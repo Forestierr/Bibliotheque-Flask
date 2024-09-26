@@ -1,0 +1,94 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="title is-1">
+      Modifier le livre {{ book.title }}
+    </h1>
+
+    <div class="content">
+        <form action="/livre/{{ book.id }}/edit" method="post">
+            <div class="field">
+                <label class="label" for="title">Titre</label>
+                <div class="control">
+                    <input class="input" type="text" name="title" id="title" value="{{ book.title }}" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="author">Auteur</label>
+                <div class="control">
+                    <input class="input" type="text" name="author" id="author" value="{{ book.author }}">
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="editor">Editeur</label>
+                <div class="control">
+                    <input class="input" type="text" name="editor" id="editor" value="{{ book.editor }}">
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="year">Année</label>
+                <div class="control">
+                    <input class="input" type="number" name="year" id="year" value="{{ book.year }}">
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="type">Genre</label>
+                <div class="control">
+                    <input class="input" type="text" name="type" id="type" value="{{ book.type }}">
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="isbn">ISBN</label>
+                <div class="control">
+                    <input class="input" type="number" name="isbn" id="isbn" value="{{ book.isbn }}">
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="students">Élèves possédent le livre</label>
+                <div class="select">
+                    <select name="student" id="student-select">
+                        {% if student %}
+                            <option value="{{ student.id }}" selected>{{ student.name }} {{ student.firstname }}</option>
+                        {% endif %}
+                        <option value="">--Le livre se trouve dans le bibliothèque--</option>
+                    {% for student in students %}
+                        <option value="{{ student[0] }}">{{ student[1] }} {{ student[2] }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="field is-grouped">
+              <div class="control">
+                <button class="button is-link">Enregistrer</button>
+              </div>
+              <div class="control">
+                <button class="button is-light">
+                    <a href="/livre" class="">Annuler</a>
+                </button>
+              </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container">
+        <button class="button is-normal is-danger is-responsive">
+            <a href="/livre/{{ book.id }}/delete">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fas fa-user-slash has-text-black"></i>
+                    </span>
+                    <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
+                </div>
+            </a>
+        </button>
+    </div>
+{% endblock %}

@@ -1,0 +1,64 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 class="title is-1">
+      Mes livres
+    </h1>
+
+    <div class="container">
+        <button class="button is-normal is-responsive">
+            <a href="/livre/ajout">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                    <span>Ajouter un livre</span>
+                </div>
+            </a>
+        </button>
+        <button class="button is-normal is-responsive">
+            <a href="/livre/scann">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fas fa-barcode"></i>
+                    </span>
+                    <span>Scanner un livre</span>
+                </div>
+            </a>
+        </button>
+    </div>
+
+    <div class="is-invisible">
+        <h2>Rechercher un livre</h2>
+    </div>
+
+    <div class="table-container">
+        <table class="table is-striped is-hoverable is-fullwidth">
+          <tr class="thead">
+              <th>Titre</th>
+              <th class="is-hidden-mobile">Auteur</th>
+              <th>Editeur</th>
+              <th class="is-hidden-mobile">Annee</th>
+              <th>Genre</th>
+              <th class="is-hidden-mobile">ISBN</th>
+              <th>Emprunter par</th>
+          </tr>
+          {% for book in books %}
+            <tr class="tbody">
+                <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].title }}</td>
+                <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].author }}</td>
+                <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].editor }}</td>
+                <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].year }}</td>
+                <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].type }}</td>
+                <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].isbn }}</td>
+                <td onclick="location.href='/eleve/{{ book[1].firstname }} {{ book[1].name }}'">{{ book[1].name }} {{ book[1].firstname }}</td>
+            </tr>
+          {% endfor %}
+
+        </table>
+    </div>
+
+{% endblock %}

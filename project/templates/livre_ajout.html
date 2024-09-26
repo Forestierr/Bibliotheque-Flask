@@ -1,0 +1,67 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title is-1">
+  Livre
+</h1>
+
+<div class="content">
+    <form action="/livre/ajout" method="post">
+        <div class="field">
+            <label class="label" for="title">Titre</label>
+            <div class="control">
+                <input class="input" type="text" name="title" id="title" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="author">Auteur</label>
+            <div class="control">
+                <input class="input" type="text" name="author" id="author">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="editor">Editeur</label>
+            <div class="control">
+                <input class="input" type="text" name="editor" id="editor">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="year">Année</label>
+            <div class="control">
+                <input class="input" type="number" name="year" id="year">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="type">Genre</label>
+            <div class="control">
+                <input class="input" type="text" name="type" id="type">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label" for="isbn">ISBN</label>
+            <div class="control">
+                <input class="input" type="number" name="isbn" id="isbn">
+            </div>
+        </div>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button class="button is-link">Enregistrer</button>
+          </div>
+          <div class="control">
+            <button class="button is-light">
+                <a href="/livre" class="has-text-black">Annuler</a>
+            </button>
+          </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
