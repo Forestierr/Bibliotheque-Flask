@@ -3,10 +3,10 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, make_response
 from flask_login import login_required, current_user
 
-import cv2
-import numpy as np
-from pyzbar.pyzbar import decode
-import isbnlib
+#import cv2
+#import numpy as np
+#from pyzbar.pyzbar import decode
+#import isbnlib
 
 from .models import Book, Student, Loan
 from . import db
@@ -58,7 +58,7 @@ def livre_ajout():
 
     return render_template('livre_ajout.html')
 
-
+"""
 @livre.route('/livre/scann', methods=['GET', 'POST'])
 @login_required
 def livre_scann():
@@ -122,7 +122,7 @@ def upload():
             return 'You forgot Snap!'
 
     return 'Hello World!'
-
+"""
 
 @livre.route('/livre/<id>/edit', methods=['GET', 'POST'])
 @login_required
