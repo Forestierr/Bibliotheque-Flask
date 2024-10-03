@@ -1,7 +1,9 @@
-# main.py
+# eleve.py
 
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
+from sqlalchemy import and_, or_
+
 from .models import Student, Loan, Book
 from . import db
 
@@ -14,10 +16,9 @@ def eleve_db():
     # students = [(student.name, student.firstname) for student in students]
 
     # Query all students from the current user and add the books if the student has loans
-    students_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id).outerjoin(Loan, Student.id == Loan.student_id).outerjoin(Book, Loan.book_id == Book.id).all()
+    students_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id).outerjoin(Loan, and_(Student.id == Loan.student_id, Loan.date_return == None)).outerjoin(Book, Loan.book_id == Book.id).all()
     students = [(student, book) for (student, _, book) in students_with_loans]
 
-    print(students)
 
     return render_template('eleve.html', students=students)
 
@@ -50,18 +51,38 @@ def ajouter_eleve():
 @eleve.route('/eleve/<firstname> <name>')
 @login_required
 def eleve_infos(firstname, name):
-    #student = Student.query.filter_by(user_id=current_user.id, name=name, firstname=firstname).first()
-    #student = (student.name, student.firstname)
+    student_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id, Student.name == name, Student.firstname == firstname).outerjoin(Loan, Student.id == Loan.student_id).filter(Loan.date_return == None).outerjoin(Book, Loan.book_id == Book.id).all()
 
-    student_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id, Student.name == name, Student.firstname == firstname).outerjoin(Loan, Student.id == Loan.student_id).outerjoin(Book, Loan.book_id == Book.id).all()
-    student = [(student, book) for (student, _, book) in student_with_loans]
+    old_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id, Student.name == name, Student.firstname == firstname).outerjoin(Loan, Student.id == Loan.student_id).filter(Loan.date_return != None).outerjoin(Book, Loan.book_id == Book.id).all()
 
-    return render_template('eleve.html', student=student[0])
+    if student_with_loans:
+        student = student_with_loans[0][0]
+        books = [(loan, book) for (_, loan, book) in student_with_loans]
+    else:
+        student = Student.query.filter_by(user_id=current_user.id, name=name, firstname=firstname).first()
+        books = []
+
+    if old_loans:
+        old_books = [(loan, book) for (_, loan, book) in old_loans]
+    else:
+        old_books = []
+
+    print(firstname)
+
+    print(student)
+    print(books)
+
+    return render_template('eleve.html', student=student, books=books, old_books=old_books)
 
 @eleve.route('/eleve/<name> <firstname>/delete')
 @login_required
 def eleve_delete(name, firstname):
     student = Student.query.filter_by(user_id=current_user.id, name=name, firstname=firstname).first()
+
+    loans = Loan.query.filter_by(student_id=student.id).all()
+    for loan in loans:
+        db.session.delete(loan)
+
     db.session.delete(student)
     db.session.commit()
 

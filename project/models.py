@@ -26,7 +26,7 @@ class Book(db.Model):
     editor = db.Column(db.String(100))
     year = db.Column(db.Integer)
     type = db.Column(db.String(100))
-    isbn = db.Column(db.String(100))
+    isbn = db.Column(db.String(100), unique=True)
 
     # Many-to-One relationship with User
     user_id = db.Column(db.Integer, ForeignKey('user.id'))  # Each book belongs to a user
@@ -52,8 +52,8 @@ class Loan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # Foreign keys to link Student and Book
-    student_id = db.Column(db.Integer, ForeignKey('student.id'))
-    book_id = db.Column(db.Integer, ForeignKey('book.id'))
+    student_id = db.Column(db.Integer, ForeignKey('student.id'), nullable=False)
+    book_id = db.Column(db.Integer, ForeignKey('book.id'), nullable=False)
 
     date_loan = db.Column(db.Date)
     date_return = db.Column(db.Date)
