@@ -5,7 +5,7 @@
 {% block content %}
 
     <h1 class="title is-1">
-      Mes livres
+        Mes livres
     </h1>
 
     <div class="container">
@@ -31,34 +31,125 @@
         </button>
     </div>
 
-    <div class="is-invisible">
-        <h2>Rechercher un livre</h2>
+    <div class="section">
+        <div class="card">
+            <header class="card-header" id="toggle-button">
+                <p class="card-header-title">Recherche</p>
+                <button class="card-header-icon" aria-label="more options">
+                    <span class="icon">
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                </button>
+            </header>
+            <div class="card-content is-hidden" id="content">
+                <form method="POST" action="/livre">
+                <div class="content">
+                    <div class="columns is-multiline is-2">
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <input class="input" type="text" name="title" id="title" placeholder="Titre">
+                        </div>
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <input class="input" type="text" name="author" id="author" placeholder="Autheur">
+                        </div>
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <input class="input" type="text" name="editor" id="editor" placeholder="Editeur">
+                        </div>
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <input class="input" type="number" name="year" id="year" placeholder="Année">
+                        </div>
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <input class="input" type="text" name="type" id="type" placeholder="Genre">
+                        </div>
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <input class="input" type="number" name="isbn" id="isbn" placeholder="ISBN">
+                        </div>
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <input class="input" type="text" name="student" id="student" placeholder="Emprunter par">
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <footer class="card-footer is-hidden" id="footer">
+                <button class="button card-footer-item has-text-black is-white" id="reset-button">Réinitialiser</button>
+                <button class="button card-footer-item has-background-primary has-text-black" id="search-button">Rechercher</button>
+            </footer>
+        </div>
     </div>
 
     <div class="table-container">
         <table class="table is-striped is-hoverable is-fullwidth">
-          <tr class="thead">
-              <th>Titre</th>
-              <th class="is-hidden-mobile">Auteur</th>
-              <th>Editeur</th>
-              <th class="is-hidden-mobile">Annee</th>
-              <th>Genre</th>
-              <th class="is-hidden-mobile">ISBN</th>
-              <th>Emprunter par</th>
-          </tr>
-          {% for book in books %}
-            <tr class="tbody">
-                <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].title }}</td>
-                <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].author }}</td>
-                <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].editor }}</td>
-                <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].year }}</td>
-                <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].type }}</td>
-                <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].isbn }}</td>
-                <td onclick="location.href='/eleve/{{ book[1].firstname }} {{ book[1].name }}'">{{ book[1].name }} {{ book[1].firstname }}</td>
+            <tr class="thead">
+                <th>Titre</th>
+                <th class="is-hidden-mobile">Auteur</th>
+                <th>Editeur</th>
+                <th class="is-hidden-mobile">Annee</th>
+                <th>Genre</th>
+                <th class="is-hidden-mobile">ISBN</th>
+                <th>Emprunter par</th>
             </tr>
-          {% endfor %}
+            {% for book in books %}
+                <tr class="tbody">
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].title }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
+                        class="is-hidden-mobile">{{ book[0].author }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].editor }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
+                        class="is-hidden-mobile">{{ book[0].year }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].type }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
+                        class="is-hidden-mobile">{{ book[0].isbn }}</td>
+                    {% if book[1] != None %}
+                    <td onclick="location.href='/eleve/{{ book[1].firstname }} {{ book[1].name }}'">{{ book[1].name }} {{ book[1].firstname }}</td>
+                    {% else %}
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"> </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
 
         </table>
     </div>
+
+    <script>
+        // toggle button : show/hide search inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggle-button');
+            const cardContent = document.getElementById('content');
+            const cardFooter = document.getElementById('footer');
+
+            if (!toggleButton || !cardContent) {
+                console.error('Missing elements');
+            }
+
+            toggleButton.addEventListener('click', function() {
+                if (cardContent.classList.contains('is-hidden')) {
+                    cardContent.classList.remove('is-hidden');
+                    cardFooter.classList.remove('is-hidden');
+                } else {
+                    cardContent.classList.add('is-hidden');
+                    cardFooter.classList.add('is-hidden');
+                }
+            });
+        });
+
+        // reset button : reset all input
+        document.getElementById('reset-button').addEventListener('click', function() {
+            document.getElementById('title').value = '';
+            document.getElementById('author').value = '';
+            document.getElementById('editor').value = '';
+            document.getElementById('year').value = '';
+            document.getElementById('type').value = '';
+            document.getElementById('isbn').value = '';
+            document.getElementById('student').value = '';
+
+            // refresh page
+            document.querySelector('form').submit();
+        });
+
+        // search button : submit form
+        document.getElementById('search-button').addEventListener('click', function() {
+            document.querySelector('form').submit();
+        });
+    </script>
 
 {% endblock %}

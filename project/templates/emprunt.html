@@ -1,0 +1,43 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1 class="title is-1">
+        Emprunts
+    </h1>
+
+    <div class="container">
+        <form method="POST" action="/emprunt">
+            <label class="checkbox">
+                {% if only_active_loans %}
+                    <input type="checkbox" name="active_loan" onChange="this.form.submit()" value="0"/>
+                {% else %}
+                    <input type="checkbox" name="active_loan" onChange="this.form.submit()" value="1" checked/>
+                {% endif %}
+                Afficher les emprunts actifs
+            </label>
+        </form>
+    </div>
+
+    <div class="table-container">
+    <table class="table is-striped is-hoverable is-fullwidth">
+        <tr class="thead">
+            <th>Titre</th>
+            <th>Elève</th>
+            <th>Date d'emprunt</th>
+            <th>Date de retour</th>
+        </tr>
+        {% for (book, loan, student) in loans %}
+        <tr class="tbody">
+            <td onclick="location.href='/livre/{{ book.id }}/edit'">{{ book.title }}</td>
+            <td onclick="location.href='/eleve/{{ student.firstname }} {{ student.name }}'">{{ student.firstname }} {{ student.name }}</td>
+            <td>{{ loan.date_loan }}</td>
+            <td>{{ loan.date_return }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+{% endblock %}

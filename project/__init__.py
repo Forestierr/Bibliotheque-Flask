@@ -43,6 +43,10 @@ def create_app():
     from .eleve import eleve as eleve_blueprint
     app.register_blueprint(eleve_blueprint)
 
+    # blueprint for emprunt parts of app
+    from .emprunt import emprunt as emprunt_blueprint
+    app.register_blueprint(emprunt_blueprint)
+
     # blueprint for non-auth parts of app
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

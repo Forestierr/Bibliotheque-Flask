@@ -10,96 +10,22 @@
     Scanné un nouveau livre
 </h1>
 
-<video id="video" width="320" height="240" autoplay style="background-color: grey"></video>
-<button id="send">Take & Send Photo</button>
-<canvas id="canvas" width="320" height="240" style="background-color: grey"></canvas>
+<div class = "large-12 column">
+    <div class="card"></div>
+        <div class="card-section">
+            <div id="product_summary" class="v-space-short text-left">
+                <ul id="attributes_grid" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3">
+                    <li style =" list-style : none"><div id="code"></div> </li>
+                    <li style =" list-style : none"> <div> <div id="nutriscoreresult" class="attr_card_header"></div></div> </li>
+                    <li style =" list-style : none"><div><div id="ecoscoreresult" class="attr_card_header"></div></div> </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
-<img id="image" src="" width="320" height="240" style="background-color: grey"></img>
-<img id="image64" src="" width="320" height="240" style="background-color: grey"></img>
-
-
-<script>
-
-// Elements for taking the snapshot
-var video = document.getElementById('video');
-
-// Element to display snapshot
-
-// you need canvas to get image. canvas can be hidden using `createElement("canvas")`
-// var canvas = document.createElement("canvas");
-
-var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
-
-var image = document.getElementById('image');
-var image64 = document.getElementById('image64');
-
-// Get access to the camera!
-if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    // Not adding `{ audio: true }` since we only want video now
-    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-        //video.src = window.URL.createObjectURL(stream);
-        video.srcObject = stream;
-        video.play();
-
-        /*
-        //console.log('setInterval')
-        window.setInterval(function() {
-            //context.drawImage(video, 0, 0);
-            context.drawImage(video, 0, 0, 320, 240); // better use size because camera may gives data in different size then <video> is displaying
-
-            image64.src = canvas.toDataURL();
-            canvas.toBlob(upload, "image/jpeg");
-        }, 100);
-        */
-    });
-}
-
-// Trigger photo take
-document.getElementById("send").addEventListener("click", function() {
-    // context.drawImage(video, 0, 0);
-    context.drawImage(video, 0, 0, 320, 240); // better use size because camera may gives data in different size then <video> is displaying
-    image64.src = canvas.toDataURL();
-
-    canvas.toBlob(upload, "image/jpeg");
-});
-
-function upload(file) {
-
-    // create form
-    var formdata =  new FormData();
-
-    // add file to form
-    formdata.append("snap", file);
-
-    // create AJAX connection
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "{{ url_for('livre.upload') }}", true);
-    xhr.responseType = 'blob';
-    // define function which get response
-    xhr.onload = function() {
-
-        if(this.status = 200) {
-            //console.log(this.response);
-        } else {
-            console.error(xhr);
-        }
-
-        //alert(this.response);
-
-        //img.onload = function(){
-        //    ctx.drawImage(img, 0, 0)
-        //}
-
-        image.src = URL.createObjectURL(this.response); // blob
-    };
-
-    // send form in AJAX
-    xhr.send(formdata);
-
-    image.src = URL.createObjectURL(file);
-}
-
-</script>
+<div id="camera"></div>
+<script src="{{ url_for('static', filename='/javascript/quagga.min.js') }}"> </script>
+<script src="{{ url_for('static', filename='/javascript/cbscanner.js') }}"> </script>
 
 {% endblock %}

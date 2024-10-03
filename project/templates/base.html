@@ -85,6 +85,16 @@
                                 </div>
                             </a>
                         {% endif %}
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item">
+                                <div class="icon-text">
+                                    <span class="icon">
+                                        <i class="fas fa-file-alt has-text-grey"></i>
+                                    </span>
+                                    <span>Emprunt</span>
+                                </div>
+                            </a>
+                        {% endif %}
                         {% if not current_user.is_authenticated %}
                             <a href="{{ url_for('auth.login') }}" class="navbar-item">
                                 Login
