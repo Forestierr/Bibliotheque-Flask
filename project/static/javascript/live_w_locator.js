@@ -36,6 +36,21 @@ $(function() {
             });
         },
         handleError: function(err) {
+
+            if (err.name === 'NotReadableError') {
+                // La caméra n'est pas disponible
+                // afficher un message d'erreur dans le div avec l'id error
+
+                var $node = null;
+                $node = $(
+                    '<h4 class="subtitle is-4">' +
+                        'Erreur : Aucune caméra n\'a été détectée.' +
+                    '</h4>'
+                );
+
+                $("#result_strip").html($node);
+            }
+
             console.log(err);
         },
         checkCapabilities: function() {
