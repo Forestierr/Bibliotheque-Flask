@@ -80,15 +80,51 @@
     </div>
 
     <div class="container">
-        <button class="button is-normal is-danger is-responsive">
-            <a href="/livre/{{ book.id }}/delete">
-                <div class="icon-text">
-                    <span class="icon has-text-info">
-                        <i class="fas fa-user-slash has-text-black"></i>
-                    </span>
-                    <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
-                </div>
-            </a>
+        <div id="delete-modal" class="modal">
+          <div class="modal-background"></div>
+          <div class="modal-content">
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Supprimer le livre</p>
+                </header>
+                <footer class="modal-card-foot">
+                    <a href="/livre/{{ book.id }}/delete" class="button is-normal is-danger is-responsive">
+                        <div class="icon-text">
+                            <span class="icon has-text-info">
+                                <i class="fa-solid fa-trash has-text-black"></i>
+                            </span>
+                            <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
+                        </div>
+                    </a>
+                    <a href="/livre/{{ book.id }}/edit" class="button is-normal is-responsive">Annuler</a>
+                </footer>
+            </div>
+          </div>
+          <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
+        </div>
+        <br>
+        <button class="button is-normal is-danger is-responsive" id="showModal">
+            <div class="icon-text">
+                <span class="icon has-text-info">
+                    <i class="fa-solid fa-trash has-text-black"></i>
+                </span>
+                <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
+            </div>
         </button>
     </div>
+
+    <script>
+        var btn = document.querySelector('#showModal');
+        var modalDlg = document.querySelector('#delete-modal');
+        var modalCloseBtn = document.querySelector('#modal-close');
+        btn.addEventListener('click', function(){
+          modalDlg.classList.add('is-active');
+        });
+
+        modalCloseBtn.addEventListener('click', function(){
+          modalDlg.classList.remove('is-active');
+        });
+    </script>
+
+
 {% endblock %}
