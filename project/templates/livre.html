@@ -110,6 +110,92 @@
         </table>
     </div>
 
+    {% if nb_page < 5 %}
+    <nav class="pagination" role="navigation" aria-label="pagination">
+      <ul class="pagination-list">
+        {% for i in range(1, nb_page + 1) %}
+          {% if i == page %}
+            <li>
+              <a
+                class="pagination-link is-current"
+                aria-label="Page {{ page }}"
+                aria-current="page"
+                >{{ page }}</a
+              >
+            </li>
+          {% else %}
+            <li>
+              <a href="{{ url_for('livre.livre_db', page=i) }}" class="pagination-link" aria-label="Goto page {{ i }}">{{ i }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+    {% else %}
+    <nav class="pagination" role="navigation" aria-label="pagination">
+      <ul class="pagination-list">
+        {# Page 1 #}
+        {% if page > 2 %}
+        <li>
+          <a href="{{ url_for('livre.livre_db', page=1) }}" class="pagination-link" aria-label="Goto page 1">1</a>
+        </li>
+        {# ... #}
+        <li>
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        {% endif %}
+
+        {# if current is last add page - 2 #}
+        {% if page == nb_page %}
+        <li>
+          <a href="{{ url_for('livre.livre_db', page=page-2) }}" class="pagination-link" aria-label="Goto page {{ page - 2 }}">{{ page - 2 }}</a>
+        </li>
+        {% endif %}
+
+        {# Page - 1 #}
+        {% if page - 1 > 0 %}
+        <li>
+          <a href="{{ url_for('livre.livre_db', page=page-1) }}" class="pagination-link" aria-label="Goto page {{ page - 1 }}">{{ page - 1 }}</a>
+        </li>
+        {% endif %}
+
+        {# Page actuelle #}
+        <li>
+          <a
+            class="pagination-link is-current"
+            aria-label="Page {{ page }}"
+            aria-current="page"
+            >{{ page }}</a
+          >
+        </li>
+
+        {# Page + 1 #}
+        {% if (page + 1) < nb_page + 1 %}
+        <li>
+          <a href="{{ url_for('livre.livre_db', page=page+1) }}" class="pagination-link" aria-label="Goto page {{ page + 1 }}">{{ page + 1 }}</a>
+        </li>
+        {% endif %}
+
+        {# if current is first add page + 2 #}
+        {% if page == 1 %}
+        <li>
+          <a href="{{ url_for('livre.livre_db', page=page+2) }}" class="pagination-link" aria-label="Goto page {{ page + 2 }}">{{ page + 2 }}</a>
+        </li>
+        {% endif %}
+
+        {% if page < nb_page - 1 %}
+        <li>
+          <span class="pagination-ellipsis">&hellip;</span>
+        </li>
+        {# Page nb_page #}
+        <li>
+          <a href="{{ url_for('livre.livre_db', page=nb_page) }}" class="pagination-link" aria-label="Goto page {{ nb_page }}">{{ nb_page }}</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
     <script>
         // toggle button : show/hide search inputs
         document.addEventListener('DOMContentLoaded', function() {

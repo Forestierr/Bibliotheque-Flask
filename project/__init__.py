@@ -4,6 +4,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
+import locale
+
 from .config import SECRET_KEY
 
 # init SQLAlchemy so we can use it later in our models
@@ -20,6 +22,9 @@ def create_app():
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
+
+    # set the locale to french for the date format
+    locale.setlocale(locale.LC_TIME, 'fr_CH.UTF-8')
 
     # import data base models
     from .models import User, Book, Student, Loan

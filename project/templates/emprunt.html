@@ -32,7 +32,12 @@
         {% for (book, loan, student) in loans %}
         <tr class="tbody">
             <td onclick="location.href='/livre/{{ book.id }}/edit'">{{ book.title }}</td>
+            {# Si il n y a pas d eleve associer au livre, modification du lien sur la case #}
+            {% if student is none %}
+            <td onclick="location.href='/livre/{{ book.id }}/edit'"></td>
+            {% else %}
             <td onclick="location.href='/eleve/{{ student.firstname }} {{ student.name }}'">{{ student.firstname }} {{ student.name }}</td>
+            {% endif %}
             <td>{{ loan.date_loan }}</td>
             <td>{{ loan.date_return }}</td>
         </tr>

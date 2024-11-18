@@ -67,10 +67,16 @@ def eleve_infos(firstname, name):
     else:
         old_books = []
 
-    print(firstname)
+    # change the date format from 2024-12-31 to 31 dec. 2024
+    for i, (loan, _) in enumerate(books):
+        loan.date_loan = loan.date_loan.strftime('%d %b %Y')
+        if loan.date_return:
+            loan.date_return = loan.date_return.strftime('%d %b %Y')
 
-    print(student)
-    print(books)
+    for i, (loan, _) in enumerate(old_books):
+        loan.date_loan = loan.date_loan.strftime('%d %b %Y')
+        if loan.date_return:
+            loan.date_return = loan.date_return.strftime('%d %b %Y')
 
     return render_template('eleve.html', student=student, books=books, old_books=old_books)
 

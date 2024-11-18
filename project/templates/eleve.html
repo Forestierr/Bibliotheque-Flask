@@ -10,7 +10,7 @@
     </h1>
         {% if books[0] %}
         {% for book in books %}
-            <div class="container">
+            <div class="container mb-1">
             {% if loop.first %}
                 <h2 class="subtitle is-2">Livre actuellement emprunté</h2>
             {% endif %}
@@ -24,6 +24,39 @@
                         </p>
                     </div>
                     <footer class="card-footer">
+                        <div id="delete-modal" class="modal">
+                          <div class="modal-background"></div>
+                          <div class="modal-content">
+                            <div class="modal-card">
+                                <header class="modal-card-head">
+                                    <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                                </header>
+                                <footer class="modal-card-foot">
+                                    <a href="/emprunt/{{ book[0].id }}/delete" class="button is-normal is-danger is-responsive">
+                                        <div class="icon-text">
+                                            <span class="icon has-text-info">
+                                                <i class="fa-solid fa-trash has-text-black"></i>
+                                            </span>
+                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                        </div>
+                                    </a>
+                                    <a href="/eleve/{{ student.firstname }} {{ student.name }}" class="button is-normal is-responsive">Annuler</a>
+                                </footer>
+                            </div>
+                          </div>
+                          <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
+                        </div>
+                        <div class="card-footer-item">
+                        <button class="button is-small is-danger is-responsive" id="showModal">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-trash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                            </div>
+                        </button>
+                        </div>
+
                         <a href="/livre/{{ book[1].id }}/edit" class="card-footer-item">Voir le livre</a>
                     </footer>
                 </div>
@@ -35,6 +68,7 @@
             </div>
         {% endif %}
 
+        <hr style="border-top: 8px">
 
         {% if old_books %}
         {% for book in old_books %}
@@ -55,7 +89,39 @@
                         </p>
                     </div>
                     <footer class="card-footer">
-                        <a href="/emprunt/{{ book[0].id }}/delete" class="card-footer-item has-text-danger">Supprimer l'emprunt</a>
+                        <div id="delete-modal" class="modal">
+                          <div class="modal-background"></div>
+                          <div class="modal-content">
+                            <div class="modal-card">
+                                <header class="modal-card-head">
+                                    <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                                </header>
+                                <footer class="modal-card-foot">
+                                    <a href="/emprunt/{{ book[0].id }}/delete" class="button is-normal is-danger is-responsive">
+                                        <div class="icon-text">
+                                            <span class="icon has-text-info">
+                                                <i class="fa-solid fa-trash has-text-black"></i>
+                                            </span>
+                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                        </div>
+                                    </a>
+                                    <a href="/eleve/{{ student.firstname }} {{ student.name }}" class="button is-normal is-responsive">Annuler</a>
+                                </footer>
+                            </div>
+                          </div>
+                          <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
+                        </div>
+                        <div class="card-footer-item">
+                        <button class="button is-small is-danger is-responsive" id="showModal">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-trash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                            </div>
+                        </button>
+                        </div>
+
                         <a href="/livre/{{ book[1].id }}/edit" class="card-footer-item">Voir le livre</a>
                     </footer>
                 </div>
@@ -69,7 +135,7 @@
           <div class="modal-content">
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Supprimer l'élève</p>
+                    <p class="modal-card-title">Supprimer l'élève ?</p>
                 </header>
                 <footer class="modal-card-foot">
                     <a href="/eleve/{{ student.name }} {{ student.firstname }}/delete" class="button is-normal is-danger is-responsive">
@@ -113,7 +179,7 @@
 {% else %}
 
     <h1 class="title is-1">
-        Élèves
+        Elèves
     </h1>
 
     <div class="container">

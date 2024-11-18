@@ -1,4 +1,6 @@
 # livre.py
+import math
+from math import floor
 
 from flask import Blueprint, render_template, redirect, url_for, request, flash, make_response, jsonify
 from flask_login import login_required, current_user
@@ -11,8 +13,15 @@ from . import db
 livre = Blueprint('livre', __name__)
 
 @livre.route('/livre', methods=['GET', 'POST'])
+@livre.route('/livre/<int:page>/', methods=['GET', 'POST'])
 @login_required
-def livre_db():
+def livre_db(page=1):
+    n_books_by_page = 10
+    # get the number of books
+    nb_books = db.session.query(Book).filter(Book.user_id == current_user.id).count()
+    # nombre de page
+    nb_page = math.ceil(nb_books / n_books_by_page)
+
     books = []
 
     if request.method == 'POST':
@@ -36,6 +45,11 @@ def livre_db():
                     Student.firstname.ilike('%' + student + '%') if student else text('')
                 )).outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return == None)).outerjoin(Student, Loan.student_id == Student.id).all()
 
+            nb_books = len(books)
+            nb_page = math.ceil(nb_books / n_books_by_page)
+
+            books = books[:n_books_by_page]
+
     if not books:
         # Query books and add the student name if the book is loaned
         books = (
@@ -43,12 +57,12 @@ def livre_db():
             .filter(Book.user_id == current_user.id)
             .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return == None))
             .outerjoin(Student, Loan.student_id == Student.id )
-            .all()
+            .limit(n_books_by_page).offset((int(page) - 1) * n_books_by_page)
         )
 
     books = [(book, student) for (book, _, student) in books]
 
-    return render_template('livre.html', books=books)
+    return render_template('livre.html', books=books, nb_page=nb_page, page=int(page))
 
 
 @livre.route('/livre/ajout', methods=['GET', 'POST'])
@@ -61,6 +75,16 @@ def livre_ajout():
         year = request.form.get('year')
         type = request.form.get('type')
         isbn = request.form.get('isbn')
+
+        # to avoid empty string (because isbn is a required field)
+        if (isbn == ''):
+            isbn = None
+
+        if (author == "None"):
+            author = ""
+
+        if (editor == "undefined"):
+            editor = ""
 
         if not title:
             flash('Veuillez ajouter un titre.')

@@ -20,12 +20,18 @@ def emprunt_db():
 
         if active_loan:
             only_active_loans = False
-            loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, Loan.date_return == None).outerjoin(Loan, Book.id == Loan.book_id).outerjoin(Student, Loan.student_id == Student.id).all()
+            loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, Loan.date_loan is not None, Loan.date_return == None).join(Loan, Book.id == Loan.book_id).join(Student, Loan.student_id == Student.id).all()
         else:
             only_active_loans = True
-            loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id).outerjoin(Loan, Book.id == Loan.book_id).outerjoin(Student, Loan.student_id == Student.id).all()
+            loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, Loan.date_loan is not None).join(Loan, Book.id == Loan.book_id).join(Student, Loan.student_id == Student.id).all()
     else:
-        loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id).outerjoin(Loan, Book.id == Loan.book_id).outerjoin(Student, Loan.student_id == Student.id).all()
+        loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, Loan.date_loan is not None).join(Loan, Book.id == Loan.book_id).join(Student, Loan.student_id == Student.id).all()
+
+    # change the date format from 2024-12-31 to 31 dec. 2024
+    for i, loan in enumerate(loans):
+        loan[1].date_loan = loan[1].date_loan.strftime('%d %b %Y')
+        if loan[1].date_return:
+            loan[1].date_return = loan[1].date_return.strftime('%d %b %Y')
 
     return render_template('emprunt.html', loans=loans, only_active_loans=only_active_loans)
 

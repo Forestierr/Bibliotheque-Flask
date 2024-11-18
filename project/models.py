@@ -26,7 +26,7 @@ class Book(db.Model):
     editor = db.Column(db.String(100))
     year = db.Column(db.Integer)
     type = db.Column(db.String(100))
-    isbn = db.Column(db.String(100), unique=True)
+    isbn = db.Column(db.String(100), unique=True, nullable=True)
 
     # Many-to-One relationship with User
     user_id = db.Column(db.Integer, ForeignKey('user.id'))  # Each book belongs to a user
