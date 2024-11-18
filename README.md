@@ -25,8 +25,8 @@ SECRET_KEY = 'your_new_secret_key'
 ## Utilisation
 
 ```bash
-$env:FLASK_APP = "projet" -p 80 -h 0.0.0.0
-flask run
+$env:FLASK_APP = "project"
+flask run -p 80 -h 0.0.0.0
 ```
 
 And go to http://127.0.0.1:80

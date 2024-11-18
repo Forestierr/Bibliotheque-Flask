@@ -107,12 +107,12 @@
                             </a>
                         {% endif %}
                         {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                            <a href="{{ url_for('auth.reglage') }}" class="navbar-item">
                                 <div class="icon-text">
                                     <span class="icon has-text-info">
-                                        <i class="fas fa-sign-out-alt has-text-grey"></i>
+                                        <i class="fa-solid fa-sliders has-text-grey"></i>
                                     </span>
-                                    <span>Logout</span>
+                                    <span>Réglage</span>
                                 </div>
                             </a>
                         {% endif %}
