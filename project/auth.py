@@ -67,11 +67,14 @@ def logout():
 @auth.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
-    db.session.query(User).filter(User.id == current_user.id).delete()
-    db.session.commit()
-    logout_user()
+    #db.session.query(User).filter(User.id == current_user.id).delete()
+    #db.session.commit()
+    #logout_user()
 
-    return redirect(url_for('main.index'))
+    #return redirect(url_for('main.index'))
+    print("delete account !!!!")
+
+    return redirect(url_for('auth.reglage'))
 
 @auth.route('/reglage', methods=['GET', 'POST'])
 @login_required

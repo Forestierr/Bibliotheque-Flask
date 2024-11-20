@@ -2,10 +2,10 @@
 
 {% block content %}
 
-    <section class="section">
-      <h1 class="title is-1">Bonjour {{ user.name }}</h1>
-      <div class = container>
-          <div class="columns">
+<section class="section">
+    <h1 class="title is-1">Bonjour {{ user.name }}</h1>
+    <div class=container>
+        <div class="columns">
             <div class="column is-four-fifths">
                 <h3 class="subtitle is-3">Bienvenue sur votre page de réglage</h3>
             </div>
@@ -38,197 +38,312 @@
                     </div>
                 </button>
             </div>
-          </div>
-      </div>
-
-    </section>
-
-    <section class="section">
-        <h2 class="title is-3">Modifier mes informations personnelles</h2>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <ul class=flashes>
-            {% for category, message in messages %}
-              {% if category == 'error' %}
-                <div class="notification is-danger is-light">
-                  <button class="delete"></button>
-                  {{ message }}
-                </div>
-              {% elif category == 'info' %}
-                <div class="notification is-info is-light">
-                  <button class="delete"></button>
-                  {{ message }}
-                </div>
-              {% elif category == 'success' %}
-                <div class="notification is-success is-light">
-                  <button class="delete"></button>
-                  {{ message }}
-                </div>
-              {% endif %}
-            {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
-
-        <div class="container">
-
-            <form method="POST" action="{{ url_for('auth.reglage') }}">
-                <div class="field">
-                    <label class="label">Nom</label>
-                    <div class="control">
-                        <input class="input" type="text" name="name" value="{{ user.name }}">
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Email</label>
-                    <div class="control">
-                        <input class="input" type="email" name="email" value="{{ user.email }}">
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Mot de passe actuelle</label>
-                    <div class="control">
-                        <input class="input" type="password" name="password">
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Nouveau mot de passe</label>
-                    <div class="control">
-                        <input class="input" type="password" name="new_password">
-                    </div>
-                </div>
-                <p><i>Si vous ne souhaitez pas modifier le mot de passe, laisser les deux champs précédents vides.</i></p>
-                <br>
-                <div class="notification is-warning is-light">
-                    <p>
-                        Pour garantir la sécurité de votre compte, veuillez utiliser un mot de passe fort qui respecte les critères suivants :
-                        Au moins 8 caractères.
-                        Inclure des lettres majuscules et minuscules (ex. : A, a).
-                        Au moins un chiffre (ex. : 1, 9).
-                        Au moins un caractère spécial (ex. : @, #, $, %).
-                    </p>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-link">Mettre à jour</button>
-                    </div>
-                </div>
-            </form>
         </div>
+    </div>
+</section>
 
-        <hr>
+<section class="section">
+    <h2 class="title is-3">Modifier mes informations personnelles</h2>
 
-        <h2 class="title is-3">Supprimer tous les élèves</h2>
-        <div class="container">
-            <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible.</i></p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="notification is-danger is-light">
+            <button class="delete"></button>
+            {{ message }}
+        </div>
+        {% elif category == 'info' %}
+        <div class="notification is-info is-light">
+            <button class="delete"></button>
+            {{ message }}
+        </div>
+        {% elif category == 'success' %}
+        <div class="notification is-success is-light">
+            <button class="delete"></button>
+            {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <div class="container">
+
+        <form method="POST" action="{{ url_for('auth.reglage') }}">
+            <div class="field">
+                <label class="label">Nom</label>
+                <div class="control">
+                    <input class="input" type="text" name="name" value="{{ user.name }}">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Email</label>
+                <div class="control">
+                    <input class="input" type="email" name="email" value="{{ user.email }}">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Mot de passe actuelle</label>
+                <div class="control">
+                    <input class="input" type="password" name="password">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Nouveau mot de passe</label>
+                <div class="control">
+                    <input class="input" type="password" name="new_password">
+                </div>
+            </div>
+            <p><i>Si vous ne souhaitez pas modifier le mot de passe, laisser les deux champs précédents vides.</i></p>
             <br>
-            <form method="POST" action="#">
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-danger">Supprimer tous les élèves</button>
-                    </div>
+            <div class="notification is-warning is-light">
+                <button class="delete"></button>
+                <p>
+                    Pour garantir la sécurité de votre compte, veuillez utiliser un mot de passe fort qui respecte les
+                    critères suivants :
+                    Au moins 8 caractères.
+                    Inclure des lettres majuscules et minuscules (ex. : A, a).
+                    Au moins un chiffre (ex. : 1, 9).
+                    Au moins un caractère spécial (ex. : @, #, $, %).
+                </p>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-link">Mettre à jour</button>
                 </div>
-            </form>
+            </div>
+        </form>
+    </div>
+
+    <hr>
+
+    <h2 class="title is-3">Supprimer tous les élèves</h2>
+    <div class="container">
+        <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible.</i></p>
+        <br>
+        <!-- Supprimer tous les élèves -->
+        <div id="delete-modal-1" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Supprimer tous les élèves ?</p>
+                    </header>
+                    <footer class="modal-card-foot">
+                        <form method="POST" action="#" id="delet_user"></form>
+                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-trash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer tous les élèves</span>
+                            </div>
+                        </button>
+                        </form>
+                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
+                    </footer>
+                </div>
+                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
+            </div>
         </div>
+        <br>
+        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
+            href="#delete-modal-1">
+            <div class="icon-text">
+                <span class="icon has-text-info">
+                    <i class="fa-solid fa-trash has-text-black"></i>
+                </span>
+                <span class="has-text-black has-text-weight-semibold">Supprimer tous les élèves</span>
+            </div>
+        </button>
+    </div>
 
-        <hr>
+    <hr>
 
-        <h2 class="title is-3">Supprimer tous les prèts</h2>
-        <div class="container">
-            <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible.</i></p>
-            <br>
-            <form method="POST" action="#">
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-danger">Supprimer tous les prèts</button>
-                    </div>
+    <h2 class="title is-3">Supprimer tous les prêts</h2>
+    <div class="container">
+        <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible.</i></p>
+        <br>
+        <!-- Supprimer tous les prêts -->
+        <div id="delete-modal-2" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Supprimer tous les prêts ?</p>
+                    </header>
+                    <footer class="modal-card-foot">
+                        <form method="POST" action="#" id="delet_user"></form>
+                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-trash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer tous les prêts</span>
+                            </div>
+                        </button>
+                        </form>
+                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
+                    </footer>
                 </div>
-            </form>
+                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
+            </div>
         </div>
+        <br>
+        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
+            href="#delete-modal-2">
+            <div class="icon-text">
+                <span class="icon has-text-info">
+                    <i class="fa-solid fa-trash has-text-black"></i>
+                </span>
+                <span class="has-text-black has-text-weight-semibold">Supprimer tous les prêts</span>
+            </div>
+        </button>
+    </div>
 
-        <hr>
+    <hr>
 
-        <h2 class="title is-3">Supprimer tous les livres</h2>
-        <div class="container">
-            <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible.</i></p>
-            <br>
-            <form method="POST" action="#">
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-danger">Supprimer tous les livres</button>
-                    </div>
+    <h2 class="title is-3">Supprimer tous les livres</h2>
+    <div class="container">
+        <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible.</i></p>
+        <br>
+        <!-- Supprimer tous les livres -->
+        <div id="delete-modal-3" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Supprimer tous les livres ?</p>
+                    </header>
+                    <footer class="modal-card-foot">
+                        <form method="POST" action="#" id="delet_user"></form>
+                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-trash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer tous les livres</span>
+                            </div>
+                        </button>
+                        </form>
+                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
+                    </footer>
                 </div>
-            </form>
+                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
+            </div>
         </div>
+        <br>
+        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
+            href="#delete-modal-3">
+            <div class="icon-text">
+                <span class="icon has-text-info">
+                    <i class="fa-solid fa-trash has-text-black"></i>
+                </span>
+                <span class="has-text-black has-text-weight-semibold">Supprimer tous les livres</span>
+            </div>
+        </button>
+    </div>
 
-        <hr>
+    <hr>
 
-        <h2 class="title is-3">Supprimer le compte</h2>
-        <div class="container">
-            <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible. <br>
-                Vous perdrez l'accès à votre compte et toutes les données associées.
-            </i></p>
-            <br>
-            <form method="POST" action="{{ url_for('auth.delete_account') }}">
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-danger">Supprimer le compte</button>
-                    </div>
+    <h2 class="title is-3">Supprimer le compte</h2>
+    <div class="container">
+        <p>
+            <i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> cette action est irréversible. <br>
+                Vous perdrez l'accès à votre compte et toutes les données associées.</i>
+        </p>
+        <br>
+
+        <!-- Supprimer l'utilisateur -->
+        <div id="delete-modal-4" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Supprimer mon compte ?</p>
+                    </header>
+                    <footer class="modal-card-foot">
+                        <form method="POST" action="{{ url_for('auth.delete_account') }}" id="delet_user"></form>
+                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fas fa-user-slash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer mon compte</span>
+                            </div>
+                        </button>
+                        </form>
+                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
+                    </footer>
                 </div>
-
-                <!-- Modal -->
-
-                <div class="container">
-                    <div id="delete-modal" class="modal">
-                      <div class="modal-background"></div>
-                      <div class="modal-content">
-                        <div class="modal-card">
-                            <header class="modal-card-head">
-                                <p class="modal-card-title">Supprimer le livre</p>
-                            </header>
-                            <footer class="modal-card-foot">
-                                <a href="#" class="button is-normal is-danger is-responsive">
-                                    <div class="icon-text">
-                                        <span class="icon has-text-info">
-                                            <i class="fa-solid fa-trash has-text-black"></i>
-                                        </span>
-                                        <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
-                                    </div>
-                                </a>
-                                <a href="#" class="button is-normal is-responsive">Annuler</a>
-                            </footer>
-                        </div>
-                      </div>
-                      <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
-                    </div>
-                    <br>
-                    <button class="button is-normal is-danger is-responsive" id="showModal">
-                        <div class="icon-text">
-                            <span class="icon has-text-info">
-                                <i class="fa-solid fa-trash has-text-black"></i>
-                            </span>
-                            <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
-                        </div>
-                    </button>
-                </div>
-
-
-            </form>
+                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
+            </div>
         </div>
+        <br>
+        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
+            href="#delete-modal-4">
+            <div class="icon-text">
+                <span class="icon has-text-info">
+                    <i class="fas fa-user-slash has-text-black"></i>
+                </span>
+                <span class="has-text-black has-text-weight-semibold">Supprimer mon compte</span>
+            </div>
+        </button>
+    </div>
+</section>
 
-    </section>
-
-    <script>
+<!-- Utilisé pour supprimer les notifications -->
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-      (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-        const $notification = $delete.parentNode;
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            const $notification = $delete.parentNode;
 
-        $delete.addEventListener('click', () => {
-          $notification.parentNode.removeChild($notification);
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
         });
-      });
     });
-    </script>
+</script>
+
+<!-- Utilisé pour les validation de suppression -->
+<script>
+    let modals = document.getElementsByClassName('modal');
+    let modalBtns = document.getElementsByClassName('showModal');
+    let closeBtns = document.getElementsByClassName('close');
+
+    for (let modalBtn of modalBtns) {
+        modalBtn.onclick = function (event) {
+            document.querySelector(event.currentTarget.getAttribute('href')).style.display = 'flex';
+        }
+    }
+
+    for (let closeBtn of closeBtns) {
+        closeBtn.onclick = function (event) {
+            console.log(event.target.currentTarget.parentNode.parentNode.parentNode)
+            event.target.parentNode.parentNode.parentNode.style.display = 'none';
+        }
+    }
+
+    window.onclick = function (event) {
+        if (event.target.classList.contains('modal')) {
+            for (let modal of modals) {
+                if (typeof modal.style !== 'undefined') {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+    }
+
+    window.onkeydown = function (event) {
+        if (event.key == 'Escape') {
+            for (let modal of modals) {
+                modal.style.display = 'none';
+            }
+        }
+    }
+</script>
 
 {% endblock %}
