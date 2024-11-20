@@ -8,7 +8,7 @@
         Mes livres
     </h1>
 
-    <div class="container">
+    <div class="block">
         <button class="button is-normal is-responsive">
             <a href="/livre/ajout">
                 <div class="icon-text">
@@ -31,10 +31,12 @@
         </button>
     </div>
 
-    <div class="section">
+    {% include "flash_message.html" %}
+
+    <div class="block">
         <div class="card">
             <header class="card-header" id="toggle-button">
-                <p class="card-header-title">Recherche</p>
+                <p class="card-header-title">Rechercher un livre</p>
                 <button class="card-header-icon" aria-label="more options">
                     <span class="icon">
                         <i class="fas fa-angle-down" aria-hidden="true"></i>
@@ -64,7 +66,14 @@
                             <input class="input" type="number" name="isbn" id="isbn" placeholder="ISBN">
                         </div>
                         <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
-                            <input class="input" type="text" name="student" id="student" placeholder="Emprunter par">
+                            <div class="select is-fullwidth">
+                                <select name="student" id="student">
+                                    <option value="">Emprunter par</option>
+                                    {% for student in students %}
+                                        <option value="{{ student.firstname }}">{{ student.name }} {{ student.firstname }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -141,7 +150,7 @@
         </li>
         {# ... #}
         <li>
-          <span class="pagination-ellipsis">&hellip;</span>
+            <i class="fa-solid fa-ellipsis"></i>
         </li>
         {% endif %}
 
@@ -185,7 +194,7 @@
 
         {% if page < nb_page - 1 %}
         <li>
-          <span class="pagination-ellipsis">&hellip;</span>
+            <i class="fa-solid fa-ellipsis"></i>
         </li>
         {# Page nb_page #}
         <li>
@@ -235,6 +244,19 @@
         // search button : submit form
         document.getElementById('search-button').addEventListener('click', function() {
             document.querySelector('form').submit();
+        });
+    </script>
+
+    <!-- Utilisé pour supprimer les notifications -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
         });
     </script>
 

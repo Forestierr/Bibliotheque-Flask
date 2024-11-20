@@ -18,7 +18,7 @@ def emprunt_db():
     if request.method == 'POST':
         active_loan = request.form.get('active_loan')
 
-        if active_loan:
+        if active_loan == '0':
             only_active_loans = False
             loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, Loan.date_loan is not None, Loan.date_return == None).join(Loan, Book.id == Loan.book_id).join(Student, Loan.student_id == Student.id).all()
         else:
@@ -50,3 +50,15 @@ def delete_loan(id):
         db.session.commit()
 
     return redirect(url_for('emprunt.emprunt_db'))
+
+@emprunt.route('/emprunt/delete_all', methods=['POST'])
+@login_required
+def delete_all_loans():
+    loans = db.session.query(Loan).join(Book, Loan.book_id == Book.id).filter(Book.user_id == current_user.id).all()
+
+    for loan in loans:
+        db.session.delete(loan)
+
+    db.session.commit()
+
+    return redirect(url_for('auth.reglage'))

@@ -120,7 +120,4 @@ def reglage():
 
     user = db.session.query(User).with_entities(User.name, User.email).filter(User.id == current_user.id).first()
 
-    print(user.email)
-    print(user.name)
-
     return render_template('reglage.html', user=user)

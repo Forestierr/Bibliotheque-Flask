@@ -33,6 +33,8 @@ def livre_db(page=1):
         isbn = request.form.get('isbn')
         student = request.form.get('student')
 
+        print(title, author, editor, year, type, isbn, student)
+
         if title or author or editor or year or type or isbn or student:
             books = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, or_(
                     Book.title.ilike('%' + title + '%') if title else text(''),
@@ -51,6 +53,9 @@ def livre_db(page=1):
             books = books[:n_books_by_page]
 
     if not books:
+        if request.method == 'POST':
+            flash('Aucun livre n\'a été trouvé lors de la recherche.', 'info')
+
         # Query books and add the student name if the book is loaned
         books = (
             db.session.query(Book, Loan, Student)
@@ -61,8 +66,9 @@ def livre_db(page=1):
         )
 
     books = [(book, student) for (book, _, student) in books]
+    all_students = Student.query.filter_by(user_id=current_user.id).all()
 
-    return render_template('livre.html', books=books, nb_page=nb_page, page=int(page))
+    return render_template('livre.html', books=books, students=all_students, nb_page=nb_page, page=int(page))
 
 
 @livre.route('/livre/ajout', methods=['GET', 'POST'])
@@ -87,13 +93,13 @@ def livre_ajout():
             editor = ""
 
         if not title:
-            flash('Veuillez ajouter un titre.')
+            flash('Veuillez ajouter un titre.', 'error')
             return redirect(url_for('livre.livre_ajout'))
 
         # Check if the book already exists
         book = Book.query.filter_by(user_id=current_user.id, title=title).first()
         if book:
-            flash('Ce livre existe déjà.')
+            flash('Ce titre est déja utilisé pour un autre livre.', 'error')
             return redirect(url_for('livre.livre_ajout'))
 
         new_book = Book(title=title, author=author, editor=editor, year=year, type=type, isbn=isbn, user_id=current_user.id)
@@ -108,7 +114,6 @@ def livre_ajout():
 @livre.route('/livre/scann', methods=['GET', 'POST'])
 @login_required
 def livre_scann():
-
     return render_template('livre_scann_live.html')
 
 
@@ -118,6 +123,7 @@ def livre_edit(id):
     book = Book.query.filter_by(id=id, user_id=current_user.id).first()
 
     if not book:
+        flash('Le livre que vous souhaitiez éditer n\'existe pas.', 'error')
         return redirect(url_for('livre.livre_db'))
 
     # Get all students from the current user
@@ -137,8 +143,11 @@ def livre_edit(id):
         student = request.form.get('student')
 
         if not title:
-            flash('Veuillez remplir le titre.')
+            flash('Veuillez ajouter un titre au livre.', 'info')
             return redirect(url_for('livre.livre_edit', id=id))
+
+        if (isbn == ''):
+            isbn = None
 
         # Update the book
         book.title = title
@@ -203,3 +212,19 @@ def livre_exist(isbn):
         return {'id': book.id}
 
     return make_response('No Content', 204)
+
+@livre.route('/livre/delete_all', methods=['POST'])
+@login_required
+def livre_delete_all():
+    books = Book.query.filter_by(user_id=current_user.id).all()
+    for book in books:
+        loans = Loan.query.filter_by(book_id=book.id).all()
+        for loan in loans:
+            db.session.delete(loan)
+        db.session.delete(book)
+
+    db.session.commit()
+
+    flash('Tous les livres ont été supprimés.', 'info')
+
+    return redirect(url_for('auth.reglage'))

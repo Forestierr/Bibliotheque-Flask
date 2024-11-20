@@ -95,3 +95,16 @@ def eleve_delete(name, firstname):
     db.session.commit()
 
     return redirect(url_for('eleve.eleve_db'))
+
+@eleve.route('/eleve/delete_all', methods=['POST'])
+@login_required
+def eleve_delete_all():
+    students = Student.query.filter_by(user_id=current_user.id).all()
+    for student in students:
+        loans = Loan.query.filter_by(student_id=student.id).all()
+        for loan in loans:
+            db.session.delete(loan)
+        db.session.delete(student)
+    db.session.commit()
+
+    return redirect(url_for('auth.reglage'))

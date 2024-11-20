@@ -6,31 +6,7 @@
         Contact
     </h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class=flashes>
-        {% for category, message in messages %}
-          {% if category == 'error' %}
-            <div class="notification is-danger is-light">
-              <button class="delete"></button>
-              {{ message }}
-            </div>
-          {% elif category == 'info' %}
-            <div class="notification is-info is-light">
-              <button class="delete"></button>
-              {{ message }}
-            </div>
-          {% elif category == 'success' %}
-            <div class="notification is-success is-light">
-              <button class="delete"></button>
-              {{ message }}
-            </div>
-          {% endif %}
-        {% endfor %}
-        </ul>
-        <br>
-      {% endif %}
-    {% endwith %}
+    {% include 'flash_message.html' %}
 
     <div class="container">
         <form action="{{ url_for('main.contact') }}" method="post">

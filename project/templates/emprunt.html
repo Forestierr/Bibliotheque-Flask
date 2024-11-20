@@ -8,16 +8,17 @@
         Emprunts
     </h1>
 
-    <div class="container">
+    <div class="block">
         <form method="POST" action="/emprunt">
-            <label class="checkbox">
-                {% if only_active_loans %}
-                    <input type="checkbox" name="active_loan" onChange="this.form.submit()" value="0"/>
+                {% if only_active_loans == true %}
+                    <button class="button" name="active_loan" onChange="this.form.submit()" value="0">
+                        Voir les emprunts actifs
+                    </button>
                 {% else %}
-                    <input type="checkbox" name="active_loan" onChange="this.form.submit()" value="1" checked/>
+                    <button class="button" name="active_loan" onChange="this.form.submit()" value="1">
+                        Voir tous les emprunts
+                    </button>
                 {% endif %}
-                Afficher les emprunts actifs
-            </label>
         </form>
     </div>
 

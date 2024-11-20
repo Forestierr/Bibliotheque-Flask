@@ -13,30 +13,30 @@
 
             </div>
             <div class="column">
-                <button class="button is-normal is-white is-responsive is-fullwidth" id="showModal">
+                <a href="{{ url_for('auth.logout') }}" class="button is-normal is-white is-responsive is-fullwidth">
                     <div class="icon-text">
                         <span class="icon has-text-info">
                             <i class="fa-solid fa-arrow-right-from-bracket has-text-black"></i>
                         </span>
                         <span class="has-text-black has-text-weight-semibold">Se déconecter</span>
                     </div>
-                </button>
-                <button class="button is-normal is-white is-responsive is-fullwidth" id="showModal">
+                </a>
+                <a href="{{ url_for('main.mentions_legales') }}" class="button is-normal is-white is-responsive is-fullwidth">
                     <div class="icon-text">
                         <span class="icon has-text-info">
                             <i class="fa-solid fa-shield-halved has-text-black"></i>
                         </span>
                         <span class="has-text-black has-text-weight-semibold">Mentions Légales</span>
                     </div>
-                </button>
-                <button class="button is-normal is-white is-responsive is-fullwidth" id="showModal">
+                </a>
+                <a href="{{ url_for('main.contact') }}" class="button is-normal is-white is-responsive is-fullwidth">
                     <div class="icon-text">
                         <span class="icon has-text-info">
                             <i class="fa-solid fa-envelope has-text-black"></i>
                         </span>
                         <span class="has-text-black has-text-weight-semibold">Contact</span>
                     </div>
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -45,30 +45,7 @@
 <section class="section">
     <h2 class="title is-3">Modifier mes informations personnelles</h2>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <ul class=flashes>
-        {% for category, message in messages %}
-        {% if category == 'error' %}
-        <div class="notification is-danger is-light">
-            <button class="delete"></button>
-            {{ message }}
-        </div>
-        {% elif category == 'info' %}
-        <div class="notification is-info is-light">
-            <button class="delete"></button>
-            {{ message }}
-        </div>
-        {% elif category == 'success' %}
-        <div class="notification is-success is-light">
-            <button class="delete"></button>
-            {{ message }}
-        </div>
-        {% endif %}
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
+    {% include 'flash_message.html' %}
 
     <div class="container">
 
@@ -133,8 +110,8 @@
                         <p class="modal-card-title">Supprimer tous les élèves ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form method="POST" action="#" id="delet_user"></form>
-                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
+                        <form method="POST" action="{{ url_for('eleve.eleve_delete_all') }}" id="delet_student"></form>
+                        <button class="button is-normal is-danger is-responsive" form="delet_student" value="Submit">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
                                     <i class="fa-solid fa-trash has-text-black"></i>
@@ -176,8 +153,8 @@
                         <p class="modal-card-title">Supprimer tous les prêts ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form method="POST" action="#" id="delet_user"></form>
-                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
+                        <form method="POST" action="{{ url_for('emprunt.delete_all_loans') }}" id="delet_loan"></form>
+                        <button class="button is-normal is-danger is-responsive" form="delet_loan" value="Submit">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
                                     <i class="fa-solid fa-trash has-text-black"></i>
@@ -219,8 +196,8 @@
                         <p class="modal-card-title">Supprimer tous les livres ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form method="POST" action="#" id="delet_user"></form>
-                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
+                        <form method="POST" action="{{ url_for('livre.livre_delete_all') }}" id="delet_book"></form>
+                        <button class="button is-normal is-danger is-responsive" form="delet_book" value="Submit">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
                                     <i class="fa-solid fa-trash has-text-black"></i>

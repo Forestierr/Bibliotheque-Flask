@@ -38,7 +38,6 @@ def favicon():
 
 @main.route('/contact', methods=['GET', 'POST'])
 def contact():
-
     if request.method == 'POST':
         name = request.form.get('name')
         firstname = request.form.get('firstname')
