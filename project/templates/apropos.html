@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <section class="section">
+
+        <div class="columns is-multiline is-centered is-vcentered m-2">
+            <div class="column is-4-mobile is-offset-8-mobile is-3-tablet is-3-desktop is-2-widescreen is-2-fullhd">
+                <a href="{{ url_for('eleve.eleve_db') }}">
+                    <figure class="image is-256x256">
+                        <img src="{{ url_for('static',filename='/image/girl.png') }}"
+                             href="https://www.flaticon.com/free-stickers/literature"
+                             alt="Literature stickers created by Stickers - Flaticon">
+                    </figure>
+                </a>
+            </div>
+
+            <div class="column">
+              <div class="myHero has-text-centered">
+                <div class="hr"></div>
+                <h1 class="title is-1 is-spaced">A propos</h1>
+                <h2 class="subtitle is-4">Ma bibliothèque personnelle.</h2>
+              </div>
+            </div>
+
+            <div class="column is-4-mobile is-3-tablet is-3-desktop is-2-widescreen is-2-fullhd">
+                <a href="{{ url_for('livre.livre_db') }}">
+                    <figure class="image is-256x256 is-pulled-right">
+                        <img src="{{ url_for('static',filename='/image/book_2.png') }}"
+                        href="https://www.flaticon.com/free-stickers/literature"
+                         alt="Literature stickers created by Stickers - Flaticon">
+                    </figure>
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+{% endblock %}

@@ -1,6 +1,6 @@
 # init.py
 
-from flask import Flask
+from flask import Flask, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
@@ -24,7 +24,11 @@ def create_app():
     login_manager.init_app(app)
 
     # set the locale to french for the date format
-    locale.setlocale(locale.LC_TIME, 'C.UTF-8')
+    try:
+        locale.setlocale(locale.LC_TIME, 'C.UTF-8')
+    except locale.Error:
+        print("Locale not supported, falling back to default.")
+        locale.setlocale(locale.LC_TIME, '')
 
     # import data base models
     from .models import User, Book, Student, Loan

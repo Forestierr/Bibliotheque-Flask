@@ -63,30 +63,6 @@ def logout():
     logout_user()
     return redirect(url_for('main.index'))
 
-@auth.route('/contact', methods=['GET', 'POST'])
-def contact():
-
-    if request.method == 'POST':
-        name = request.form.get('name')
-        firstname = request.form.get('firstname')
-        email = request.form.get('email')
-        message = request.form.get('message')
-        flash('Votre message a été envoyé avec succès.', 'success')
-        flash('Nous vous répondrons dans les plus brefs délais.', 'info')
-
-        # sauvegarde des données dans un fichier (name_firstname_date.txt) dans contact/
-        with open("contact/" + name + "_" + firstname + "_" + datetime.now().strftime("%m-%d-%Y_%H-%M-%S") + ".txt", 'w', encoding='utf-8') as f:
-            f.write('Date: ' + datetime.now().strftime("%m %B %Y %H:%M:%S") + '\n')
-            f.write('Nom: ' + name + '\n')
-            f.write('Prénom: ' + firstname + '\n')
-            f.write('Email: ' + email + '\n')
-            f.write('Message: \n' + message + '\n')
-
-            f.close()
-
-        return redirect(url_for('auth.contact'))
-
-    return render_template('contact.html')
 
 @auth.route('/delete_account', methods=['POST'])
 @login_required
