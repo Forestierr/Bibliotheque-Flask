@@ -10,7 +10,7 @@
     </h1>
         {% if books[0] %}
         {% for book in books %}
-            <div class="container mb-1">
+            <div class="block mb-1">
             {% if loop.first %}
                 <h2 class="subtitle is-2">Livre actuellement emprunté</h2>
             {% endif %}
@@ -24,7 +24,7 @@
                         </p>
                     </div>
                     <footer class="card-footer">
-                        <div id="delete-modal" class="modal">
+                        <div id="delete-moda-l-{{ loop.index }}" class="modal">
                           <div class="modal-background"></div>
                           <div class="modal-content">
                             <div class="modal-card">
@@ -47,7 +47,7 @@
                           <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
                         </div>
                         <div class="card-footer-item">
-                        <button class="button is-small is-danger is-responsive" id="showModal">
+                        <button class="button is-normal is-danger is-responsive showModal" href="#delete-moda-l-{{ loop.index }}">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
                                     <i class="fa-solid fa-trash has-text-black"></i>
@@ -63,7 +63,7 @@
             </div>
         {% endfor %}
         {% else %}
-            <div class="container">
+            <div class="block">
                 <h2 class="subtitle is-2 mt-4">Aucun livre emprunté actuellement</h2>
             </div>
         {% endif %}
@@ -72,7 +72,7 @@
 
         {% if old_books %}
         {% for book in old_books %}
-            <div class="container">
+            <div class="block">
             {% if loop.first %}
                 <h2 class="subtitle is-2">Livre emprunté précédement</h2>
             {% endif %}
@@ -89,7 +89,7 @@
                         </p>
                     </div>
                     <footer class="card-footer">
-                        <div id="delete-modal" class="modal">
+                        <div id="delete-modal-2-{{ loop.index }}" class="modal">
                           <div class="modal-background"></div>
                           <div class="modal-content">
                             <div class="modal-card">
@@ -112,7 +112,7 @@
                           <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
                         </div>
                         <div class="card-footer-item">
-                        <button class="button is-small is-danger is-responsive" id="showModal">
+                        <button class="button is-normal is-danger is-responsive showModal" href="#delete-modal-2-{{ loop.index }}">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
                                     <i class="fa-solid fa-trash has-text-black"></i>
@@ -130,8 +130,7 @@
         {% endif %}
 
     <section class="section">
-        <div id="delete-modal" class="modal">
-          <div class="modal-background"></div>
+        <div id="delete-modal-1" class="modal">
           <div class="modal-content">
             <div class="modal-card">
                 <header class="modal-card-head">
@@ -149,11 +148,11 @@
                     <a href="/eleve/{{ student.firstname }} {{ student.name }}" class="button is-normal is-responsive">Annuler</a>
                 </footer>
             </div>
+            <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
           </div>
-          <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
         </div>
         <br>
-        <button class="button is-normal is-danger is-responsive" id="showModal">
+        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal" href="#delete-modal-1">
             <div class="icon-text">
                 <span class="icon has-text-info">
                     <i class="fas fa-user-slash has-text-black"></i>
@@ -164,16 +163,39 @@
     </section>
 
     <script>
-        var btn = document.querySelector('#showModal');
-        var modalDlg = document.querySelector('#delete-modal');
-        var modalCloseBtn = document.querySelector('#modal-close');
-        btn.addEventListener('click', function(){
-          modalDlg.classList.add('is-active');
-        });
+        let modals = document.getElementsByClassName('modal');
+        let modalBtns = document.getElementsByClassName('showModal');
+        let closeBtns = document.getElementsByClassName('close');
 
-        modalCloseBtn.addEventListener('click', function(){
-          modalDlg.classList.remove('is-active');
-        });
+        for(let modalBtn of modalBtns) {
+            modalBtn.onclick = function(event) {
+                document.querySelector(event.currentTarget.getAttribute('href')).style.display = 'block';
+            }
+        }
+
+        for(let closeBtn of closeBtns) {
+            closeBtn.onclick = function(event) {
+                event.target.parentNode.parentNode.style.display = 'none';
+            }
+        }
+
+        window.onclick = function(event) {
+            if(event.target.classList.contains('modal') ) {
+                for(let modal of modals) {
+                    if(typeof modal.style !== 'undefined') {
+                        modal.style.display = 'none';    
+                    }
+                }
+            }
+        }
+
+        window.onkeydown = function(event) {
+            if (event.key == 'Escape') {
+                for(let modal of modals) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
     </script>
 
 {% else %}

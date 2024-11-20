@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  flask:
+    build: 
+      context: .
+      dockerfile: project/Dockerfile
+    command: gunicorn -w 4 -b 0.0.0.0:5602 wsgi:app
+    environment:
+      - FLASK_RUN_HOST=0.0.0.0
+    restart: always
+    volumes:
+        - .:/app
+
+  nginx:
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8755:8755"
+    depends_on:
+      - flask
+    # volumes:
+    #   - /home/austin/log/nginx:/var/log/nginx
+    restart: always
+
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CF_TOCKEN}
+    restart: always
+    environment:
+      - CF_TOKEN
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16

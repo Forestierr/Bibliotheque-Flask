@@ -24,7 +24,7 @@ def create_app():
     login_manager.init_app(app)
 
     # set the locale to french for the date format
-    locale.setlocale(locale.LC_TIME, 'fr_CH.UTF-8')
+    locale.setlocale(locale.LC_TIME, 'C.UTF-8')
 
     # import data base models
     from .models import User, Book, Student, Loan

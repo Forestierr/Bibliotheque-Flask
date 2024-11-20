@@ -16,7 +16,7 @@ def eleve_db():
     # students = [(student.name, student.firstname) for student in students]
 
     # Query all students from the current user and add the books if the student has loans
-    students_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id).outerjoin(Loan, and_(Student.id == Loan.student_id, Loan.date_return == None)).outerjoin(Book, Loan.book_id == Book.id).all()
+    students_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id).outerjoin(Loan, and_(Student.id == Loan.student_id, Loan.date_return == None)).outerjoin(Book, Loan.book_id == Book.id).order_by(Student.firstname.desc()).all()
     students = [(student, book) for (student, _, book) in students_with_loans]
 
 
@@ -51,9 +51,9 @@ def ajouter_eleve():
 @eleve.route('/eleve/<firstname> <name>')
 @login_required
 def eleve_infos(firstname, name):
-    student_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id, Student.name == name, Student.firstname == firstname).outerjoin(Loan, Student.id == Loan.student_id).filter(Loan.date_return == None).outerjoin(Book, Loan.book_id == Book.id).all()
+    student_with_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id, Student.name == name, Student.firstname == firstname).join(Loan, Student.id == Loan.student_id).filter(Loan.date_return == None).join(Book, Loan.book_id == Book.id).all()
 
-    old_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id, Student.name == name, Student.firstname == firstname).outerjoin(Loan, Student.id == Loan.student_id).filter(Loan.date_return != None).outerjoin(Book, Loan.book_id == Book.id).all()
+    old_loans = db.session.query(Student, Loan, Book).filter(Student.user_id == current_user.id, Student.name == name, Student.firstname == firstname).join(Loan, Student.id == Loan.student_id).filter(Loan.date_return != None).join(Book, Loan.book_id == Book.id).all()
 
     if student_with_loans:
         student = student_with_loans[0][0]
@@ -69,14 +69,16 @@ def eleve_infos(firstname, name):
 
     # change the date format from 2024-12-31 to 31 dec. 2024
     for i, (loan, _) in enumerate(books):
-        loan.date_loan = loan.date_loan.strftime('%d %b %Y')
-        if loan.date_return:
-            loan.date_return = loan.date_return.strftime('%d %b %Y')
+        if loan:
+            loan.date_loan = loan.date_loan.strftime('%d %b %Y')
+            if loan.date_return:
+                loan.date_return = loan.date_return.strftime('%d %b %Y')
 
     for i, (loan, _) in enumerate(old_books):
-        loan.date_loan = loan.date_loan.strftime('%d %b %Y')
-        if loan.date_return:
-            loan.date_return = loan.date_return.strftime('%d %b %Y')
+        if loan:
+            loan.date_loan = loan.date_loan.strftime('%d %b %Y')
+            if loan.date_return:
+                loan.date_return = loan.date_return.strftime('%d %b %Y')
 
     return render_template('eleve.html', student=student, books=books, old_books=old_books)
 
