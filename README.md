@@ -1,7 +1,14 @@
 # Bibliotheque flask
 
-Simple application to manage a library with flask.
-Design for professeur and student.
+<strong>Ma bibliothèque</strong> est une application web spécialement conçue pour répondre aux
+besoins des enseignants dans la gestion de leur bibliothèque de classe. Cette plateforme
+intuitive leur permet de centraliser et d’organiser facilement leur collection de livres.
+Ils ont la possibilité d’ajouter de nouveaux ouvrages, de modifier les informations existantes
+ou de supprimer des livres qui ne sont plus nécessaires. En outre, l'application offre un suivi
+détaillé des emprunts effectués par leurs élèves, leur permettant de savoir quels livres ont été
+empruntés, par qui et pour combien de temps. Grâce à LivresEnClasse.com, les enseignants peuvent
+ainsi encourager la lecture tout en gardant une vue d’ensemble claire et précise sur
+l’utilisation des ressources de leur bibliothèque.
 
 ## Features
 
