@@ -2,53 +2,63 @@
 
 {% block content %}
 
-<section class="section">
+<div class="block">
     <h1 class="title is-1">Bonjour {{ user.name }}</h1>
     <div class=container>
-        <div class="columns">
-            <div class="column is-four-fifths">
+        <div class="columns is-three-fifths">
+            <div class="column">
                 <h3 class="subtitle is-3">Bienvenue sur votre page de réglage</h3>
             </div>
-            <div class="column">
-
-            </div>
-            <div class="column">
-                <a href="{{ url_for('auth.logout') }}" class="button is-normal is-white is-responsive is-fullwidth">
-                    <div class="icon-text">
-                        <span class="icon has-text-info">
-                            <i class="fa-solid fa-arrow-right-from-bracket has-text-black"></i>
-                        </span>
-                        <span class="has-text-black has-text-weight-semibold">Se déconecter</span>
+            <div class="column is-narrow">
+                <div class="columns">
+                    <div class="column is-narrow">
+                        <a href="{{ url_for('auth.logout') }}" class="button is-normal is-white is-responsive is-fullwidth">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-arrow-right-from-bracket has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Se déconecter</span>
+                            </div>
+                        </a>
+                        <a href="{{ url_for('main.mentions_legales') }}" class="button is-normal is-white is-responsive is-fullwidth">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-shield-halved has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Mentions Légales</span>
+                            </div>
+                        </a>
                     </div>
-                </a>
-                <a href="{{ url_for('main.mentions_legales') }}" class="button is-normal is-white is-responsive is-fullwidth">
-                    <div class="icon-text">
-                        <span class="icon has-text-info">
-                            <i class="fa-solid fa-shield-halved has-text-black"></i>
-                        </span>
-                        <span class="has-text-black has-text-weight-semibold">Mentions Légales</span>
+                    <div class="column is-narrow">
+                        <a href="{{ url_for('main.apropos') }}" class="button is-normal is-white is-responsive is-fullwidth">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-question has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">A-propos</span>
+                            </div>
+                        </a>
+                        <a href="{{ url_for('main.contact') }}" class="button is-normal is-white is-responsive is-fullwidth">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-envelope has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Contact</span>
+                            </div>
+                        </a>
                     </div>
-                </a>
-                <a href="{{ url_for('main.contact') }}" class="button is-normal is-white is-responsive is-fullwidth">
-                    <div class="icon-text">
-                        <span class="icon has-text-info">
-                            <i class="fa-solid fa-envelope has-text-black"></i>
-                        </span>
-                        <span class="has-text-black has-text-weight-semibold">Contact</span>
-                    </div>
-                </a>
+                </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section class="section">
+<div class="block">
     <h2 class="title is-3">Modifier mes informations personnelles</h2>
 
     {% include 'flash_message.html' %}
 
     <div class="container">
-
         <form method="POST" action="{{ url_for('auth.reglage') }}">
             <div class="field">
                 <label class="label">Nom</label>
@@ -270,7 +280,7 @@
             </div>
         </button>
     </div>
-</section>
+</div>
 
 <!-- Utilisé pour supprimer les notifications -->
 <script>

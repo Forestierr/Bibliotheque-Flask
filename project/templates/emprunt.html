@@ -8,6 +8,34 @@
         Emprunts
     </h1>
 
+    {% include "flash_message.html" %}
+
+    {% if not loans %}
+
+        <section class="section">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content has-text-centered is-size-5">
+                      <div class="content">
+                        <p>Vous n'avez pas encore prèté de livre. <br>
+                        Pour prèter un livre, rendez-vous sur la page du livre et assignez le a un élève.</p>
+                      </div>
+                    </div>
+                    <div class="media-right is-hidden-mobile">
+                        <a href="{{ url_for('livre.livre_db') }}">
+                            <figure class="image is-64x64">
+                                <img src="{{ url_for('static',filename='/image/book_3.png') }}"
+                                     href="https://www.flaticon.com/free-stickers/reading"
+                                     alt="Literature stickers created by Stickers - Flaticon">
+                            </figure>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+    {% else %}
+
     <div class="block">
         <form method="POST" action="/emprunt">
                 {% if only_active_loans == true %}
@@ -40,10 +68,30 @@
             <td onclick="location.href='/eleve/{{ student.firstname }} {{ student.name }}'">{{ student.firstname }} {{ student.name }}</td>
             {% endif %}
             <td>{{ loan.date_loan }}</td>
+            {# Si le livre n a pas ete rendu, modification de la case #}
+            {% if loan.date_return is none %}
+            <td> </td>
+            {% else %}
             <td>{{ loan.date_return }}</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </table>
     </div>
+
+    {% endif %}
+
+     <!-- Utilisé pour supprimer les notifications -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>
 
 {% endblock %}

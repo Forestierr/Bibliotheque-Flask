@@ -57,15 +57,43 @@
                         </button>
                         </div>
 
-                        <a href="/livre/{{ book[1].id }}/edit" class="card-footer-item">Voir le livre</a>
+                        <div class="card-footer-item">
+                        <a class="button is-normal is-info is-responsive" href="/livre/{{ book[1].id }}/edit">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-book has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Voir le livre</span>
+                            </div>
+                        </a>
+                        </div>
                     </footer>
                 </div>
             </div>
         {% endfor %}
         {% else %}
-            <div class="block">
-                <h2 class="subtitle is-2 mt-4">Aucun livre emprunté actuellement</h2>
-            </div>
+
+            <section class="section">
+                <div class="box">
+                    <article class="media">
+                        <div class="media-content has-text-centered is-size-5">
+                          <div class="content">
+                              <p>{{ student.name }} {{ student.firstname }} ne lis actuellement aucun livre. <br>
+                              Pour lui assigner un livre, rendez-vous sur la page du livre.</p>
+                          </div>
+                        </div>
+                        <div class="media-right is-hidden-mobile">
+                        <a href="{{ url_for('livre.livre_db') }}">
+                            <figure class="image is-64x64">
+                                <img src="{{ url_for('static',filename='/image/kid.png') }}"
+                                     href="https://www.flaticon.com/free-stickers/teacher"
+                                     alt="Literature stickers created by Stickers - Flaticon">
+                            </figure>
+                        </a>
+                    </div>
+                    </article>
+                </div>
+            </section>
         {% endif %}
 
         <hr style="border-top: 8px">
@@ -122,7 +150,17 @@
                         </button>
                         </div>
 
-                        <a href="/livre/{{ book[1].id }}/edit" class="card-footer-item">Voir le livre</a>
+                        <div class="card-footer-item">
+                        <a class="button is-normal is-info is-responsive" href="/livre/{{ book[1].id }}/edit">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-book has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Voir le livre</span>
+                            </div>
+                        </a>
+                        </div>
+
                     </footer>
                 </div>
             </div>
@@ -131,6 +169,7 @@
 
     <section class="section">
         <div id="delete-modal-1" class="modal">
+          <div class="modal-background"></div>
           <div class="modal-content">
             <div class="modal-card">
                 <header class="modal-card-head">
@@ -169,7 +208,7 @@
 
         for(let modalBtn of modalBtns) {
             modalBtn.onclick = function(event) {
-                document.querySelector(event.currentTarget.getAttribute('href')).style.display = 'block';
+                document.querySelector(event.currentTarget.getAttribute('href')).style.display = 'flex';
             }
         }
 
@@ -211,13 +250,38 @@
                     <span class="icon has-text-info">
                         <i class="fas fa-plus"></i>
                     </span>
-                    <span>Ajouter un eleve</span>
+                    <span>Ajouter un élève</span>
                 </div>
             </a>
         </button>
     </div>
 
-    {% if students %}
+    {% if not students %}
+
+    <section class="section">
+        <div class="box">
+            <article class="media">
+                <div class="media-content has-text-centered is-size-5">
+                  <div class="content">
+                    <p>Vous n'avez pas encore ajouter vos élèves. <br>
+                    Pour ajouter un élève, cliquez sur le <strong>bouton</strong> ci-dessus.</p>
+                  </div>
+                </div>
+                <div class="media-right is-hidden-mobile">
+                    <a href="{{ url_for('livre.livre_db') }}">
+                        <figure class="image is-64x64">
+                            <img src="{{ url_for('static',filename='/image/book_5.png') }}"
+                                 href="https://www.flaticon.com/free-stickers/reading"
+                                 alt="Literature stickers created by Stickers - Flaticon">
+                        </figure>
+                    </a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    {% else %}
+
     <div class="table-container is-fluid">
         <table class="table is-striped is-hoverable is-fullwidth">
             <tr class="thead">

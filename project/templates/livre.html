@@ -33,6 +33,32 @@
 
     {% include "flash_message.html" %}
 
+    {% if not books %}
+
+        <section class="section">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content has-text-centered is-size-5">
+                      <div class="content">
+                        <p>Vous n'avez pas encore ajouter de livre à votre bibliothèque. <br>
+                        Pour ajouter un livre, cliquez sur le bouton <strong>Ajouter un livre</strong> ou <strong>Scanner un livre</strong>.</p>
+                      </div>
+                    </div>
+                    <div class="media-right is-hidden-mobile">
+                        <a href="{{ url_for('livre.livre_db') }}">
+                            <figure class="image is-64x64">
+                                <img src="{{ url_for('static',filename='/image/book_4.png') }}"
+                                     href="https://www.flaticon.com/free-stickers/reading"
+                                     alt="Literature stickers created by Stickers - Flaticon">
+                            </figure>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+    {% else %}
+
     <div class="block">
         <div class="card">
             <header class="card-header" id="toggle-button">
@@ -106,8 +132,12 @@
                     <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
                         class="is-hidden-mobile">{{ book[0].year }}</td>
                     <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].type }}</td>
+                    {% if book[0].isbn != None %}
                     <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
                         class="is-hidden-mobile">{{ book[0].isbn }}</td>
+                    {% else %}
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"> </td>
+                    {% endif %}
                     {% if book[1] != None %}
                     <td onclick="location.href='/eleve/{{ book[1].firstname }} {{ book[1].name }}'">{{ book[1].name }} {{ book[1].firstname }}</td>
                     {% else %}
@@ -203,6 +233,8 @@
         {% endif %}
       </ul>
     </nav>
+    {% endif %}
+
     {% endif %}
 
     <script>

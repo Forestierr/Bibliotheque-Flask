@@ -24,7 +24,10 @@ def emprunt_db():
         else:
             only_active_loans = True
             loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, Loan.date_loan is not None).join(Loan, Book.id == Loan.book_id).join(Student, Loan.student_id == Student.id).all()
-    else:
+
+    if not loans:
+        if request.method == 'POST' and active_loan == '0':
+            flash('Aucun livre n\'est actuellement en prêt.', 'info')
         loans = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, Loan.date_loan is not None).join(Loan, Book.id == Loan.book_id).join(Student, Loan.student_id == Student.id).all()
 
     # change the date format from 2024-12-31 to 31 dec. 2024
