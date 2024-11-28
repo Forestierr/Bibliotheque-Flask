@@ -3,67 +3,181 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title is-1">
-  Livre
-</h1>
+    <h1 class="title is-1">
+        Livre
+    </h1>
 
-{% include 'flash_message.html' %}
+    {% include 'flash_message.html' %}
 
-<div class="content">
-    <form action="/livre/ajout" method="post">
-        <div class="field">
-            <label class="label" for="title">Titre</label>
-            <div class="control">
-                <input class="input" type="text" name="title" id="title" required>
+    <div class="content">
+        <form action="/livre/ajout" method="post">
+            <div class="field">
+                <label class="label" for="title">Titre</label>
+                <div class="control">
+                    <input class="input" type="text" name="title" id="title" required>
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label" for="author">Auteur</label>
-            <div class="control">
-                <input class="input" type="text" name="author" id="author">
+            <div class="field">
+                <label class="label" for="author">Auteur</label>
+                <div class="control">
+                    <input class="input" type="text" name="author" id="author">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label" for="editor">Editeur</label>
-            <div class="control">
-                <input class="input" type="text" name="editor" id="editor">
+            <div class="field">
+                <label class="label" for="editor">Editeur</label>
+                <div class="control">
+                    <input class="input" type="text" name="editor" id="editor">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label" for="year">Année</label>
-            <div class="control">
-                <input class="input" type="number" name="year" id="year">
+            <div class="field">
+                <label class="label" for="year">Année</label>
+                <div class="control">
+                    <input class="input" type="number" name="year" id="year">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label" for="type">Genre</label>
-            <div class="control">
-                <input class="input" type="text" name="type" id="type">
+            <div class="field">
+                <label class="label" for="type">Genre</label>
+                <div class="control">
+                    <input class="input" type="text" name="type" id="type">
+                </div>
             </div>
-        </div>
 
-        <div class="field">
-            <label class="label" for="isbn">ISBN</label>
-            <div class="control">
-                <input class="input" type="number" name="isbn" id="isbn">
+            <div class="field">
+                <label class="label" for="isbn">ISBN</label>
+                <div class="control">
+                    <input class="input" type="number" name="isbn" id="isbn">
+                </div>
             </div>
-        </div>
 
-        <div class="field is-grouped">
-          <div class="control">
-            <button class="button is-link">Enregistrer</button>
-          </div>
-          <div class="control">
-            <button class="button is-light">
-                <a href="/livre" class="has-text-black">Annuler</a>
-            </button>
-          </div>
-        </div>
-    </form>
-</div>
+            <div class="field">
+                <label class="label" for="tags">Étiquettes</label>
+                <div class="control">
+                    <div class="tags-input-container">
+                        <div id="tags-list" class="tags is-hidden"></div>
+                        <input
+                                id="tags-input"
+                                class="input"
+                                type="text"
+                                placeholder="Ajouter une étiquette ou une catégorie"
+                                autocomplete="off"
+                        />
+                    </div>
+                </div>
+                <input type="hidden" name="tags" id="tags-hidden-input" />
+                <div class="dropdown" id="suggestions-dropdown">
+                    <div class="dropdown-menu">
+                        <div class="dropdown-content" id="suggestions-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link">Enregistrer</button>
+                </div>
+                <div class="control">
+                    <button class="button is-light">
+                        <a href="/livre" class="has-text-black">Annuler</a>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Script pour la gestion des étiquettes -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const existingTags = {{ tags|safe }}; // Liste des tags existants
+      const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
+      const tagsInput = document.getElementById("tags-input");
+      const tagsList = document.getElementById("tags-list");
+      const tagsHiddenInput = document.getElementById("tags-hidden-input");
+      const suggestionsDropdown = document.getElementById("suggestions-dropdown");
+      const suggestionsList = document.getElementById("suggestions-list");
+
+      // Mise à jour des suggestions
+      function updateSuggestions() {
+        const input = tagsInput.value.toLowerCase();
+        const suggestions = existingTags.filter(tag =>
+          tag.toLowerCase().includes(input) && !selectedTags.has(tag)
+        );
+
+        suggestionsList.innerHTML = suggestions
+          .map(tag => `<a class="dropdown-item">${tag}</a>`)
+          .join("");
+
+        if (suggestions.length > 0) {
+          suggestionsDropdown.classList.add("is-active");
+        } else {
+          suggestionsDropdown.classList.remove("is-active");
+        }
+      }
+
+      // Ajouter un tag
+      function addTag(tag) {
+        if (tagsList.classList.contains("is-hidden")) {
+          tagsList.classList.remove("is-hidden");
+        }
+
+        if (tag && !selectedTags.has(tag)) {
+          selectedTags.add(tag);
+
+          const tagElement = document.createElement("div");
+          tagElement.className = "tag is-info";
+          tagElement.textContent = tag;
+
+          const removeButton = document.createElement("button");
+          removeButton.className = "delete is-small";
+          removeButton.addEventListener("click", () => {
+            selectedTags.delete(tag);
+            tagsList.removeChild(tagElement);
+            updateHiddenInput();
+          });
+
+          tagElement.appendChild(removeButton);
+          tagsList.appendChild(tagElement);
+          updateHiddenInput();
+        }
+
+        tagsInput.value = "";
+        updateSuggestions();
+      }
+
+      // Met à jour le champ masqué avec les tags sélectionnés
+      function updateHiddenInput() {
+        tagsHiddenInput.value = Array.from(selectedTags).join(",");
+        if (selectedTags.size === 0) {
+          tagsList.classList.add("is-hidden");
+        }
+      }
+
+      // Gestion des événements
+      tagsInput.addEventListener("input", updateSuggestions);
+
+      tagsInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addTag(tagsInput.value);
+        }
+      });
+
+      suggestionsList.addEventListener("click", event => {
+        if (event.target.classList.contains("dropdown-item")) {
+          addTag(event.target.textContent);
+        }
+      });
+
+      document.addEventListener("click", event => {
+        if (!suggestionsDropdown.contains(event.target) && event.target !== tagsInput) {
+          suggestionsDropdown.classList.remove("is-active");
+        }
+      });
+    });
+    </script>
+
 
 {% endblock %}

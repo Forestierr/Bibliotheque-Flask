@@ -1,13 +1,14 @@
 # livre.py
 import math
 from math import floor
+import json
 
 from flask import Blueprint, render_template, redirect, url_for, request, flash, make_response, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy import or_, and_, text, DateTime
 from datetime import datetime, date
 
-from .models import Book, Student, Loan
+from .models import Book, Student, Loan, Tags, BookTags
 from . import db
 
 livre = Blueprint('livre', __name__)
@@ -32,10 +33,10 @@ def livre_db(page=1):
         type = request.form.get('type')
         isbn = request.form.get('isbn')
         student = request.form.get('student')
+        tags = request.form.get('tags')
 
-        print(title, author, editor, year, type, isbn, student)
-
-        if title or author or editor or year or type or isbn or student:
+        if title or author or editor or year or type or isbn or student or tags:
+            tags = tags.split(',')
             books = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, or_(
                     Book.title.ilike('%' + title + '%') if title else text(''),
                     Book.author.ilike('%' + author + '%') if author else text(''),
@@ -44,7 +45,8 @@ def livre_db(page=1):
                     Book.type.ilike('%' + type + '%') if type else text(''),
                     Book.isbn.ilike('%' + isbn + '%') if isbn else text(''),
                     Student.name.ilike('%' + student + '%') if student else text(''),
-                    Student.firstname.ilike('%' + student + '%') if student else text('')
+                    Student.firstname.ilike('%' + student + '%') if student else text(''),
+                    and_(Tags.name.in_(tags), Book.id == BookTags.book_id,Tags.id == BookTags.tag_id)
                 )).outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return == None)).outerjoin(Student, Loan.student_id == Student.id).all()
 
             nb_books = len(books)
@@ -67,8 +69,10 @@ def livre_db(page=1):
 
     books = [(book, student) for (book, _, student) in books]
     all_students = Student.query.filter_by(user_id=current_user.id).all()
+    tags = Tags.query.filter_by(user_id=current_user.id).all()
+    tags = [tag.name for tag in tags]
 
-    return render_template('livre.html', books=books, students=all_students, nb_page=nb_page, page=int(page))
+    return render_template('livre.html', books=books, students=all_students, nb_page=nb_page, page=int(page), tags=json.dumps(tags))
 
 
 @livre.route('/livre/ajout', methods=['GET', 'POST'])
@@ -81,6 +85,7 @@ def livre_ajout():
         year = request.form.get('year')
         type = request.form.get('type')
         isbn = request.form.get('isbn')
+        tags = request.form.get('tags')
 
         # to avoid empty string (because isbn is a required field)
         if (isbn == ''):
@@ -96,19 +101,43 @@ def livre_ajout():
             flash('Veuillez ajouter un titre.', 'error')
             return redirect(url_for('livre.livre_ajout'))
 
+        tags = tags.split(',')
+        tags_in_db = Tags.query.filter_by(user_id=current_user.id).all()
+        tags_in_db = [tag.name for tag in tags_in_db]
+
+        # If the tag is not in the database, we add it
+        for tag in tags:
+            if tag not in tags_in_db:
+                new_tag = Tags(name=tag, user_id=current_user.id)
+                db.session.add(new_tag)
+                db.session.commit()
+
         # Check if the book already exists
         book = Book.query.filter_by(user_id=current_user.id, title=title).first()
         if book:
+            # The book already exists
             flash('Ce titre est déja utilisé pour un autre livre.', 'error')
             return redirect(url_for('livre.livre_ajout'))
 
+
         new_book = Book(title=title, author=author, editor=editor, year=year, type=type, isbn=isbn, user_id=current_user.id)
         db.session.add(new_book)
+
+        # Add the tags to the book
+        for tag in tags:
+            tag_id = Tags.query.filter_by(name=tag, user_id=current_user.id).first().id
+            book_tag = BookTags(book_id=new_book.id, tag_id=tag_id)
+            db.session.add(book_tag)
+
         db.session.commit()
 
         return redirect(url_for('livre.livre_db'))
 
-    return render_template('livre_ajout.html')
+    # Get all tags (only the name) from the current user
+    tags = Tags.query.filter_by(user_id=current_user.id).all()
+    tags = [tag.name for tag in tags]
+
+    return render_template('livre_ajout.html', tags=json.dumps(tags))
 
 
 @livre.route('/livre/scann', methods=['GET', 'POST'])
@@ -133,6 +162,12 @@ def livre_edit(id):
     loan = Loan.query.filter_by(book_id=id, date_return=None).first()
     student = Student.query.filter_by(id=loan.student_id).first() if loan else None
 
+    tags = Tags.query.filter_by(user_id=current_user.id).all()
+    tags = [tag.name for tag in tags]
+
+    book_tags = Tags.query.join(BookTags, Tags.id == BookTags.tag_id).filter(BookTags.book_id == id, Tags.user_id == current_user.id).all()
+    book_tags = [tag.name for tag in book_tags]
+
     if request.method == 'POST':
         title = request.form.get('title')
         author = request.form.get('author')
@@ -141,6 +176,7 @@ def livre_edit(id):
         type = request.form.get('type')
         isbn = request.form.get('isbn')
         student = request.form.get('student')
+        tags = request.form.get('tags')
 
         if not title:
             flash('Veuillez ajouter un titre au livre.', 'info')
@@ -179,11 +215,34 @@ def livre_edit(id):
                 # fin de la location
                 loan.date_return = date.today()
 
+        # Add the tags to the book
+        book_tags = BookTags.query.filter_by(book_id=id).all()
+        for book_tag in book_tags:
+            db.session.delete(book_tag)
+
+        tags = tags.split(',')
+
+        # Get all tags from the current user
+        tags_in_db = Tags.query.filter_by(user_id=current_user.id).all()
+        tags_in_db = [tag.name for tag in tags_in_db]
+
+        # If the tag is not in the database, we add it
+        for tag in tags:
+            if tag not in tags_in_db:
+                new_tag = Tags(name=tag, user_id=current_user.id)
+                db.session.add(new_tag)
+                db.session.commit()
+
+            # Add the tags to the book
+            tag_id = Tags.query.filter_by(name=tag, user_id=current_user.id).first().id
+            book_tag = BookTags(book_id=id, tag_id=tag_id)
+            db.session.add(book_tag)
+
         db.session.commit()
 
         return redirect(url_for('livre.livre_db'))
 
-    return render_template('livre_edit.html', book=book, students=students, student=student)
+    return render_template('livre_edit.html', book=book, students=students, student=student, tags=json.dumps(tags), book_tags=book_tags)
 
 @livre.route('/livre/<id>/delete')
 @login_required

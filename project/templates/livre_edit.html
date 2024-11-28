@@ -52,6 +52,28 @@
             </div>
 
             <div class="field">
+                <label class="label" for="tags">Étiquettes</label>
+                <div class="control">
+                    <div class="tags-input-container">
+                        <div id="tags-list" class="tags {% if not book_tags %}is-hidden{% endif %}"></div>
+                        <input
+                                id="tags-input"
+                                class="input"
+                                type="text"
+                                placeholder="Ajouter une étiquette ou une catégorie"
+                                autocomplete="off"
+                        />
+                    </div>
+                </div>
+                <input type="hidden" name="tags" id="tags-hidden-input" value="{{ book_tags[0] }}" />
+                <div class="dropdown" id="suggestions-dropdown">
+                    <div class="dropdown-menu">
+                        <div class="dropdown-content" id="suggestions-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
                 <label class="label" for="students">Élève possédant le livre</label>
                 <div class="select">
                     <select name="student" id="student-select">
@@ -113,6 +135,106 @@
         </button>
     </div>
 
+    <!-- Script pour les tags -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const existingTags = {{ tags|safe }}; // Liste des tags existants
+      const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
+      const tagsInput = document.getElementById("tags-input");
+      const tagsList = document.getElementById("tags-list");
+      const tagsHiddenInput = document.getElementById("tags-hidden-input");
+      const suggestionsDropdown = document.getElementById("suggestions-dropdown");
+      const suggestionsList = document.getElementById("suggestions-list");
+
+      window.onload = function () {
+        for (let tag of {{ book_tags|safe }}) {
+            if (tag) {
+                addTag(tag);
+            }
+        }
+      }
+
+      // Mise à jour des suggestions
+      function updateSuggestions() {
+        const input = tagsInput.value.toLowerCase();
+        const suggestions = existingTags.filter(tag =>
+          tag.toLowerCase().includes(input) && !selectedTags.has(tag)
+        );
+
+        suggestionsList.innerHTML = suggestions
+          .map(tag => `<a class="dropdown-item">${tag}</a>`)
+          .join("");
+
+        if (suggestions.length > 0) {
+          suggestionsDropdown.classList.add("is-active");
+        } else {
+          suggestionsDropdown.classList.remove("is-active");
+        }
+      }
+
+      // Ajouter un tag
+      function addTag(tag) {
+        if (tagsList.classList.contains("is-hidden")) {
+          tagsList.classList.remove("is-hidden");
+        }
+
+        if (tag && !selectedTags.has(tag)) {
+          selectedTags.add(tag);
+
+          const tagElement = document.createElement("div");
+          tagElement.className = "tag is-info";
+          tagElement.textContent = tag;
+
+          const removeButton = document.createElement("button");
+          removeButton.className = "delete is-small";
+          removeButton.addEventListener("click", () => {
+            selectedTags.delete(tag);
+            tagsList.removeChild(tagElement);
+            updateHiddenInput();
+          });
+
+          tagElement.appendChild(removeButton);
+          tagsList.appendChild(tagElement);
+          updateHiddenInput();
+        }
+
+        tagsInput.value = "";
+        updateSuggestions();
+      }
+
+      // Met à jour le champ masqué avec les tags sélectionnés
+      function updateHiddenInput() {
+        tagsHiddenInput.value = Array.from(selectedTags).join(",");
+        if (selectedTags.size === 0) {
+          tagsList.classList.add("is-hidden");
+        }
+      }
+
+      // Gestion des événements
+      tagsInput.addEventListener("input", updateSuggestions);
+
+      tagsInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addTag(tagsInput.value);
+        }
+      });
+
+      suggestionsList.addEventListener("click", event => {
+        if (event.target.classList.contains("dropdown-item")) {
+          addTag(event.target.textContent);
+        }
+      });
+
+      document.addEventListener("click", event => {
+        if (!suggestionsDropdown.contains(event.target) && event.target !== tagsInput) {
+          suggestionsDropdown.classList.remove("is-active");
+        }
+      });
+    });
+    </script>
+
+    <!-- Script pour les modals -->
     <script>
         var btn = document.querySelector('#showModal');
         var modalDlg = document.querySelector('#delete-modal');

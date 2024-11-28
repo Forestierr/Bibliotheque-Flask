@@ -2,9 +2,17 @@
 # look at the file docs/model.png
 
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from . import db
+
+# Table d'association pour la relation Many-to-Many entre Book et Tags
+
+
+class BookTags(db.Model):
+    __tablename__ = 'book_tags'
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)
 
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
@@ -17,6 +25,8 @@ class User(UserMixin, db.Model):
     books = relationship('Book', backref='user', lazy=True)  # User can have many books
     # One-to-Many relationship with students
     students = relationship('Student', backref='user', lazy=True)  # User can have many students
+    # One-to-Many relationship with tags
+    tags = relationship('Tags', backref='user', lazy=True) # User can have many tags
 
 class Book(db.Model):
     __tablename__ = 'book'
@@ -28,11 +38,9 @@ class Book(db.Model):
     type = db.Column(db.String(100))
     isbn = db.Column(db.String(100), unique=True, nullable=True)
 
-    # Many-to-One relationship with User
     user_id = db.Column(db.Integer, ForeignKey('user.id'))  # Each book belongs to a user
-
-    # Loan relationship: One book can be loaned out many times
     loans = relationship('Loan', backref='book', lazy=True)
+    book_tags = relationship('BookTags', backref='book', lazy=True)
 
 
 class Student(db.Model):
@@ -50,10 +58,18 @@ class Student(db.Model):
 class Loan(db.Model):
     __tablename__ = 'loan'
     id = db.Column(db.Integer, primary_key=True)
+    date_loan = db.Column(db.Date)
+    date_return = db.Column(db.Date)
 
     # Foreign keys to link Student and Book
     student_id = db.Column(db.Integer, ForeignKey('student.id'), nullable=False)
     book_id = db.Column(db.Integer, ForeignKey('book.id'), nullable=False)
 
-    date_loan = db.Column(db.Date)
-    date_return = db.Column(db.Date)
+
+class Tags(db.Model):
+    __tablename__ = 'tags'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    book_tags = relationship('BookTags', backref='tag', lazy=True)
