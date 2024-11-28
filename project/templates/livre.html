@@ -101,6 +101,24 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="column is-4 is-4-desktop is-6-tablet is-12-mobile">
+                            <div class="tags-input-container">
+                                <input
+                                        id="tags-input"
+                                        class="input"
+                                        type="text"
+                                        placeholder="Etiquettes"
+                                        autocomplete="off"
+                                />
+                            </div>
+                            <input type="hidden" name="tags" id="tags-hidden-input" />
+                            <div class="dropdown is-hidden" id="suggestions-dropdown">
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-content" id="suggestions-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tags-list" class="column is-4 is-4-desktop is-6-tablet is-12-mobile is-hidden"></div>
                     </div>
                 </div>
                 </form>
@@ -148,6 +166,8 @@
 
         </table>
     </div>
+
+    <!-- Pagination -->
 
     {% if nb_page < 5 %}
     <nav class="pagination" role="navigation" aria-label="pagination">
@@ -237,6 +257,7 @@
 
     {% endif %}
 
+    <!-- Script pour les boutons de recherche -->
     <script>
         // toggle button : show/hide search inputs
         document.addEventListener('DOMContentLoaded', function() {
@@ -277,6 +298,101 @@
         document.getElementById('search-button').addEventListener('click', function() {
             document.querySelector('form').submit();
         });
+    </script>
+
+    <!-- Script pour la gestion des étiquettes -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const existingTags = {{ tags|safe }}; // Liste des tags existants
+      const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
+      const tagsInput = document.getElementById("tags-input");
+      const tagsList = document.getElementById("tags-list");
+      const tagsHiddenInput = document.getElementById("tags-hidden-input");
+      const suggestionsDropdown = document.getElementById("suggestions-dropdown");
+      const suggestionsList = document.getElementById("suggestions-list");
+
+      // Mise à jour des suggestions
+      function updateSuggestions() {
+        suggestionsDropdown.classList.remove("is-hidden");
+        const input = tagsInput.value.toLowerCase();
+        const suggestions = existingTags.filter(tag =>
+          tag.toLowerCase().includes(input) && !selectedTags.has(tag)
+        );
+
+        suggestionsList.innerHTML = suggestions
+          .map(tag => `<a class="dropdown-item">${tag}</a>`)
+          .join("");
+
+        if (suggestions.length > 0) {
+          suggestionsDropdown.classList.add("is-active");
+        } else {
+          suggestionsDropdown.classList.remove("is-active");
+        }
+      }
+
+      // Ajouter un tag
+      function addTag(tag) {
+        suggestionsDropdown.classList.add("is-hidden");
+        if (tagsList.classList.contains("is-hidden")) {
+          tagsList.classList.remove("is-hidden");
+        }
+
+        if (tag && !selectedTags.has(tag)) {
+          selectedTags.add(tag);
+
+          const tagElement = document.createElement("div");
+          tagElement.className = "tag is-info";
+          tagElement.textContent = tag;
+
+          const removeButton = document.createElement("button");
+          removeButton.className = "delete is-small";
+          removeButton.addEventListener("click", () => {
+            selectedTags.delete(tag);
+            tagsList.removeChild(tagElement);
+            updateHiddenInput();
+          });
+
+          tagElement.appendChild(removeButton);
+          tagsList.appendChild(tagElement);
+          updateHiddenInput();
+        }
+
+        tagsInput.value = "";
+        updateSuggestions();
+      }
+
+      // Met à jour le champ masqué avec les tags sélectionnés
+      function updateHiddenInput() {
+        suggestionsDropdown.classList.add("is-hidden");
+        tagsHiddenInput.value = Array.from(selectedTags).join(",");
+        if (selectedTags.size === 0) {
+          tagsList.classList.add("is-hidden");
+        }
+      }
+
+      // Gestion des événements
+      tagsInput.addEventListener("input", updateSuggestions);
+
+      tagsInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addTag(tagsInput.value);
+        }
+      });
+
+      suggestionsList.addEventListener("click", event => {
+        if (event.target.classList.contains("dropdown-item")) {
+          addTag(event.target.textContent);
+        }
+      });
+
+      document.addEventListener("click", event => {
+        if (!suggestionsDropdown.contains(event.target) && event.target !== tagsInput) {
+          suggestionsDropdown.classList.remove("is-active");
+          suggestionsDropdown.classList.add("is-hidden");
+        }
+      });
+    });
     </script>
 
     <!-- Utilisé pour supprimer les notifications -->
