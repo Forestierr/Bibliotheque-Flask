@@ -35,7 +35,6 @@ def livre_db(page=1):
         student = request.form.get('student')
         tags = request.form.get('tags')
 
-        # TODO : add tags in the search
         if title or author or editor or year or type or isbn or student or tags:
             tags = tags.split(',')
             books = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, or_(
