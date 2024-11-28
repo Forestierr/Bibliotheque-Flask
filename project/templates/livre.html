@@ -290,8 +290,11 @@
             document.getElementById('isbn').value = '';
             document.getElementById('student').value = '';
 
-            // refresh page
-            document.querySelector('form').submit();
+            // clear tags
+            const tagsList = document.getElementById('tags-list');
+            while (tagsList.firstChild) {
+                tagsList.firstChild.querySelector('button').click();
+            }
         });
 
         // search button : submit form

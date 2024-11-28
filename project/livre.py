@@ -37,6 +37,7 @@ def livre_db(page=1):
 
         # TODO : add tags in the search
         if title or author or editor or year or type or isbn or student or tags:
+            tags = tags.split(',')
             books = db.session.query(Book, Loan, Student).filter(Book.user_id == current_user.id, or_(
                     Book.title.ilike('%' + title + '%') if title else text(''),
                     Book.author.ilike('%' + author + '%') if author else text(''),
@@ -45,7 +46,8 @@ def livre_db(page=1):
                     Book.type.ilike('%' + type + '%') if type else text(''),
                     Book.isbn.ilike('%' + isbn + '%') if isbn else text(''),
                     Student.name.ilike('%' + student + '%') if student else text(''),
-                    Student.firstname.ilike('%' + student + '%') if student else text('')
+                    Student.firstname.ilike('%' + student + '%') if student else text(''),
+                    and_(Tags.name.in_(tags), Book.id == BookTags.book_id,Tags.id == BookTags.tag_id)
                 )).outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return == None)).outerjoin(Student, Loan.student_id == Student.id).all()
 
             nb_books = len(books)
