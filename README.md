@@ -12,7 +12,7 @@ empruntés, par qui et pour combien de temps. Grâce à LivresEnClasse.com, les 
 ainsi encourager la lecture tout en gardant une vue d’ensemble claire et précise sur
 l’utilisation des ressources de leur bibliothèque.
 
-## Features
+## Caractéristiques
 
 - Ajouter, supprimer, modifier un livre
 - Ajouter, supprimer, modifier un élève
@@ -71,7 +71,7 @@ flask run -p 80 -h 0.0.0.0
 And go to http://127.0.0.1:80
 
 > [!TIP]
-> Vous pouvez utiliser les options `--host` et `--port` pour changer l'hôte et le port du serveur.
+> Vous pouvez utiliser `flask run --help` pour voir toutes les options disponibles.
 
 > [!CAUTION]
 > Flask ne lance pas de serveur WSGI, vous devez utiliser un serveur WSGI de production comme Gunicorn.
@@ -97,7 +97,7 @@ Mais sans utiliser GitHub Actions, libre à vous de l'utiliser.
 
 Premièrement, vous devez créer un fichier `docker-compose.yml` à la racine du projet.
 
-```bash
+```yaml
 command: tunnel --no-autoupdate run --token ${CF_TOCKEN}
 ```
 
@@ -126,7 +126,7 @@ La base de données est une base de données SQLite. Stockée dans le fichier `i
 
 ![Database schema](docs/model.png)
 
-_The **User** is a professor._
+_**User** est un professeur._
 
 ## Licence
 
