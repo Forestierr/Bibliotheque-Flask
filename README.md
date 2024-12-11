@@ -31,6 +31,23 @@ SECRET_KEY = 'your_new_secret_key'
 
 ## Utilisation
 
+### Create the database
+
+```bash
+flask db init
+flask db migrate
+flask db upgrade
+```
+
+### Update the database
+
+```bash
+flask db migrate -m "message"
+flask db upgrade
+```
+
+### Run the application
+
 ```bash
 $env:FLASK_APP = "project"
 flask run -p 80 -h 0.0.0.0
