@@ -1,4 +1,6 @@
-# Bibliotheque flask
+# Bibliothèque flask
+
+[English version](README.en.md)
 
 <strong>Ma bibliothèque</strong> est une application web spécialement conçue pour répondre aux
 besoins des enseignants dans la gestion de leur bibliothèque de classe. Cette plateforme
@@ -10,28 +12,36 @@ empruntés, par qui et pour combien de temps. Grâce à LivresEnClasse.com, les 
 ainsi encourager la lecture tout en gardant une vue d’ensemble claire et précise sur
 l’utilisation des ressources de leur bibliothèque.
 
-## Features
+## Caractéristiques
 
-- Add, delete, modify a book
-- Add, delete, modify a student
-- Scan barcode of a book
-- login / logout
+- Ajouter, supprimer, modifier un livre
+- Ajouter, supprimer, modifier un élève
+- Scanner le code-barres d'un livre
+- Gestion des emprunts
+- Connexion / déconnexion
 
 ## Installation
 
+### Créer un environnement virtuel
+
 ```bash
-pip install requirements.txt
+python -m venv venv
+source venv/bin/activate
 ```
 
-Modify the `project\config.py` file to set the secret key.
+Puis installer les dépendances :
+
+```bash
+pip install -r project/requirements.txt
+```
+
+Modifier le fichier `project\config.py` pour définir la clé secrète.
 
 ```python
 SECRET_KEY = 'your_new_secret_key'
 ```
 
-## Utilisation
-
-### Create the database
+### Création de la base de données
 
 ```bash
 flask db init
@@ -39,14 +49,19 @@ flask db migrate
 flask db upgrade
 ```
 
-### Update the database
+> [!TIP]
+> Vous pouvez utiliser la commande `flask db --help` pour voir toutes les commandes disponibles.
+
+### Mise à jour de la base de données
+
+Si vous modifiez le modèle de données, vous devez mettre à jour la base de données.
 
 ```bash
 flask db migrate -m "message"
 flask db upgrade
 ```
 
-### Run the application
+### Lancer le serveur
 
 ```bash
 $env:FLASK_APP = "project"
@@ -56,15 +71,64 @@ flask run -p 80 -h 0.0.0.0
 And go to http://127.0.0.1:80
 
 > [!TIP]
-> Note: You can use the `--host` and `--port` options to change the host and port of the server.
+> Vous pouvez utiliser `flask run --help` pour voir toutes les options disponibles.
 
 > [!CAUTION]
-> Flask don't run a WSGI server, you should use a production WSGI server like Gunicorn.
+> Flask ne lance pas de serveur WSGI, vous devez utiliser un serveur WSGI de production comme Gunicorn.
 
-## Database
+## Publication
 
-The database is a SQLite database. Stored in `instance\db.sqlite` file.
+Pour publier l'application, j'ai décider d'utiliser [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
+, nginx et gunicorn. Cela me permet de publier l'application sur mon serveur personnel et de la rendre accessible sous
+un nom de domaine personnalisé [Cloudflare Registrar](https://www.cloudflare.com/fr-fr/products/registrar/).
+
+Pour cela je me suis inspiré de l'article de blog de [austinsnerdythings](https://austinsnerdythings.com/2023/11/01/using-github-actions-to-deploy-a-flask-nginx-cloudflared-tunnel-docker-compose-stack/).
+Mais sans utiliser GitHub Actions, libre à vous de l'utiliser.
+
+> [!CAUTION]
+> AVERTISSEMENT SUR LA SÉCURITÉ
+> Cette solution ne rend pas automatiquement votre application sûre. Vous devez toujours vous concentrer sur la sécurité. Toute vulnérabilité dans votre application web peut permettre à un attaquant de prendre pied dans votre réseau. Votre hôte Docker doit être isolé du reste de votre réseau par un pare-feu, dans un premier temps, afin d'empêcher toute intrusion dans d'autres ordinateurs/services/systèmes de votre réseau. Toutes les étapes suivantes devraient être axées sur les vecteurs d'attaque habituels (injection SQL, mise à jour des systèmes, etc.).
+
+### Shéma de l'infrastructure
+
+![Infrastructure schema](docs/infrastructure.png)
+
+### Lancer l'application
+
+Premièrement, vous devez créer un fichier `docker-compose.yml` à la racine du projet.
+
+```yaml
+command: tunnel --no-autoupdate run --token ${CF_TOCKEN}
+```
+
+En remplaçant `${CF_TOCKEN}` par votre token Cloudflare.
+
+### Build et lancer l'application
+
+```bash
+docker-compose up --build
+```
+
+> [!TIP]
+> Vous pouvez utiliser l'option `-d` pour lancer les conteneurs en arrière-plan.
+
+### Arrêter l'application
+
+```bash
+docker-compose down
+```
+
+## Base de données
+
+La base de données est une base de données SQLite. Stockée dans le fichier `instance\db.sqlite`.
+
+### Schéma de la base de données
 
 ![Database schema](docs/model.png)
 
-_The **User** is a professor._
+_**User** est un professeur._
+
+## Licence
+
+Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE.md) pour plus de détails.
+
