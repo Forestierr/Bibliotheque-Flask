@@ -35,11 +35,7 @@ Puis installer les dépendances :
 pip install -r project/requirements.txt
 ```
 
-Modifier le fichier `project\config.py` pour définir la clé secrète.
-
-```python
-SECRET_KEY = 'your_new_secret_key'
-```
+Modifier le fichier `.env` pour définir les variables d'environnement.
 
 ### Création de la base de données
 

@@ -26,6 +26,7 @@ services:
 
 
   cloudflared:
+    env_file: ".env"
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate run --token ${CF_TOCKEN}
     restart: always

@@ -35,11 +35,7 @@ Then install the dependencies:
 pip install -r project/requirements.txt
 ```
 
-Modify the `project\config.py` file to define the secret key.
-
-```python
-SECRET_KEY = 'your_new_secret_key'
-```
+Modify the `.env` file to set the environment variables.
 
 ### Create the database
 
