@@ -35,7 +35,13 @@ Then install the dependencies:
 pip install -r project/requirements.txt
 ```
 
-Modify the `.env` file to set the environment variables.
+Modify the `.env' file to set the environment variables.
+The `.env.example` file has all the default values, you just need to copy the file and add your 
+copy the file and add your own values.
+
+```bash
+cp .env.example .env
+```
 
 ### Create the database
 
