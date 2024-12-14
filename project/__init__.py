@@ -7,8 +7,11 @@ from flask_migrate import Migrate
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import os
-
+import logging
+from logging.handlers import RotatingFileHandler
 import locale
+
+from .emailError import MailCriticalHandler
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
@@ -16,6 +19,22 @@ db = SQLAlchemy()
 mail = Mail()
 
 load_dotenv()
+
+# logging configuration
+# Définir le chemin du fichier de log
+LOG_DIR = 'logs'
+LOG_FILE = os.path.join(LOG_DIR, 'app.log')
+
+# Vérifier et créer le répertoire si nécessaire
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+LOG_FILE = 'logs/app.log'
+handler = RotatingFileHandler(LOG_FILE, maxBytes=1*1024*1024, backupCount=10)
+handler.setLevel(logging.ERROR)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logging.getLogger().addHandler(handler)
 
 def create_app():
     app = Flask(__name__)
@@ -33,6 +52,10 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
     mail.init_app(app)
+
+    app.logger.addHandler(handler)
+    mail_handler = MailCriticalHandler(mail_instance=mail, app=app, recipients=os.getenv("MAIL_USERNAME"))
+    app.logger.addHandler(mail_handler)
 
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
