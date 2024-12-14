@@ -1,7 +1,7 @@
 # main.py
 import os
 
-from flask import Blueprint, render_template, request, url_for, make_response, send_from_directory, app, flash, redirect
+from flask import Blueprint, render_template, request, url_for, make_response, send_from_directory, app, flash, redirect, current_app
 from flask_flatpages import flatpages
 from flask_login import login_required, current_user
 from werkzeug.exceptions import HTTPException
@@ -60,7 +60,6 @@ def contact():
     # get the current user if logged in
     if current_user.is_authenticated:
         User.query.filter(User.id == current_user.id)
-        return render_template('contact.html', user=current_user)
 
     return render_template('contact.html')
 
