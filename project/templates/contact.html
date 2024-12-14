@@ -13,7 +13,7 @@
             <div class="field">
                 <label class="label">Nom</label>
                 <div class="control">
-                    <input class="input" type="text" name="name" required>
+                    <input class="input" type="text" name="name" value="{{ user.name if user }}" required>
                 </div>
             </div>
             <div class="field">
@@ -25,7 +25,7 @@
             <div class="field">
                 <label class="label">Email</label>
                 <div class="control">
-                    <input class="input" type="email" name="email" required>
+                    <input class="input" type="email" name="email" value="{{ user.email if user }}" required>
                 </div>
             </div>
             <div class="field">

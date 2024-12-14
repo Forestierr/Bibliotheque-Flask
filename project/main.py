@@ -8,8 +8,11 @@ from werkzeug.exceptions import HTTPException
 import datetime
 from urllib.parse import urlparse
 
-main = Blueprint('main', __name__)
+from .email import send_email_to_me, send_email_confirmation
+from .models import User
+from . import db
 
+main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
@@ -43,20 +46,21 @@ def contact():
         firstname = request.form.get('firstname')
         email = request.form.get('email')
         message = request.form.get('message')
-        flash('Votre message a été envoyé avec succès.', 'success')
-        flash('Nous vous répondrons dans les plus brefs délais.', 'info')
 
-        # sauvegarde des données dans un fichier (name_firstname_date.txt) dans contact/
-        with open("contact/" + name + "_" + firstname + "_" + datetime.now().strftime("%m-%d-%Y_%H-%M-%S") + ".txt", 'w', encoding='utf-8') as f:
-            f.write('Date: ' + datetime.now().strftime("%m %B %Y %H:%M:%S") + '\n')
-            f.write('Nom: ' + name + '\n')
-            f.write('Prénom: ' + firstname + '\n')
-            f.write('Email: ' + email + '\n')
-            f.write('Message: \n' + message + '\n')
+        # envoi d'un email à l'administrateur
+        send_email_to_me('Contact de ' + name + ' ' + firstname, "Email: " + email + "\n" + "Nom: " + name + " " + firstname + "\n\n" + message)
 
-            f.close()
+        # envoi d'un email de confirmation à l'utilisateur
+        send_email_confirmation(name, firstname, email)
+
+        flash('Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation.', 'success')
 
         return redirect(url_for('main.contact'))
+
+    # get the current user if logged in
+    if current_user.is_authenticated:
+        User.query.filter(User.id == current_user.id)
+        return render_template('contact.html', user=current_user)
 
     return render_template('contact.html')
 
