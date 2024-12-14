@@ -9,6 +9,8 @@ import datetime
 from urllib.parse import urlparse
 
 from .email import send_email_to_me, send_email_confirmation
+from .models import User
+from . import db
 
 main = Blueprint('main', __name__)
 
@@ -54,6 +56,11 @@ def contact():
         flash('Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation.', 'success')
 
         return redirect(url_for('main.contact'))
+
+    # get the current user if logged in
+    if current_user.is_authenticated:
+        User.query.filter(User.id == current_user.id)
+        return render_template('contact.html', user=current_user)
 
     return render_template('contact.html')
 
