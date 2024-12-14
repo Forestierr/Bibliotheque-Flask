@@ -35,7 +35,13 @@ Puis installer les dépendances :
 pip install -r project/requirements.txt
 ```
 
-Modifier le fichier `.env` pour définir les variables d'environnement.
+Modifiez le fichier `.env' pour définir les variables d'environnement.
+Le fichier `.env.example` contient toutes les valeurs par défaut, il vous suffit de copier le fichier et d'ajouter vos propres valeurs. 
+copier le fichier et ajouter vos propres valeurs.
+
+```bash
+cp .env.example .env
+```
 
 ### Création de la base de données
 
