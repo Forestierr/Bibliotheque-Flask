@@ -31,12 +31,12 @@ class User(UserMixin, db.Model):
 class Book(db.Model):
     __tablename__ = 'book'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), unique=True)
+    title = db.Column(db.String(100))
     author = db.Column(db.String(100))
     editor = db.Column(db.String(100))
     year = db.Column(db.Integer)
     type = db.Column(db.String(100))
-    isbn = db.Column(db.String(100), unique=True, nullable=True)
+    isbn = db.Column(db.String(100),nullable=True)
 
     user_id = db.Column(db.Integer, ForeignKey('user.id'))  # Each book belongs to a user
     loans = relationship('Loan', backref='book', lazy=True)

@@ -101,33 +101,36 @@ def livre_ajout():
             flash('Veuillez ajouter un titre.', 'error')
             return redirect(url_for('livre.livre_ajout'))
 
-        tags = tags.split(',')
+        if tags:
+            tags = tags.split(',')
         tags_in_db = Tags.query.filter_by(user_id=current_user.id).all()
         tags_in_db = [tag.name for tag in tags_in_db]
 
         # If the tag is not in the database, we add it
-        for tag in tags:
-            if tag not in tags_in_db:
-                new_tag = Tags(name=tag, user_id=current_user.id)
-                db.session.add(new_tag)
-                db.session.commit()
+        if tags:
+            for tag in tags:
+                if tag not in tags_in_db:
+                    new_tag = Tags(name=tag, user_id=current_user.id)
+                    db.session.add(new_tag)
+                    db.session.commit()
 
         # Check if the book already exists
         book = Book.query.filter_by(user_id=current_user.id, title=title).first()
         if book:
             # The book already exists
             flash('Ce titre est déja utilisé pour un autre livre.', 'error')
-            return redirect(url_for('livre.livre_ajout'))
+            return redirect(url_for('livre.livre_db'))
 
 
         new_book = Book(title=title, author=author, editor=editor, year=year, type=type, isbn=isbn, user_id=current_user.id)
         db.session.add(new_book)
 
         # Add the tags to the book
-        for tag in tags:
-            tag_id = Tags.query.filter_by(name=tag, user_id=current_user.id).first().id
-            book_tag = BookTags(book_id=new_book.id, tag_id=tag_id)
-            db.session.add(book_tag)
+        if tags:
+            for tag in tags:
+                tag_id = Tags.query.filter_by(name=tag, user_id=current_user.id).first().id
+                book_tag = BookTags(book_id=new_book.id, tag_id=tag_id)
+                db.session.add(book_tag)
 
         db.session.commit()
 
