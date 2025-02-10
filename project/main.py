@@ -14,9 +14,19 @@ from . import db
 
 main = Blueprint('main', __name__)
 
+
 @main.route('/')
 def index():
+    if current_user.is_authenticated:
+        return render_template('user/dashboard.html')
+
     return render_template('index.html')
+
+
+@main.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('user/dashboard.html')
 
 
 @main.route("/sitemap.xml")

@@ -1,0 +1,124 @@
+<!-- templates/user/dashboard.html -->
+
+{% from "utils/search_bar.html" import search_bar %}
+
+{% extends "base.html" %}
+
+{% block content %}
+
+
+{{ search_bar("Rechercher") }}
+
+<div class="container block">
+  <h4 class="title is-4 block">Infos</h4>
+  <div class="box">
+    <p>Nombre de livres : <strong>36</strong></p>
+    <p>Nombre d'élèves  : <strong>24</strong></p>
+  </div>
+</div>
+
+<div class="container block">
+  <h4 class="title is-4 block">Meilleurs livres</h4>
+  <div class="box">
+    <p>Livre 1 ...</p>
+    <p>Livre 2 ...</p>
+    <p>Livre 3 ...</p>
+    <p>Livre 4 ...</p>
+    <p>Livre 5 ...</p>
+  </div>
+</div>
+
+<div class="container block">
+  <h4 class="title is-4 block">Derniers prèts</h4>
+  <div class="box">
+    <p>Livre 1 ... eleve 1 ... date</p>
+    <p>Livre 2 ... eleve 2 ... date</p>
+    <p>Livre 3 ... eleve 3 ... date</p>
+    <p>Livre 4 ... eleve 4 ... date</p>
+    <p>Livre 5 ... eleve 5 ... date</p>
+  </div>
+</div>
+
+<div class="container block">
+  <h4 class="title is-4 block">Prêts sur l'année</h4>
+  <div class="container">
+    <div class="month-labels is-size-7">
+      <span>jan</span><span>fév</span><span>mar</span><span>avr</span><span>mai</span><span>jun</span><span>jui</span><span>aoû</span><span>sep</span><span>oct</span><span>nov</span><span>déc</span>
+    </div>
+    <div class="columns">
+      <div class="column">
+        <div class="day-labels is-size-6">
+          <span>1</span><span>2</span><span>3</span><span>4</span>
+        </div>
+      </div>
+      <div class="column">
+      <div class="heatmap">
+        <!-- 4 lignes x plusieurs colonnes -->
+        <script>
+            for (let i = 0; i < 12 * 4; i++) {
+                document.write('<div class="level-' + (Math.floor(Math.random() * 5)) + '"></div>');
+            }
+        </script>
+      </div>
+    </div>
+    </div>
+    <div class="legend is-size-7">
+        <span>Nombres de livres prêté :</span>
+        <div class="level-0"></div>
+        <div class="level-1"></div>
+        <div class="level-2"></div>
+        <div class="level-3"></div>
+        <div class="level-4"></div>
+        <span>moins → plus</span>
+    </div>
+  </div>
+</div>
+
+
+<style>
+    .heatmap {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 4px;
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        width: fit-content;
+    }
+    .month-labels {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        font-size: 0.8em;
+        writing-mode: tb-rl;
+        transform: rotate(-180deg);
+    }
+    .day-labels {
+      display: flex;
+      flex-direction: column;
+    }
+    .heatmap div {
+        width: 15px;
+        height: 15px;
+        border-radius: 3px;
+        background-color: #e0e0e0;
+    }
+    .level-1 { background-color: #d6e685 !important; }
+    .level-2 { background-color: #8cc665 !important; }
+    .level-3 { background-color: #44a340 !important; }
+    .level-4 { background-color: #1e6823 !important; }
+    .legend {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .legend div {
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+        border-radius: 3px;
+    }
+</style>
+
+{% endblock %}
