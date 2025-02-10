@@ -72,7 +72,7 @@ def livre_db(page=1):
     tags = Tags.query.filter_by(user_id=current_user.id).all()
     tags = [tag.name for tag in tags]
 
-    return render_template('livre.html', books=books, students=all_students, nb_page=nb_page, page=int(page), tags=json.dumps(tags))
+    return render_template('livre/livre.html', books=books, students=all_students, nb_page=nb_page, page=int(page), tags=json.dumps(tags))
 
 
 @livre.route('/livre/ajout', methods=['GET', 'POST'])
@@ -140,13 +140,13 @@ def livre_ajout():
     tags = Tags.query.filter_by(user_id=current_user.id).all()
     tags = [tag.name for tag in tags]
 
-    return render_template('livre_ajout.html', tags=json.dumps(tags))
+    return render_template('livre/livre_ajout.html', tags=json.dumps(tags))
 
 
 @livre.route('/livre/scann', methods=['GET', 'POST'])
 @login_required
 def livre_scann():
-    return render_template('livre_scann_live.html')
+    return render_template('livre/livre_scann_live.html')
 
 
 @livre.route('/livre/<id>/edit', methods=['GET', 'POST'])
@@ -245,7 +245,7 @@ def livre_edit(id):
 
         return redirect(url_for('livre.livre_db'))
 
-    return render_template('livre_edit.html', book=book, students=students, student=student, tags=json.dumps(tags), book_tags=book_tags)
+    return render_template('livre/livre_edit.html', book=book, students=students, student=student, tags=json.dumps(tags), book_tags=book_tags)
 
 @livre.route('/livre/<id>/delete')
 @login_required

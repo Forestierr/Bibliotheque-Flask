@@ -22,7 +22,7 @@ def index():
 @main.route("/sitemap.xml")
 @main.route("/sitemap")
 def sitemap():
-    return render_template('sitemap.xml')
+    return render_template('utils/sitemap.xml')
 
 
 @main.route('/robots.txt')
@@ -30,7 +30,7 @@ def sitemap():
 @main.route('/robots')
 @main.route('/robot')
 def robots():
-    return render_template('robots.txt')
+    return render_template('utils/robots.txt')
 
 
 @main.route('/favicon.ico')

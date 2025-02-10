@@ -20,7 +20,7 @@ def eleve_db():
     students = [(student, book) for (student, _, book) in students_with_loans]
 
 
-    return render_template('eleve.html', students=students)
+    return render_template('eleve/eleve.html', students=students)
 
 @eleve.route('/eleve/ajout', methods=['GET', 'POST'])
 @login_required
@@ -46,7 +46,7 @@ def ajouter_eleve():
 
         redirect(url_for('eleve.eleve_db'))
 
-    return render_template('eleve_add.html')
+    return render_template('eleve/eleve_add.html')
 
 @eleve.route('/eleve/<firstname> <name>')
 @login_required
@@ -80,7 +80,7 @@ def eleve_infos(firstname, name):
             if loan.date_return:
                 loan.date_return = loan.date_return.strftime('%d %b %Y')
 
-    return render_template('eleve.html', student=student, books=books, old_books=old_books)
+    return render_template('eleve/eleve.html', student=student, books=books, old_books=old_books)
 
 @eleve.route('/eleve/<name> <firstname>/delete')
 @login_required

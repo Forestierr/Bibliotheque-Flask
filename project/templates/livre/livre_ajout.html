@@ -1,53 +1,55 @@
-<!-- templates/profile.html -->
+<!-- templates/livre/livre_ajout.html -->
 
 {% extends "base.html" %}
 
 {% block content %}
     <h1 class="title is-1">
-      Modifier le livre {{ book.title }}
+        Livre
     </h1>
 
+    {% include 'utils/flash_message.html' %}
+
     <div class="content">
-        <form action="/livre/{{ book.id }}/edit" method="post">
+        <form action="/livre/ajout" method="post">
             <div class="field">
                 <label class="label" for="title">Titre</label>
                 <div class="control">
-                    <input class="input" type="text" name="title" id="title" value="{{ book.title }}" required>
+                    <input class="input" type="text" name="title" id="title" required>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="author">Auteur</label>
                 <div class="control">
-                    <input class="input" type="text" name="author" id="author" value="{{ book.author }}">
+                    <input class="input" type="text" name="author" id="author">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="editor">Editeur</label>
                 <div class="control">
-                    <input class="input" type="text" name="editor" id="editor" value="{{ book.editor }}">
+                    <input class="input" type="text" name="editor" id="editor">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="year">Année</label>
                 <div class="control">
-                    <input class="input" type="number" name="year" id="year" value="{{ book.year }}">
+                    <input class="input" type="number" name="year" id="year">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="type">Genre</label>
                 <div class="control">
-                    <input class="input" type="text" name="type" id="type" value="{{ book.type }}">
+                    <input class="input" type="text" name="type" id="type">
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="isbn">ISBN</label>
                 <div class="control">
-                    <input class="input" type="number" name="isbn" id="isbn" value="{{ book.isbn }}">
+                    <input class="input" type="number" name="isbn" id="isbn">
                 </div>
             </div>
 
@@ -55,7 +57,7 @@
                 <label class="label" for="tags">Étiquettes</label>
                 <div class="control">
                     <div class="tags-input-container">
-                        <div id="tags-list" class="tags {% if not book_tags %}is-hidden{% endif %}"></div>
+                        <div id="tags-list" class="tags is-hidden"></div>
                         <input
                                 id="tags-input"
                                 class="input"
@@ -65,7 +67,7 @@
                         />
                     </div>
                 </div>
-                <input type="hidden" name="tags" id="tags-hidden-input" value="{{ book_tags[0] }}" />
+                <input type="hidden" name="tags" id="tags-hidden-input" />
                 <div class="dropdown" id="suggestions-dropdown">
                     <div class="dropdown-menu">
                         <div class="dropdown-content" id="suggestions-list"></div>
@@ -73,69 +75,20 @@
                 </div>
             </div>
 
-            <div class="field">
-                <label class="label" for="students">Élève possédant le livre</label>
-                <div class="select">
-                    <select name="student" id="student-select">
-                        {% if student %}
-                            <option value="{{ student.id }}" selected>{{ student.name }} {{ student.firstname }}</option>
-                        {% endif %}
-                        <option value="">--Le livre se trouve dans le bibliothèque--</option>
-                    {% for student in students %}
-                        <option value="{{ student[0] }}">{{ student[1] }} {{ student[2] }}</option>
-                    {% endfor %}
-                    </select>
-                </div>
-            </div>
-
             <div class="field is-grouped">
-              <div class="control">
-                <button class="button is-link">Enregistrer</button>
-              </div>
-              <div class="control">
-                <button class="button is-light">
-                    <a href="/livre" class="">Annuler</a>
-                </button>
-              </div>
+                <div class="control">
+                    <button class="button is-link">Enregistrer</button>
+                </div>
+                <div class="control">
+                    <button class="button is-light">
+                        <a href="/livre" class="has-text-black">Annuler</a>
+                    </button>
+                </div>
             </div>
         </form>
     </div>
 
-    <div class="container">
-        <div id="delete-modal" class="modal">
-          <div class="modal-background"></div>
-          <div class="modal-content">
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title">Supprimer le livre</p>
-                </header>
-                <footer class="modal-card-foot">
-                    <a href="/livre/{{ book.id }}/delete" class="button is-normal is-danger is-responsive">
-                        <div class="icon-text">
-                            <span class="icon has-text-info">
-                                <i class="fa-solid fa-trash has-text-black"></i>
-                            </span>
-                            <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
-                        </div>
-                    </a>
-                    <a href="/livre/{{ book.id }}/edit" class="button is-normal is-responsive">Annuler</a>
-                </footer>
-            </div>
-          </div>
-          <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
-        </div>
-        <br>
-        <button class="button is-normal is-danger is-responsive" id="showModal">
-            <div class="icon-text">
-                <span class="icon has-text-info">
-                    <i class="fa-solid fa-trash has-text-black"></i>
-                </span>
-                <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
-            </div>
-        </button>
-    </div>
-
-    <!-- Script pour les tags -->
+    <!-- Script pour la gestion des étiquettes -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
       const existingTags = {{ tags|safe }}; // Liste des tags existants
@@ -145,14 +98,6 @@
       const tagsHiddenInput = document.getElementById("tags-hidden-input");
       const suggestionsDropdown = document.getElementById("suggestions-dropdown");
       const suggestionsList = document.getElementById("suggestions-list");
-
-      window.onload = function () {
-        for (let tag of {{ book_tags|safe }}) {
-            if (tag) {
-                addTag(tag);
-            }
-        }
-      }
 
       // Mise à jour des suggestions
       function updateSuggestions() {
@@ -232,20 +177,6 @@
         }
       });
     });
-    </script>
-
-    <!-- Script pour les modals -->
-    <script>
-        var btn = document.querySelector('#showModal');
-        var modalDlg = document.querySelector('#delete-modal');
-        var modalCloseBtn = document.querySelector('#modal-close');
-        btn.addEventListener('click', function(){
-          modalDlg.classList.add('is-active');
-        });
-
-        modalCloseBtn.addEventListener('click', function(){
-          modalDlg.classList.remove('is-active');
-        });
     </script>
 
 

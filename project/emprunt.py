@@ -36,7 +36,7 @@ def emprunt_db():
         if loan[1].date_return:
             loan[1].date_return = loan[1].date_return.strftime('%d %b %Y')
 
-    return render_template('emprunt.html', loans=loans, only_active_loans=only_active_loans)
+    return render_template('emprunt/emprunt.html', loans=loans, only_active_loans=only_active_loans)
 
 @emprunt.route('/emprunt/<id>/delete', methods=['GET', 'POST'])
 @login_required
