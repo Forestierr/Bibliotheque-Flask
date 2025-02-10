@@ -1,0 +1,206 @@
+{% macro footer() %}
+<footer class="footer m-auto is-size-7 is-hidden-touch" style="padding: 1rem 1rem 1rem; background-color: #fff">
+    <div class="columns">
+        <div class="column is-two-thirds">
+            <h4 class="bd-footer-title has-text-weight-medium has-text-left">
+                <strong>Ma Bibliotheque</strong> par
+                <a href="https://github.com/Forestierr" class="has-text-grey">Forestierr</a>.
+            </h4>
+            <p class="bd-footer-link has-text-left">
+                Le code source est sous licence
+                <a href="https://opensource.org/license/mit" class="has-text-grey">
+                    MIT
+                </a>
+                . Le contenu du site est sous licence
+                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="has-text-grey">
+                    CC BY NC SA 4.0
+                </a>.
+            </p>
+        </div>
+        <div class="column">
+            <a href="{{ url_for('main.contact') }}" class="has-text-grey">
+                <span>Contact</span>
+            </a>
+            <br/>
+            <a href="{{ url_for('main.apropos') }}" class="has-text-grey">
+                <span>A propos</span>
+            </a>
+        </div>
+        <div class="column">
+            <a href="{{ url_for('main.mentions_legales') }}" class="has-text-grey">
+                <span>Mentions légales</span>
+            </a>
+            <br/>
+            <a href="{{ url_for('main.sitemap') }}" class="has-text-grey">
+                Plan du site
+            </a>
+        </div>
+    </div>
+</footer>
+{% endmacro %}
+
+
+{% macro footer_mobile(id=1) %}
+
+<footer class="footer-mobile m-auto is-size-7 is-hidden-desktop" style="position: fixed; width: 100%; bottom: 0; overflow:hidden; padding: 1rem 0rem 1rem;">
+        <!-- svg mask -->
+
+
+    <div class="columns is-mobile is-centered has-text-centered	">
+        <!-- spacer -->
+        <div class="column is-1"></div>
+        <!-- livre -->
+        <div class="column">
+            <a href="{{ url_for('livre.livre_db') }}" class="footer-icon {% if id == 1 %} is-active {% endif %}">
+                {% if id == 1 %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="73.633 19.744 40 10" width="80px" height="40px">
+                  <path style="fill: rgb(255, 255, 255); stroke: rgb(255, 255, 255);" d="M 83.633 29.744 C 83.633 24.744 78.633 19.744 73.633 19.744 L 113.633 19.744 C 108.633 19.744 103.633 24.744 103.633 29.744 L 83.633 29.744 Z" transform="matrix(1, 0, 0, 1, 0, -3.552713678800501e-15)"/>
+                </svg>
+                {% endif %}
+                <span class="icon is-large">
+                    <i class="fas fa-2x fa-book"></i>
+                </span>
+            </a>
+        </div>
+        <!-- scann -->
+        <div class="column">
+            <a href="{{ url_for('livre.livre_scann') }}" class="footer-icon {% if id == 2 %} is-active {% endif %}">
+                {% if id == 2 %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="73.633 19.744 40 10" width="80px" height="40px">
+                  <path style="fill: rgb(255, 255, 255); stroke: rgb(255, 255, 255);" d="M 83.633 29.744 C 83.633 24.744 78.633 19.744 73.633 19.744 L 113.633 19.744 C 108.633 19.744 103.633 24.744 103.633 29.744 L 83.633 29.744 Z" transform="matrix(1, 0, 0, 1, 0, -3.552713678800501e-15)"/>
+                </svg>
+                {% endif %}
+                <span class="icon is-large">
+                    <i class="fas fa-2x fa-barcode"></i>
+                </span>
+            </a>
+        </div>
+        <!-- eleve -->
+        <div class="column">
+            <a href="{{ url_for('eleve.eleve_db') }}" class="footer-icon {% if id == 3 %} is-active {% endif %}">
+                {% if id == 3 %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="73.633 19.744 40 10" width="80px" height="40px">
+                  <path style="fill: rgb(255, 255, 255); stroke: rgb(255, 255, 255);" d="M 83.633 29.744 C 83.633 24.744 78.633 19.744 73.633 19.744 L 113.633 19.744 C 108.633 19.744 103.633 24.744 103.633 29.744 L 83.633 29.744 Z" transform="matrix(1, 0, 0, 1, 0, -3.552713678800501e-15)"/>
+                </svg>
+                {% endif %}
+                <span class="icon is-large">
+                    <i class="fas fa-2x fa-users"></i>
+                </span>
+            </a>
+
+        </div>
+        <!-- pret -->
+        <div class="column">
+            <a href="{{ url_for('emprunt.emprunt_db') }}" class="footer-icon {% if id == 4 %} is-active {% endif %}">
+                {% if id == 4 %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="73.633 19.744 40 10" width="80px" height="40px">
+                  <path style="fill: rgb(255, 255, 255); stroke: rgb(255, 255, 255);" d="M 83.633 29.744 C 83.633 24.744 78.633 19.744 73.633 19.744 L 113.633 19.744 C 108.633 19.744 103.633 24.744 103.633 29.744 L 83.633 29.744 Z" transform="matrix(1, 0, 0, 1, 0, -3.552713678800501e-15)"/>
+                </svg>
+                {% endif %}
+                <span class="icon is-large">
+                    <i class="fas fa-2x fa-address-book"></i>
+                </span>
+            </a>
+        </div>
+        <!-- reglage -->
+        <div class="column">
+            <a href="{{ url_for('auth.reglage') }}" class="footer-icon {% if id == 5 %} is-active {% endif %}">
+                {% if id == 5 %}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="73.633 19.744 40 10" width="80px" height="40px">
+                  <path style="fill: rgb(255, 255, 255); stroke: rgb(255, 255, 255);" d="M 83.633 29.744 C 83.633 24.744 78.633 19.744 73.633 19.744 L 113.633 19.744 C 108.633 19.744 103.633 24.744 103.633 29.744 L 83.633 29.744 Z" transform="matrix(1, 0, 0, 1, 0, -3.552713678800501e-15)"/>
+                </svg>
+                {% endif %}
+                <span class="icon is-large">
+                    <i class="fas fa-2x fa-cog"></i>
+                </span>
+            </a>
+        </div>
+
+        <div class="column is-1"></div>
+    </div>
+</footer>
+
+<style>
+    .footer-icon {
+        color: hsl(0, 0%, 48%);
+        position: relative;
+        top: 10px;
+    }
+
+    .footer-icon.is-active {
+        color: hsl(217, 71%, 53%);
+        position: relative;
+        top: 4px;
+    }
+
+    .footer-icon.is-active i {
+        position: relative;
+        top: -4px;
+    }
+
+    .footer-icon.is-active > span {
+        background-color: #fff;
+        border-radius: 0% 0% 50% 50% / 0% 0% 50% 50%;
+    }
+
+    /*
+
+    .footer-icon.is-active > span:before {
+        content: "";
+        position: absolute;
+        top: -20px;
+        left: 100%;
+        width: 48px;
+        height: 48px;
+        background-color: #fff;
+        color: #FFF;
+        mask: linear-gradient(to top, red, red), radial-gradient(circle 30px at center, green 80%, transparent 81%);
+        mask-size: 24px 24px, 100%;
+        mask-position: top left, center;
+        mask-repeat: no-repeat, repeat;
+        mask-composite: subtract;
+    }
+
+    .footer-icon.is-active > span:after {
+        content: "";
+        position: absolute;
+        top: -20px;
+        left: -100%;
+        width: 48px;
+        height: 48px;
+        background-color: #fff;
+        color: #F0F;
+        -webkit-mask-image: linear-gradient(to top, red, red), radial-gradient(circle 30px at center, green 80%, transparent 81%);
+        mask-image: linear-gradient(to top, red, red), radial-gradient(circle 30px at center, green 80%, transparent 81%);
+        -webkit-mask-size: 24px 24px, 100%;
+        mask-size: 24px 24px, 100%;
+        -webkit-mask-position: top right, center;
+        mask-position: top right, center;
+        -webkit-mask-repeat: no-repeat, repeat;
+        mask-repeat: no-repeat, repeat;
+        -webkit-mask-composite: subtract;
+        mask-composite: subtract;
+    }
+    */
+
+    .footer-mobile svg {
+        position: absolute;
+        top: -29px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 190%;
+    }
+
+    .footer-mobile::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        height: 60px;
+        background-color: #CED4DA;
+    }
+</style>
+
+{% endmacro %}

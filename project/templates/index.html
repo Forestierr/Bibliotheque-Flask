@@ -20,7 +20,16 @@
               <div class="myHero has-text-centered">
                 <div class="hr"></div>
                 <h1 class="title is-1 is-spaced">Bibliothèque</h1>
-                <h2 class="subtitle is-4">Ma bibliothèque personnelle.</h2>
+                <h2 class="subtitle is-4 block">Ma bibliothèque personnelle.</h2>
+                <div class="container block">
+                    <p>Gérez vos livres, vos emprunts et vos élèves.</p>
+                    <p>Ajoutez, modifiez et supprimez des livres.</p>
+                </div>
+
+                <div class="block is-max-tablet">
+                    <a class="button is-grey is-rounded is-medium" href="{{ url_for('auth.signup') }}">Créer un compte</a>
+                    <a class="button is-info is-rounded is-medium" href="{{ url_for('auth.login') }}">Se connecter</a>
+                </div>
               </div>
             </div>
 

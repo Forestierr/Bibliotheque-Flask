@@ -1,0 +1,71 @@
+{% macro navbar(current_user, titre) %}
+
+<nav class="navbar is-fixed-top is-white has-shadow" style="background-color: #fff">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ url_for('main.index') }}">
+            <img
+                src="https://livresenclasse.com/static/image/favicon.ico"
+                alt="Logo"
+            />
+        </a>
+
+        <p class="navbar-item">{{ titre }}</p>
+
+        <!-- Navbar burger -->
+        {% if current_user.is_authenticated %}
+        <a
+            role="button"
+            class="navbar-burger"
+            id="burger"
+            data-target="navbarMenuHeroC"
+        >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        {% endif %}
+    </div>
+    {% if current_user.is_authenticated %}
+    <div id="navbarMenuHeroC" class="navbar-menu">
+        <div class="navbar-end">
+            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fas fa-book has-text-grey"></i>
+                    </span>
+                    <span>Livres</span>
+                </div>
+            </a>
+            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fas fa-child has-text-grey"></i>
+                    </span>
+                    <span>Elèves</span>
+                </div>
+            </a>
+            <a
+                href="{{ url_for('emprunt.emprunt_db') }}"
+                class="navbar-item"
+            >
+                <div class="icon-text">
+                    <span class="icon">
+                        <i class="fas fa-file-alt has-text-grey"></i>
+                    </span>
+                    <span>Emprunts</span>
+                </div>
+            </a>
+            <a href="{{ url_for('auth.reglage') }}" class="navbar-item">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fa-solid fa-sliders has-text-grey"></i>
+                    </span>
+                    <span>Réglage</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</nav>
+
+{%endmacro%}
