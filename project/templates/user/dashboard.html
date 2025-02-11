@@ -41,17 +41,20 @@
 
 <div class="container block">
   <h4 class="title is-4 block">Prêts sur l'année</h4>
-  <div class="container">
-    <div class="month-labels is-size-7">
-      <span>jan</span><span>fév</span><span>mar</span><span>avr</span><span>mai</span><span>jun</span><span>jui</span><span>aoû</span><span>sep</span><span>oct</span><span>nov</span><span>déc</span>
-    </div>
-    <div class="columns">
-      <div class="column">
-        <div class="day-labels is-size-6">
+  <div class="box">
+    <div class="columns is-mobile">
+      <div class="column is-narrow col-semaine">
+        <div class="month-labels is-size-7" style="visibility: hidden;">
+            <span>sem</span>
+        </div>
+        <div class="day-labels is-size-7">
           <span>1</span><span>2</span><span>3</span><span>4</span>
         </div>
       </div>
-      <div class="column">
+      <div class="column pl-0">
+        <div class="month-labels is-size-7">
+          <span>jan</span><span>fév</span><span>mar</span><span>avr</span><span>mai</span><span>jun</span><span>jui</span><span>aoû</span><span>sep</span><span>oct</span><span>nov</span><span>déc</span>
+        </div>
       <div class="heatmap">
         <!-- 4 lignes x plusieurs colonnes -->
         <script>
@@ -63,7 +66,7 @@
     </div>
     </div>
     <div class="legend is-size-7">
-        <span>Nombres de livres prêté :</span>
+        <span>Nombres de prêts :</span>
         <div class="level-0"></div>
         <div class="level-1"></div>
         <div class="level-2"></div>
@@ -94,9 +97,21 @@
         writing-mode: tb-rl;
         transform: rotate(-180deg);
     }
+    /* only on the first span */
+    .month-labels > span:first-child {
+        margin: 0 5px 0 0;
+    }
+    .month-labels > span {
+        margin: 0 1px 0 0;
+    }
+    .col-semaine {
+        padding-right: 0 !important;
+    }
     .day-labels {
       display: flex;
       flex-direction: column;
+      text-align: center;
+      margin-top: 15px;
     }
     .heatmap div {
         width: 15px;
