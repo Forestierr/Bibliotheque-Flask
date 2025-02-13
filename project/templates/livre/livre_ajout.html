@@ -1,6 +1,12 @@
 <!-- templates/livre/livre_ajout.html -->
 
+{% from "utils/navbar.html" import navbar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ajouter un livre") }}
+{% endblock %}
 
 {% block content %}
     <h1 class="title is-1">

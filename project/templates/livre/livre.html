@@ -1,40 +1,38 @@
 <!-- templates/livre/livre.html -->
 
+{% from "utils/navbar.html" import navbar %}
+{% from "utils/search_bar.html" import search_bar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Mes Livres") }}
+{% endblock %}
 
 {% block content %}
 
-    <h1 class="title is-1">
+    <h1 class="title is-1 is-hidden-touch">
         Mes livres
     </h1>
 
     <div class="block">
-        <button class="button is-normal is-responsive">
-            <a href="/livre/ajout">
-                <div class="icon-text">
-                    <span class="icon has-text-info">
-                        <i class="fas fa-plus"></i>
-                    </span>
-                    <span>Ajouter un livre</span>
-                </div>
-            </a>
-        </button>
-        <button class="button is-normal is-responsive">
-            <a href="/livre/scann">
-                <div class="icon-text">
-                    <span class="icon has-text-info">
-                        <i class="fas fa-barcode"></i>
-                    </span>
-                    <span>Scanner un livre</span>
-                </div>
-            </a>
-        </button>
+        <a href="/livre/ajout" class="button is-dark is-fullwidth" style="justify-content: flex-start">
+            <div class="icon-text has-text-white">
+                <span class="icon">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span>Ajouter un livre</span>
+            </div>
+        </a>
     </div>
+
+    {{ search_bar("Rechercher un livre") }}
+
+    {% include "utils/result_sort.html" %}
 
     {% include "utils/flash_message.html" %}
 
     {% if not books %}
-
         <section class="section">
             <div class="box">
                 <article class="media">
@@ -56,9 +54,8 @@
                 </article>
             </div>
         </section>
-
     {% else %}
-
+    <!--
     <div class="block">
         <div class="card">
             <header class="card-header" id="toggle-button">
@@ -129,32 +126,36 @@
             </footer>
         </div>
     </div>
+    -->
 
+    <div id="book_list">
+    {% include "livre/livre_list.html" %}
+    </div>
+
+<!--
     <div class="table-container">
         <table class="table is-striped is-hoverable is-fullwidth">
             <tr class="thead">
                 <th>Titre</th>
                 <th class="is-hidden-mobile">Auteur</th>
-                <th>Editeur</th>
+                <th class="is-hidden-mobile">Editeur</th>
                 <th class="is-hidden-mobile">Annee</th>
-                <th>Genre</th>
+                <th class="is-hidden-mobile">Genre</th>
                 <th class="is-hidden-mobile">ISBN</th>
                 <th>Emprunter par</th>
             </tr>
             {% for book in books %}
                 <tr class="tbody">
                     <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].title }}</td>
-                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
-                        class="is-hidden-mobile">{{ book[0].author }}</td>
-                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].editor }}</td>
-                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
-                        class="is-hidden-mobile">{{ book[0].year }}</td>
-                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'">{{ book[0].type }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].author }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].editor }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].year }}</td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile">{{ book[0].type }}</td>
                     {% if book[0].isbn != None %}
                     <td onclick="location.href='/livre/{{ book[0].id }}/edit'"
                         class="is-hidden-mobile">{{ book[0].isbn }}</td>
                     {% else %}
-                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'"> </td>
+                    <td onclick="location.href='/livre/{{ book[0].id }}/edit'" class="is-hidden-mobile"> </td>
                     {% endif %}
                     {% if book[1] != None %}
                     <td onclick="location.href='/eleve/{{ book[1].firstname }} {{ book[1].name }}'">{{ book[1].name }} {{ book[1].firstname }}</td>
@@ -166,94 +167,7 @@
 
         </table>
     </div>
-
-    <!-- Pagination -->
-
-    {% if nb_page < 5 %}
-    <nav class="pagination" role="navigation" aria-label="pagination">
-      <ul class="pagination-list">
-        {% for i in range(1, nb_page + 1) %}
-          {% if i == page %}
-            <li>
-              <a
-                class="pagination-link is-current"
-                aria-label="Page {{ page }}"
-                aria-current="page"
-                >{{ page }}</a
-              >
-            </li>
-          {% else %}
-            <li>
-              <a href="{{ url_for('livre.livre_db', page=i) }}" class="pagination-link" aria-label="Goto page {{ i }}">{{ i }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </nav>
-    {% else %}
-    <nav class="pagination" role="navigation" aria-label="pagination">
-      <ul class="pagination-list">
-        {# Page 1 #}
-        {% if page > 2 %}
-        <li>
-          <a href="{{ url_for('livre.livre_db', page=1) }}" class="pagination-link" aria-label="Goto page 1">1</a>
-        </li>
-        {# ... #}
-        <li>
-            <i class="fa-solid fa-ellipsis"></i>
-        </li>
-        {% endif %}
-
-        {# if current is last add page - 2 #}
-        {% if page == nb_page %}
-        <li>
-          <a href="{{ url_for('livre.livre_db', page=page-2) }}" class="pagination-link" aria-label="Goto page {{ page - 2 }}">{{ page - 2 }}</a>
-        </li>
-        {% endif %}
-
-        {# Page - 1 #}
-        {% if page - 1 > 0 %}
-        <li>
-          <a href="{{ url_for('livre.livre_db', page=page-1) }}" class="pagination-link" aria-label="Goto page {{ page - 1 }}">{{ page - 1 }}</a>
-        </li>
-        {% endif %}
-
-        {# Page actuelle #}
-        <li>
-          <a
-            class="pagination-link is-current"
-            aria-label="Page {{ page }}"
-            aria-current="page"
-            >{{ page }}</a
-          >
-        </li>
-
-        {# Page + 1 #}
-        {% if (page + 1) < nb_page + 1 %}
-        <li>
-          <a href="{{ url_for('livre.livre_db', page=page+1) }}" class="pagination-link" aria-label="Goto page {{ page + 1 }}">{{ page + 1 }}</a>
-        </li>
-        {% endif %}
-
-        {# if current is first add page + 2 #}
-        {% if page == 1 %}
-        <li>
-          <a href="{{ url_for('livre.livre_db', page=page+2) }}" class="pagination-link" aria-label="Goto page {{ page + 2 }}">{{ page + 2 }}</a>
-        </li>
-        {% endif %}
-
-        {% if page < nb_page - 1 %}
-        <li>
-            <i class="fa-solid fa-ellipsis"></i>
-        </li>
-        {# Page nb_page #}
-        <li>
-          <a href="{{ url_for('livre.livre_db', page=nb_page) }}" class="pagination-link" aria-label="Goto page {{ nb_page }}">{{ nb_page }}</a>
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-    {% endif %}
+-->
 
     {% endif %}
 
@@ -396,19 +310,6 @@
         }
       });
     });
-    </script>
-
-    <!-- Utilisé pour supprimer les notifications -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-                const $notification = $delete.parentNode;
-
-                $delete.addEventListener('click', () => {
-                    $notification.parentNode.removeChild($notification);
-                });
-            });
-        });
     </script>
 
 {% endblock %}

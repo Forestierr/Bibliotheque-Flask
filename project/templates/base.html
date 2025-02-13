@@ -1,6 +1,5 @@
 <!-- templates/base.html -->
 
-{% from "utils/navbar.html" import navbar %}
 {% from "utils/footer.html" import footer, footer_mobile %}
 
 <!DOCTYPE html>
@@ -18,6 +17,7 @@
     />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"
     />
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script src="https://kit.fontawesome.com/222094ca6a.js" crossorigin="anonymous"></script>
 
     <style type="text/css" media="screen">
@@ -61,10 +61,13 @@
     <div id="wrpper">
        <div class="hero-head block">
         {# Navbar #}
-        {# TODO: replace with block content #}
-        {{ navbar(current_user, "Ma Bibliothèque") }}
+        {% block navbar %}
+            {# {% from "utils/navbar.html" import navbar %} #}
+        	{# {{ navbar(current_user, "Ma Bibliothèque") }} #}
+        {% endblock %}
+
         </div>
-        <div class="hero-body block">
+        <div class="hero-body block" style="margin-bottom: 2rem">
             <div class="container">{% block content %} {% endblock %}</div>
         </div>
     </div>
@@ -86,5 +89,27 @@
     {{ footer() }}
 
 </section>
+
+<!-- Utilisé pour supprimer les notifications -->
+<script>
+    function attachDeleteHandlers() {
+        document.querySelectorAll('.notification .delete').forEach(($delete) => {
+            if (!$delete.dataset.listener) {  // Empêcher d'ajouter plusieurs fois le même événement
+                $delete.dataset.listener = "true";
+                $delete.addEventListener('click', () => {
+                    const $notification = $delete.parentNode;
+                    $notification.parentNode.removeChild($notification);
+                });
+            }
+        });
+    }
+
+    // Appliquer au chargement initial
+    document.addEventListener('DOMContentLoaded', attachDeleteHandlers);
+
+    // Réappliquer après une mise à jour HTMX
+    document.body.addEventListener('htmx:afterSwap', attachDeleteHandlers);
+</script>
+
 </body>
 </html>

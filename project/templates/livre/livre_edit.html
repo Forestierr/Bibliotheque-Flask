@@ -1,11 +1,19 @@
 <!-- templates/livre/livre_edit.html -->
 
+{% from "utils/navbar.html" import navbar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Modifer un livre") }}
+{% endblock %}
 
 {% block content %}
     <h1 class="title is-1">
       Modifier le livre {{ book.title }}
     </h1>
+
+    {% include "utils/flash_message.html" %}
 
     <div class="content">
         <form action="/livre/{{ book.id }}/edit" method="post">
@@ -82,7 +90,7 @@
                         {% endif %}
                         <option value="">--Le livre se trouve dans le bibliothèque--</option>
                     {% for student in students %}
-                        <option value="{{ student[0] }}">{{ student[1] }} {{ student[2] }}</option>
+                        <option value="{{ student.id }}">{{ student.name }} {{ student.firstname }}</option>
                     {% endfor %}
                     </select>
                 </div>
