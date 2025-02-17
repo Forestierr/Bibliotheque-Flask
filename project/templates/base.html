@@ -78,7 +78,7 @@
         {{ footer_mobile(1) }}
     {% elif request.endpoint == 'livre.livre_scann' %}
         {{ footer_mobile(2) }}
-    {% elif request.endpoint == 'eleve.eleve_db' %}
+    {% elif request.endpoint == 'eleve.eleve_db' or request.endpoint == 'eleve.eleve_infos' %}
         {{ footer_mobile(3) }}
     {% elif request.endpoint == 'emprunt.emprunt_db' %}
         {{ footer_mobile(4) }}

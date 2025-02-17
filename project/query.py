@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import or_, and_, text, DateTime, func
+from sqlalchemy.orm import joinedload, aliased, subqueryload
 from sqlalchemy.sql import collate
 
 from .models import User, Book, Student, Loan, Tags, BookTags
@@ -87,19 +88,89 @@ def get_books_student_tags(current_user_id, n_par_page, page) -> list:
     return books
 
 
+"""
+Get all students
+    :param current_user_id: the user id
+    :return: the list of students
+"""
 def get_students(current_user_id) -> list:
     students = db.session.query(Student).filter(Student.user_id == current_user_id).all()
     return students
 
 
+"""
+Get the number of students
+    :param current_user_id: the user id
+    :return: the number of students
+"""
 def get_students_count(current_user_id) -> int:
     students_count = db.session.query(Student).filter(Student.user_id == current_user_id).count()
     return students_count
 
 
+"""
+Get the student by his id
+    :param current_user_id: the user id
+    :param student_id: the student id
+    :return: the student
+"""
 def get_student_by_id(current_user_id, student_id) -> Student:
     student = db.session.query(Student).filter(Student.user_id == current_user_id, Student.id == student_id).first()
     return student
+
+
+"""
+Get all students with the number of loans and the last loan date
+    :param current_user_id: the user id
+    :return: the list of students
+"""
+def get_all_students_info(current_user_id) -> list:
+    subquery_loan_count = (db.session.query(Loan.student_id, func.count(Loan.id).label('loan_count'))
+                           .group_by(Loan.student_id)
+                           .subquery())
+
+    last_loan_subquery = (db.session.query(Loan.student_id, func.max(Loan.date_loan).label('last_loan'))
+                          .group_by(Loan.student_id)
+                          .subquery())
+
+    last_loan_alias = aliased(Loan, last_loan_subquery)
+
+    students = (db.session.query(Student, Book, last_loan_subquery.c.last_loan, func.coalesce(subquery_loan_count.c.loan_count, 0).label('loan_count'))
+                .filter(Student.user_id == current_user_id)
+                .outerjoin(Loan, and_(Student.id == Loan.student_id, Loan.date_return == None))
+                .outerjoin(Book, Loan.book_id == Book.id)
+                .outerjoin(last_loan_alias, Student.id == last_loan_alias.student_id)
+                .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
+                .group_by(Student.id)
+                .order_by(Student.name, Student.firstname)
+                .all())
+
+    return students
+
+
+"""
+Get one student by his id with the list of actual loans and the list of old loans
+    :param current_user_id: the user id
+    :param student_id: the student id
+    :return: the student, the list of actual loans, the list of old loans
+"""
+def get_student_infos(current_user_id, student_id) -> (Student, list, list):
+    # Query to get the student
+    student = db.session.query(Student).filter(Student.user_id == current_user_id, Student.id == student_id).first()
+
+    # Query to get the current loans
+    current_loans = (db.session.query(Loan, Book)
+                     .filter(Book.user_id == current_user_id, Loan.student_id == student_id, Loan.date_return == None)
+                     .join(Book, Loan.book_id == Book.id)
+                     .all())
+
+    # Query to get the past loans
+    past_loans = (db.session.query(Loan, Book)
+                  .filter(Book.user_id == current_user_id, Loan.student_id == student_id, Loan.date_return != None)
+                  .join(Book, Loan.book_id == Book.id)
+                  .all())
+
+    return student, current_loans, past_loans
 
 
 def get_loans(current_user_id) -> list:

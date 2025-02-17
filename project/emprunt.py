@@ -1,4 +1,5 @@
 # emprunt.py
+from datetime import date
 
 from flask import Blueprint, render_template, redirect, url_for, request, flash, make_response, jsonify
 from flask_login import login_required, current_user
@@ -38,6 +39,22 @@ def emprunt_db():
 
     return render_template('emprunt/emprunt.html', loans=loans, only_active_loans=only_active_loans)
 
+
+@emprunt.route('/emprunt/<id>', methods=['GET', 'POST'])
+@login_required
+def return_loan(id):
+    from_url = request.referrer
+
+    loan = db.session.query(Loan).filter(Loan.id == id).first()
+
+    if loan:
+        loan.date_return = date.today()
+        db.session.commit()
+
+
+    return redirect(from_url)
+
+
 @emprunt.route('/emprunt/<id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_loan(id):
@@ -53,6 +70,7 @@ def delete_loan(id):
         db.session.commit()
 
     return redirect(url_for('emprunt.emprunt_db'))
+
 
 @emprunt.route('/emprunt/delete_all', methods=['POST'])
 @login_required

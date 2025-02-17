@@ -98,7 +98,7 @@
             <div class="column">
                 {{ book.Book.title }} emprunté par {{ book.Student.name }} {{ book.Student.firstname }}
             </div>
-            <div class="column narrow">
+            <div class="column narrow has-text-right">
                 {% if book.Loan.date_return != None %}
                 Du {{ book.Loan.date_loan.strftime('%d %b %Y') }} au {{ book.Loan.date_return.strftime('%d %b %Y') }}
                 {% else %}
