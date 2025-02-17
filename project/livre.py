@@ -261,13 +261,21 @@ def livre_delete_all():
 @livre.route('/livre/search-preview', methods=['POST'])
 @login_required
 def search_preview():
-    search = request.form.get('search')
+    search = request.form.get('search') if request.form.get('search') else ''
 
     if search == '':
         return make_response('No Content', 204)
 
-    # Rechercher 5 livres
-    books = get_search_5_books(current_user.id, search)
+    # Si la recherche est typée (par exemple : titre:Harry Potter)
+    search_type = ["titre", "isbn", "eleve", "tags"]
+    split = search.split(':')
+    if len(split) == 2:
+        if split[0] in search_type:
+            search = split[1]
+            books, _ = search_books_by_types(current_user.id, split[0], search, 'Book.title', 'asc', 5, 1)
+    else:
+        # Rechercher 5 livres
+        books = get_search_5_books(current_user.id, search)
 
     return render_template("utils/search_preview.html", books=books)
 

@@ -10,12 +10,19 @@
                    class="input"
                    type="search"
                    name="search"
+                   list="suggestions"
                    placeholder="{{ placeholder }}"
                    hx-post="/livre/search-preview"
                    hx-trigger="keyup changed delay:500ms"
                    hx-target="#search-results"
                    hx-include="[name='sort'], [name='n_results']"
             />
+            <datalist id="suggestions">
+              <option value="titre:">
+              <option value="isbn:">
+              <option value="eleve:">
+              <option value="tags:">
+            </datalist>
 
             </div>
         </div>
@@ -41,6 +48,17 @@
     document.getElementById('search-input').addEventListener('focusout', function() {
         let resultsBox = document.getElementById('search-results');
         resultsBox.style.display = "none";
+    });
+
+    document.getElementById('search-results').addEventListener('mousedown', function(event) {
+        event.preventDefault();
+    });
+    
+    document.getElementById('search-input').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            let resultsBox = document.getElementById('search-results');
+            resultsBox.style.display = "none";
+        }
     });
 </script>
 

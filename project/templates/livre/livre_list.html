@@ -1,3 +1,5 @@
+<!-- templates/livre/livre_list.html -->
+
 {% from "utils/pagination.html" import pagination %}
 
 {% include "utils/flash_message.html" %}
@@ -16,7 +18,7 @@
             </div>
 
             {% if book.Student != None %}
-                <p>Emprunté par : {{ book.Student.name }} {{ book.Student.firstname }}</p>
+                <p>Emprunté par : <a href="/eleve/{{ book.Student.id }}" class="has-text-dark">{{ book.Student.name }} {{ book.Student.firstname }}</a></p>
             {% else %}
                 <p>Disponible</p>
             {% endif %}
