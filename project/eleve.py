@@ -50,7 +50,7 @@ def eleve_infos(id):
 
     return render_template('eleve/eleve_info.html', student=student, books=books, old_books=old_books)
 
-
+# TODO: change to id
 @eleve.route('/eleve/<name> <firstname>/delete')
 @login_required
 def eleve_delete(name, firstname):
@@ -77,3 +77,22 @@ def eleve_delete_all():
     db.session.commit()
 
     return redirect(url_for('auth.reglage'))
+
+
+@eleve.route('/eleve/search-preview', methods=['POST'])
+@login_required
+def search_preview():
+    search = request.form.get('search')
+    students = Student.query.filter(and_(Student.user_id == current_user.id, or_(Student.name.like('%' + search + '%'), Student.firstname.like('%' + search + '%')))).limit(5).all()
+
+    return render_template('eleve/search_preview.html', students=students)
+
+
+@eleve.route('/eleve/search', methods=['POST'])
+@login_required
+def search():
+    search = request.form.get('search')
+
+    students = get_search_all_students_info(current_user.id, search)
+
+    return render_template('eleve/eleve_list.html', students=students)

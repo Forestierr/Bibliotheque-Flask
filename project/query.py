@@ -1,3 +1,7 @@
+"""
+query.py: This file contains all the queries to the database.
+"""
+
 from datetime import datetime, timedelta
 from sqlalchemy import or_, and_, text, DateTime, func
 from sqlalchemy.orm import joinedload, aliased, subqueryload
@@ -7,26 +11,53 @@ from .models import User, Book, Student, Loan, Tags, BookTags
 from . import db
 
 
+"""
+Get all books from a user
+    :param current_user_id: the user id
+    :return: the list of books
+"""
 def get_books(current_user_id) -> list:
     books = db.session.query(Book).filter(Book.user_id == current_user_id).all()
     return books
 
 
+"""
+Get the number of books from a user
+    :param current_user_id: the user id
+    :return: the number of books
+"""
 def get_books_count(current_user_id) -> int:
     books_count = db.session.query(Book).filter(Book.user_id == current_user_id).count()
     return books_count
 
 
+"""
+Get a book by his id
+    :param current_user_id: the user id
+    :param book_id: the book id
+    :return: the book
+"""
 def get_book_by_id(current_user_id, book_id) -> Book:
     book = db.session.query(Book).filter(Book.user_id == current_user_id, Book.id == book_id).first()
     return book
 
 
+"""
+Get a book by his isbn
+    :param current_user_id: the user id
+    :param isbn: the book isbn
+    :return: the book
+"""
 def get_book_by_isbn(current_user_id, isbn) -> Book:
     book = db.session.query(Book).filter(Book.user_id == current_user_id, Book.isbn == isbn).first()
     return book
 
 
+"""
+Get all books and the student who have the book actually
+    :param current_user_id: the user id
+    :return: the list of books (Book, Student)
+"""
 def get_books_student(current_user_id) -> list:
     books = (db.session.query(Book, Student)
              .filter(Book.user_id == current_user_id)
@@ -36,6 +67,14 @@ def get_books_student(current_user_id) -> list:
     return books
 
 
+"""
+Get all books and the student who have the book actually
+But paginate the result
+    :param current_user_id: the user id
+    :param n_par_page: the number of elements per page
+    :param page: the page number (starting at 1)
+    :return: the list of books (Book, Student)
+"""
 def get_books_student(current_user_id, n_par_page, page) -> list:
     books = (db.session.query(Book, Student)
              .filter(Book.user_id == current_user_id)
@@ -46,6 +85,12 @@ def get_books_student(current_user_id, n_par_page, page) -> list:
     return books
 
 
+"""
+Get all books with the tags and the student who have the book actually
+The tags and the count of loans are also returned
+    :param current_user_id: the user id
+    :return: the list of books (Book, Student, tags, loan_count)
+"""
 def get_books_student_tags(current_user_id) -> list:
     subquery_tags = (db.session.query(BookTags.book_id, func.group_concat(Tags.name, ',').label('tags'))
                 .join(Tags, BookTags.tag_id == Tags.id)
@@ -67,6 +112,15 @@ def get_books_student_tags(current_user_id) -> list:
     return books
 
 
+"""
+Get all books with the tags and the student who have the book actually
+The tags and the count of loans are also returned
+But paginate the result
+    :param current_user_id: the user id
+    :param n_par_page: the number of elements per page
+    :param page: the page number (starting at 1)
+    :return: the list of books (Book, Student, tags, loan_count)
+"""
 def get_books_student_tags(current_user_id, n_par_page, page) -> list:
     subquery_tags = (db.session.query(BookTags.book_id, func.group_concat(Tags.name, ',').label('tags'))
                 .join(Tags, BookTags.tag_id == Tags.id)
@@ -142,7 +196,32 @@ def get_all_students_info(current_user_id) -> list:
                 .outerjoin(last_loan_alias, Student.id == last_loan_alias.student_id)
                 .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
                 .group_by(Student.id)
-                .order_by(Student.name, Student.firstname)
+                .order_by(collate(Student.name, 'NOCASE'), collate(Student.firstname, 'NOCASE'))
+                .all())
+
+    return students
+
+
+def get_search_all_students_info(current_user_id, search) -> list:
+    subquery_loan_count = (db.session.query(Loan.student_id, func.count(Loan.id).label('loan_count'))
+                           .group_by(Loan.student_id)
+                           .subquery())
+
+    last_loan_subquery = (db.session.query(Loan.student_id, func.max(Loan.date_loan).label('last_loan'))
+                          .group_by(Loan.student_id)
+                          .subquery())
+
+    last_loan_alias = aliased(Loan, last_loan_subquery)
+
+    students = (db.session.query(Student, Book, last_loan_subquery.c.last_loan,
+                                 func.coalesce(subquery_loan_count.c.loan_count, 0).label('loan_count'))
+                .filter(and_(Student.user_id == current_user_id, or_(Student.name.like('%' + search + '%'), Student.firstname.like('%' + search + '%'))))
+                .outerjoin(Loan, and_(Student.id == Loan.student_id, Loan.date_return == None))
+                .outerjoin(Book, Loan.book_id == Book.id)
+                .outerjoin(last_loan_alias, Student.id == last_loan_alias.student_id)
+                .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
+                .group_by(Student.id)
+                .order_by(collate(Student.name, 'NOCASE'), collate(Student.firstname, 'NOCASE'))
                 .all())
 
     return students
@@ -173,11 +252,79 @@ def get_student_infos(current_user_id, student_id) -> (Student, list, list):
     return student, current_loans, past_loans
 
 
+"""
+Get all the loans
+    :param current_user_id: the user id
+    :return: the list of loans
+"""
 def get_loans(current_user_id) -> list:
     loans = db.session.query(Loan).filter(Loan.user_id == current_user_id).all()
     return loans
 
 
+def get_loans_count(current_user_id) -> int:
+    loans_count = (db.session.query(Loan).filter(Book.user_id == current_user_id)
+                   .outerjoin(Book, Loan.book_id == Book.id)
+                   .count())
+    return loans_count
+
+
+"""
+Get loans with the book and the student
+    :param current_user_id: the user id
+    :param actualy_loan: if True, only the actual loans are returned
+    :return: the list of loans (Loan, Book, Student)
+"""
+def get_loans_with_infos(current_user_id, actualy_loan=False) -> list:
+    query = db.session.query(Loan, Book, Student).filter(Book.user_id == current_user_id)
+
+    if actualy_loan:
+        query = query.filter(Loan.date_return == None)
+        query = query.order_by(Loan.date_loan.desc())
+    else:
+        query = query.order_by(Loan.date_loan.desc(), Loan.date_return.desc())
+
+    query = query.join(Book, Loan.book_id == Book.id).join(Student, Loan.student_id == Student.id)
+
+    loans_with_infos = query.all()
+
+
+    return loans_with_infos
+
+
+"""
+Get loans with the book and the student
+    :param current_user_id: the user id
+    :param actualy_loan: if True, only the actual loans are returned
+    :return: the list of loans (Loan, Book, Student)
+"""
+def get_loans_with_infos(current_user_id, actualy_loan=False, sort='Loan.id', sort_order='asc', n_books_by_page=10, page=1) -> list:
+    query = db.session.query(Loan, Book, Student).filter(Book.user_id == current_user_id)
+
+    if actualy_loan:
+        query = query.filter(Loan.date_return == None)
+        query = query.order_by(Loan.date_loan.desc())
+    else:
+        query = query.order_by(Loan.date_loan.desc(), Loan.date_return.desc())
+
+    query = query.join(Book, Loan.book_id == Book.id).join(Student, Loan.student_id == Student.id)
+
+    query = query.order_by(
+        collate(text(sort), 'NOCASE').desc() if sort_order == 'desc' else collate(text(sort), 'NOCASE'))
+
+    # n_books = query.count()
+
+    loans_with_infos = query.limit(n_books_by_page).offset((page - 1) * n_books_by_page).all()
+
+    return loans_with_infos
+
+
+"""
+Get the actual loan from a book
+    :param current_user_id: the user id
+    :param book_id: the book id
+    :return: the loan
+"""
 def get_book_actual_loan(current_user_id, book_id) -> Loan:
     book_loan = (db.session.query(Loan)
                  .filter(Loan.book_id == book_id, Loan.date_return == None, Book.user_id == current_user_id)
@@ -186,6 +333,12 @@ def get_book_actual_loan(current_user_id, book_id) -> Loan:
     return book_loan
 
 
+"""
+Get all the loans from a book
+    :param current_user_id: the user id
+    :param book_id: the book id
+    :return: the list of loans
+"""
 def get_book_loans(current_user_id, book_id) -> list:
     book_loans = (db.session.query(Loan)
                   .filter(Loan.book_id == book_id, Book.user_id == current_user_id)
@@ -194,6 +347,12 @@ def get_book_loans(current_user_id, book_id) -> list:
     return book_loans
 
 
+"""
+Get the student who have the book actually
+    :param current_user_id: the user id
+    :param book_id: the book id
+    :return: the student
+"""
 def get_book_loan_by_student(current_user_id, book_id) -> Student:
     student = (db.session.query(Student)
                 .join(Loan)
@@ -202,16 +361,32 @@ def get_book_loan_by_student(current_user_id, book_id) -> Student:
     return student
 
 
+"""
+Get all the tags
+    :param current_user_id: the user id
+    :return: the list of tags
+"""
 def get_tags(current_user_id) -> list:
     tags = db.session.query(Tags).filter(Tags.user_id == current_user_id).all()
     return tags
 
 
+"""
+Get user information
+    :param current_user_id: the user id
+    :return: the user (id, email, name)
+"""
 def get_user(current_user_id) -> list:
     user = db.session.query(User.id, User.email, User.name).filter(User.id == current_user_id).first()
     return user
 
 
+"""
+Get tags from a book
+    :param current_user_id: the user id
+    :param book_id: the book id
+    :return: the list of tags
+"""
 def get_book_tags(current_user_id, book_id) -> list:
     book_tags = (db.session.query(Tags)
                  .join(BookTags)
@@ -220,6 +395,12 @@ def get_book_tags(current_user_id, book_id) -> list:
     return book_tags
 
 
+"""
+Get the book most borrowed
+    :param current_user_id: the user id
+    :param n_books: the number of books to return (5)
+    :return: the list of books (Book, loan_count)
+"""
 def get_books_most_borrowed(current_user_id, n_books=5) -> list:
     subquery_loan_count = (db.session.query(Loan.book_id, func.count(Loan.id).label('loan_count'))
                            .group_by(Loan.book_id)
@@ -234,6 +415,12 @@ def get_books_most_borrowed(current_user_id, n_books=5) -> list:
     return books
 
 
+"""
+Get the student who read the most books
+    :param current_user_id: the user id
+    :param n_students: the number of students to return (5)
+    :return: the list of students (Student, loan_count)
+"""
 def get_students_most_borrowed(current_user_id, n_students=5) -> list:
     subquery_loan_count = (db.session.query(Loan.student_id, func.count(Loan.id).label('loan_count'))
                            .group_by(Loan.student_id)
@@ -248,6 +435,12 @@ def get_students_most_borrowed(current_user_id, n_students=5) -> list:
     return students
 
 
+"""
+Get the last book loan or return
+    :param current_user_id: the user id
+    :param n_books: the number of books to return (5)
+    :return: the list of books (Book, Loan, Student)
+"""
 def get_last_book_loan(current_user_id, n_books=5) -> list:
     books = (db.session.query(Book, Loan, Student)
              .filter(Book.user_id == current_user_id)
@@ -351,6 +544,17 @@ def get_books_sorted(current_user_id, sort='Book.id', sort_order='asc', n_par_pa
     return books
 
 
+"""
+Get the books that match the search
+    :param current_user_id: the user id
+    :param search_type: the search type (titre, isbn, eleve, tags, all)
+    :param search_value: the search value
+    :param sort: the column to sort (Book.id, ...)
+    :param sort_order: the order to sort (asc, desc)
+    :param n_books_by_page: the number of elements per page
+    :param page: the page number
+    :return: the list of books (Book, Student, tags, loan_count)
+"""
 def search_books_by_types(current_user_id, search_type, search_value, sort, sort_order, n_books_by_page, page):
     subquery_tags = (db.session.query(BookTags.book_id, func.group_concat(Tags.name, ',').label('tags'))
                      .join(Tags, BookTags.tag_id == Tags.id)
@@ -367,6 +571,69 @@ def search_books_by_types(current_user_id, search_type, search_value, sort, sort
     query = query.outerjoin(Student, Loan.student_id == Student.id)
     query = query.outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
     query = query.outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
+
+    if search_type == "titre":
+        query = query.filter(Book.title.ilike('%' + search_value + '%'))
+    elif search_type == "isbn":
+        query = query.filter(Book.isbn.ilike('%' + search_value + '%'))
+    elif search_type == "eleve":
+        query = query.filter(or_(Student.name.ilike('%' + search_value + '%'), Student.firstname.ilike('%' + search_value + '%')))
+    elif search_type == "tags":
+        query = query.outerjoin(BookTags, Book.id == BookTags.book_id)
+        query = query.outerjoin(Tags, BookTags.tag_id == Tags.id)
+        query = query.filter(Tags.name.ilike('%' + search_value + '%'))
+    elif search_type == "all":
+        query = query.outerjoin(BookTags, Book.id == BookTags.book_id)
+        query = query.outerjoin(Tags, BookTags.tag_id == Tags.id)
+        query = query.filter(or_(Book.title.ilike('%' + search_value + '%'), Book.isbn.ilike('%' + search_value + '%'),
+                                 Student.name.ilike('%' + search_value + '%'), Student.firstname.ilike('%' + search_value + '%'),
+                                 Tags.name.ilike('%' + search_value + '%')))
+
+    query = query.order_by(collate(text(sort), 'NOCASE').desc() if sort_order == 'desc' else collate(text(sort), 'NOCASE'))
+
+    n_books = query.count()
+
+    books = query.limit(n_books_by_page).offset((page - 1) * n_books_by_page).all()
+
+    return books, n_books
+
+
+"""
+Get the 5 loans that match the search (title, isbn, student name, student firstname)
+    :param current_user_id: the user id
+    :param search: the search string
+    :return: the list of books
+"""
+def get_search_5_loans(current_user_id, search) -> list:
+    books = (db.session.query(Loan, Book, Student)
+             .filter(Book.user_id == current_user_id,
+                     or_(Book.title.ilike('%' + search + '%'), Book.isbn.ilike('%' + search + '%'),
+                         Student.name.ilike('%' + search + '%'), Student.firstname.ilike('%' + search + '%')))
+             .join(Book, Loan.book_id == Book.id)
+             .join(Student, Loan.student_id == Student.id)
+             .limit(5).all())
+    return books
+
+
+"""
+Get the loans that match the search
+    :param current_user_id: the user id
+    :param actualy_loan: if True, only the actual loans are returned
+    :param search_type: the search type (titre, isbn, eleve, tags, all)
+    :param search_value: the search value
+    :param sort: the column to sort (Book.id, ...)
+    :param sort_order: the order to sort (asc, desc)
+    :param n_books_by_page: the number of elements per page
+    :param page: the page number
+    :return: the list of books (Book, Student, tags, loan_count)
+"""
+def search_loans_by_types(current_user_id, actualy_loan, search_type, search_value, sort, sort_order, n_books_by_page, page):
+    query = db.session.query(Loan, Book, Student).filter(Book.user_id == current_user_id)
+
+    if actualy_loan:
+        query = query.filter(Loan.date_return == None)
+
+    query = query.join(Book, Loan.book_id == Book.id).join(Student, Loan.student_id == Student.id)
 
     if search_type == "titre":
         query = query.filter(Book.title.ilike('%' + search_value + '%'))

@@ -1,10 +1,10 @@
-{% macro search_bar(placeholder) %}
+{% macro search_bar(placeholder, list, url_preview, url_search) %}
 
-<div class="block">
+<div class="">
     <div class="control has-icons-left is-expanded">
-        <div  hx-boost="true">
+        <div hx-boost="true">
             <!-- full search when enter is pressed -->
-            <div hx-post="/livre/search" hx-trigger="keyup[key=='Enter']" hx-target="#book_list" hx-include="[name='search'], [name='sort'], [name='n_results']">
+            <div hx-post="{{ url_search }}" hx-trigger="keyup[key=='Enter']" hx-target="#search_list" hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
             <!-- search preview 5 elements -->
             <input id="search-input"
                    class="input"
@@ -12,17 +12,19 @@
                    name="search"
                    list="suggestions"
                    placeholder="{{ placeholder }}"
-                   hx-post="/livre/search-preview"
+                   hx-post="{{ url_preview }}"
                    hx-trigger="keyup changed delay:500ms"
                    hx-target="#search-results"
-                   hx-include="[name='sort'], [name='n_results']"
+                   hx-include="[name='sort'], [name='n_results'], [name='active_loan']"
             />
+            {% if list %}
             <datalist id="suggestions">
               <option value="titre:">
               <option value="isbn:">
               <option value="eleve:">
               <option value="tags:">
             </datalist>
+            {% endif %}
 
             </div>
         </div>
@@ -53,7 +55,7 @@
     document.getElementById('search-results').addEventListener('mousedown', function(event) {
         event.preventDefault();
     });
-    
+
     document.getElementById('search-input').addEventListener('keyup', function(event) {
         if (event.key === 'Enter') {
             let resultsBox = document.getElementById('search-results');

@@ -269,10 +269,9 @@ def search_preview():
     # Si la recherche est typée (par exemple : titre:Harry Potter)
     search_type = ["titre", "isbn", "eleve", "tags"]
     split = search.split(':')
-    if len(split) == 2:
-        if split[0] in search_type:
-            search = split[1]
-            books, _ = search_books_by_types(current_user.id, split[0], search, 'Book.title', 'asc', 5, 1)
+    if len(split) == 2 and split[0] in search_type:
+        search = split[1]
+        books, _ = search_books_by_types(current_user.id, split[0], search, 'Book.title', 'asc', 5, 1)
     else:
         # Rechercher 5 livres
         books = get_search_5_books(current_user.id, search)

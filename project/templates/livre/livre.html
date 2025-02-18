@@ -26,9 +26,13 @@
         </a>
     </div>
 
-    {{ search_bar("Rechercher un livre") }}
+    <div class="block">
+        {{ search_bar("Rechercher un livre", True, "/livre/search-preview", "/livre/search") }}
+    </div>
 
+    {% with n_emprunt=true, url="/livre/search" %}
     {% include "utils/result_sort.html" %}
+    {% endwith %}
 
     {% include "utils/flash_message.html" %}
 
@@ -56,13 +60,14 @@
         </section>
     {% else %}
 
-    <div id="book_list">
+    <div id="search_list">
     {% include "livre/livre_list.html" %}
     </div>
 
     {% endif %}
 
     <!-- Script pour les boutons de recherche -->
+    <!--
     <script>
         // toggle button : show/hide search inputs
         document.addEventListener('DOMContentLoaded', function() {
@@ -107,6 +112,7 @@
             document.querySelector('form').submit();
         });
     </script>
+    -->
 
     <!-- Script pour la gestion des étiquettes -->
     <script>

@@ -50,10 +50,11 @@
 </section>
 {% else %}
 
-{# TODO : changer les lines dans search bar #}
-{{ search_bar("Rechercher un élève") }}
+<div class="block">
+    {{ search_bar("Rechercher un élève", False, "/eleve/search-preview", "/eleve/search") }}
+</div>
 
-<div id="eleve_list">
+<div id="search_list">
 {% include "eleve/eleve_list.html" %}
 </div>
 {% endif %}
