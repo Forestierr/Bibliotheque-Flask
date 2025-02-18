@@ -1,6 +1,13 @@
 <!-- templates/emprunt/emprunt.html -->
 
+{% from "utils/navbar.html" import navbar %}
+{% from "utils/search_bar.html" import search_bar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Mes emprunts") }}
+{% endblock %}
 
 {% block content %}
 
@@ -11,7 +18,6 @@
     {% include "utils/flash_message.html" %}
 
     {% if not loans %}
-
         <section class="section">
             <div class="box">
                 <article class="media">
@@ -33,51 +39,71 @@
                 </article>
             </div>
         </section>
-
     {% else %}
+        <div class="columns is-mobile">
+            <div class="column">
+                {{ search_bar("Rechercher un emprunt", True, "/emprunt/search-preview", "/emprunt/search") }}
+            </div>
+            <div class="column is-narrow has-text-right">
+                <div class="select is-rounded">
+                    <select class="button" name="active_loan"
+                        hx-post="/emprunt/search"
+                        hx-trigger="change"
+                        hx-target="#search_list"
+                        hx-include="[name='search'], [name='n_results'], [name='sort']">
+                        <option class="is-hidden-tablet" value="0" selected>Tout</option>
+                        <option class="is-hidden-tablet" value="1">Actifs</option>
+                    </select>
+                </div>
 
-    <div class="block">
-        <form method="POST" action="/emprunt">
-                {% if only_active_loans == true %}
-                    <button class="button" name="active_loan" onChange="this.form.submit()" value="0">
-                        Voir les emprunts actifs
-                    </button>
-                {% else %}
-                    <button class="button" name="active_loan" onChange="this.form.submit()" value="1">
-                        Voir tous les emprunts
-                    </button>
-                {% endif %}
-        </form>
-    </div>
+            <!--
+                <button class="button is-hidden-mobile {% if only_active_loans == false %}is-hidden{% endif %}" data-active="true"
+                        hx-post="/emprunt/search"
+                        hx-trigger="click"
+                        hx-target="#search_list"
+                        hx-include="[name='sort'], [name='n_results'], [name='search'], [name='active_loan']">
+                    <span class="icon">
+                      <i class="fa-solid fa-book"></i>
+                    </span>
+                    <span>Voir tous les emprunts</span>
+                </button>
 
-    <div class="table-container">
-    <table class="table is-striped is-hoverable is-fullwidth">
-        <tr class="thead">
-            <th>Titre</th>
-            <th>Elève</th>
-            <th>Date d'emprunt</th>
-            <th>Date de retour</th>
-        </tr>
-        {% for (book, loan, student) in loans %}
-        <tr class="tbody">
-            <td onclick="location.href='/livre/{{ book.id }}/edit'">{{ book.title }}</td>
-            {# Si il n y a pas d eleve associer au livre, modification du lien sur la case #}
-            {% if student is none %}
-            <td onclick="location.href='/livre/{{ book.id }}/edit'"></td>
-            {% else %}
-            <td onclick="location.href='/eleve/{{ student.firstname }} {{ student.name }}'">{{ student.firstname }} {{ student.name }}</td>
-            {% endif %}
-            <td>{{ loan.date_loan }}</td>
-            {# Si le livre n a pas ete rendu, modification de la case #}
-            {% if loan.date_return is none %}
-            <td> </td>
-            {% else %}
-            <td>{{ loan.date_return }}</td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </table>
-    </div>
+
+                <button class="button is-hidden-tablet" id="btn_active_loan">
+                    <span class="icon">
+                      <i class="fa-solid fa-book"></i>
+                    </span>
+                </button>
+
+                <button class="button is-hidden-mobile {% if only_active_loans == true %}is-hidden{% endif %}" data-active="false"
+                    hx-post="/emprunt/search"
+                    hx-trigger="click"
+                    hx-target="#search_list"
+                    hx-include="[name='sort'], [name='n_results'], [name='search'], [name='active_loan']">
+                    <span class="icon">
+                      <i class="fa-solid fa-book-open-reader"></i>
+                    </span>
+                    <span>Voir les emprunts actifs</span>
+                </button>
+
+                <button class="button is-hidden-tablet" id="active_loan">
+                    <span class="icon">
+                      <i class="fa-solid fa-book-open-reader"></i>
+                    </span>
+                </button>
+
+                <input type="hidden" name="active_loan" value="{% if only_active_loans %}1{% else %}0{% endif %}">
+            -->
+            </div>
+        </div>
+
+        {% with date=true, url="/emprunt/search" %}
+        {% include "utils/result_sort.html" %}
+        {% endwith %}
+
+        <div id="search_list">
+            {% include "emprunt/emprunt_list.html" %}
+        </div>
 
     {% endif %}
 
