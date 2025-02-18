@@ -28,7 +28,7 @@
     {% if current_user.is_authenticated %}
     <div id="navbarMenuHeroC" class="navbar-menu">
         <div class="navbar-end">
-            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item">
+            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item {% if request.endpoint == 'livre.livre_db' or request.endpoint == 'livre.livre_edit' %}is-active{% endif %}">
                 <div class="icon-text">
                     <span class="icon has-text-info">
                         <i class="fas fa-book has-text-grey"></i>
@@ -36,29 +36,29 @@
                     <span>Livres</span>
                 </div>
             </a>
-            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item">
+            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item {% if request.endpoint == 'eleve.eleve_db' %}is-active{% endif %}">
                 <div class="icon-text">
                     <span class="icon has-text-info">
-                        <i class="fas fa-child has-text-grey"></i>
+                        <i class="fas fa-users has-text-grey"></i>
                     </span>
                     <span>Elèves</span>
                 </div>
             </a>
             <a
                 href="{{ url_for('emprunt.emprunt_db') }}"
-                class="navbar-item"
+                class="navbar-item {% if request.endpoint == 'emprunt.emprunt_db' %}is-active{% endif %}"
             >
                 <div class="icon-text">
                     <span class="icon">
-                        <i class="fas fa-file-alt has-text-grey"></i>
+                        <i class="fas fa-address-book has-text-grey"></i>
                     </span>
                     <span>Emprunts</span>
                 </div>
             </a>
-            <a href="{{ url_for('auth.reglage') }}" class="navbar-item">
+            <a href="{{ url_for('auth.reglage') }}" class="navbar-item {% if request.endpoint == 'auth.reglage' %}is-active{% endif %}">
                 <div class="icon-text">
                     <span class="icon has-text-info">
-                        <i class="fa-solid fa-sliders has-text-grey"></i>
+                        <i class="fa-solid fa-cog has-text-grey"></i>
                     </span>
                     <span>Réglage</span>
                 </div>

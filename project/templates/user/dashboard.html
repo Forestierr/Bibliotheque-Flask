@@ -11,9 +11,6 @@
 
 {% block content %}
 
-
-{{ search_bar("Rechercher") }}
-
 <div class="container block">
   <h4 class="title is-4 block">Infos</h4>
   <div class="box">
@@ -27,16 +24,16 @@
   <h4 class="title is-4 block">Meilleurs livres</h4>
   <div class="box">
     {% for book in books %}
-      <a href="/livre/{{ book.Book.id }}/edit">
-        <div class="columns is-mobile has-text-black">
+        <div class="columns is-mobile">
             <div class="column">
+                <a href="/livre/{{ book.Book.id }}/edit">
                 {{ book.Book.title }}
+                </a>
             </div>
             <div class="column has-text-right">
                 Prêté <strong>{{ book.loan_count }}</strong> fois
             </div>
         </div>
-      </a>
     {% endfor %}
   </div>
 </div>
@@ -60,16 +57,16 @@
   <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
   <div class="box">
     {% for student in students %}
-      <a href="/eleve/{{ student.Student.firstname }} {{ student.Student.name }}">
-        <div class="columns is-mobile has-text-black">
+        <div class="columns is-mobile">
             <div class="column">
+                <a href="/eleve/{{ student.Student.id }}">
                 {{ student.Student.name }} {{ student.Student.firstname }}
+                </a>
             </div>
             <div class="column has-text-right">
                 <strong>{{ student.loan_count }}</strong> livres lu
             </div>
         </div>
-      </a>
     {% endfor %}
   </div>
 </div>
@@ -93,10 +90,9 @@
   <h4 class="title is-4 block">Derniers prèts</h4>
   <div class="box">
     {% for book in books_loaned %}
-      <a href="/livre/{{ book.Book.id }}/edit">
-        <div class="columns is-mobile has-text-black">
+        <div class="columns is-mobile">
             <div class="column">
-                {{ book.Book.title }} emprunté par {{ book.Student.name }} {{ book.Student.firstname }}
+                <a href="/livre/{{ book.Book.id }}/edit">{{ book.Book.title }}</a> emprunté par <a href="/eleve/{{ book.Student.id }}">{{ book.Student.name }} {{ book.Student.firstname }}</a>
             </div>
             <div class="column narrow has-text-right">
                 {% if book.Loan.date_return != None %}
@@ -106,7 +102,6 @@
                 {% endif %}
             </div>
         </div>
-      </a>
     {% endfor %}
   </div>
 </div>

@@ -298,25 +298,21 @@ Get loans with the book and the student
     :param actualy_loan: if True, only the actual loans are returned
     :return: the list of loans (Loan, Book, Student)
 """
-def get_loans_with_infos(current_user_id, actualy_loan=False, sort='Loan.id', sort_order='asc', n_books_by_page=10, page=1) -> list:
+def get_loans_with_infos(current_user_id, actualy_loan=False, sort='Loan.id', sort_order='asc', n_books_by_page=10, page=1):
     query = db.session.query(Loan, Book, Student).filter(Book.user_id == current_user_id)
 
     if actualy_loan:
         query = query.filter(Loan.date_return == None)
-        query = query.order_by(Loan.date_loan.desc())
-    else:
-        query = query.order_by(Loan.date_loan.desc(), Loan.date_return.desc())
 
     query = query.join(Book, Loan.book_id == Book.id).join(Student, Loan.student_id == Student.id)
 
-    query = query.order_by(
-        collate(text(sort), 'NOCASE').desc() if sort_order == 'desc' else collate(text(sort), 'NOCASE'))
+    query = query.order_by(collate(text(sort), 'NOCASE').desc() if sort_order == 'desc' else collate(text(sort), 'NOCASE'))
 
-    # n_books = query.count()
+    n_books = query.count()
 
     loans_with_infos = query.limit(n_books_by_page).offset((page - 1) * n_books_by_page).all()
 
-    return loans_with_infos
+    return loans_with_infos, n_books
 
 
 """

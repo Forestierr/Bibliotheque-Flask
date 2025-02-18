@@ -1,4 +1,10 @@
+{% from "utils/navbar.html" import navbar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Réglage") }}
+{% endblock %}
 
 {% block content %}
 

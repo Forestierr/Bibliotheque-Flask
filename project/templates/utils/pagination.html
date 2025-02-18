@@ -17,8 +17,8 @@
             <button class="pagination-link"
                 hx-post="{{ url_for(url, page=i) }}"
                 hx-trigger="click"
-                hx-target="#book_list"
-                hx-include="[name='search'], [name='sort'], [name='n_results']">
+                hx-target="#search_list"
+                hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
                 {{ i }}
             </button>
             </li>
@@ -36,8 +36,8 @@
         <button class="pagination-link"
             hx-post="{{ url_for(url, page=1) }}"
             hx-trigger="click"
-            hx-target="#book_list"
-            hx-include="[name='search'], [name='sort'], [name='n_results']">
+            hx-target="#search_list"
+            hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
             1
         </button>
         </li>
@@ -54,8 +54,8 @@
         <button class="pagination-link"
             hx-post="{{ url_for(url, page=page-2) }}"
             hx-trigger="click"
-            hx-target="#book_list"
-            hx-include="[name='search'], [name='sort'], [name='n_results']">
+            hx-target="#search_list"
+            hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
             {{ page - 2 }}
         </button>
         </li>
@@ -68,8 +68,8 @@
         <button class="pagination-link"
             hx-post="{{ url_for(url, page=page-1) }}"
             hx-trigger="click"
-            hx-target="#book_list"
-            hx-include="[name='search'], [name='sort'], [name='n_results']">
+            hx-target="#search_list"
+            hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
             {{ page - 1 }}
         </button>
 
@@ -88,8 +88,8 @@
         <button class="pagination-link"
             hx-post="{{ url_for(url, page=page+1) }}"
             hx-trigger="click"
-            hx-target="#book_list"
-            hx-include="[name='search'], [name='sort'], [name='n_results']">
+            hx-target="#search_list"
+            hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
             {{ page + 1 }}
         </button>
         </li>
@@ -102,8 +102,8 @@
             <button class="pagination-link"
                 hx-post="{{ url_for(url, page=page+2) }}"
                 hx-trigger="click"
-                hx-target="#book_list"
-                hx-include="[name='search'], [name='sort'], [name='n_results']">
+                hx-target="#search_list"
+                hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
                 {{ page + 2 }}
             </button>
         </li>
@@ -119,8 +119,8 @@
             <button class="pagination-link"
                 hx-post="{{ url_for(url, page=nb_page) }}"
                 hx-trigger="click"
-                hx-target="#book_list"
-                hx-include="[name='search'], [name='sort'], [name='n_results']">
+                hx-target="#search_list"
+                hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
                 {{ nb_page }}
             </button>
         </li>

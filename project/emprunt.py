@@ -15,11 +15,18 @@ emprunt = Blueprint('emprunt', __name__)
 @emprunt.route('/emprunt', methods=['GET', 'POST'])
 @login_required
 def emprunt_db():
+    page = 1
+    n_books_by_page = 10
+    # get the number of books
+    nb_books = get_loans_count(current_user.id)
+    # nombre de page
+    nb_page = math.ceil(nb_books / n_books_by_page)
+
     only_active_loans = True if request.form.get('active_loan') == '1' else False
 
-    loans = get_loans_with_infos(current_user.id, only_active_loans)
+    loans, nb_books = get_loans_with_infos(current_user.id, only_active_loans)
 
-    return render_template('emprunt/emprunt.html', loans=loans, only_active_loans=only_active_loans, nb_page=1, page=1)
+    return render_template('emprunt/emprunt.html', loans=loans, only_active_loans=only_active_loans, nb_page=nb_page, page=page)
 
 
 @emprunt.route('/emprunt/<id>', methods=['GET', 'POST'])
@@ -123,14 +130,10 @@ def search(page=1):
         case _:
             sort = 'Loan.id'
 
-    print(only_active_loans)
-    print(search)
-    print(sort)
-
     n_books = get_loans_count(current_user.id)
 
     if search == '':
-        loans = get_loans_with_infos(current_user.id, only_active_loans, sort, sort_order, n_books_by_page, page)
+        (loans, n_books) = get_loans_with_infos(current_user.id, only_active_loans, sort, sort_order, n_books_by_page, page)
         nb_page = math.ceil(n_books / n_books_by_page)
         return render_template("emprunt/emprunt_list.html", loans=loans, only_active_loans=only_active_loans, nb_page=nb_page, page=int(page))
 
@@ -146,7 +149,7 @@ def search(page=1):
             flash('Type de recherche inconnu, vous pouvez utiliser : titre:, isbn:, eleve:, tags: suivi de votre recherche.',
                 'error')
             # All books
-            loans = get_loans_with_infos(current_user.id, only_active_loans, sort, sort_order, n_books_by_page, page)
+            (loans, n_books) = get_loans_with_infos(current_user.id, only_active_loans, sort, sort_order, n_books_by_page, page)
 
         nb_page = math.ceil(n_books / n_books_by_page)
         return render_template("emprunt/emprunt_list.html", loans=loans, only_active_loans=only_active_loans, nb_page=nb_page, page=int(page))
@@ -154,7 +157,5 @@ def search(page=1):
     # Recherche par défaut
     (loans, n_books) = search_loans_by_types(current_user.id, only_active_loans, 'all', search, sort, sort_order, n_books_by_page, page)
     nb_page = math.ceil(n_books / n_books_by_page)
-
-    print(loans)
 
     return render_template("emprunt/emprunt_list.html", loans=loans, only_active_loans=only_active_loans, nb_page=nb_page, page=int(page))
