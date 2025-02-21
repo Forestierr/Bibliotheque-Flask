@@ -72,8 +72,8 @@
         </div>
     </div>
 
-    {% if request.endpoint == 'main.dashboard' %}
-        {{ footer_mobile() }}
+    {% if request.endpoint == 'main.index' %}
+        {# pass #}
     {% elif request.endpoint == 'livre.livre_db' %}
         {{ footer_mobile(1) }}
     {% elif request.endpoint == 'livre.livre_scann' %}
@@ -84,6 +84,8 @@
         {{ footer_mobile(4) }}
     {% elif request.endpoint == 'auth.reglage' %}
         {{ footer_mobile(5) }}
+    {% else %}
+        {{ footer_mobile() }}
     {% endif %}
 
     {{ footer() }}

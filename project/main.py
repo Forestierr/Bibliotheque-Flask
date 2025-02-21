@@ -85,12 +85,17 @@ def favicon():
 
 
 @main.route('/contact', methods=['GET', 'POST'])
+@login_required
 def contact():
     if request.method == 'POST':
         name = request.form.get('name')
         firstname = request.form.get('firstname')
         email = request.form.get('email')
         message = request.form.get('message')
+
+        if not name or not firstname or not email or not message:
+            flash('Veuillez remplir tous les champs.', 'danger')
+            return redirect(url_for('main.contact'))
 
         # envoi d'un email à l'administrateur
         send_email_to_me('Contact de ' + name + ' ' + firstname, "Email: " + email + "\n" + "Nom: " + name + " " + firstname + "\n\n" + message)
@@ -102,7 +107,9 @@ def contact():
 
         return redirect(url_for('main.contact'))
 
-    return render_template('contact.html')
+    user = get_user(current_user.id)
+
+    return render_template('contact.html', user=user)
 
 
 @main.route('/mentions_legales')

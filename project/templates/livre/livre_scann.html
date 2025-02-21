@@ -1,113 +1,16 @@
 <!-- templates/livre/livre_scann.html -->
 
+{% from "utils/navbar.html" import navbar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Scanner un livre") }}
+{% endblock %}
 
 {% block content %}
 
-{{ meta }}
-
-<h1 class="title is-1">
-    Scanné un livre
-</h1>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-
-    <!--
-
-    <h1 style="text-align: center;">Scan the Book Barcode</h1>
-    <div class="camera-buttons" id="camera-buttons"></div>
-    <div id="interactive" class="viewport"></div>
-    <div id="barcode-result">Waiting for scan...</div>
-
- <script>
-        let selectedDeviceId = null;
-        let cameras = [];
-
-        function stopScanner() {
-            if (Quagga.initialized) {
-                Quagga.stop();
-                Quagga.initialized = false;
-            }
-        }
-
-        function startScanner(deviceId) {
-            stopScanner(); // Arrêter l'ancienne caméra avant de lancer la nouvelle
-
-            Quagga.init({
-                inputStream: {
-                    type: "LiveStream",
-                    constraints: {
-                        width: 640,
-                        height: 480,
-                        deviceId: deviceId ? { exact: deviceId } : undefined
-                    },
-                    target: document.querySelector("#interactive")
-                },
-                decoder: {
-                    readers: ["ean_reader"]
-                }
-            }, function (err) {
-                if (err) {
-                    console.error("Erreur d'initialisation Quagga:", err);
-                    return;
-                }
-                Quagga.initialized = true;
-                Quagga.start();
-            });
-
-            Quagga.onDetected(function (result) {
-                const code = result.codeResult.code;
-                document.getElementById("barcode-result").innerText = "Code scanné: " + code;
-                stopScanner(); // Arrêter après détection
-            });
-        }
-
-        function getCameras() {
-            navigator.mediaDevices.enumerateDevices().then(function (devices) {
-                cameras = devices.filter(device => device.kind === "videoinput");
-                const buttonContainer = document.getElementById("camera-buttons");
-                buttonContainer.innerHTML = ""; // Nettoyer les anciens boutons
-
-                if (cameras.length > 0) {
-                    cameras.forEach((device, index) => {
-                        const button = document.createElement("button");
-                        button.innerText = device.label || `Caméra ${index + 1}`;
-                        button.onclick = () => switchCamera(device.deviceId, button);
-                        buttonContainer.appendChild(button);
-
-                        // Définir la caméra principale au démarrage
-                        if (index === 0) {
-                            selectedDeviceId = device.deviceId;
-                            startScanner(selectedDeviceId);
-                            button.classList.add("active");
-                        }
-                    });
-
-                    // Ajouter un bouton spécial pour la caméra frontale s'il y en a une
-                    const frontCamera = cameras.find(device => device.label.toLowerCase().includes(""));
-                    if (frontCamera) {
-                        const frontButton = document.createElement("button");
-                        frontButton.innerText = "📸 Selfie Cam";
-                        frontButton.onclick = () => switchCamera(frontCamera.deviceId, frontButton);
-                        buttonContainer.appendChild(frontButton);
-                    }
-                }
-            });
-        }
-
-        function switchCamera(deviceId, button) {
-            selectedDeviceId = deviceId;
-            startScanner(selectedDeviceId);
-
-            // Mettre en surbrillance le bouton actif
-            document.querySelectorAll(".camera-buttons button").forEach(btn => btn.classList.remove("active"));
-            button.classList.add("active");
-        }
-
-        getCameras();
-    </script>
-
-    -->
 
     <style>
         .lens-controls {
