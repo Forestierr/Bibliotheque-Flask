@@ -20,42 +20,42 @@
             <div class="field">
                 <label class="label" for="title">Titre</label>
                 <div class="control">
-                    <input class="input" type="text" name="title" id="title" required>
+                    <input class="input" type="text" name="title" id="title" required {% if book.title %}value="{{ book.title }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="author">Auteur</label>
                 <div class="control">
-                    <input class="input" type="text" name="author" id="author">
+                    <input class="input" type="text" name="author" id="author" {% if book.authors %}value="{{ book.authors }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="editor">Editeur</label>
                 <div class="control">
-                    <input class="input" type="text" name="editor" id="editor">
+                    <input class="input" type="text" name="editor" id="editor" {% if book.editor %}value="{{ book.editor }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="year">Année</label>
                 <div class="control">
-                    <input class="input" type="number" name="year" id="year">
+                    <input class="input" type="number" name="year" id="year" {% if book.year %}value="{{ book.year }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="type">Genre</label>
                 <div class="control">
-                    <input class="input" type="text" name="type" id="type">
+                    <input class="input" type="text" name="type" id="type" {% if book.type %}value="{{ book.type }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="isbn">ISBN</label>
                 <div class="control">
-                    <input class="input" type="number" name="isbn" id="isbn">
+                    <input class="input" type="number" name="isbn" id="isbn" {% if book.isbn %}value="{{ book.isbn }}"{% endif %}>
                 </div>
             </div>
 

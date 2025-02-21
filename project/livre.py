@@ -1,7 +1,9 @@
 # livre.py
 import math
 import json
+import os
 
+import requests
 from flask import Blueprint, render_template, redirect, url_for, request, flash, make_response, jsonify
 from flask_login import login_required, current_user
 from datetime import datetime, date
@@ -35,6 +37,34 @@ def livre_db():
     tags = [tag.name for tag in tags]
 
     return render_template('livre/livre.html', books=books, students=all_students, nb_page=nb_page, page=int(page), tags=json.dumps(tags))
+
+
+def get_book_from_api(isbn):
+    # get api key from the environnement
+    api_key = os.getenv("GOOGLE_BOOK_API_KEY")
+
+    url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&printType=books&orderBy=relevance&maxResults=1&key={api_key}"
+    response = requests.get(url)
+    data = response.json()
+
+    if data.get('totalItems', 0) > 0:
+        book = data['items'][0]['volumeInfo']
+        title = book.get('title', None)
+        authors = ", ".join(book.get('authors', None))
+        editor = book.get('publisher', None)
+        year = book.get('publishedDate', None)
+        type = book.get('subtitle', None)
+
+        return {
+            'title': title,
+            'authors': authors,
+            'editor': editor,
+            'year': year,
+            'type': type,
+            'isbn': isbn
+        }
+    else:
+        return None
 
 
 @livre.route('/livre/ajout', methods=['GET', 'POST'])
@@ -88,17 +118,27 @@ def livre_ajout():
 
         return redirect(url_for('livre.livre_db'))
 
+    # get ISBN from the URL
+    isbn = request.args.get('isbn')
+
+    book = None
+
+    if isbn:
+        # Get the book from the API
+        book = get_book_from_api(isbn)
+        print(book)
+
     # Get all tags (only the name) from the current user
     tags = Tags.query.filter_by(user_id=current_user.id).all()
     tags = [tag.name for tag in tags]
 
-    return render_template('livre/livre_ajout.html', tags=json.dumps(tags))
+    return render_template('livre/livre_ajout.html', tags=json.dumps(tags), book=book)
 
 
 @livre.route('/livre/scann', methods=['GET', 'POST'])
 @login_required
 def livre_scann():
-    return render_template('livre/livre_scann_live.html')
+    return render_template('livre/livre_scann.html')
 
 
 @livre.route('/livre/<id>/edit', methods=['GET', 'POST'])
@@ -233,11 +273,9 @@ def livre_exist(isbn):
 
     if book:
         data = {'id': book.id}
-        response = make_response(jsonify(data), 200)
+        return make_response(jsonify(data), 200)
 
-        return {'id': book.id}
-
-    return make_response('No Content', 204)
+    return make_response(jsonify({'error':'Book not found'}), 404)
 
 
 @livre.route('/livre/delete_all', methods=['POST'])

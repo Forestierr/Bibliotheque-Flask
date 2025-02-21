@@ -7,25 +7,279 @@
 {{ meta }}
 
 <h1 class="title is-1">
-    Scanné un nouveau livre
+    Scanné un livre
 </h1>
 
-<div class = "large-12 column">
-    <div class="card"></div>
-        <div class="card-section">
-            <div id="product_summary" class="v-space-short text-left">
-                <ul id="attributes_grid" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3">
-                    <li style =" list-style : none"><div id="code"></div> </li>
-                    <li style =" list-style : none"> <div> <div id="nutriscoreresult" class="attr_card_header"></div></div> </li>
-                    <li style =" list-style : none"><div><div id="ecoscoreresult" class="attr_card_header"></div></div> </li>
-                </ul>
-            </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
+    <!--
+
+    <h1 style="text-align: center;">Scan the Book Barcode</h1>
+    <div class="camera-buttons" id="camera-buttons"></div>
+    <div id="interactive" class="viewport"></div>
+    <div id="barcode-result">Waiting for scan...</div>
+
+ <script>
+        let selectedDeviceId = null;
+        let cameras = [];
+
+        function stopScanner() {
+            if (Quagga.initialized) {
+                Quagga.stop();
+                Quagga.initialized = false;
+            }
+        }
+
+        function startScanner(deviceId) {
+            stopScanner(); // Arrêter l'ancienne caméra avant de lancer la nouvelle
+
+            Quagga.init({
+                inputStream: {
+                    type: "LiveStream",
+                    constraints: {
+                        width: 640,
+                        height: 480,
+                        deviceId: deviceId ? { exact: deviceId } : undefined
+                    },
+                    target: document.querySelector("#interactive")
+                },
+                decoder: {
+                    readers: ["ean_reader"]
+                }
+            }, function (err) {
+                if (err) {
+                    console.error("Erreur d'initialisation Quagga:", err);
+                    return;
+                }
+                Quagga.initialized = true;
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function (result) {
+                const code = result.codeResult.code;
+                document.getElementById("barcode-result").innerText = "Code scanné: " + code;
+                stopScanner(); // Arrêter après détection
+            });
+        }
+
+        function getCameras() {
+            navigator.mediaDevices.enumerateDevices().then(function (devices) {
+                cameras = devices.filter(device => device.kind === "videoinput");
+                const buttonContainer = document.getElementById("camera-buttons");
+                buttonContainer.innerHTML = ""; // Nettoyer les anciens boutons
+
+                if (cameras.length > 0) {
+                    cameras.forEach((device, index) => {
+                        const button = document.createElement("button");
+                        button.innerText = device.label || `Caméra ${index + 1}`;
+                        button.onclick = () => switchCamera(device.deviceId, button);
+                        buttonContainer.appendChild(button);
+
+                        // Définir la caméra principale au démarrage
+                        if (index === 0) {
+                            selectedDeviceId = device.deviceId;
+                            startScanner(selectedDeviceId);
+                            button.classList.add("active");
+                        }
+                    });
+
+                    // Ajouter un bouton spécial pour la caméra frontale s'il y en a une
+                    const frontCamera = cameras.find(device => device.label.toLowerCase().includes(""));
+                    if (frontCamera) {
+                        const frontButton = document.createElement("button");
+                        frontButton.innerText = "📸 Selfie Cam";
+                        frontButton.onclick = () => switchCamera(frontCamera.deviceId, frontButton);
+                        buttonContainer.appendChild(frontButton);
+                    }
+                }
+            });
+        }
+
+        function switchCamera(deviceId, button) {
+            selectedDeviceId = deviceId;
+            startScanner(selectedDeviceId);
+
+            // Mettre en surbrillance le bouton actif
+            document.querySelectorAll(".camera-buttons button").forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+        }
+
+        getCameras();
+    </script>
+
+    -->
+
+    <style>
+        .lens-controls {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+        .lens-controls button {
+            background-color: rgb(0, 0, 0, 0.5);
+            color: white;
+        }
+        .lens-controls button:hover,
+        .lens-controls button:focus {
+            color: gold;
+        }
+        .camera-controls {
+            justify-content: space-between;
+        }
+        #barcode-result {
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+
+    <div class="container block">
+        <video id="video" autoplay playsinline></video>
+
+        <div class="buttons lens-controls">
+            <button class="button is-rounded" onclick="switchCamera('ultra-wide')">.5x</button>
+            <button class="button is-rounded" onclick="switchCamera('environment')">1x</button>
+            <button class="button is-rounded" onclick="switchCamera('zoom')">2x</button>
+        </div>
+        <div class="buttons camera-controls">
+            <button class="button is-warning is-rounded" onclick="toggleTorch()">
+                <span class="icon is-small">
+                  <i class="fas fa-bolt"></i>
+                </span>
+            </button>
+            <button id="switch-side" class="button is-rounded" onclick="switchCamera('user')">
+                <span class="icon is-small">
+                  <i class="fas fa-sync"></i>
+                </span>
+            </button>
         </div>
     </div>
-</div>
 
-<div id="camera"></div>
-<script src="{{ url_for('static', filename='/javascript/quagga.min.js') }}"> </script>
-<script src="{{ url_for('static', filename='/javascript/cbscanner.js') }}"> </script>
+    <script>
+        let videoStream;
+
+        async function switchCamera(cameraType) {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+
+            let constraints = {
+                video: {
+                    facingMode: cameraType === 'user' ? 'user' : 'environment',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                }
+            };
+
+            if (cameraType === 'user') {
+                document.getElementById('switch-side').onclick = () => switchCamera('environment');
+            } else {
+                document.getElementById('switch-side').onclick = () => switchCamera('user');
+            }
+
+            if (cameraType === 'ultra-wide' || cameraType === 'zoom') {
+                constraints.video.advanced = [{ zoom: cameraType === 'zoom' ? 2 : 0.5 }];
+            }
+
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('video').srcObject = videoStream;
+                startBarcodeScanner();
+            } catch (error) {
+                console.error("Erreur d'accès à la caméra :", error);
+            }
+        }
+
+        async function toggleTorch() {
+            if (!videoStream) return;
+
+            let track = videoStream.getVideoTracks()[0];
+            let capabilities = track.getCapabilities();
+
+            if (!capabilities.torch) {
+                console.warn("La lampe torche n'est pas supportée sur cet appareil.");
+                return;
+            }
+
+            let torchState = !track.getSettings().torch;
+            await track.applyConstraints({ advanced: [{ torch: torchState }] });
+        }
+
+        function startBarcodeScanner() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector("#video"),
+                    constraints: {
+                        facingMode: "environment"
+                    }
+                },
+                locator: {
+                    patchSize: "medium",
+                    halfSample: true
+                },
+                numOfWorkers: 8,
+                frequency: 10,
+                decoder: {
+                    readers: ["ean_reader"] // Scanner les codes-barres EAN-13
+                },
+                locate: true
+            }, function (err) {
+                if (err) {
+                    console.error("Erreur Quagga : ", err);
+                    return;
+                }
+                Quagga.start();
+            });
+
+            // Quagga.onProcessed(drawOverlay);
+            Quagga.onDetected(onBarcodeDetected);
+        }
+
+        function onBarcodeDetected(result) {
+            let code = result.codeResult.code;
+
+            if (!isISBN(code)) {
+                console.log("Code-barres invalide : ", code);
+                return;
+            }
+
+            console.log("Code-barres détecté : ", code);
+
+            // does the book exist in the database?
+            // if yes, redirect to the book edit page
+            // if no, redirect to the book creation page
+            fetch(`/livre/${code}/exist`)
+                .then(response => response.json())
+                .then(data => {
+                    // if the book does not exist, redirect to the book creation page
+                    if (data.error) {
+                        console.info("Erreur de recherche du livre :", data.error);
+                        window.location.href = `/livre/ajout?isbn=${code}`;
+
+                        return;
+                    }
+
+                    window.location.href = `/livre/${data.id}/edit`;
+                })
+                .catch(error => console.error("Erreur de recherche du livre :", error));
+        }
+
+        function isISBN(code) {
+            return code.length === 13 && code.startsWith("978");
+        }
+
+        switchCamera('environment'); // Par défaut sur la caméra arrière
+    </script>
+
 
 {% endblock %}

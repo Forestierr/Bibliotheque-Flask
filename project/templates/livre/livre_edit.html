@@ -27,35 +27,35 @@
             <div class="field">
                 <label class="label" for="author">Auteur</label>
                 <div class="control">
-                    <input class="input" type="text" name="author" id="author" value="{{ book.author }}">
+                    <input class="input" type="text" name="author" id="author" {% if book.author %}value="{{ book.author }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="editor">Editeur</label>
                 <div class="control">
-                    <input class="input" type="text" name="editor" id="editor" value="{{ book.editor }}">
+                    <input class="input" type="text" name="editor" id="editor" {% if book.editor %}value="{{ book.editor }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="year">Année</label>
                 <div class="control">
-                    <input class="input" type="number" name="year" id="year" value="{{ book.year }}">
+                    <input class="input" type="number" name="year" id="year" {% if book.year %}value="{{ book.year }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="type">Genre</label>
                 <div class="control">
-                    <input class="input" type="text" name="type" id="type" value="{{ book.type }}">
+                    <input class="input" type="text" name="type" id="type" {% if book.type %}value="{{ book.type }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
                 <label class="label" for="isbn">ISBN</label>
                 <div class="control">
-                    <input class="input" type="number" name="isbn" id="isbn" value="{{ book.isbn }}">
+                    <input class="input" type="number" name="isbn" id="isbn" {% if book.isbn %}value="{{ book.isbn }}"{% endif %}>
                 </div>
             </div>
 
