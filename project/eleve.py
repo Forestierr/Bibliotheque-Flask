@@ -50,11 +50,11 @@ def eleve_infos(id):
 
     return render_template('eleve/eleve_info.html', student=student, books=books, old_books=old_books)
 
-# TODO: change to id
-@eleve.route('/eleve/<name> <firstname>/delete')
+
+@eleve.route('/eleve/<id>/delete')
 @login_required
-def eleve_delete(name, firstname):
-    student = Student.query.filter_by(user_id=current_user.id, name=name, firstname=firstname).first()
+def eleve_delete(id):
+    student = Student.query.filter_by(user_id=current_user.id, id=id).first()
 
     loans = Loan.query.filter_by(student_id=student.id).all()
     for loan in loans:
@@ -64,6 +64,7 @@ def eleve_delete(name, firstname):
     db.session.commit()
 
     return redirect(url_for('eleve.eleve_db'))
+
 
 @eleve.route('/eleve/delete_all', methods=['POST'])
 @login_required

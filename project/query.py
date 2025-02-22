@@ -655,3 +655,18 @@ def search_loans_by_types(current_user_id, actualy_loan, search_type, search_val
     books = query.limit(n_books_by_page).offset((page - 1) * n_books_by_page).all()
 
     return books, n_books
+
+
+"""
+Get infos about the app
+    :return: (n of users, n of books, n of student, n of loan)
+"""
+def get_app_infos():
+    infos = {
+        'n_users': db.session.query(User).count(),
+        'n_books': db.session.query(Book).count(),
+        'n_students': db.session.query(Student).count(),
+        'n_loans': db.session.query(Loan).count()
+    }
+
+    return infos

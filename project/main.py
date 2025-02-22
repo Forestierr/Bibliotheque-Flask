@@ -19,7 +19,9 @@ def index():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
 
-    return render_template('index.html')
+    infos = get_app_infos()
+
+    return render_template('index.html', infos=infos)
 
 
 @main.route('/dashboard')

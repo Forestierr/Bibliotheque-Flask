@@ -78,6 +78,11 @@ And go to http://127.0.0.1:80
 > [!CAUTION]
 > Flask ne lance pas de serveur WSGI, vous devez utiliser un serveur WSGI de production comme Gunicorn.
 
+Si vous avez des problèmes lors du developpement avec le scann.
+Il se peut que vous deviez utiliser un server en HTTPS.
+Pour cela, vous pouvez utiliser le flag  `--cert=adhoc`.
+
+
 ## Publication
 
 Pour publier l'application, j'ai décider d'utiliser [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)

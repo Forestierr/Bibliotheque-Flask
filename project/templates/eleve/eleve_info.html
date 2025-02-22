@@ -14,13 +14,13 @@
         {{ student.name }} {{ student.firstname }}
     </h1>
 
-    <h4 class="subtitle is-4">Nombre de livres lu : <strong>{{ books|count + old_books|count }}</strong></h4>
+    <h4 class="subtitle is-4">Nombre de livres lus : <strong>{{ books|count + old_books|count }}</strong></h4>
 
     {% if books %}
     {% for book in books %}
         <div class="container block">
         {% if loop.first %}
-            <h3 class="subtitle is-3">Livre actuellement emprunté ({{ books|count }})</h3>
+            <h3 class="subtitle is-3">Livre{% if books|count > 1 %}s{% endif %} actuellement emprunté{% if books|count > 1 %}s{% endif %} ({{ books|count }})</h3>
         {% endif %}
             <hr style="margin: 5px 0 5px 0"/>
             <div class="container" style="margin-bottom: 10px">
@@ -88,7 +88,7 @@
                 <article class="media">
                     <div class="media-content has-text-centered is-size-5">
                       <div class="content">
-                          <p>{{ student.name }} {{ student.firstname }} ne lis actuellement aucun livre. <br>
+                          <p>{{ student.name }} {{ student.firstname }} ne lit actuellement aucun livre. <br>
                           Pour lui assigner un livre, rendez-vous sur la page d'un livre.</p>
                       </div>
                     </div>
@@ -110,7 +110,7 @@
     {% for book in old_books %}
         <div class="container block">
         {% if loop.first %}
-            <h3 class="subtitle is-3">Livre emprunté précédement ({{ old_books|count }})</h3>
+            <h3 class="subtitle is-3">Livre{% if old_books|count > 1 %}s{% endif %} emprunté{% if old_books|count > 1 %}s{% endif %} précédement ({{ old_books|count }})</h3>
         {% endif %}
             <hr style="margin: 5px 0 5px 0"/>
             <div class="container" style="margin-bottom: 10px">
@@ -172,7 +172,7 @@
                     <p class="modal-card-title">Supprimer l'élève ?</p>
                 </header>
                 <footer class="modal-card-foot">
-                    <a href="/eleve/{{ student.name }} {{ student.firstname }}/delete" class="button is-normal is-danger is-responsive">
+                    <a href="/eleve/{{ student.id }}/delete" class="button is-normal is-danger is-responsive">
                         <div class="icon-text">
                             <span class="icon has-text-info">
                                 <i class="fas fa-user-slash has-text-black"></i>

@@ -1,42 +1,25 @@
 <!-- templates/index.html -->
 
+{% from "utils/navbar.html" import navbar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
 
 {% block content %}
 
     <section class="section">
-        <div class="columns is-multiline is-centered is-vcentered m-2">
-            <div class="column is-4-mobile is-offset-8-mobile is-3-tablet is-3-desktop is-2-widescreen is-2-fullhd">
-                <a href="{{ url_for('livre.livre_db') }}">
-                    <figure class="image is-256x256">
-                        <img src="{{ url_for('static',filename='/image/book.png') }}"
-                             href="https://www.flaticon.com/free-stickers/literature"
-                             alt="Literature stickers created by Stickers - Flaticon">
-                    </figure>
-                </a>
-            </div>
-
+        <div class="section columns is-multiline is-centered is-vcentered">
             <div class="column">
-              <div class="myHero has-text-centered">
-                <div class="hr"></div>
-                <h1 class="title is-1 is-spaced">LivreEnClasse</h1>
-                <h2 class="subtitle is-4 block">Ma bibliothèque personnelle.</h2>
-                <div class="container block">
-                    <p>Gérez vos livres, vos emprunts et vos élèves.</p>
-                    <p>Ajoutez, modifiez et supprimez des livres.</p>
-                    <p>Tout est possible avec Ma Bibliothèque.</p>
-                </div>
-
-                <div class="block is-max-tablet">
-                    <a class="button is-grey is-rounded is-medium block" href="{{ url_for('auth.signup') }}">Créer un compte</a>
-                    <a class="button is-info is-rounded is-medium block" href="{{ url_for('auth.login') }}">Se connecter</a>
-                </div>
-              </div>
+                <h1 class="title is-1">La meilleure bibliothèque pour votre classe.</h1>
+                <h2 class="subtitle is-3">Ajoutez. Modifiez. Prêtez. <br>La meilleure gestion de livres en toute simplicité.</h2>
             </div>
 
-            <div class="column is-4-mobile is-3-tablet is-3-desktop is-2-widescreen is-2-fullhd">
+            <div class="column is-hidden-touch is-3-desktop is-2-widescreen is-2-fullhd">
                 <a href="{{ url_for('eleve.eleve_db') }}">
-                    <figure class="image is-256x256 is-pulled-right">
+                    <figure class="image is-256x256">
                         <img src="{{ url_for('static',filename='/image/boy.png') }}"
                         href="https://www.flaticon.com/free-stickers/reading"
                          alt="Reading stickers created by Stickers - Flaticon">
@@ -44,6 +27,130 @@
                 </a>
             </div>
         </div>
+
+        <div class="section block">
+            <nav class="level is-mobile block">
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Professeures</p>
+                  <p class="title">{{ infos.n_users if infos.n_users }}</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Livres</p>
+                  <p class="title">{{ infos.n_books if infos.n_books }}</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Élèves</p>
+                  <p class="title">{{ infos.n_students if infos.n_students }}</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Prêts</p>
+                  <p class="title">{{ infos.n_loans if infos.n_loans }}</p>
+                </div>
+              </div>
+            </nav>
+
+            <div class="container">
+                <i>Crée-toi un compte et fais augmenter ces chiffres !</i>
+            </div>
+
+        </div>
+
+        <!-- Dashboard -->
+        <div class="section block wow">
+            <div class="container block">
+                <h1 class="title is-1 is-spaced">Une vue globale</h1>
+                <p>Un dashboard pour une vue globale de votre bibliothèque.</p>
+            </div>
+            <div class="container is-fluid">
+                <figure class="images is-fullwidth">
+                    <img src="{{ url_for('static',filename='/image/screenshots/dashboard_1.png') }}" alt="...">
+                    <img src="{{ url_for('static',filename='/image/screenshots/dashboard_phone.png') }}" alt="..."
+                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
+                </figure>
+            </div>
+        </div>
+
+        <div class="section block wow">
+            <div class="container block">
+                <h1 class="title is-1 is-spaced">Tous tes livres à un seul endroit !</h1>
+                <p>Scanne les codes barres de tes livres pour les ajouter à ta bibliothèque.</p>
+                <p>Rien de plus simple !</p>
+            </div>
+            <div class="container is-fluid">
+                <figure class="images is-fullwidth">
+                    <img src="{{ url_for('static',filename='/image/screenshots/livre_1.png') }}" alt="...">
+                    <img src="{{ url_for('static',filename='/image/screenshots/livre_phone.png') }}" alt="..."
+                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
+                </figure>
+            </div>
+        </div>
+
+        <div class="section block wow">
+            <div class="column">
+                <h1 class="title is-1 is-spaced">Qui a lu quoi ?</h1>
+                <p>Tu peux voir qui a lu quel livre et combien de fois.</p>
+            </div>
+            <figure class="images is-fullwidth">
+                <img src="{{ url_for('static',filename='/image/server.png') }}"
+                     href="https://www.flaticon.com/free-stickers/bookshelf"
+                     alt="Bookshelf stickers created by Stickers - Flaticon">
+            </figure>
+        </div>
     </section>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".title.is-1", { opacity: 0, y: -20, duration: 1, ease: "power2.out" });
+        gsap.from(".subtitle.is-3", { opacity: 0, y: 20, duration: 1, delay: 0.3, ease: "power2.out" });
+
+        gsap.from(".image img", { scale: 0.8, opacity: 0, duration: 1, delay: 0.5, ease: "back.out(1.7)" });
+
+        gsap.from(".level-item", { opacity: 0, y: 20, duration: 1, stagger: 0.2, delay: 0.6, ease: "power2.out" });
+
+        gsap.from(".images img", { opacity: 0, scale: 0.9, duration: 1.2, delay: 0.8, ease: "power2.out" });
+
+        // Animation des compteurs
+        document.querySelectorAll(".level-item .title").forEach((counter) => {
+            let target = parseInt(counter.innerText) || 0;
+            let tl = gsap.timeline();
+            tl.fromTo(counter, { textContent: 0 }, {
+                textContent: target,
+                duration: 2,
+                ease: "power1.out",
+                snap: { textContent: 1 }
+            });
+        });
+
+        // Animation du dashboard au scroll
+        // Animation des sections .section.block au scroll individuellement
+        document.querySelectorAll(".section.block").forEach((section) => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 50,
+                duration: 1.2,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none none",
+                    once: true
+                }
+            });
+        });
+    });
+    </script>
 
 {% endblock %}
