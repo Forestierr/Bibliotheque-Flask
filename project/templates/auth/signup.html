@@ -1,39 +1,67 @@
 <!-- templates/signup.html -->
 
+{% from "utils/navbar.html" import navbar %}
+
 {% extends "base.html" %}
 
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
 {% block content %}
-<div class="column is-4 is-offset-4">
-    <h3 class="title">S'inscrire</h3>
-    <div class="box">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="notification is-danger">
-                {{ messages[0] }}. Go to <a href="{{ url_for('auth.login') }}">login page</a>.
-            </div>
-        {% endif %}
-        {% endwith %}
-        <form method="POST" action="/signup">
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="email" name="email" placeholder="Email" autofocus="">
+
+<div class="section">
+    <div class="columns login-container" style="align-items: center;">
+        <div class="column is-half is-hidden-mobile left-side">
+            <h1 class="title">Bienvenu</h1>
+            <h3 class="subtitle is-3">
+                Créer un compte pour gérer vos livres en toute simplicité.
+            </h3>
+
+            <div class="columns" style="align-items: center;">
+                <div class="column is-narrow">
+                    <figure class="image is-128x128">
+                        <img src="{{ url_for('static',filename='/image/kid.png') }}"
+                        href="https://www.flaticon.com/free-stickers/reading"
+                         alt="Reading stickers created by Stickers - Flaticon">
+                    </figure>
+                </div>
+                <div class="column">
+                    <p class="subtitle">Gérez vos livres en toute simplicité.</p>
                 </div>
             </div>
+        </div>
+        <div class="column is-half right-side">
+            <div class="container box" style="width: 80%; max-width: 400px;">
+                <h2 class="title is-4 has-text-centered">Créer un compte</h2>
 
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="text" name="name" placeholder="Nom" autofocus="">
-                </div>
+                {% include "utils/flash_message.html" %}
+
+                <form method="POST" action="/signup">
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control">
+                            <input class="input" type="email" name="email" placeholder="Votre email" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Nom</label>
+                        <div class="control">
+                            <input class="input" type="text" name="name" placeholder="Votre nom" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Mot de passe</label>
+                        <div class="control">
+                            <input class="input" type="password" name="password" placeholder="Votre mot de passe" required>
+                        </div>
+                    </div>
+                    <div class="field has-text-centered">
+                        <button class="button is-primary is-fullwidth">S'inscrire</button>
+                    </div>
+                </form>
             </div>
-
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Mot de passe">
-                </div>
-            </div>
-
-            <button class="button is-block is-info is-large is-fullwidth">S'inscrire</button>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}

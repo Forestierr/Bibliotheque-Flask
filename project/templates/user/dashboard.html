@@ -64,7 +64,7 @@
                 </a>
             </div>
             <div class="column has-text-right">
-                <strong>{{ student.loan_count }}</strong> livres lu
+                <strong>{{ student.loan_count }}</strong> livres lus
             </div>
         </div>
     {% endfor %}
@@ -87,7 +87,7 @@
 
 {% if books_loaned != None %}
 <div class="container block">
-  <h4 class="title is-4 block">Derniers prèts</h4>
+  <h4 class="title is-4 block">Derniers prêts</h4>
   <div class="box">
     {% for book in books_loaned %}
         <div class="columns is-mobile">
