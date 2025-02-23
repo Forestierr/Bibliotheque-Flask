@@ -39,6 +39,8 @@ def dashboard():
     # get the 5 list books loaned or returned
     books_loaned = get_last_book_loan(current_user.id)
 
+    print(books_loaned)
+
     # actual month and the 12 previous months
     months = [datetime.now().strftime('%b')]
     for i in range(0, 12):

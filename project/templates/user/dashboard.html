@@ -19,23 +19,23 @@
   </div>
 </div>
 
-{% if books != None %}
+{% if books %}
 <div class="container block">
   <h4 class="title is-4 block">Meilleurs livres</h4>
-  <div class="box">
-    {% for book in books %}
-        <div class="columns is-mobile">
-            <div class="column">
-                <a href="/livre/{{ book.Book.id }}">
-                {{ book.Book.title }}
-                </a>
+      <div class="box">
+        {% for book in books %}
+            <div class="columns is-mobile">
+                <div class="column">
+                    <a href="/livre/{{ book.Book.id }}">
+                    {{ book.Book.title }}
+                    </a>
+                </div>
+                <div class="column has-text-right">
+                    Prêté <strong>{{ book.loan_count }}</strong> fois
+                </div>
             </div>
-            <div class="column has-text-right">
-                Prêté <strong>{{ book.loan_count }}</strong> fois
-            </div>
-        </div>
-    {% endfor %}
-  </div>
+        {% endfor %}
+      </div>
 </div>
 {% else %}
 <div class="container block">
@@ -48,11 +48,17 @@
         </span>
         <span>Ajouter un livre a votre bibliothèque</span>
     </a>
+    <a class="button is-dark" href="{{ url_for('livre.livre_scann') }}">
+        <span class="icon">
+          <i class="fas fa-barcode"></i>
+        </span>
+        <span>Scanner un livre</span>
+    </a>
   </div>
 </div>
 {% endif %}
 
-{% if students != None %}
+{% if students %}
 <div class="container block">
   <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
   <div class="box">
@@ -85,7 +91,7 @@
 </div>
 {% endif %}
 
-{% if books_loaned != None %}
+{% if books_loaned %}
 <div class="container block">
   <h4 class="title is-4 block">Derniers prêts</h4>
   <div class="box">

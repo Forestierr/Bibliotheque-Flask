@@ -34,23 +34,13 @@
         </a>
     </div>
 
-    <div class="block">
-        {{ search_bar("Rechercher un livre", True, "/livre/search-preview", "/livre/search") }}
-    </div>
-
-    {% with n_emprunt=true, url="/livre/search" %}
-    {% include "utils/result_sort.html" %}
-    {% endwith %}
-
-    {% include "utils/flash_message.html" %}
-
     {% if not books %}
         <section class="section">
             <div class="box">
                 <article class="media">
                     <div class="media-content has-text-centered is-size-5">
                       <div class="content">
-                        <p>Vous n'avez pas encore ajouter de livre à votre bibliothèque. <br>
+                        <p>Vous n'avez pas encore ajouté de livre à votre bibliothèque. <br>
                         Pour ajouter un livre, cliquez sur le bouton <strong>Ajouter un livre</strong> ou <strong>Scanner un livre</strong>.</p>
                       </div>
                     </div>
@@ -67,6 +57,14 @@
             </div>
         </section>
     {% else %}
+
+    <div class="block">
+        {{ search_bar("Rechercher un livre", True, "/livre/search-preview", "/livre/search") }}
+    </div>
+
+    {% with n_emprunt=true, url="/livre/search" %}
+    {% include "utils/result_sort.html" %}
+    {% endwith %}
 
     <div id="search_list">
     {% include "livre/livre_list.html" %}

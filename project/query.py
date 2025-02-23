@@ -137,7 +137,7 @@ def get_books_student_tags(current_user_id, n_par_page, page) -> list:
              .outerjoin(Student, Loan.student_id == Student.id)
              .outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
              .outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
-             .limit(n_par_page).offset((page - 1) * n_par_page))
+             .limit(n_par_page).offset((page - 1) * n_par_page).all())
 
     return books
 
@@ -464,8 +464,8 @@ Get the last book loan or return
 def get_last_book_loan(current_user_id, n_books=5) -> list:
     books = (db.session.query(Book, Loan, Student)
              .filter(Book.user_id == current_user_id)
-             .outerjoin(Loan, and_(Book.id == Loan.book_id))
-             .outerjoin(Student, Loan.student_id == Student.id)
+             .join(Loan, and_(Book.id == Loan.book_id))
+             .join(Student, Loan.student_id == Student.id)
              .order_by(Loan.date_loan.desc())
              .limit(n_books).all())
 

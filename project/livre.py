@@ -29,7 +29,8 @@ def livre_db():
     # (Book, Student, Tags, Loan_count)
     books = get_books_student_tags(current_user.id, n_books_by_page, page)
 
-    # TODO: Add autocompletion for the search bar
+    print(books)
+
     # When the user types "tags:" or "eleve:" in the search bar, we should display the tags and students
     all_students = get_students(current_user.id)
 
@@ -151,7 +152,6 @@ def livre_ajout():
     if isbn:
         # Get the book from the API
         book = get_book_from_api(isbn)
-        print(book)
 
     # Get all tags (only the name) from the current user
     tags = Tags.query.filter_by(user_id=current_user.id).all()
