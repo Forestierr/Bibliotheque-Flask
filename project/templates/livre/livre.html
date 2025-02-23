@@ -1,0 +1,218 @@
+<!-- templates/livre/livre.html -->
+
+{% from "utils/navbar.html" import navbar %}
+{% from "utils/search_bar.html" import search_bar %}
+
+{% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Mes Livres") }}
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="title is-1 is-hidden-touch">
+        Mes livres
+    </h1>
+
+    <div class="block buttons">
+        <a href="/livre/ajout" class="button is-dark">
+            <div class="icon-text has-text-white">
+                <span class="icon">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span>Ajouter un livre</span>
+            </div>
+        </a>
+        <a href="/livre/scann" class="button is-dark">
+            <div class="icon-text has-text-white">
+                <span class="icon">
+                    <i class="fas fa-barcode"></i>
+                </span>
+                <span>Scanner un livre</span>
+            </div>
+        </a>
+    </div>
+
+    {% if not books %}
+        <section class="section">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content has-text-centered is-size-5">
+                      <div class="content">
+                        <p>Vous n'avez pas encore ajouté de livre à votre bibliothèque. <br>
+                        Pour ajouter un livre, cliquez sur le bouton <strong>Ajouter un livre</strong> ou <strong>Scanner un livre</strong>.</p>
+                      </div>
+                    </div>
+                    <div class="media-right is-hidden-mobile">
+                        <a href="{{ url_for('livre.livre_db') }}">
+                            <figure class="image is-64x64">
+                                <img src="{{ url_for('static',filename='/image/book_4.png') }}"
+                                     href="https://www.flaticon.com/free-stickers/reading"
+                                     alt="Literature stickers created by Stickers - Flaticon">
+                            </figure>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+    {% else %}
+
+    <div class="block">
+        {{ search_bar("Rechercher un livre", True, "/livre/search-preview", "/livre/search") }}
+    </div>
+
+    {% with n_emprunt=true, url="/livre/search" %}
+    {% include "utils/result_sort.html" %}
+    {% endwith %}
+
+    <div id="search_list">
+    {% include "livre/livre_list.html" %}
+    </div>
+
+    {% endif %}
+
+    <!-- Script pour les boutons de recherche -->
+    <!--
+    <script>
+        // toggle button : show/hide search inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggle-button');
+            const cardContent = document.getElementById('content');
+            const cardFooter = document.getElementById('footer');
+
+            if (!toggleButton || !cardContent) {
+                console.error('Missing elements');
+            }
+
+            toggleButton.addEventListener('click', function() {
+                if (cardContent.classList.contains('is-hidden')) {
+                    cardContent.classList.remove('is-hidden');
+                    cardFooter.classList.remove('is-hidden');
+                } else {
+                    cardContent.classList.add('is-hidden');
+                    cardFooter.classList.add('is-hidden');
+                }
+            });
+        });
+
+        // reset button : reset all input
+        document.getElementById('reset-button').addEventListener('click', function() {
+            document.getElementById('title').value = '';
+            document.getElementById('author').value = '';
+            document.getElementById('editor').value = '';
+            document.getElementById('year').value = '';
+            document.getElementById('type').value = '';
+            document.getElementById('isbn').value = '';
+            document.getElementById('student').value = '';
+
+            // clear tags
+            const tagsList = document.getElementById('tags-list');
+            while (tagsList.firstChild) {
+                tagsList.firstChild.querySelector('button').click();
+            }
+        });
+
+        // search button : submit form
+        document.getElementById('search-button').addEventListener('click', function() {
+            document.querySelector('form').submit();
+        });
+    </script>
+    -->
+
+    <!-- Script pour la gestion des étiquettes -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const existingTags = {{ tags|safe }}; // Liste des tags existants
+      const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
+      const tagsInput = document.getElementById("tags-input");
+      const tagsList = document.getElementById("tags-list");
+      const tagsHiddenInput = document.getElementById("tags-hidden-input");
+      const suggestionsDropdown = document.getElementById("suggestions-dropdown");
+      const suggestionsList = document.getElementById("suggestions-list");
+
+      // Mise à jour des suggestions
+      function updateSuggestions() {
+        suggestionsDropdown.classList.remove("is-hidden");
+        const input = tagsInput.value.toLowerCase();
+        const suggestions = existingTags.filter(tag =>
+          tag.toLowerCase().includes(input) && !selectedTags.has(tag)
+        );
+
+        suggestionsList.innerHTML = suggestions
+          .map(tag => `<a class="dropdown-item">${tag}</a>`)
+          .join("");
+
+        if (suggestions.length > 0) {
+          suggestionsDropdown.classList.add("is-active");
+        } else {
+          suggestionsDropdown.classList.remove("is-active");
+        }
+      }
+
+      // Ajouter un tag
+      function addTag(tag) {
+        suggestionsDropdown.classList.add("is-hidden");
+        if (tagsList.classList.contains("is-hidden")) {
+          tagsList.classList.remove("is-hidden");
+        }
+
+        if (tag && !selectedTags.has(tag)) {
+          selectedTags.add(tag);
+
+          const tagElement = document.createElement("div");
+          tagElement.className = "tag is-info";
+          tagElement.textContent = tag;
+
+          const removeButton = document.createElement("button");
+          removeButton.className = "delete is-small";
+          removeButton.addEventListener("click", () => {
+            selectedTags.delete(tag);
+            tagsList.removeChild(tagElement);
+            updateHiddenInput();
+          });
+
+          tagElement.appendChild(removeButton);
+          tagsList.appendChild(tagElement);
+          updateHiddenInput();
+        }
+
+        tagsInput.value = "";
+        updateSuggestions();
+      }
+
+      // Met à jour le champ masqué avec les tags sélectionnés
+      function updateHiddenInput() {
+        suggestionsDropdown.classList.add("is-hidden");
+        tagsHiddenInput.value = Array.from(selectedTags).join(",");
+        if (selectedTags.size === 0) {
+          tagsList.classList.add("is-hidden");
+        }
+      }
+
+      // Gestion des événements
+      tagsInput.addEventListener("input", updateSuggestions);
+
+      tagsInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addTag(tagsInput.value);
+        }
+      });
+
+      suggestionsList.addEventListener("click", event => {
+        if (event.target.classList.contains("dropdown-item")) {
+          addTag(event.target.textContent);
+        }
+      });
+
+      document.addEventListener("click", event => {
+        if (!suggestionsDropdown.contains(event.target) && event.target !== tagsInput) {
+          suggestionsDropdown.classList.remove("is-active");
+          suggestionsDropdown.classList.add("is-hidden");
+        }
+      });
+    });
+    </script>
+
+{% endblock %}

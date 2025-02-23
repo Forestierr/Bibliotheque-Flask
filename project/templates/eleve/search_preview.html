@@ -1,0 +1,9 @@
+{% if students|length == 0 %}
+    <p>Aucun élèves trouvés</p>
+{% endif %}
+
+{% for student in students %}
+    <p>
+        <a href="/eleve/{{ student.id }}"><strong>{{ student.name }} {{ student.firstname }}</strong></a>
+    </p>
+{% endfor %}

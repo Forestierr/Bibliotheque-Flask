@@ -1,0 +1,32 @@
+<!-- templates/eleve/eleve_list.html -->
+
+{% include "utils/flash_message.html" %}
+
+<div class="container block">
+    {% for student in students %}
+        <hr style="margin: 5px 0 5px 0"/>
+        <div class="container" style="margin-bottom: 10px">
+            <div class="columns" style="margin-bottom: 0;">
+                <div class="column">
+                    <a href="/eleve/{{ student.Student.id }}" class="has-text-weight-bold	">{{ student.Student.name }} {{ student.Student.firstname }}</a>
+                </div>
+                <div class="column is-hidden-mobile has-text-right">
+                    <p>A lu <strong>{{ student.loan_count }}</strong> livres</p>
+                </div>
+            </div>
+
+            {% if student.Book != None %}
+                <p>Lit actuellement : <a href="/livre/{{ student.Book.id }}">{{ student.Book.title }}</a></p>
+            {% elif student.last_loan != None %}
+                <p>Dernier emprunt : {{ student.last_loan.strftime('%d %b %Y') }}</p>
+            {% else %}
+                <p>N'a jamais emprunté de livre</p>
+            {% endif %}
+        </div>
+
+        {# Add hr if last element #}
+        {%  if loop.last %}
+        <hr style="margin: 5px 0 5px 0" />
+        {% endif %}
+    {% endfor %}
+</div>

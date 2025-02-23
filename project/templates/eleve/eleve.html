@@ -1,0 +1,62 @@
+<!-- templates/eleve/eleve.html -->
+
+{% from "utils/navbar.html" import navbar %}
+{% from "utils/search_bar.html" import search_bar %}
+
+{% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Mes Élèves") }}
+{% endblock %}
+
+{% block content %}
+
+<h1 class="title is-1">
+    Mes élèves
+</h1>
+
+<div class="block">
+    <a href="/eleve/ajout" class="button is-dark is-fullwidth" style="justify-content: flex-start">
+        <div class="icon-text has-text-white">
+            <span class="icon">
+                <i class="fas fa-plus"></i>
+            </span>
+            <span>Ajouter un élève</span>
+        </div>
+    </a>
+</div>
+
+{% if not students %}
+<section class="section">
+    <div class="box">
+        <article class="media">
+            <div class="media-content has-text-centered is-size-5">
+              <div class="content">
+                <p>Vous n'avez pas encore ajouter vos élèves. <br>
+                Pour ajouter un élève, cliquez sur le <strong>bouton</strong> ci-dessus.</p>
+              </div>
+            </div>
+            <div class="media-right is-hidden-mobile">
+                <a href="{{ url_for('livre.livre_db') }}">
+                    <figure class="image is-64x64">
+                        <img src="{{ url_for('static',filename='/image/book_5.png') }}"
+                             href="https://www.flaticon.com/free-stickers/reading"
+                             alt="Literature stickers created by Stickers - Flaticon">
+                    </figure>
+                </a>
+            </div>
+        </article>
+    </div>
+</section>
+{% else %}
+
+<div class="block">
+    {{ search_bar("Rechercher un élève", False, "/eleve/search-preview", "/eleve/search") }}
+</div>
+
+<div id="search_list">
+{% include "eleve/eleve_list.html" %}
+</div>
+{% endif %}
+
+{% endblock %}

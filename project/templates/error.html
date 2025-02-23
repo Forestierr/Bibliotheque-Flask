@@ -1,6 +1,12 @@
-<!-- templates/index.html -->
+<!-- templates/error.html -->
+
+{% from "utils/navbar.html" import navbar %}
 
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
 
 {% block content %}
 

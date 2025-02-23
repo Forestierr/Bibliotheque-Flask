@@ -2,27 +2,76 @@
 import os
 
 from flask import Blueprint, render_template, request, url_for, make_response, send_from_directory, app, flash, redirect, current_app
-from flask_flatpages import flatpages
 from flask_login import login_required, current_user
 from werkzeug.exceptions import HTTPException
-import datetime
-from urllib.parse import urlparse
 
 from .email import send_email_to_me, send_email_confirmation
 from .models import User
 from . import db
 
+from .query import *
+
 main = Blueprint('main', __name__)
+
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+
+    infos = get_app_infos()
+
+    return render_template('index.html', infos=infos)
+
+
+@main.route('/dashboard')
+@login_required
+def dashboard():
+    n_books = get_books_count(current_user.id)
+    n_students = get_students_count(current_user.id)
+
+    # get the 5 books most borrowed
+    books = get_books_most_borrowed(current_user.id)
+
+    # get the 5 students who borrowed the most
+    students = get_students_most_borrowed(current_user.id)
+
+    # get the 5 list books loaned or returned
+    books_loaned = get_last_book_loan(current_user.id)
+
+    print(books_loaned)
+
+    # actual month and the 12 previous months
+    months = [datetime.now().strftime('%b')]
+    for i in range(0, 12):
+        months.insert(1, (datetime.now() - timedelta(days=i * 30)).strftime('%b'))
+
+    # get the loan and returns of each day for the last 365 days (max 371 day)
+    loans = get_loans_over_the_year(current_user.id)
+
+    # get all months small text version
+    # get the index of the monday of the first week of the month
+    month_index = 0
+    for i in range(0, len(loans), 7):
+        # compare the month of the loan with the month of the current date
+        if loans[i][0].month == datetime.strptime(months[month_index], '%b').month:
+            months[month_index] = (months[month_index], int(i / 7))
+            month_index += 1
+            if month_index > 12:
+                break
+
+    # calc the delta (number of weeks) between each month
+    for i in range(0, 12):
+        months[i] = (months[i][0], abs(months[i][1] - months[i + 1][1]))
+    months[12] = (months[12][0], abs(5 - months[0][1]))
+
+    return render_template('user/dashboard.html', n_books=n_books, n_students=n_students, books=books, students=students, books_loaned=books_loaned, months=months, loans=loans)
 
 
 @main.route("/sitemap.xml")
 @main.route("/sitemap")
 def sitemap():
-    return render_template('sitemap.xml')
+    return render_template('utils/sitemap.xml')
 
 
 @main.route('/robots.txt')
@@ -30,7 +79,7 @@ def sitemap():
 @main.route('/robots')
 @main.route('/robot')
 def robots():
-    return render_template('robots.txt')
+    return render_template('utils/robots.txt')
 
 
 @main.route('/favicon.ico')
@@ -40,12 +89,17 @@ def favicon():
 
 
 @main.route('/contact', methods=['GET', 'POST'])
+@login_required
 def contact():
     if request.method == 'POST':
         name = request.form.get('name')
         firstname = request.form.get('firstname')
         email = request.form.get('email')
         message = request.form.get('message')
+
+        if not name or not firstname or not email or not message:
+            flash('Veuillez remplir tous les champs.', 'danger')
+            return redirect(url_for('main.contact'))
 
         # envoi d'un email à l'administrateur
         send_email_to_me('Contact de ' + name + ' ' + firstname, "Email: " + email + "\n" + "Nom: " + name + " " + firstname + "\n\n" + message)
@@ -57,11 +111,9 @@ def contact():
 
         return redirect(url_for('main.contact'))
 
-    # get the current user if logged in
-    if current_user.is_authenticated:
-        User.query.filter(User.id == current_user.id)
+    user = get_user(current_user.id)
 
-    return render_template('contact.html')
+    return render_template('contact.html', user=user)
 
 
 @main.route('/mentions_legales')

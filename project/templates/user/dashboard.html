@@ -1,0 +1,257 @@
+<!-- templates/user/dashboard.html -->
+
+{% from "utils/navbar.html" import navbar %}
+{% from "utils/search_bar.html" import search_bar %}
+
+{% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container block">
+  <h4 class="title is-4 block">Infos</h4>
+  <div class="box">
+    <p>Nombre de livres : <strong>{{ n_books }}</strong></p>
+    <p>Nombre d'élèves  : <strong>{{ n_students }}</strong></p>
+  </div>
+</div>
+
+{% if books %}
+<div class="container block">
+  <h4 class="title is-4 block">Meilleurs livres</h4>
+      <div class="box">
+        {% for book in books %}
+            <div class="columns is-mobile">
+                <div class="column">
+                    <a href="/livre/{{ book.Book.id }}">
+                    {{ book.Book.title }}
+                    </a>
+                </div>
+                <div class="column has-text-right">
+                    Prêté <strong>{{ book.loan_count }}</strong> fois
+                </div>
+            </div>
+        {% endfor %}
+      </div>
+</div>
+{% else %}
+<div class="container block">
+  <h4 class="title is-4 block">Meilleurs livres</h4>
+  <div class="box">
+    <p class="block">Vous n'avez pas encore de livres dans votre bibliothèque.</p>
+    <a class="button is-dark" href="{{ url_for('livre.livre_ajout') }}">
+        <span class="icon">
+          <i class="fab fa-plus"></i>
+        </span>
+        <span>Ajouter un livre a votre bibliothèque</span>
+    </a>
+    <a class="button is-dark" href="{{ url_for('livre.livre_scann') }}">
+        <span class="icon">
+          <i class="fas fa-barcode"></i>
+        </span>
+        <span>Scanner un livre</span>
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% if students %}
+<div class="container block">
+  <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
+  <div class="box">
+    {% for student in students %}
+        <div class="columns is-mobile">
+            <div class="column">
+                <a href="/eleve/{{ student.Student.id }}">
+                {{ student.Student.name }} {{ student.Student.firstname }}
+                </a>
+            </div>
+            <div class="column has-text-right">
+                <strong>{{ student.loan_count }}</strong> livres lus
+            </div>
+        </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="container block">
+  <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
+  <div class="box">
+    <p class="block">Vous n'avez pas encore d'élèves dans votre bibliothèque.</p>
+    <a class="button is-dark" href="{{ url_for('eleve.ajouter_eleve') }}">
+        <span class="icon">
+          <i class="fab fa-plus"></i>
+        </span>
+        <span>Ajouter un élève</span>
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% if books_loaned %}
+<div class="container block">
+  <h4 class="title is-4 block">Derniers prêts</h4>
+  <div class="box">
+    {% for book in books_loaned %}
+        <div class="columns is-mobile">
+            <div class="column">
+                <a href="/livre/{{ book.Book.id }}">{{ book.Book.title }}</a> emprunté par <a href="/eleve/{{ book.Student.id }}">{{ book.Student.name }} {{ book.Student.firstname }}</a>
+            </div>
+            <div class="column narrow has-text-right">
+                {% if book.Loan.date_return != None %}
+                Du {{ book.Loan.date_loan.strftime('%d %b %Y') }} au {{ book.Loan.date_return.strftime('%d %b %Y') }}
+                {% else %}
+                Prêté le {{ book.Loan.date_loan.strftime('%d %b %Y') }}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<div class="container block">
+  <h4 class="title is-4 block">Derniers prèts</h4>
+  <div class="box">
+    <p>Vous n'avez pas encore effectué de prêts.</p>
+    <p class="block">Sélectionnez un livre pour le prêter à un élève.</p>
+    <a class="button is-dark" href="{{ url_for('livre.livre_db') }}">
+        <span class="icon">
+          <i class="fas fa-book"></i>
+        </span>
+        <span>Voir mes livres</span>
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% macro level(l) %}{% if l < 1 %}0{% elif l < 3 %}1{% elif l < 5 %}2{% elif l < 7 %}3{% else %}4{% endif %}{% endmacro %}
+
+<div class="container block">
+  <h4 class="title is-4 block">Prêts sur l'année</h4>
+  <div class="box">
+    <!-- table formating error on mobile : -->
+    <!-- https://github.com/jgthms/bulma/issues/2572#issuecomment-523173866 -->
+    <div style="display: grid">
+        <div class="table-container">
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <td></td>
+                        {% for month in months %}
+                            <td colspan="{{ month[1] }}">{{ month[0] }}</td>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(7) %}
+                        <tr class="heatmap">
+                            {% if i == 0 %}
+                                <td>Lun</td>
+                            {% elif i == 2 %}
+                                <td>Mer</td>
+                            {% elif i == 4 %}
+                                <td>Ven</td>
+                            {% elif i == 6 %}
+                                <td>Dim</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+
+                            {% for j in range(53) %}
+                                {% if loans[j * 7 + i] %}
+                                    <td>
+                                        <div class="level-{{ level(loans[j * 7 + i][1] + loans[j * 7 + i][2]) }} {% if i > 4 %}weekend{% endif %} tooltip">
+                                            <span class="tooltiptext">Le {{ loans[j * 7 + i][0].strftime('%d %b %Y') }}<br>{{ loans[j * 7 + i][1] }} prèts, {{ loans[j * 7 + i][2] }} retours</span>
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td><div class="level-0" style="visibility: hidden"></div></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="legend is-size-7">
+        <span>Nombres de prêts : </span>
+        <div class="level-0"></div>
+        <div class="level-1"></div>
+        <div class="level-2"></div>
+        <div class="level-3"></div>
+        <div class="level-4"></div>
+        <span>moins → plus</span>
+    </div>
+  </div>
+</div>
+
+<style>
+    .table td {
+        font-size: 10px;
+        padding: 5px !important;
+        width: 15px;
+        height: 15px;
+        border: 0;
+    }
+    .heatmap {
+        padding: 10px;
+        border-radius: 5px;
+        width: fit-content;
+    }
+    .heatmap div {
+        width: 15px;
+        height: 15px;
+        border-radius: 3px;
+        background-color: #e0e0e0;
+        box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1);
+    }
+    .level-0 { background-color: #e0e0e0 !important; }
+    .weekend { background-color: #f8f8f8 !important; }
+    .level-1 { background-color: #d6e685 !important; }
+    .level-2 { background-color: #8cc665 !important; }
+    .level-3 { background-color: #44a340 !important; }
+    .level-4 { background-color: #1e6823 !important; }
+    .legend {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    .legend div {
+        width: 15px;
+        height: 15px;
+        margin: 5px;
+        border-radius: 3px;
+        box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1);
+    }
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+    .tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 100%;
+  z-index: 1;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+</style>
+
+{% endblock %}

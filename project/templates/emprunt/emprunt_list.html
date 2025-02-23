@@ -1,0 +1,32 @@
+{% from "utils/pagination.html" import pagination %}
+
+{% include "utils/flash_message.html" %}
+
+<div class="container block">
+    {% for loan in loans %}
+        <hr style="margin: 5px 0 5px 0"/>
+        <div class="container" style="margin-bottom: 10px">
+            <div class="columns is-mobile" style="margin-bottom: 0;">
+                <div class="column">
+                    <a href="/livre/{{ loan.Book.id }}" class="has-text-weight-bold {% if loan.Loan.date_return == None %}has-text-danger{% endif %}">{{ loan.Book.title }}</a>
+                </div>
+                <div class="column has-text-right">
+                    <a href="/eleve/{{ loan.Student.id }}">{{ loan.Student.name }} {{ loan.Student.firstname }}</a>
+                </div>
+            </div>
+
+            {% if loan.Loan.date_return == None %}
+                <p>Emprunté le : {{ loan.Loan.date_loan.strftime('%d %b %Y') }}</p>
+            {% else %}
+                <p>Emprunté du : {{ loan.Loan.date_loan.strftime('%d %b %Y') }} au {{ loan.Loan.date_return.strftime('%d %b %Y') }}</p>
+            {% endif %}
+        </div>
+
+        {# Add hr if last element #}
+        {%  if loop.last %}
+        <hr style="margin: 5px 0 5px 0" />
+        {% endif %}
+    {% endfor %}
+</div>
+
+{{ pagination(nb_page, page, url="emprunt.search") }}

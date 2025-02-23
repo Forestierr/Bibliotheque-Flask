@@ -1,4 +1,12 @@
+<!-- templates/contact.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
 {% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
 
 {% block content %}
 
@@ -6,7 +14,7 @@
         Contact
     </h1>
 
-    {% include 'flash_message.html' %}
+    {% include 'utils/flash_message.html' %}
 
     <div class="container">
         <form action="{{ url_for('main.contact') }}" method="post">

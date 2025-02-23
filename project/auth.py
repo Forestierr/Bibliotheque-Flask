@@ -12,7 +12,7 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login')
 def login():
-    return render_template('login.html')
+    return render_template('auth/login.html')
 
 @auth.route('/login', methods=['POST'])
 def login_post():
@@ -34,7 +34,7 @@ def login_post():
 
 @auth.route('/signup')
 def signup():
-    return render_template('signup.html')
+    return render_template('auth/signup.html')
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
@@ -127,4 +127,4 @@ def reglage():
 
     user = db.session.query(User).with_entities(User.name, User.email).filter(User.id == current_user.id).first()
 
-    return render_template('reglage.html', user=user)
+    return render_template('user/reglage.html', user=user)

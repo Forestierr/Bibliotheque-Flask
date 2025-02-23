@@ -1,0 +1,96 @@
+{% macro navbar(current_user, titre) %}
+
+<nav class="navbar is-fixed-top is-white has-shadow" style="background-color: #fff">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ url_for('main.index') }}">
+            <img
+                src="https://livresenclasse.com/static/image/favicon.ico"
+                alt="Logo"
+            />
+        </a>
+
+        <p class="navbar-item">{{ titre }}</p>
+
+        <!-- Navbar burger -->
+        <a
+            role="button"
+            class="navbar-burger"
+            id="burger"
+            data-target="navbarMenuHeroC"
+        >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+    {% if current_user.is_authenticated %}
+    <div id="navbarMenuHeroC" class="navbar-menu">
+        <div class="navbar-end">
+            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item {% if request.endpoint == 'livre.livre_db' or request.endpoint == 'livre.livre_edit' %}is-active{% endif %}">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fas fa-book has-text-grey"></i>
+                    </span>
+                    <span>Livres</span>
+                </div>
+            </a>
+            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item {% if request.endpoint == 'eleve.eleve_db' %}is-active{% endif %}">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fas fa-users has-text-grey"></i>
+                    </span>
+                    <span>Elèves</span>
+                </div>
+            </a>
+            <a
+                href="{{ url_for('emprunt.emprunt_db') }}"
+                class="navbar-item {% if request.endpoint == 'emprunt.emprunt_db' %}is-active{% endif %}"
+            >
+                <div class="icon-text">
+                    <span class="icon">
+                        <i class="fas fa-address-book has-text-grey"></i>
+                    </span>
+                    <span>Emprunts</span>
+                </div>
+            </a>
+            <a href="{{ url_for('auth.reglage') }}" class="navbar-item {% if request.endpoint == 'auth.reglage' %}is-active{% endif %}">
+                <div class="icon-text">
+                    <span class="icon has-text-info">
+                        <i class="fa-solid fa-cog has-text-grey"></i>
+                    </span>
+                    <span>Réglages</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div id="navbarMenuHeroC" class="navbar-menu">
+        <div class="navbar-end">
+            <a href="{{ url_for('main.apropos') }}" class="navbar-item">
+                À propos
+            </a>
+            <a href="{{ url_for('main.mentions_legales') }}" class="navbar-item {% if request.endpoint == 'eleve.eleve_db' %}is-active{% endif %}">
+                Mentions legales
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="navbar-item">
+                <div class="button is-fullwidth">
+                    <span class="icon is-grey">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </span>
+                    <span>Se connecter</span>
+                </div>
+            </a>
+            <a href="{{ url_for('auth.signup') }}" class="navbar-item">
+                <div class="button is-fullwidth is-info">
+                    <span class="icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </span>
+                    <span>Créer un compte</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</nav>
+
+{%endmacro%}

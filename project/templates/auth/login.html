@@ -1,0 +1,68 @@
+<!-- templates/login.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+<div class="section">
+    <div class="columns login-container" style="align-items: center;">
+        <div class="column is-half is-hidden-mobile left-side">
+            <h1 class="title">Ma Bibliothèque</h1>
+
+            <div class="columns" style="align-items: center;">
+                <div class="column is-narrow">
+                    <figure class="image is-128x128">
+                        <img src="{{ url_for('static',filename='/image/book_3.png') }}"
+                        href="https://www.flaticon.com/free-stickers/reading"
+                         alt="Reading stickers created by Stickers - Flaticon">
+                    </figure>
+                </div>
+                <div class="column">
+                    <p class="subtitle">Gérez vos livres en toute simplicité.</p>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="column is-half right-side">
+            <div class="container box" style="width: 80%; max-width: 400px;">
+                <h2 class="title is-4 has-text-centered">Connexion</h2>
+
+                {% include "utils/flash_message.html" %}
+
+                <form method="POST" action="/login">
+                    <div class="field">
+                        <label class="label">Email</label>
+                        <div class="control">
+                            <input class="input" type="email" name="email" placeholder="Votre email" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Mot de passe</label>
+                        <div class="control">
+                            <input class="input" type="password" name="password" placeholder="Votre mot de passe" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox">
+                            Se souvenir de moi
+                        </label>
+                    </div>
+                    <div class="field has-text-centered">
+                        <button class="button is-primary is-fullwidth">Se connecter</button>
+                    </div>
+                </form>
+                <p class="has-text-centered mt-3">
+                    <a href="#">Mot de passe oublié ?</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

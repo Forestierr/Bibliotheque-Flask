@@ -1,0 +1,123 @@
+<!-- templates/emprunt/emprunt.html -->
+
+{% from "utils/navbar.html" import navbar %}
+{% from "utils/search_bar.html" import search_bar %}
+
+{% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Mes emprunts") }}
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="title is-1">
+        Emprunts
+    </h1>
+
+    {% include "utils/flash_message.html" %}
+
+    {% if not loans %}
+        <section class="section">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content has-text-centered is-size-5">
+                      <div class="content">
+                        <p>Vous n'avez pas encore prèté de livre. <br>
+                        Pour prèter un livre, rendez-vous sur la page du livre et assignez le a un élève.</p>
+                      </div>
+                    </div>
+                    <div class="media-right is-hidden-mobile">
+                        <a href="{{ url_for('livre.livre_db') }}">
+                            <figure class="image is-64x64">
+                                <img src="{{ url_for('static',filename='/image/book_3.png') }}"
+                                     href="https://www.flaticon.com/free-stickers/reading"
+                                     alt="Literature stickers created by Stickers - Flaticon">
+                            </figure>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+    {% else %}
+        <div class="columns is-mobile">
+            <div class="column">
+                {{ search_bar("Rechercher un emprunt", True, "/emprunt/search-preview", "/emprunt/search") }}
+            </div>
+            <div class="column is-narrow has-text-right">
+                <div class="select is-rounded">
+                    <select class="button" name="active_loan"
+                        hx-post="/emprunt/search"
+                        hx-trigger="change"
+                        hx-target="#search_list"
+                        hx-include="[name='search'], [name='n_results'], [name='sort']">
+                        <option class="is-hidden-tablet" value="0" selected>Tout</option>
+                        <option class="is-hidden-tablet" value="1">Actifs</option>
+                    </select>
+                </div>
+
+            <!--
+                <button class="button is-hidden-mobile {% if only_active_loans == false %}is-hidden{% endif %}" data-active="true"
+                        hx-post="/emprunt/search"
+                        hx-trigger="click"
+                        hx-target="#search_list"
+                        hx-include="[name='sort'], [name='n_results'], [name='search'], [name='active_loan']">
+                    <span class="icon">
+                      <i class="fa-solid fa-book"></i>
+                    </span>
+                    <span>Voir tous les emprunts</span>
+                </button>
+
+
+                <button class="button is-hidden-tablet" id="btn_active_loan">
+                    <span class="icon">
+                      <i class="fa-solid fa-book"></i>
+                    </span>
+                </button>
+
+                <button class="button is-hidden-mobile {% if only_active_loans == true %}is-hidden{% endif %}" data-active="false"
+                    hx-post="/emprunt/search"
+                    hx-trigger="click"
+                    hx-target="#search_list"
+                    hx-include="[name='sort'], [name='n_results'], [name='search'], [name='active_loan']">
+                    <span class="icon">
+                      <i class="fa-solid fa-book-open-reader"></i>
+                    </span>
+                    <span>Voir les emprunts actifs</span>
+                </button>
+
+                <button class="button is-hidden-tablet" id="active_loan">
+                    <span class="icon">
+                      <i class="fa-solid fa-book-open-reader"></i>
+                    </span>
+                </button>
+
+                <input type="hidden" name="active_loan" value="{% if only_active_loans %}1{% else %}0{% endif %}">
+            -->
+            </div>
+        </div>
+
+        {% with date=true, url="/emprunt/search" %}
+        {% include "utils/result_sort.html" %}
+        {% endwith %}
+
+        <div id="search_list">
+            {% include "emprunt/emprunt_list.html" %}
+        </div>
+
+    {% endif %}
+
+     <!-- Utilisé pour supprimer les notifications -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
