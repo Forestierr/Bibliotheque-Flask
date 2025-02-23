@@ -8,7 +8,7 @@
         <div class="container" style="margin-bottom: 10px">
             <div class="columns is-mobile" style="margin-bottom: 0;">
                 <div class="column">
-                    <a href="/livre/{{ loan.Book.id }}/edit" class="has-text-weight-bold {% if loan.Loan.date_return == None %}has-text-danger{% endif %}">{{ loan.Book.title }}</a>
+                    <a href="/livre/{{ loan.Book.id }}" class="has-text-weight-bold {% if loan.Loan.date_return == None %}has-text-danger{% endif %}">{{ loan.Book.title }}</a>
                 </div>
                 <div class="column has-text-right">
                     <a href="/eleve/{{ loan.Student.id }}">{{ loan.Student.name }} {{ loan.Student.firstname }}</a>

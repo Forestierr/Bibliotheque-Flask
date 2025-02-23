@@ -47,18 +47,20 @@ def return_loan(id):
 @emprunt.route('/emprunt/<id>/delete', methods=['GET', 'POST'])
 @login_required
 def delete_loan(id):
+    from_url = request.referrer
+
     loan = db.session.query(Loan).filter(Loan.id == id).first()
 
     book = db.session.query(Book).filter(Book.id == loan.book_id).first()
 
     if book.user_id != current_user.id:
-        return redirect(url_for('emprunt.emprunt_db'))
+        return redirect(from_url)
 
     if loan:
         db.session.delete(loan)
         db.session.commit()
 
-    return redirect(url_for('emprunt.emprunt_db'))
+    return redirect(from_url)
 
 
 @emprunt.route('/emprunt/delete_all', methods=['POST'])

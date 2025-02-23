@@ -262,6 +262,11 @@ def get_loans(current_user_id) -> list:
     return loans
 
 
+"""
+Get the number of loans
+    :param current_user_id: the user id
+    :return: the number of loans
+"""
 def get_loans_count(current_user_id) -> int:
     loans_count = (db.session.query(Loan).filter(Book.user_id == current_user_id)
                    .outerjoin(Book, Loan.book_id == Book.id)
@@ -313,6 +318,25 @@ def get_loans_with_infos(current_user_id, actualy_loan=False, sort='Loan.id', so
     loans_with_infos = query.limit(n_books_by_page).offset((page - 1) * n_books_by_page).all()
 
     return loans_with_infos, n_books
+
+
+def get_loans_with_infos_bookid(current_user_id, book_id, actualy_loan=False) -> list:
+    query = db.session.query(Loan, Book, Student).filter(Book.user_id == current_user_id, Book.id == book_id)
+
+    if actualy_loan:
+        query = query.filter(Loan.date_return == None)
+    else:
+        query = query.filter(Loan.date_return != None)
+        query = query.order_by(Loan.date_loan.desc(), Loan.date_return.desc())
+
+    query = query.join(Book, Loan.book_id == Book.id).join(Student, Loan.student_id == Student.id)
+
+    if actualy_loan:
+        loans_with_infos = query.first()
+    else:
+        loans_with_infos = query.all()
+
+    return loans_with_infos
 
 
 """

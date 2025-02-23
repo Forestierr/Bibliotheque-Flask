@@ -16,7 +16,7 @@
             </div>
 
             {% if student.Book != None %}
-                <p>Lit actuellement : <a href="/livre/{{ student.Book.id }}/edit">{{ student.Book.title }}</a></p>
+                <p>Lit actuellement : <a href="/livre/{{ student.Book.id }}">{{ student.Book.title }}</a></p>
             {% elif student.last_loan != None %}
                 <p>Dernier emprunt : {{ student.last_loan.strftime('%d %b %Y') }}</p>
             {% else %}

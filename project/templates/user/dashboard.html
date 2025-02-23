@@ -26,7 +26,7 @@
     {% for book in books %}
         <div class="columns is-mobile">
             <div class="column">
-                <a href="/livre/{{ book.Book.id }}/edit">
+                <a href="/livre/{{ book.Book.id }}">
                 {{ book.Book.title }}
                 </a>
             </div>
@@ -92,7 +92,7 @@
     {% for book in books_loaned %}
         <div class="columns is-mobile">
             <div class="column">
-                <a href="/livre/{{ book.Book.id }}/edit">{{ book.Book.title }}</a> emprunté par <a href="/eleve/{{ book.Student.id }}">{{ book.Student.name }} {{ book.Student.firstname }}</a>
+                <a href="/livre/{{ book.Book.id }}">{{ book.Book.title }}</a> emprunté par <a href="/eleve/{{ book.Student.id }}">{{ book.Student.name }} {{ book.Student.firstname }}</a>
             </div>
             <div class="column narrow has-text-right">
                 {% if book.Loan.date_return != None %}

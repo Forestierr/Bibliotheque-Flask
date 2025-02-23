@@ -67,6 +67,31 @@ def get_book_from_api(isbn):
         return None
 
 
+@livre.route('/livre/<id>')
+@login_required
+def livre_infos(id):
+    book = get_book_by_id(current_user.id, id)
+
+    if not book:
+        flash('Le livre que vous souhaitiez voir n\'existe pas.', 'error')
+
+        return redirect(url_for('livre.livre_db'))
+
+    # get the loans
+    actual_loans = get_loans_with_infos_bookid(current_user.id, id, True)
+
+    # get the old loans
+    old_loans = get_loans_with_infos_bookid(current_user.id, id, False)
+
+    # Get all students from the current user
+    students = get_students(current_user.id)
+
+    # Get the tags of the book
+    tags = get_book_tags(current_user.id, id)
+
+    return render_template('livre/livre_info.html', book=book, actual_loans=actual_loans, old_loans=old_loans, students=students, tags=tags)
+
+
 @livre.route('/livre/ajout', methods=['GET', 'POST'])
 @login_required
 def livre_ajout():
@@ -245,6 +270,24 @@ def livre_edit(id):
         return redirect(url_for('livre.livre_db'))
 
     return render_template('livre/livre_edit.html', book=book, students=students, student=student, tags=json.dumps(tags), book_tags=book_tags)
+
+
+@livre.route('/livre/<id>/edit-student', methods=['POST'])
+@login_required
+def livre_edit_student(id):
+    student_id = request.form.get('student_id')
+    student = get_student_by_id(current_user.id, student_id)
+
+    if not student:
+        flash('L\'élève n\'existe pas.', 'error')
+        return redirect(url_for('livre.livre_infos', id=id))
+
+    # Create a new loan
+    loan = Loan(student_id=student.id, book_id=id, date_loan=date.today())
+    db.session.add(loan)
+    db.session.commit()
+
+    return redirect(url_for('livre.livre_infos', id=id))
 
 
 @livre.route('/livre/<id>/delete')

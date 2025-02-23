@@ -1,0 +1,222 @@
+<!-- templates/live/livre_info.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Mes Livres") }}
+{% endblock %}
+
+{% block content %}
+
+    <h1 class="title is-1">
+        {{ book.title }}
+    </h1>
+    <h3 class="subtitle is-3 block">
+        Nombre de fois prêtés : {{ (old_loans|count if old_loans else 0) + (actual_loans|count if actual_loans else 0) }}
+    </h3>
+
+    {% include "utils/flash_message.html" %}
+
+    {% if tags %}
+    <div class="container block">
+        {% for tag in tags %}
+            <span class="tag is-rounded is-dark">{{ tag.name }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container block">
+        <div class="box">
+            <div class="columns is-mobile">
+                <div class="column is-narrow">
+                    <p>Titre: </p>
+                    {% if book.author %}<p>Auteur : </p>{% endif %}
+                    {% if book.editor %}<p>Editeur : </p>{% endif %}
+                    {% if book.year %}<p>Année : </p>{% endif %}
+                    {% if book.isbn %}<p>ISBN : </p>{% endif %}
+                </div>
+                <div class="column">
+                    <p><strong>{{ book.title }}</strong></p>
+                    {% if book.author %}<p><strong>{{ book.author }}</strong></p>{% endif %}
+                    {% if book.editor %}<p><strong>{{ book.editor }}</strong></p>{% endif %}
+                    {% if book.year %}<p><strong>{{ book.year }}</strong></p>{% endif %}
+                    {% if book.isbn %}<p><strong>{{ book.isbn }}</strong></p>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container block">
+        {% if actual_loans %}
+            <h3 class="subtitle is-3">Actuellement prêté à :</h3>
+            <hr>
+            <div class="columns" style="margin-bottom: 0;">
+                <div class="column">
+                    <a href="/eleve/{{ actual_loans.Student.id }}">
+                        <h4 class="subtitle is-4">{{ actual_loans.Student.name }} {{ actual_loans.Student.firstname }}</h4>
+                    </a>
+                </div>
+                <div class="column has-text-right">
+                    <a href="/emprunt/{{ actual_loans.Loan.id }}" class="button is-success is-small">
+                        <span class="icon is-small">
+                          <i class="fa-solid fa-calendar-check"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Delete modal -->
+            <div id="delete-moda-l-0" class="modal">
+              <div class="modal-background"></div>
+              <div class="modal-content">
+                <div class="modal-card">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                    </header>
+                    <footer class="modal-card-foot">
+                        <a href="/emprunt/{{ actual_loans.Loan.id }}/delete" class="button is-normal is-danger is-responsive">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-trash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                            </div>
+                        </a>
+                        <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">Annuler</a>
+                    </footer>
+                </div>
+              </div>
+              <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
+            </div>
+
+            <div class="columns" style="margin-bottom: 0;">
+                <div class="column">
+                    <p>Emprunté le {{ actual_loans.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                </div>
+
+                <div class="column has-text-right">
+                    <button class="button is-danger is-small showModal" href="#delete-moda-l-0">
+                        <span class="icon is-small">
+                          <i class="fas fa-trash"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <hr>
+        {% else %}
+            <div class="container block">
+                <h3 class="subtitle is-3">Ce livre n'est pas actuellement prêté.</h3>
+                <form action="/livre/{{ book.id }}/edit-student" method="post">
+                    <div class="field">
+                        <label class="label" for="students">Prêter le livre a un élève</label>
+                        <div class="select">
+                            <select name="student_id" id="student-select">
+                                {% if student %}
+                                    <option value="{{ student.id }}" selected>{{ student.name }} {{ student.firstname }}</option>
+                                {% endif %}
+                                <option value="">--Le livre se trouve dans le bibliothèque--</option>
+                                {% for student in students %}
+                                    <option value="{{ student.id }}">{{ student.name }} {{ student.firstname }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <button class="button is-link">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if old_loans %}
+            <h3 class="subtitle is-3">Anciens emprunts :</h3>
+            {% for loan in old_loans %}
+                <hr>
+                <a href="/eleve/{{ loan.Student.id }}">
+                    <h4 class="subtitle is-4">{{ loan.Student.name }} {{ loan.Student.firstname }}</h4>
+                </a>
+
+                <div class="columns is-mobile">
+                    <div class="column">
+                        <p>Emprunté du {{ loan.Loan.date_loan.strftime('%d %b %Y') }} au {{ loan.Loan.date_return.strftime('%d %b %Y') }}</p>
+                    </div>
+
+                    <!-- Delete modal -->
+                    <div id="delete-moda-l-{{ loop.index }}" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-content">
+                        <div class="modal-card">
+                            <header class="modal-card-head">
+                                <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                            </header>
+                            <footer class="modal-card-foot">
+                                <a href="/emprunt/{{ loan.Loan.id }}/delete" class="button is-normal is-danger is-responsive">
+                                    <div class="icon-text">
+                                        <span class="icon has-text-info">
+                                            <i class="fa-solid fa-trash has-text-black"></i>
+                                        </span>
+                                        <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                    </div>
+                                </a>
+                                <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">Annuler</a>
+                            </footer>
+                        </div>
+                      </div>
+                      <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
+                    </div>
+
+                    <div class="column has-text-right">
+                        <button class="button is-danger is-small showModal" href="#delete-moda-l-{{ loop.index }}">
+                            <span class="icon is-small">
+                              <i class="fas fa-trash"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <hr>
+
+    </div>
+
+    <div class="buttons">
+        <a href="/livre/{{ book.id }}/edit" class="button is-grey">Modifier le livre</a>
+    </div>
+
+    <script>
+    let modals = document.getElementsByClassName('modal');
+    let modalBtns = document.getElementsByClassName('showModal');
+    let closeBtns = document.getElementsByClassName('modal-close');
+    let modalBackgrounds = document.getElementsByClassName('modal-background');
+
+    for(let modalBtn of modalBtns) {
+        modalBtn.onclick = function(event) {
+            document.querySelector(event.currentTarget.getAttribute('href')).style.display = 'flex';
+        }
+    }
+
+    for(let closeBtn of closeBtns) {
+        closeBtn.onclick = function(event) {
+            event.target.parentNode.style.display = 'none';
+        }
+    }
+
+    for(let modalBackground of modalBackgrounds) {
+        modalBackground.onclick = function(event) {
+            event.target.parentNode.style.display = 'none';
+        }
+    }
+
+    window.onkeydown = function(event) {
+        if (event.key == 'Escape') {
+            for(let modal of modals) {
+                modal.style.display = 'none';
+            }
+        }
+    }
+</script>
+
+{% endblock %}
