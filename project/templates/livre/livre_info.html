@@ -175,11 +175,12 @@
                         </button>
                     </div>
                 </div>
+
+                {% if loop.last %}
+                <hr>
+                {% endif %}
             {% endfor %}
         {% endif %}
-
-        <hr>
-
     </div>
 
     <div class="buttons">
