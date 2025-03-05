@@ -3,13 +3,9 @@
 <nav class="navbar is-fixed-top is-white has-shadow" style="background-color: #fff">
     <div class="navbar-brand">
         <a class="navbar-item" href="{{ url_for('main.index') }}">
-            <img
-                src="https://livresenclasse.com/static/image/favicon.ico"
-                alt="Logo"
-            />
+            <img src="/static/image/icons/favicon-96x96.png" alt="Logo"/>
+            <p class="navbar-item" style="user-select: none;">{{ titre }}</p>
         </a>
-
-        <p class="navbar-item">{{ titre }}</p>
 
         <!-- Navbar burger -->
         <a

@@ -29,8 +29,6 @@ def livre_db():
     # (Book, Student, Tags, Loan_count)
     books = get_books_student_tags(current_user.id, n_books_by_page, page)
 
-    print(books)
-
     # When the user types "tags:" or "eleve:" in the search bar, we should display the tags and students
     all_students = get_students(current_user.id)
 
@@ -43,7 +41,6 @@ def livre_db():
 def get_book_from_api(isbn):
     # get api key from the environnement
     api_key = os.getenv("GOOGLE_BOOK_API_KEY")
-
     url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&printType=books&orderBy=relevance&maxResults=1&key={api_key}"
     response = requests.get(url)
     data = response.json()
@@ -152,6 +149,10 @@ def livre_ajout():
     if isbn:
         # Get the book from the API
         book = get_book_from_api(isbn)
+        # If the book is not found, we create a book with the ISBN
+        # The user can complete the book information
+        if not book:
+            book = {'isbn': isbn}
 
     # Get all tags (only the name) from the current user
     tags = Tags.query.filter_by(user_id=current_user.id).all()
@@ -407,7 +408,6 @@ def search(page=1):
             search = split[1]
             (books, n_books) = search_books_by_types(current_user.id, split[0], search, sort, sort_order, n_books_by_page, page)
         else:
-            print('Type de recherche inconnu, vous pouvez utiliser : titre:, isbn:, eleve:, tags: suivi de votre recherche.')
             flash('Type de recherche inconnu, vous pouvez utiliser : titre:, isbn:, eleve:, tags: suivi de votre recherche.', 'error')
             # All books
             books = get_books_sorted(current_user.id, sort, sort_order, n_books_by_page, page)

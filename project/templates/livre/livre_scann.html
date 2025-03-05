@@ -161,7 +161,8 @@
             // does the book exist in the database?
             // if yes, redirect to the book edit page
             // if no, redirect to the book creation page
-            fetch(`/livre/${code}/exist`)
+            // fetch(`/livre/${code}/exist`)
+            fetch("{{ url_for('livre.livre_exist', isbn='ISBN') }}".replace("ISBN", code))
                 .then(response => response.json())
                 .then(data => {
                     // if the book does not exist, redirect to the book creation page
@@ -178,7 +179,7 @@
         }
 
         function isISBN(code) {
-            return code.length === 13 && code.startsWith("978");
+            return code.length === 13 && (code.startsWith("978") || code.startsWith("979"));
         }
 
         switchCamera('environment'); // Par défaut sur la caméra arrière

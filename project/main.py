@@ -1,7 +1,7 @@
 # main.py
 import os
 
-from flask import Blueprint, render_template, request, url_for, make_response, send_from_directory, app, flash, redirect, current_app
+from flask import Blueprint, render_template, request, url_for, make_response, send_from_directory, app, flash, redirect, current_app, send_file
 from flask_login import login_required, current_user
 from werkzeug.exceptions import HTTPException
 
@@ -127,7 +127,22 @@ def apropos():
     return render_template('apropos.html')
 
 
+@main.route('/install')
+def install():
+    return render_template('utils/app_install.html')
+
+
 # Error handling
 @main.app_errorhandler(HTTPException)
 def page_not_found(e):
     return render_template('error.html', error=e), e.code
+
+
+# PWA code
+@main.route('/manifest.json')
+def serve_manifest():
+    return send_file('manifest.json', mimetype='application/manifest+json')
+
+@main.route('/sw.js')
+def serve_sw():
+    return send_file('static/javascript/sw.js', mimetype='application/javascript')
