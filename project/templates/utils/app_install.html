@@ -1,0 +1,77 @@
+<!-- templates/utils/app_install.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h1 class="title is-1 is-spaced">Installer l'application <strong>Ma Biblio</strong></h1>
+        <h3 class="subtitle is-3">Installer l'application sur votre appareil pour un accès plus rapide et une meilleure expérience utilisateur.</h3>
+
+        <button class="button is-large is-link is-rounded is-outlined" id="installApp" style="display: none;">
+            <span class="icon">
+                <i class="fa-solid fa-download"></i>
+            </span>
+            <span>Installer l'application</span>
+        </button>
+
+        <div class="box" id="iosMessage" style="display: none;">
+            <p>
+                Il est possible que le bouton d'installation ne soit pas disponible sur votre appareil.
+                Pour installer l'application, veuillez ajouter cette page à votre écran d'accueil.
+            </p>
+            <p>
+                Pour cela suivre les étapes suivantes :
+            </p>
+            <figure class="image">
+              <img src="/static/image/screenshots/install.webp" />
+            </figure>
+            <hr>
+            <p>
+                Si vous avez des questions, n'hésitez pas à nous contacter.
+                Si votre navigateur ne supporte pas cette fonctionnalité, essayez avec un autre navigateur ou
+                utilisez la version web de l'application.
+            </p>
+        </div>
+    </div>
+
+    <script>
+    let deferredPrompt;
+
+    // Détection de iOS
+    function isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent);
+    }
+
+    // Affichage du bouton pour Android + Chrome
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (!isIOS()) {
+            document.getElementById('installApp').style.display = 'block';
+        }
+    });
+
+    // Gestion du bouton d'installation sur Android
+    document.getElementById('installApp').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                deferredPrompt = null;
+            }
+        }
+    });
+
+    // Affichage du message pour iOS
+    if (isIOS()) {
+        document.getElementById('iosMessage').style.display = 'block';
+    }
+</script>
+
+{% endblock %}

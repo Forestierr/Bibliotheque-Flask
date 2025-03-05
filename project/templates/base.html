@@ -3,24 +3,67 @@
 {% from "utils/footer.html" import footer, footer_mobile %}
 
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="La bibliothèque pour votre classe"/>
+    <meta name="keywords" content="livres, classe, bibliothèque, emprunt, scolaire"/>
+    <meta property="og:title" content="Ma bibliothèque"/>
+    <meta property="og:description" content="La bibliothèque pour votre classe"/>
     <title>Ma bibliothèque</title>
 
-    <!--
-    <link rel="shortcut icon" href="{{ url_for('static', filename='/image/favicon.ico') }}">
-    -->
-    <link rel="shortcut icon" href="https://livresenclasse.com/static/image/favicon.ico"
-    />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"
-    />
+    <!-- Android -->
+    <meta name="theme-color" content="#ffffffff"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+
+    <!-- iOS -->
+    <meta name="apple-mobile-web-app-title" content="Application Title">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- Windows  -->
+    <meta name="msapplication-navbutton-color" content="red">
+    <meta name="msapplication-TileColor" content="red">
+    <meta name="msapplication-TileImage" content="ms-icon-144x144.png">
+    <meta name="msapplication-config" content="browserconfig.xml">
+
+    <!-- Pinned Sites  -->
+    <meta name="application-name" content="Application Name">
+    <meta name="msapplication-tooltip" content="Tooltip Text">
+    <meta name="msapplication-starturl" content="/">
+
+    <!-- Tap highlighting  -->
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!-- UC Mobile Browser  -->
+    <meta name="full-screen" content="yes">
+    <meta name="browsermode" content="application">
+
+    <!-- Main Link Tags -->
+    <link rel="icon" type="image/png" href="/static/image/icons/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/static/image/icons/favicon.svg" />
+    <link rel="icon" type="image/png" href="/static/image/icons/logo-w-512x512.png" sizes="512x512" />
+    <link rel="shortcut icon" href="/static/image/icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/image/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Ma Bibliothèque" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <script src="{{ url_for('static', filename='/javascript/app.js') }}"></script>
+
+    <!-- Bulma & Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"/>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script src="https://kit.fontawesome.com/222094ca6a.js" crossorigin="anonymous"></script>
 
-    <style type="text/css" media="screen">
+    <!-- Custom CSS -->
+    <style media="screen">
       body {
         display: flex;
         min-height: 100vh;
@@ -60,12 +103,11 @@
 <section class="hero is-fullheight">
     <div id="wrpper">
        <div class="hero-head block">
-        {# Navbar #}
-        {% block navbar %}
-            {# {% from "utils/navbar.html" import navbar %} #}
-        	{# {{ navbar(current_user, "Ma Bibliothèque") }} #}
-        {% endblock %}
-
+            {# Navbar #}
+            {% block navbar %}
+                {# {% from "utils/navbar.html" import navbar %} #}
+                {# {{ navbar(current_user, "Ma Bibliothèque") }} #}
+            {% endblock %}
         </div>
         <div class="hero-body block" style="margin-bottom: 2rem">
             <div class="container">{% block content %} {% endblock %}</div>
