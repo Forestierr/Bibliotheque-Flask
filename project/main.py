@@ -39,8 +39,6 @@ def dashboard():
     # get the 5 list books loaned or returned
     books_loaned = get_last_book_loan(current_user.id)
 
-    print(books_loaned)
-
     # actual month and the 12 previous months
     months = [datetime.now().strftime('%b')]
     for i in range(0, 12):
@@ -60,10 +58,12 @@ def dashboard():
             if month_index > 12:
                 break
 
+    months[-1] = (months[-1], 52)  # last month is always at 52 weeks
+
     # calc the delta (number of weeks) between each month
     for i in range(0, 12):
         months[i] = (months[i][0], abs(months[i][1] - months[i + 1][1]))
-    months[12] = (months[12][0], abs(5 - months[0][1]))
+    months[12] = (months[12][0], abs(52 - months[12][1]))
 
     return render_template('user/dashboard.html', n_books=n_books, n_students=n_students, books=books, students=students, books_loaned=books_loaned, months=months, loans=loans)
 
