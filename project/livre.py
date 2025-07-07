@@ -48,7 +48,7 @@ def get_book_from_api(isbn):
     if data.get('totalItems', 0) > 0:
         book = data['items'][0]['volumeInfo']
         title = book.get('title', None)
-        authors = ", ".join(book.get('authors', None))
+        authors = ", ".join(book.get('authors', []))
         editor = book.get('publisher', None)
         year = book.get('publishedDate', None)
         type = book.get('subtitle', None)
