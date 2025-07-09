@@ -190,6 +190,104 @@
   </div>
 </div>
 
+<div class="container block">
+  <h4 class="title is-4 block">Livres lus par élève</h4>
+  <div class="box">
+    <form id="student-books-form" class="mb-4 block" style="display: flex; gap: 1em; align-items: center;">
+      <label for="date_from">De :</label>
+      <input type="date" id="date_from" name="date_from" style="border-radius: 5px; padding: 5px 12px">
+      <label for="date_to">À :</label>
+      <input type="date" id="date_to" name="date_to" style="border-radius: 5px; padding: 5px 12px">
+      <button type="submit" class="button is-dark">Afficher</button>
+    </form>
+    <canvas id="studentBooksChart" height="100"></canvas>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  async function fetchStudentBooks(from, to) {
+    const params = new URLSearchParams({from, to});
+    const response = await fetch(`/api/student_books_read?${params}`);
+    return await response.json();
+  }
+
+  function renderChart(labels, data) {
+    const ctx = document.getElementById('studentBooksChart').getContext('2d');
+    if(window.studentBooksChartInstance) window.studentBooksChartInstance.destroy();
+    window.studentBooksChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Livres lus',
+          data: data,
+          backgroundColor: 'rgba(54, 162, 235, 0.35)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+          barThickness: 'flex',
+          maxBarThickness: 200,
+        }]
+      },
+      options: {
+        indexAxis: 'x',
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          x: {
+              beginAtZero: true,
+              ticks: {
+                  autoSkip: false,
+                  maxRotation: 90,
+                  minRotation: 0
+              },
+              barThickness: 'flex',  // number (pixels) or 'flex'
+              maxBarThickness: 8,
+              grid: { display: false },
+              type: 'category',
+              title: {
+              display: true,
+              text: 'Élèves'
+            }
+          },
+          y: {
+            beginAtZero: true,
+            type: 'linear',
+            min: 0,
+            ticks: {
+              stepSize: 1
+            },
+            title: {
+              display: true,
+              text: 'Nombre de livres lus'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  document.getElementById('student-books-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const from = document.getElementById('date_from').value;
+    const to = document.getElementById('date_to').value;
+    const result = await fetchStudentBooks(from, to);
+    renderChart(result.labels, result.data);
+  });
+
+  // Initial load (last 365 days)
+  window.addEventListener('DOMContentLoaded', async () => {
+    const today = new Date();
+    const priorDate = new Date();
+    priorDate.setDate(today.getDate() - 365);
+    document.getElementById('date_to').value = today.toISOString().slice(0,10);
+    document.getElementById('date_from').value = priorDate.toISOString().slice(0,10);
+    const result = await fetchStudentBooks(priorDate.toISOString().slice(0,10), today.toISOString().slice(0,10));
+    renderChart(result.labels, result.data);
+  });
+</script>
+
 <style>
     .table td {
         font-size: 10px;

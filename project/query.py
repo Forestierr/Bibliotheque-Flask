@@ -694,3 +694,41 @@ def get_app_infos():
     }
 
     return infos
+
+
+def get_books_read_by_students(current_user_id, date_from, date_to):
+    """
+    Retourne le nombre de livres lus par élève entre deux dates (incluses).
+    :param current_user_id: l'id de l'utilisateur
+    :param date_from: date de début (string 'YYYY-MM-DD')
+    :param date_to: date de fin (string 'YYYY-MM-DD')
+    :return: liste de tuples (nom complet, nombre de livres lus)
+    """
+    from datetime import datetime
+    from .models import Student, Loan
+    from sqlalchemy import func, and_
+
+    # Conversion des dates
+    try:
+        date_from = datetime.strptime(date_from, '%Y-%m-%d')
+        date_to = datetime.strptime(date_to, '%Y-%m-%d')
+    except Exception:
+        return []
+
+    # Requête : inclure tous les élèves, même sans emprunt
+    results = (
+        db.session.query(
+            (Student.name + ' ' + Student.firstname).label('fullname'),
+            func.coalesce(func.count(Loan.id), 0).label('books_read')
+        )
+        .outerjoin(Loan, Loan.student_id == Student.id)
+        .filter(Student.user_id == current_user_id)
+        .filter(
+            (Loan.date_loan >= date_from) & (Loan.date_loan <= date_to) | (Loan.id == None)
+        )
+        .group_by(Student.id)
+        .order_by(func.count(Loan.id).desc())
+        .all()
+    )
+    return results
+
