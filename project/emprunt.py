@@ -51,6 +51,10 @@ def delete_loan(id):
 
     loan = db.session.query(Loan).filter(Loan.id == id).first()
 
+    if not loan:
+        flash('Emprunt introuvable.', 'error')
+        return redirect(from_url)
+
     book = db.session.query(Book).filter(Book.id == loan.book_id).first()
 
     if book.user_id != current_user.id:
