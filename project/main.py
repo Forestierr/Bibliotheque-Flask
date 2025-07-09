@@ -1,7 +1,7 @@
 # main.py
 import os
 
-from flask import Blueprint, render_template, request, url_for, make_response, send_from_directory, app, flash, redirect, current_app, send_file
+from flask import Blueprint, render_template, request, url_for, make_response, send_from_directory, app, flash, redirect, current_app, send_file, jsonify
 from flask_login import login_required, current_user
 from werkzeug.exceptions import HTTPException
 
@@ -146,3 +146,17 @@ def serve_manifest():
 @main.route('/sw.js')
 def serve_sw():
     return send_file('static/javascript/sw.js', mimetype='application/javascript')
+
+
+@main.route('/api/student_books_read')
+@login_required
+def api_student_books_read():
+    date_from = request.args.get('from')
+    date_to = request.args.get('to')
+    if not date_from or not date_to:
+        return jsonify({'labels': [], 'data': []})
+    results = get_books_read_by_students(current_user.id, date_from, date_to)
+    labels = [r[0] for r in results]
+    data = [r[1] for r in results]
+    return jsonify({'labels': labels, 'data': data})
+
