@@ -19,7 +19,7 @@ def livre_db():
     # Puis on utilise HTMX pour avoir les valeurs des paramètres
     # dans les fonctions search et search_preview
     page = 1
-    n_books_by_page = 10
+    n_books_by_page = 20
     # get the number of books
     nb_books = db.session.query(Book).filter(Book.user_id == current_user.id).count()
     # nombre de page
@@ -112,7 +112,11 @@ def livre_ajout():
         # If the tag is not in the database, we add it
         if tags:
             tags = tags.split(',')
+            # Remove spaces at the beginning and end of each tag
+            tags = [tag.strip() for tag in tags if tag.strip()]
             for tag in tags:
+                if tag == '':
+                    continue
                 if tag not in tags_in_db:
                     new_tag = Tags(name=tag, user_id=current_user.id)
                     db.session.add(new_tag)
@@ -131,6 +135,8 @@ def livre_ajout():
         # Add the tags to the book
         if tags:
             for tag in tags:
+                if tag == '':
+                    continue
                 tag_id = Tags.query.filter_by(name=tag, user_id=current_user.id).first().id
                 book_tag = BookTags(book_id=new_book.id, tag_id=tag_id)
                 db.session.add(book_tag)
@@ -159,6 +165,20 @@ def livre_ajout():
     tags = [tag.name for tag in tags]
 
     return render_template('livre/livre_ajout.html', tags=json.dumps(tags), book=book)
+
+
+@livre.route('/livre/check-title', methods=['POST'])
+@login_required
+def check_title():
+    title = request.form.get('title')
+    if not title:
+        return make_response('Titre requis', 400)
+
+    book = get_book_by_title(current_user.id, title)
+    if book:
+        return make_response('Ce titre existe déjà.', 200)
+
+    return make_response('', 200)
 
 
 @livre.route('/livre/scann', methods=['GET', 'POST'])
@@ -222,7 +242,8 @@ def livre_edit(id):
         book.isbn = isbn
 
         # take the student in the database
-        student = get_student_by_id(current_user.id, student)
+        if student:
+            student = get_student_by_id(current_user.id, student)
 
         if student:
             if loan:
@@ -256,6 +277,8 @@ def livre_edit(id):
 
         # If the tag is not in the database, we add it
         for tag in tags:
+            if tag == '':
+                continue
             if tag not in tags_in_db:
                 new_tag = Tags(name=tag, user_id=current_user.id)
                 db.session.add(new_tag)
@@ -272,6 +295,51 @@ def livre_edit(id):
 
     return render_template('livre/livre_edit.html', book=book, students=students, student=student, tags=json.dumps(tags), book_tags=book_tags)
 
+
+@livre.route('/livre/<id>/duplique', methods=['GET'])
+@login_required
+def livre_duplique(id):
+    book = get_book_by_id(current_user.id, id)
+
+    if not book:
+        flash('Le livre que vous souhaitiez dupliquer n\'existe pas.', 'error')
+        return redirect(url_for('livre.livre_db'))
+
+    new_title = book.title
+    while Book.query.filter_by(user_id=current_user.id, title=new_title).first():
+        if new_title[-1].isdigit():
+            # Trouver le dernier numéro dans le titre
+            parts = new_title.rsplit(' - ', 1)
+            if len(parts) > 1 and parts[1].isdigit():
+                # Incrémenter le numéro
+                new_number = int(parts[1]) + 1
+                new_title = parts[0] + ' - ' + str(new_number)
+            else:
+                new_title = new_title + ' - 2'
+        else:
+            new_title = new_title + ' - 2'
+
+    new_book = Book(
+        title=new_title,
+        author=book.author,
+        editor=book.editor,
+        year=book.year,
+        type=book.type,
+        isbn=book.isbn,
+        user_id=current_user.id
+    )
+
+    db.session.add(new_book)
+
+    # Add the same tags to the new book
+    tags = get_book_tags(current_user.id, id)
+    for tag in tags:
+        book_tag = BookTags(book_id=new_book.id, tag_id=tag.id)
+        db.session.add(book_tag)
+
+    db.session.commit()
+
+    return redirect(url_for('livre.livre_infos', id=new_book.id))
 
 @livre.route('/livre/<id>/edit-student', methods=['POST'])
 @login_required
@@ -369,7 +437,7 @@ def search(page=1):
 
     search = request.form.get('search') if request.form.get('search') else ''
     sort = request.form.get('sort') if request.form.get('sort') else 'pertinent'
-    n_books_by_page = request.form.get('n_results') if request.form.get('n_results') else 10
+    n_books_by_page = request.form.get('n_results') if request.form.get('n_results') else 20
     page = request.form.get('page') if request.form.get('page') else page
 
     n_books_by_page = int(n_books_by_page)

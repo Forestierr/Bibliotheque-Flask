@@ -20,7 +20,12 @@
             <div class="field">
                 <label class="label" for="title">Titre</label>
                 <div class="control">
-                    <input class="input" type="text" name="title" id="title" required {% if book.title %}value="{{ book.title }}"{% endif %}>
+                    <input class="input" type="text" name="title" id="title" required {% if book.title %}value="{{ book.title }}"{% endif %}
+                        hx-post="/livre/check-title"
+                        hx-trigger="keyup changed delay:500ms"
+                        hx-target="#title-error"
+                        hx-swap="innerHTML">
+                    <p id="title-error" class="help is-danger"></p>
                 </div>
             </div>
 
@@ -83,7 +88,7 @@
 
             <div class="field is-grouped">
                 <div class="control">
-                    <button class="button is-link">Enregistrer</button>
+                    <button class="button is-link" id="button-enregistrer">Enregistrer</button>
                 </div>
                 <div class="control">
                     <button class="button is-light">
@@ -93,6 +98,25 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // Script pour la vérification du titre
+        document.body.addEventListener('htmx:afterRequest', function (event) {
+            if (event.detail.pathInfo.requestPath === "/livre/check-title") {
+              const input = document.querySelector('#title');
+              const errorMessage = event.detail.xhr.responseText;
+              const SaveButton = document.querySelector('#button-enregistrer');
+
+              if (errorMessage) {
+                input.classList.add('is-danger');
+                SaveButton.disabled = true;
+              } else {
+                input.classList.remove('is-danger');
+                SaveButton.disabled = false;
+              }
+            }
+          });
+    </script>
 
     <!-- Script pour la gestion des étiquettes -->
     <script>
@@ -135,7 +159,7 @@
           const tagElement = document.createElement("div");
           tagElement.className = "tag is-info";
           tagElement.textContent = tag;
-
+          console.log("Tag ajouté :", tag);
           const removeButton = document.createElement("button");
           removeButton.className = "delete is-small";
           removeButton.addEventListener("click", () => {
