@@ -16,7 +16,7 @@ emprunt = Blueprint('emprunt', __name__)
 @login_required
 def emprunt_db():
     page = 1
-    n_books_by_page = 10
+    n_books_by_page = 20
     # get the number of books
     nb_books = get_loans_count(current_user.id)
     # nombre de page
@@ -110,7 +110,7 @@ def search(page=1):
 
     search = request.form.get('search') if request.form.get('search') else ''
     sort = request.form.get('sort') if request.form.get('sort') else 'pertinent'
-    n_books_by_page = request.form.get('n_results') if request.form.get('n_results') else 10
+    n_books_by_page = request.form.get('n_results') if request.form.get('n_results') else 20
     page = request.form.get('page') if request.form.get('page') else page
     print(request.form.get('active_loan'))
     only_active_loans = True if request.form.get('active_loan') == '1' else False

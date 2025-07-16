@@ -200,7 +200,9 @@
       <input type="date" id="date_to" name="date_to" style="border-radius: 5px; padding: 5px 12px">
       <button type="submit" class="button is-dark">Afficher</button>
     </form>
-    <canvas id="studentBooksChart" height="100"></canvas>
+    <div class="chart-container" style="width: 100%; max-width: 100%; overflow-x: auto">
+        <canvas id="studentBooksChart" height="100"></canvas>
+    </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -240,7 +242,7 @@
               ticks: {
                   autoSkip: false,
                   maxRotation: 90,
-                  minRotation: 0
+                  minRotation: 90
               },
               barThickness: 'flex',  // number (pixels) or 'flex'
               maxBarThickness: 8,

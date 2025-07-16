@@ -15,7 +15,7 @@
     <style>
         .lens-controls {
             position: absolute;
-            bottom: 30px;
+            bottom: 10px;
             width: 100%;
             text-align: center;
             justify-content: center;
@@ -28,9 +28,6 @@
         .lens-controls button:focus {
             color: gold;
         }
-        .camera-controls {
-            justify-content: space-between;
-        }
         #barcode-result {
             text-align: center;
             font-size: 1.5em;
@@ -40,29 +37,32 @@
         video {
             width: 100%;
             height: auto;
+            max-height: 75vh;
             display: block;
         }
     </style>
 
-    <div class="container block">
+    <div class="container is-max-desktop" style="position: relative; margin-top: 10px;">
         <video id="video" autoplay playsinline></video>
 
-        <div class="buttons lens-controls">
-            <button class="button is-rounded" onclick="switchCamera('ultra-wide')">.5x</button>
-            <button class="button is-rounded" onclick="switchCamera('environment')">1x</button>
-            <button class="button is-rounded" onclick="switchCamera('zoom')">2x</button>
-        </div>
-        <div class="buttons camera-controls">
-            <button class="button is-warning is-rounded" onclick="toggleTorch()">
-                <span class="icon is-small">
-                  <i class="fas fa-bolt"></i>
-                </span>
-            </button>
-            <button id="switch-side" class="button is-rounded" onclick="switchCamera('user')">
-                <span class="icon is-small">
-                  <i class="fas fa-sync"></i>
-                </span>
-            </button>
+        <div class="lens-controls">
+            <div class="buttons is-centered is-flex">
+                <button class="button is-rounded torch-button" onclick="toggleTorch()">
+                    <span class="icon is-small">
+                      <i class="fas fa-bolt"></i>
+                    </span>
+                </button>
+
+                <button class="button is-rounded" onclick="switchCamera('ultra-wide')">.5</button>
+                <button class="button is-rounded" onclick="switchCamera('normal')">1</button>
+                <button class="button is-rounded" onclick="switchCamera('zoom')">2</button>
+
+                <button id="switch-side" class="button is-rounded" onclick="switchCamera('user')">
+                    <span class="icon is-small">
+                      <i class="fas fa-sync"></i>
+                    </span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -88,8 +88,16 @@
                 document.getElementById('switch-side').onclick = () => switchCamera('user');
             }
 
-            if (cameraType === 'ultra-wide' || cameraType === 'zoom') {
-                constraints.video.advanced = [{ zoom: cameraType === 'zoom' ? 2 : 0.5 }];
+            if (cameraType === 'ultra-wide') {
+                constraints.video.advanced = [{ zoom: 0.5 }];
+            }
+
+            if (cameraType === 'zoom') {
+                constraints.video.advanced = [{ zoom: 2 }];
+            }
+
+            if (cameraType === 'normal') {
+                constraints.video.advanced = [{ zoom: 1 }];
             }
 
             try {
@@ -113,6 +121,14 @@
             }
 
             let torchState = !track.getSettings().torch;
+            let torchButton = document.querySelector('.torch-button');
+
+            if (torchState) {
+                torchButton.classList.add('is-warning');
+            } else {
+                torchButton.classList.remove('is-warning');
+            }
+
             await track.applyConstraints({ advanced: [{ torch: torchState }] });
         }
 
@@ -182,7 +198,7 @@
             return code.length === 13 && (code.startsWith("978") || code.startsWith("979"));
         }
 
-        switchCamera('environment'); // Par défaut sur la caméra arrière
+        switchCamera('ultra-wide'); // Par défaut sur la caméra arrière
     </script>
 
 

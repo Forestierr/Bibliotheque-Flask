@@ -31,6 +31,17 @@ def get_books_count(current_user_id) -> int:
     return books_count
 
 
+def get_books_count_by_title(current_user_id, title) -> int:
+    """
+    Get the number of books from a user by title
+        :param current_user_id: the user id
+        :param title: the book title
+        :return: the number of books
+    """
+    books_count = db.session.query(Book).filter(Book.user_id == current_user_id, Book.title == title).count()
+    return books_count
+
+
 """
 Get a book by his id
     :param current_user_id: the user id
@@ -50,6 +61,17 @@ Get a book by his isbn
 """
 def get_book_by_isbn(current_user_id, isbn) -> Book:
     book = db.session.query(Book).filter(Book.user_id == current_user_id, Book.isbn == isbn).first()
+    return book
+
+
+"""
+Get a book by his title
+    :param current_user_id: the user id
+    :param title: the book title
+    :return: the book
+"""
+def get_book_by_title(current_user_id, title) -> Book:
+    book = db.session.query(Book).filter(Book.user_id == current_user_id, Book.title == title).first()
     return book
 
 
