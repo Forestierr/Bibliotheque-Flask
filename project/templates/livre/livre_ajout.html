@@ -22,7 +22,7 @@
                 <div class="control">
                     <input class="input" type="text" name="title" id="title" required {% if book.title %}value="{{ book.title }}"{% endif %}
                         hx-post="/livre/check-title"
-                        hx-trigger="keyup changed delay:500ms"
+                        hx-trigger="load, keyup changed delay:500ms"
                         hx-target="#title-error"
                         hx-swap="innerHTML">
                     <p id="title-error" class="help is-danger"></p>
@@ -159,7 +159,7 @@
           const tagElement = document.createElement("div");
           tagElement.className = "tag is-info";
           tagElement.textContent = tag;
-          console.log("Tag ajouté :", tag);
+
           const removeButton = document.createElement("button");
           removeButton.className = "delete is-small";
           removeButton.addEventListener("click", () => {

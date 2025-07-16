@@ -330,6 +330,7 @@ def livre_duplique(id):
     )
 
     db.session.add(new_book)
+    db.session.commit()
 
     # Add the same tags to the new book
     tags = get_book_tags(current_user.id, id)
