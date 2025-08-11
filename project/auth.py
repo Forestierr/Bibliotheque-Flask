@@ -57,7 +57,6 @@ def signup_post():
 
     # envoi d'un email de bienvenue à l'utilisateur
     # sans bloquer l'application
-    # TODO: envoyer un liens de confirmation par email
     send_email_bienvenue(name, email)
 
     return redirect(url_for('auth.login'))
@@ -102,11 +101,11 @@ def reset_password(token, user_id):
 
         if not password or not password2:
             flash('Vous devez indiquer un nouveau mot de passe.', 'error')
-            return redirect(url_for('auth.reset_password'))
+            return redirect(url_for('auth.reset_password', token=token, user_id=user_id))
 
         if password != password2:
             flash('Les mots de passe ne correspondent pas.', 'error')
-            return redirect(url_for('auth.reset_password'))
+            return redirect(url_for('auth.reset_password', token=token, user_id=user_id))
 
         user.password = generate_password_hash(password, method='pbkdf2:sha256')
         db.session.commit()
