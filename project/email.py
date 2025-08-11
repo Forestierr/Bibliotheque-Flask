@@ -1,7 +1,7 @@
 import os
 import logging
 from threading import Thread
-from flask import render_template, current_app
+from flask import render_template, current_app, url_for
 from flask_mail import Message, Mail
 
 from . import mail
@@ -53,3 +53,19 @@ def send_email_bienvenue(name, email):
 	recipients = [email]
 	html_body = render_template('email/email_bienvenue.html', name=name)
 	send_html_email(subject, sender, recipients, html_body)
+
+def send_email_reset_password(user):
+	subject = 'Réinitialisation de votre mot de passe'
+	sender = os.getenv('MAIL_USERNAME')
+	recipients = [user.email]
+
+	reset_password_url = url_for(
+		'auth.reset_password',
+		token=user.get_reset_password_token(),
+		user_id=user.id,
+		_external=True,
+	)
+
+	html_body = render_template('email/email_reset_password.html', reset_password_url=reset_password_url)
+	send_html_email(subject, sender, recipients, html_body)
+	logging.info(f'Email de réinitialisation de mot de passe envoyé à {user.email}')

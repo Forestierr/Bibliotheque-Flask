@@ -4,6 +4,8 @@
 from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Table
 from sqlalchemy.orm import relationship
+from itsdangerous import URLSafeTimedSerializer
+import os
 from . import db
 
 # Table d'association pour la relation Many-to-Many entre Book et Tags
@@ -27,6 +29,29 @@ class User(UserMixin, db.Model):
     students = relationship('Student', backref='user', lazy=True)  # User can have many students
     # One-to-Many relationship with tags
     tags = relationship('Tags', backref='user', lazy=True) # User can have many tags
+
+    def get_reset_password_token(self):
+        serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+        return serializer.dumps(self.email, salt=self.password)
+
+    @staticmethod
+    def validate_reset_password_token(token: str, user_id: int):
+        user = User.query.get(user_id)
+
+        if not user:
+            return None
+
+        serializer = URLSafeTimedSerializer(os.getenv('SECRET_KEY'))
+        try:
+            email = serializer.loads(token, salt=user.password, max_age=3600)  # Token valid for 1 hour
+        except Exception as e:
+            return None
+
+        if email != user.email:
+            return None
+
+        return user
+
 
 class Book(db.Model):
     __tablename__ = 'book'
