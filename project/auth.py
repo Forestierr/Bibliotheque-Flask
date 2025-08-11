@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
-from .email import send_email_bienvenue
+from .email import send_email_bienvenue, send_email_reset_password
 from .models import User
 from . import db
 
@@ -38,7 +38,6 @@ def signup():
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
-
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
@@ -58,8 +57,7 @@ def signup_post():
 
     # envoi d'un email de bienvenue à l'utilisateur
     # sans bloquer l'application
-
-
+    # TODO: envoyer un liens de confirmation par email
     send_email_bienvenue(name, email)
 
     return redirect(url_for('auth.login'))
@@ -69,6 +67,53 @@ def signup_post():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+@auth.route('/reset_password', methods=['GET', 'POST'])
+def reset_password_request():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        if not email:
+            flash('Vous devez indiquer votre email.', 'error')
+            return redirect(url_for('auth.reset_password_request'))
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash('Aucun utilisateur trouvé avec cet email.', 'error')
+            return redirect(url_for('auth.reset_password_request'))
+
+        flash('Un email avec les instructions de réinitialisation de mot de passe a été envoyé.', 'success')
+        send_email_reset_password(user)
+
+        return redirect(url_for('auth.reset_password_request'))
+
+    return render_template('auth/reset_password_request.html')
+
+@auth.route('/reset_password/<token>/<int:user_id>', methods=['GET', 'POST'])
+def reset_password(token, user_id):
+    user = User.validate_reset_password_token(token, user_id)
+    if not user:
+        flash('Le lien de réinitialisation de mot de passe est invalide ou a expiré.', 'error')
+        return redirect(url_for('auth.reset_password_request'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        password2 = request.form.get('password2')
+
+        if not password or not password2:
+            flash('Vous devez indiquer un nouveau mot de passe.', 'error')
+            return redirect(url_for('auth.reset_password'))
+
+        if password != password2:
+            flash('Les mots de passe ne correspondent pas.', 'error')
+            return redirect(url_for('auth.reset_password'))
+
+        user.password = generate_password_hash(password, method='pbkdf2:sha256')
+        db.session.commit()
+        flash('Votre mot de passe a été réinitialisé avec succès.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/reset_password.html')
 
 
 @auth.route('/delete_account', methods=['POST'])

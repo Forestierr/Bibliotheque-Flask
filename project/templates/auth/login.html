@@ -25,8 +25,6 @@
                 <div class="column">
                     <p class="subtitle">Gérez vos livres en toute simplicité.</p>
                 </div>
-
-
             </div>
         </div>
         <div class="column is-half right-side">
@@ -59,7 +57,7 @@
                     </div>
                 </form>
                 <p class="has-text-centered mt-3">
-                    <a href="#">Mot de passe oublié ?</a>
+                    <a href="{{ url_for('auth.reset_password_request') }}">Mot de passe oublié ?</a>
                 </p>
             </div>
         </div>
