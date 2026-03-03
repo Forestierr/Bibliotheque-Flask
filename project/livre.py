@@ -365,11 +365,6 @@ def livre_edit_student(id):
 def livre_delete(id):
     book = get_book_by_id(current_user.id, id)
 
-    # Delete all loans of the book
-    loan = get_book_loans(current_user.id, id)
-    for l in loan:
-        db.session.delete(l)
-
     # Delete the book
     db.session.delete(book)
     db.session.commit()
@@ -397,9 +392,6 @@ def livre_delete_all():
     books = get_books(current_user.id)
 
     for book in books:
-        loans = get_book_loans(current_user.id, book.id)
-        for loan in loans:
-            db.session.delete(loan)
         db.session.delete(book)
 
     db.session.commit()

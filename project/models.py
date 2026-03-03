@@ -64,8 +64,8 @@ class Book(db.Model):
     isbn = db.Column(db.String(100),nullable=True)
 
     user_id = db.Column(db.Integer, ForeignKey('user.id'))  # Each book belongs to a user
-    loans = relationship('Loan', backref='book', lazy=True)
-    book_tags = relationship('BookTags', backref='book', lazy=True)
+    loans = relationship('Loan', backref='book', lazy=True, cascade="all, delete-orphan")
+    book_tags = relationship('BookTags', backref='book', lazy=True, cascade="all, delete-orphan")
 
 
 class Student(db.Model):
@@ -77,7 +77,7 @@ class Student(db.Model):
     # Many-to-One relationship with User
     user_id = db.Column(db.Integer, ForeignKey('user.id'))  # Each student belongs to a user
     # Loan relationship: One student can have multiple loans
-    loans = relationship('Loan', backref='student', lazy=True)
+    loans = relationship('Loan', backref='student', lazy=True, cascade="all, delete-orphan")
 
 
 class Loan(db.Model):
@@ -97,4 +97,4 @@ class Tags(db.Model):
     name = db.Column(db.String(100))
 
     user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
-    book_tags = relationship('BookTags', backref='tag', lazy=True)
+    book_tags = relationship('BookTags', backref='tag', lazy=True, cascade="all, delete-orphan")
