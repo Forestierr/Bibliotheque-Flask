@@ -65,6 +65,17 @@ def get_book_by_isbn(current_user_id, isbn) -> Book:
 
 
 """
+Get all books by their isbn
+    :param current_user_id: the user id
+    :param isbn: the book isbn
+    :return: a list of books
+"""
+def get_books_by_isbn(current_user_id, isbn) -> list:
+    books = db.session.query(Book).filter(Book.user_id == current_user_id, Book.isbn == isbn).all()
+    return books
+
+
+"""
 Get a book by his title
     :param current_user_id: the user id
     :param title: the book title

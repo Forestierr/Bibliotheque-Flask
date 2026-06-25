@@ -25,7 +25,7 @@
                         hx-trigger="load, keyup changed delay:500ms"
                         hx-target="#title-error"
                         hx-swap="innerHTML">
-                    <p id="title-error" class="help is-danger"></p>
+                    <p id="title-error" class="help is-warning"></p>
                 </div>
             </div>
 
@@ -105,14 +105,11 @@
             if (event.detail.pathInfo.requestPath === "/livre/check-title") {
               const input = document.querySelector('#title');
               const errorMessage = event.detail.xhr.responseText;
-              const SaveButton = document.querySelector('#button-enregistrer');
 
               if (errorMessage) {
-                input.classList.add('is-danger');
-                SaveButton.disabled = true;
+                input.classList.add('is-warning');
               } else {
-                input.classList.remove('is-danger');
-                SaveButton.disabled = false;
+                input.classList.remove('is-warning');
               }
             }
           });

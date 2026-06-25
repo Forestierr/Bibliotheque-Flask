@@ -122,12 +122,7 @@ def livre_ajout():
                     db.session.add(new_tag)
                     db.session.commit()
 
-        # Check if the book already exists
-        book = Book.query.filter_by(user_id=current_user.id, title=title).first()
-        if book:
-            # The book already exists
-            flash('Ce titre est déja utilisé pour un autre livre.', 'error')
-            return redirect(url_for('livre.livre_ajout'))
+
 
         new_book = Book(title=title, author=author, editor=editor, year=year, type=type, isbn=isbn, user_id=current_user.id)
         db.session.add(new_book)
@@ -176,7 +171,7 @@ def check_title():
 
     book = get_book_by_title(current_user.id, title)
     if book:
-        return make_response('Ce titre existe déjà.', 200)
+        return make_response('Ce livre existe déjà, un nouvel exemplaire sera ajouté.', 200)
 
     return make_response('', 200)
 
@@ -226,12 +221,7 @@ def livre_edit(id):
             flash('Veuillez ajouter un titre au livre.', 'info')
             return redirect(url_for('livre.livre_edit', id=id))
 
-        # Check if the title is already used
-        all_book = get_books(current_user.id)
-        for b in all_book:
-            if b.title == title and b.id != int(id):
-                flash('Ce titre est déja utilisé pour un autre livre.', 'error')
-                return redirect(url_for('livre.livre_edit', id=id))
+
 
         # Update the book
         book.title = title
@@ -306,18 +296,6 @@ def livre_duplique(id):
         return redirect(url_for('livre.livre_db'))
 
     new_title = book.title
-    while Book.query.filter_by(user_id=current_user.id, title=new_title).first():
-        if new_title[-1].isdigit():
-            # Trouver le dernier numéro dans le titre
-            parts = new_title.rsplit(' - ', 1)
-            if len(parts) > 1 and parts[1].isdigit():
-                # Incrémenter le numéro
-                new_number = int(parts[1]) + 1
-                new_title = parts[0] + ' - ' + str(new_number)
-            else:
-                new_title = new_title + ' - 2'
-        else:
-            new_title = new_title + ' - 2'
 
     new_book = Book(
         title=new_title,
@@ -346,6 +324,11 @@ def livre_duplique(id):
 @login_required
 def livre_edit_student(id):
     student_id = request.form.get('student_id')
+    
+    if not student_id:
+        flash('Le livre reste dans la bibliothèque.', 'info')
+        return redirect(url_for('livre.livre_infos', id=id))
+
     student = get_student_by_id(current_user.id, student_id)
 
     if not student:
@@ -377,10 +360,13 @@ def livre_delete(id):
 @livre.route('/livre/<isbn>/exist')
 @login_required
 def livre_exist(isbn):
-    book = get_book_by_isbn(current_user.id, isbn)
+    books = get_books_by_isbn(current_user.id, isbn)
 
-    if book:
-        data = {'id': book.id}
+    if books:
+        if len(books) == 1:
+            data = {'id': books[0].id, 'multiple': False}
+        else:
+            data = {'ids': [b.id for b in books], 'multiple': True}
         return make_response(jsonify(data), 200)
 
     return make_response(jsonify({'error':'Book not found'}), 404)
