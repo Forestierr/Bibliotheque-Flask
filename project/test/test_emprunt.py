@@ -70,15 +70,20 @@ def test_return_loan_success(client, app, logged_in_user):
         mock_loan.id = 1
         mock_loan.date_return = None
 
+        mock_book = MagicMock()
+        mock_book.id = 1
+        mock_book.user_id = 1  # Same user as logged_in_user
+
         with (
             patch("project.emprunt.current_user", logged_in_user),
             patch("project.emprunt.db.session") as mock_session,
         ):
-            mock_session.query().filter().first.return_value = mock_loan
+            mock_session.query().filter().first.side_effect = [mock_loan, mock_book]
 
             with app.test_request_context(
                 "/emprunt/1", method="POST", headers={"Referer": "/emprunt"}
             ):
+                mock_session.commit = MagicMock()
                 response = client.post("/emprunt/1")
                 assert response.status_code == 302  # Redirect
                 assert mock_loan.date_return == date.today()

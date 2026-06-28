@@ -64,7 +64,7 @@ def eleve_infos(id):
     )
 
 
-@eleve.route("/eleve/<id>/delete")
+@eleve.route("/eleve/<id>/delete", methods=["POST"])
 @login_required
 def eleve_delete(id):
     student = Student.query.filter_by(user_id=current_user.id, id=id).first()

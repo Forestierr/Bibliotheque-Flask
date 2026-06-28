@@ -59,11 +59,14 @@
                     </a>
                 </div>
                 <div class="column has-text-right">
-                    <a href="/emprunt/{{ actual_loans.Loan.id }}" class="button is-success is-small">
-                        <span class="icon is-small">
-                          <i class="fa-solid fa-calendar-check"></i>
-                        </span>
-                    </a>
+                    <form action="/emprunt/{{ actual_loans.Loan.id }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="button is-success is-small">
+                            <span class="icon is-small">
+                              <i class="fa-solid fa-calendar-check"></i>
+                            </span>
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -76,14 +79,17 @@
                         <p class="modal-card-title">Supprimer l'emprunt ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <a href="/emprunt/{{ actual_loans.Loan.id }}/delete" class="button is-normal is-danger is-responsive">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-trash has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
-                            </div>
-                        </a>
+                        <form action="/emprunt/{{ actual_loans.Loan.id }}/delete" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="button is-normal is-danger is-responsive">
+                                <div class="icon-text">
+                                    <span class="icon has-text-info">
+                                        <i class="fa-solid fa-trash has-text-black"></i>
+                                    </span>
+                                    <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                </div>
+                            </button>
+                        </form>
                         <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">Annuler</a>
                     </footer>
                 </div>
@@ -109,6 +115,7 @@
             <div class="container block">
                 <h3 class="subtitle is-3">Ce livre n'est pas actuellement prêté.</h3>
                 <form action="/livre/{{ book.id }}/edit-student" method="post">
+    {% include 'utils/csrf.html' %}
                     <div class="field">
                         <label class="label" for="students">Prêter le livre a un élève</label>
                         <div class="select">
@@ -152,14 +159,17 @@
                                 <p class="modal-card-title">Supprimer l'emprunt ?</p>
                             </header>
                             <footer class="modal-card-foot">
-                                <a href="/emprunt/{{ loan.Loan.id }}/delete" class="button is-normal is-danger is-responsive">
-                                    <div class="icon-text">
-                                        <span class="icon has-text-info">
-                                            <i class="fa-solid fa-trash has-text-black"></i>
-                                        </span>
-                                        <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
-                                    </div>
-                                </a>
+                                <form action="/emprunt/{{ loan.Loan.id }}/delete" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="button is-normal is-danger is-responsive">
+                                        <div class="icon-text">
+                                            <span class="icon has-text-info">
+                                                <i class="fa-solid fa-trash has-text-black"></i>
+                                            </span>
+                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                        </div>
+                                    </button>
+                                </form>
                                 <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">Annuler</a>
                             </footer>
                         </div>

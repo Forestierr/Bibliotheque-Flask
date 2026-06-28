@@ -18,6 +18,7 @@
 
     <div class="container">
         <form action="{{ url_for('main.contact') }}" method="post">
+    {% include 'utils/csrf.html' %}
             <div class="field">
                 <label class="label">Nom</label>
                 <div class="control">

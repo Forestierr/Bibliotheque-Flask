@@ -36,6 +36,7 @@
                 {% include "utils/flash_message.html" %}
 
                 <form method="POST" action="/eleve/ajout">
+    {% include 'utils/csrf.html' %}
                     <div class="field">
                         <label class="label">Nom de l'élève</label>
                         <div class="control">
