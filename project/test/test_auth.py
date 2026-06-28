@@ -66,9 +66,10 @@ def test_login_post_success(client, app):
                 response = client.post(
                     "/login",
                     data={"email": "test@test.com", "password": "good"},
-                    follow_redirects=True,
+                    follow_redirects=False,
                 )
-                assert response.status_code in (200, 302)
+                assert response.status_code == 302
+                assert "/dashboard" in response.headers.get("Location", "")
                 assert mock_login_user.call_count == 1
 
 
