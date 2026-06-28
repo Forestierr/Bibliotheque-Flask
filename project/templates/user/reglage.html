@@ -59,7 +59,24 @@
     </div>
 </div>
 
-<div class="block">
+<div class="tabs is-centered is-boxed">
+    <ul>
+        <li class="is-active" id="tab-link-compte">
+            <a onclick="switchTab('compte')">
+                <span class="icon is-small"><i class="fas fa-user" aria-hidden="true"></i></span>
+                <span>Mon Compte</span>
+            </a>
+        </li>
+        <li id="tab-link-export">
+            <a onclick="switchTab('export')">
+                <span class="icon is-small"><i class="fas fa-file-export" aria-hidden="true"></i></span>
+                <span>Exporter mes données</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div id="tab-content-compte" class="block">
     <h2 class="title is-3">Modifier mes informations personnelles</h2>
 
     {% include 'utils/flash_message.html' %}
@@ -288,6 +305,51 @@
     </div>
 </div>
 
+<div id="tab-content-export" class="block" style="display: none;">
+    <h2 class="title is-3">Télécharger vos données</h2>
+    <div class="container">
+        <p>Générez et téléchargez facilement vos données au format Excel pour les conserver ou les analyser.</p>
+        <br>
+        <div class="columns is-multiline">
+            <div class="column is-half">
+                <div class="box">
+                    <h4 class="title is-4"><i class="fa-solid fa-book has-text-info"></i> Tous les livres</h4>
+                    <p>Exportez la liste complète des livres de votre bibliothèque avec leurs informations.</p>
+                    <br>
+                    <a href="{{ url_for('export.export_books') }}" class="button is-info is-fullwidth">Télécharger (Excel)</a>
+                </div>
+            </div>
+            
+            <div class="column is-half">
+                <div class="box">
+                    <h4 class="title is-4"><i class="fa-solid fa-graduation-cap has-text-success"></i> Lectures par élève</h4>
+                    <p>Une liste groupée par élève affichant tous les livres qu'ils ont lus ou empruntés.</p>
+                    <br>
+                    <a href="{{ url_for('export.export_students_reads') }}" class="button is-success is-fullwidth">Télécharger (Excel)</a>
+                </div>
+            </div>
+
+            <div class="column is-half">
+                <div class="box">
+                    <h4 class="title is-4"><i class="fa-solid fa-rotate has-text-warning"></i> Prêts en cours</h4>
+                    <p>Exportez la liste des livres actuellement prêtés, qui n'ont pas encore été rendus.</p>
+                    <br>
+                    <a href="{{ url_for('export.export_active_loans') }}" class="button is-warning is-fullwidth">Télécharger (Excel)</a>
+                </div>
+            </div>
+
+            <div class="column is-half">
+                <div class="box">
+                    <h4 class="title is-4"><i class="fa-solid fa-clock-rotate-left has-text-primary"></i> Tous les prêts</h4>
+                    <p>L'historique complet de tous les prêts (terminés ou en cours) réalisés dans la bibliothèque.</p>
+                    <br>
+                    <a href="{{ url_for('export.export_all_loans') }}" class="button is-primary is-fullwidth">Télécharger (Excel)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Utilisé pour supprimer les notifications -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -299,6 +361,22 @@
             });
         });
     });
+</script>
+
+<script>
+    function switchTab(tabName) {
+        // Cacher tous les contenus
+        document.getElementById('tab-content-compte').style.display = 'none';
+        document.getElementById('tab-content-export').style.display = 'none';
+        
+        // Retirer la classe is-active de tous les liens
+        document.getElementById('tab-link-compte').classList.remove('is-active');
+        document.getElementById('tab-link-export').classList.remove('is-active');
+        
+        // Afficher le contenu désiré et mettre le lien en active
+        document.getElementById('tab-content-' + tabName).style.display = 'block';
+        document.getElementById('tab-link-' + tabName).classList.add('is-active');
+    }
 </script>
 
 <!-- Utilisé pour les validation de suppression -->
