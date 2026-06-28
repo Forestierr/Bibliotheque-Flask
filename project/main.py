@@ -16,7 +16,6 @@ from flask_login import login_required, current_user
 from werkzeug.exceptions import HTTPException
 
 from .email import send_email_to_me, send_email_confirmation
-from datetime import datetime, timedelta
 from .query import (
     get_app_infos,
     get_books_count,
@@ -57,31 +56,29 @@ def dashboard():
     # get the 5 list books loaned or returned
     books_loaned = get_last_book_loan(current_user.id)
 
-    # actual month and the 12 previous months
-    months = [datetime.now().strftime("%b")]
-    for i in range(0, 12):
-        months.insert(1, (datetime.now() - timedelta(days=i * 30)).strftime("%b"))
-
     # get the loan and returns of each day for the last 365 days (max 371 day)
     loans = get_loans_over_the_year(current_user.id)
 
-    # get all months small text version
-    # get the index of the monday of the first week of the month
-    month_index = 0
-    for i in range(0, len(loans), 7):
-        # compare the month of the loan with the month of the current date
-        if loans[i][0].month == datetime.strptime(months[month_index], "%b").month:
-            months[month_index] = (months[month_index], int(i / 7))
-            month_index += 1
-            if month_index > 12:
-                break
+    # Calculate month spans based on the weeks in `loans`.
+    # A contribution graph has columns representing weeks.
+    months = []
+    if loans:
+        current_month_str = ""
+        current_span = 0
+        for w in range(0, len(loans), 7):
+            # We take the first day of the week to determine the month of this column
+            month_str = loans[w][0].strftime("%b")
 
-    months[-1] = (months[-1], 52)  # last month is always at 52 weeks
+            if month_str == current_month_str:
+                current_span += 1
+            else:
+                if current_month_str != "":
+                    months.append((current_month_str, current_span))
+                current_month_str = month_str
+                current_span = 1
 
-    # calc the delta (number of weeks) between each month
-    for i in range(0, 12):
-        months[i] = (months[i][0], abs(months[i][1] - months[i + 1][1]))
-    months[12] = (months[12][0], abs(52 - months[12][1]))
+        if current_month_str != "":
+            months.append((current_month_str, current_span))
 
     return render_template(
         "user/dashboard.html",
@@ -169,6 +166,46 @@ def mentions_legales():
 @main.route("/about")
 def apropos():
     return render_template("apropos.html")
+
+
+# SEO Dynamic Routes
+@main.route("/blog")
+def blog_index():
+    return render_template("blog/index.html")
+
+
+@main.route("/blog/<path:article_slug>")
+def blog_article(article_slug):
+    try:
+        return render_template(f"blog/{article_slug}.html")
+    except Exception:
+        return render_template("error.html", error="Article non trouvé"), 404
+
+
+@main.route("/ressources")
+def ressources_index():
+    return render_template("ressources/index.html")
+
+
+@main.route("/ressources/<path:ressource_slug>")
+def ressource_article(ressource_slug):
+    try:
+        return render_template(f"ressources/{ressource_slug}.html")
+    except Exception:
+        return render_template("error.html", error="Ressource non trouvée"), 404
+
+
+@main.route("/enseignants")
+def enseignants_index():
+    return render_template("enseignants/index.html")
+
+
+@main.route("/enseignants/<path:guide_slug>")
+def enseignants_guide(guide_slug):
+    try:
+        return render_template(f"enseignants/{guide_slug}.html")
+    except Exception:
+        return render_template("error.html", error="Guide non trouvé"), 404
 
 
 @main.route("/install")

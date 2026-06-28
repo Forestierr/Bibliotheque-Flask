@@ -20,6 +20,17 @@
             <span>Installer l'application</span>
         </button>
 
+        <div class="box has-background-warning-light" id="unsupportedMessage" style="display: none;">
+            <p>
+                <strong>Information :</strong> Votre navigateur actuel ne semble pas proposer l'installation directe via un bouton, ou l'application est peut-être déjà installée sur votre appareil.
+            </p>
+            <br>
+            <p>
+                Pour installer facilement l'application sur ordinateur (Windows/Mac/Linux), nous vous recommandons d'utiliser <strong>Google Chrome</strong> ou <strong>Microsoft Edge</strong>. 
+                Une icône d'installation apparaîtra généralement à droite dans la barre d'adresse de votre navigateur.
+            </p>
+        </div>
+
         <div class="box" id="iosMessage" style="display: none;">
             <p>
                 Il est possible que le bouton d'installation ne soit pas disponible sur votre appareil.
@@ -29,7 +40,7 @@
                 Pour cela suivre les étapes suivantes :
             </p>
             <figure class="image">
-              <img src="/static/image/screenshots/install.webp" />
+              <img src="/static/image/screenshots/install.webp" alt="Tutoriel d'installation iOS"/>
             </figure>
             <hr>
             <p>
@@ -41,29 +52,37 @@
     </div>
 
     <script>
-    let deferredPrompt;
+    const unsupportedMessage = document.getElementById('unsupportedMessage');
+    let installSupported = false;
 
     // Détection de iOS
     function isIOS() {
-        return /iPad|iPhone|iPod/.test(navigator.userAgent);
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     }
 
-    // Affichage du bouton pour Android + Chrome
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
+    function showInstallButton() {
         if (!isIOS()) {
             document.getElementById('installApp').style.display = 'block';
+            installSupported = true;
+            if (unsupportedMessage) unsupportedMessage.style.display = 'none';
         }
-    });
+    }
+
+    // Affichage du bouton si l'événement a déjà été capturé globalement, sinon on écoute l'événement
+    if (window.deferredPrompt) {
+        showInstallButton();
+    } else {
+        window.addEventListener('app-installable', showInstallButton);
+    }
 
     // Gestion du bouton d'installation sur Android
     document.getElementById('installApp').addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
+        if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            const { outcome } = await window.deferredPrompt.userChoice;
             if (outcome === 'accepted') {
-                deferredPrompt = null;
+                window.deferredPrompt = null;
+                document.getElementById('installApp').style.display = 'none';
             }
         }
     });
@@ -71,7 +90,16 @@
     // Affichage du message pour iOS
     if (isIOS()) {
         document.getElementById('iosMessage').style.display = 'block';
+        installSupported = true;
+        if (unsupportedMessage) unsupportedMessage.style.display = 'none';
     }
+
+    // Si après un court délai ni iOS ni le bouton d'installation ne sont actifs, on affiche le message par défaut
+    setTimeout(() => {
+        if (!installSupported && unsupportedMessage) {
+            unsupportedMessage.style.display = 'block';
+        }
+    }, 500);
 </script>
 
 {% endblock %}

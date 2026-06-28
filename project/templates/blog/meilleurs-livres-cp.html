@@ -1,0 +1,221 @@
+<!-- templates/blog/meilleurs-livres-cp.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques{% endblock %}
+{% block meta_description %}Quels livres proposer à un élève de CP ? Découvrez notre sélection de plus de 1300 mots classée par niveau de décodage et collections de premières lectures.{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Sommaire (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Évolution au CP</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Collections phares</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Sélection par niveau</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Documentaires et BD</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Valoriser les livres</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Les meilleurs livres pour le CP</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques</h1>
+                    <p class="subtitle is-5 has-text-grey">Temps de lecture : 8 min | Par la rédaction de Livres en Classe</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    L'année du <strong>Cours Préparatoire (CP)</strong> est une étape charnière dans la scolarité d'un enfant. C'est le moment où s'acquièrent les bases fondamentales de la lecture. Pour accompagner au mieux les élèves dans cette aventure, il est essentiel de leur proposer des livres adaptés à leurs compétences réelles de déchiffrage. Un livre trop difficile peut rapidement décourager un lecteur débutant, tandis qu'un livre trop simple n'offrira pas le défi nécessaire à sa progression.
+                </p>
+                <p>
+                    Alors, quels livres choisir pour la bibliothèque d'une classe de CP ? Comment guider les parents dans leurs achats ? Ce guide vous propose une sélection rigoureuse d'ouvrages et de collections, classés selon l'évolution des compétences des élèves tout au long de l'année scolaire.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Sommaire -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Évolution au CP</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Collections phares</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Sélection par niveau</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Documentaires et BD</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Valoriser les livres</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Comprendre l'évolution de la lecture au CP</h2>
+                <p>
+                    La lecture au CP n'est pas un bloc homogène. Elle évolue de manière spectaculaire entre le mois de septembre et le mois de juin. On distingue généralement trois grandes phases :
+                </p>
+                <ul>
+                    <li><strong>Le début d'année (périodes 1 et 2) :</strong> L'élève commence à associer les graphèmes simples (lettres) aux phonèmes (sons). La lecture est essentiellement syllabique (b-a = ba). Les phrases doivent être très courtes et ne contenir que des sons simples.</li>
+                    <li><strong>Le milieu d'année (période 3) :</strong> L'élève commence à mémoriser des mots outils (dans, avec, pour, sur) et aborde les premiers sons complexes (ou, an, on, in). Le déchiffrage devient plus fluide.</li>
+                    <li><strong>La fin d'année (périodes 4 et 5) :</strong> La plupart des sons complexes sont acquis. L'élève commence à lire avec de l'intonation et accède plus facilement à la compréhension globale de petits textes.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Les collections de "premières lectures" incontournables</h2>
+                <p>
+                    Plusieurs éditeurs se sont spécialisés dans les livres de lecture graduée pour le CP. Ces collections sont structurées de manière à suivre pas à pas les programmes scolaires.
+                </p>
+
+                <h3>Sami et Julie (Hachette Éducation)</h3>
+                <p>
+                    C'est sans conteste la collection la plus populaire dans les classes de CP. Elle met en scène deux enfants, Sami et Julie, dans des situations du quotidien (la rentrée, la piscine, le zoo).
+                </p>
+                <ul>
+                    <li><strong>Niveau Début de CP :</strong> N'utilise que des sons très simples (mots phonétiques courts).</li>
+                    <li><strong>Niveau Milieu de CP :</strong> Introduit les premiers sons complexes.</li>
+                    <li><strong>Niveau Fin de CP :</strong> Des histoires plus longues et rythmées.</li>
+                </ul>
+
+                <h3>Je lis avec l'imago (Nathan)</h3>
+                <p>
+                    Une approche intéressante basée sur le principe du rébus ou du dessin-mot. Certains mots complexes sont remplacés par des petites illustrations, ce qui permet à l'enfant qui ne décode pas encore tout de suivre le fil de l'histoire de manière autonome et active.
+                </p>
+
+                <h3>Regarde, je lis (Nathan)</h3>
+                <p>
+                    Conçue avec des professionnels de la lecture, cette collection propose des textes très épurés, une police de caractère adaptée (grosse et lisible) et un interlignage large pour éviter la fatigue visuelle des jeunes lecteurs.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Sélection de livres par niveau de déchiffrage</h2>
+
+                <div class="box has-background-white-bis p-5">
+                    <h3 class="title is-4">Niveau 1 : Les premiers pas (Septembre - Décembre)</h3>
+                    <p>
+                        Des livres presque exclusivement phonétiques avec des structures de phrases répétitives.
+                    </p>
+                    <ul>
+                        <li><strong>"Sami et Julie : Vive la rentrée !"</strong> (Hachette) : Parfait pour le premier mois de classe.</li>
+                        <li><strong>"Ratus Poche : Ratus et le poisson rouge"</strong> (Hatier) : Pour les premiers rires en déchiffrant.</li>
+                        <li><strong>"Je lis seul : La cabane"</strong> (Nathan) : Des textes courts avec peu de lignes par page.</li>
+                    </ul>
+                </div>
+
+                <div class="box has-background-white-bis p-5 mt-4">
+                    <h3 class="title is-4">Niveau 2 : L'envol (Janvier - Mars)</h3>
+                    <p>
+                        Ces ouvrages introduisent les digraphes (ch, ou, an, on) et permettent de travailler la compréhension fine.
+                    </p>
+                    <ul>
+                        <li><strong>"Sami et Julie : La dent de Sami"</strong> (Hachette) : Aborde un thème très parlant pour cet âge.</li>
+                        <li><strong>"Le bus magique au musée"</strong> (Bayard) : Un mélange de documentaire et de fiction.</li>
+                        <li><strong>"Ratus à la piscine"</strong> (Hatier) : Vocabulaire un peu plus varié mais très accessible.</li>
+                    </ul>
+                </div>
+
+                <div class="box has-background-white-bis p-5 mt-4">
+                    <h3 class="title is-4">Niveau 3 : Vers l'autonomie (Avril - Juin)</h3>
+                    <p>
+                        Pour les lecteurs à l'aise qui souhaitent lire leurs premiers "vrais" petits romans d'aventure.
+                    </p>
+                    <ul>
+                        <li><strong>"Le château d'Elise"</strong> (Belin Éducation) : Une histoire riche avec plusieurs personnages.</li>
+                        <li><strong>"La cabane magique" (Premières lectures)</strong> (Bayard) : Une adaptation simplifiée de la célèbre série.</li>
+                        <li><strong>"Sami et Julie : Classe verte"</strong> (Hachette) : Pour préparer les éventuels départs de fin d'année.</li>
+                    </ul>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Les documentaires et bandes dessinées adaptés</h2>
+                <p>
+                    Il ne faut pas limiter les élèves de CP aux seuls petits romans de fiction. De nombreux enfants entrent plus facilement dans la lecture par le biais du réel ou de l'image.
+                </p>
+
+                <h3>Les documentaires "Mes p'tits docs" (Milan)</h3>
+                <p>
+                    Cette collection propose des explications simples et très illustrées sur des sujets passionnants (les dinosaures, les châteaux forts, les pompiers). Même si le texte complet nécessite parfois l'aide d'un adulte en début d'année, la mise en page facilite la lecture d'indices visuels et la recherche d'informations précises.
+                </p>
+
+                <h3>Les premières bandes dessinées (sans texte ou à texte simple)</h3>
+                <p>
+                    Des séries comme <strong>"Anuki"</strong> (Éditions de la Gouttière) – une BD sans texte – permettent de travailler la structure du récit et l'ordre chronologique des événements. Pour les BD avec texte, la collection <strong>"Pico Bogue"</strong> ou les adaptations jeunesse de classiques proposent des dialogues courts dans des bulles faciles à identifier.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Comment valoriser ce fonds dans votre classe ?</h2>
+                <p>
+                    Posséder ces livres est une chose, mais encore faut-il que les élèves se dirigent naturellement vers eux. Voici quelques astuces de professeur :
+                </p>
+                <ul>
+                    <li><strong>Mettre en valeur les couvertures :</strong> Présentez les livres de face. Utilisez des petits chevalets pour exposer le "Livre de la semaine".</li>
+                    <li><strong>La lecture offerte quotidienne :</strong> Prenez 5 minutes chaque jour pour lire le début d'un livre à haute voix. Arrêtez-vous au moment le plus intéressant. Succès garanti : les élèves se rueront sur le livre pour connaître la suite !</li>
+                    <li><strong>Suivre l'activité de lecture :</strong> Utilisez un outil comme <a href="{{ url_for('main.index') }}">Livres en Classe</a> pour savoir quels sont les ouvrages les plus empruntés et ajuster votre catalogue.</li>
+                </ul>
+
+                <article class="message is-link mt-5">
+                    <div class="message-body">
+                        <strong>Le saviez-vous ?</strong> Avec l'application <strong>Livres en Classe</strong>, vous pouvez scanner instantanément les codes ISBN de ces séries phares de CP pour les ajouter à votre inventaire et gérer les prêts de vos élèves en toute simplicité.
+                        <br><br>
+                        <a href="{{ url_for('auth.signup') }}" class="button is-link">Créer mon catalogue de CP</a>
+                    </div>
+                </article>
+
+                <hr class="my-6">
+
+                <h2>Conclusion</h2>
+                <p>
+                    Sélectionner les bons livres pour le CP demande de l'observation et de l'adaptation. En combinant des collections de décodage phonétique strict (comme Sami et Julie) avec des albums plus riches pour la lecture accompagnée et des documentaires attrayants, vous offrirez à chaque élève le support idéal pour consolider ses compétences et prendre goût à la lecture.
+                </p>
+
+                <!-- Articles suggérés -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 Vous aimerez aussi lire...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">PÉDAGOGIE</p>
+                                <p class="has-text-weight-bold has-text-dark">Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels Pédagogiques</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">ORGANISATION</p>
+                                <p class="has-text-weight-bold has-text-dark">Comment classer les livres de sa bibliothèque de classe ?</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

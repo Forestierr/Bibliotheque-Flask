@@ -1,0 +1,261 @@
+<!-- templates/enseignants/index.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Espace Enseignants : Guides et Outils de Bibliothèque{% endblock %}
+{% block meta_description %}Accédez à notre sélection de guides pratiques, de fiches d'organisation de bibliothèque et d'outils numériques pour les enseignants du primaire et du collège.{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+
+    <style>
+        .custom-card {
+            height: 100%;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid hsl(0, 0%, 93%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background-color: #ffffff;
+        }
+        .custom-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        }
+        .card-header-clean {
+            display: flex;
+            align-items: center;
+            padding: 2rem 1.75rem 1.5rem 1.75rem;
+            background-color: #ffffff;
+            border-bottom: 1px solid hsl(0, 0%, 97%);
+        }
+        .icon-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem; /* Espace après l'icône principale */
+            flex-shrink: 0;
+        }
+        
+        /* Soft, premium desaturated colors */
+        .icon-blue {
+            background-color: hsl(210, 60%, 96%);
+            color: hsl(210, 50%, 50%);
+        }
+        .icon-green {
+            background-color: hsl(145, 50%, 95%);
+            color: hsl(145, 40%, 42%);
+        }
+        .icon-yellow {
+            background-color: hsl(38, 70%, 95%);
+            color: hsl(38, 60%, 45%);
+        }
+
+        /* Desaturated link colors matching the cards */
+        .link-method {
+            color: hsl(210, 50%, 45%);
+        }
+        .link-method:hover {
+            color: hsl(210, 60%, 35%);
+        }
+
+        .link-pedagogy {
+            color: hsl(145, 45%, 38%);
+        }
+        .link-pedagogy:hover {
+            color: hsl(145, 50%, 30%);
+        }
+
+        .link-tech {
+            color: hsl(38, 60%, 42%);
+        }
+        .link-tech:hover {
+            color: hsl(38, 70%, 32%);
+        }
+
+        .guide-link {
+            display: inline-flex;
+            align-items: center;
+            transition: transform 0.2s ease;
+            font-weight: 700;
+        }
+        .guide-link:hover {
+            transform: translateX(4px);
+        }
+        .chevron-icon {
+            font-size: 0.75rem;
+            margin-right: 12px; /* Plus d'espace entre le chevron et le texte */
+        }
+    </style>
+
+    <section class="section">
+        <div class="container" style="max-width: 1000px; margin: 0 auto;">
+            
+            <!-- Hero Section -->
+            <div class="has-text-centered mb-6">
+                <h1 class="title is-1">Espace Enseignants</h1>
+                <h2 class="subtitle is-3 mt-3">Ressources, guides pédagogiques et outils de classe</h2>
+                <p class="is-size-5 has-text-grey" style="max-width: 650px; margin: 0 auto; line-height: 1.6;">
+                    Retrouvez tout ce dont vous avez besoin pour structurer le coin lecture de votre classe, cataloguer vos livres et encourager l'autonomie de vos élèves au quotidien.
+                </p>
+            </div>
+
+            <!-- Main Hub Grid -->
+            <div class="columns is-multiline mt-6">
+                
+                <!-- Gérer sa bibliothèque -->
+                <div class="column is-4">
+                    <div class="custom-card">
+                        <header class="card-header-clean">
+                            <div class="icon-circle icon-blue">
+                                <span class="icon is-medium"><i class="fas fa-lg fa-book"></i></span>
+                            </div>
+                            <div>
+                                <h2 class="title is-4 mb-1" style="font-weight: 700;">Gérer la Bibliothèque</h2>
+                                <span class="tag is-rounded" style="background-color: hsl(210, 60%, 96%); color: hsl(210, 50%, 50%); font-weight: 600;">Méthodologie</span>
+                            </div>
+                        </header>
+                        <div class="card-content" style="flex-grow: 1; padding: 1.75rem;">
+                            <p class="has-text-grey-dark is-size-6 mb-4" style="line-height: 1.5;">
+                                Des conseils pratiques pour trier, classer et organiser vos étagères sans que cela ne devienne un casse-tête.
+                            </p>
+                            <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
+                            <ul style="list-style: none; margin-left: 0; padding-left: 0;">
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="guide-link link-method">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Gérer les emprunts
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Mettre en place un système de prêt numérique efficace avec vos élèves.</p>
+                                </li>
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="guide-link link-method">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Classer et étiqueter
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Utiliser le code couleur, les genres ou les thèmes pour faciliter le rangement.</p>
+                                </li>
+                                <li class="mb-4">
+                                    <span class="has-text-weight-bold has-text-grey-light" style="display: inline-flex; align-items: center;">
+                                        <i class="fas fa-lock chevron-icon"></i>Choisir ses livres
+                                    </span>
+                                    <p class="is-size-7 has-text-grey-light mt-1">Constituer un catalogue équilibré et attractif (prochainement).</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Favoriser la lecture -->
+                <div class="column is-4">
+                    <div class="custom-card">
+                        <header class="card-header-clean">
+                            <div class="icon-circle icon-green">
+                                <span class="icon is-medium"><i class="fas fa-lg fa-star"></i></span>
+                            </div>
+                            <div>
+                                <h2 class="title is-4 mb-1" style="font-weight: 700;">Encourager la Lecture</h2>
+                                <span class="tag is-rounded" style="background-color: hsl(145, 50%, 95%); color: hsl(145, 40%, 42%); font-weight: 600;">Pédagogie</span>
+                            </div>
+                        </header>
+                        <div class="card-content" style="flex-grow: 1; padding: 1.75rem;">
+                            <p class="has-text-grey-dark is-size-6 mb-4" style="line-height: 1.5;">
+                                Des rituels et animations testés en classe pour susciter l'intérêt de tous les élèves, même les moins lecteurs.
+                            </p>
+                            <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
+                            <ul style="list-style: none; margin-left: 0; padding-left: 0;">
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="guide-link link-pedagogy">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Donner envie de lire
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Rituels de lecture plaisir et gestion des présentations d'élèves.</p>
+                                </li>
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}#rallye" class="guide-link link-pedagogy">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Le Rallye Lecture
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Comment mettre en place un défi lecture motivant et bienveillant.</p>
+                                </li>
+                                <li class="mb-4">
+                                    <span class="has-text-weight-bold has-text-grey-light" style="display: inline-flex; align-items: center;">
+                                        <i class="fas fa-lock chevron-icon"></i>La lecture offerte
+                                    </span>
+                                    <p class="is-size-7 has-text-grey-light mt-1">Travailler l'écoute et l'imaginaire par la lecture à haute voix (prochainement).</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Outils numériques -->
+                <div class="column is-4">
+                    <div class="custom-card">
+                        <header class="card-header-clean">
+                            <div class="icon-circle icon-yellow">
+                                <span class="icon is-medium"><i class="fas fa-lg fa-laptop"></i></span>
+                            </div>
+                            <div>
+                                <h2 class="title is-4 mb-1" style="font-weight: 700;">Outils Numériques</h2>
+                                <span class="tag is-rounded" style="background-color: hsl(38, 70%, 95%); color: hsl(38, 60%, 45%); font-weight: 600;">Technologie</span>
+                            </div>
+                        </header>
+                        <div class="card-content" style="flex-grow: 1; padding: 1.75rem;">
+                            <p class="has-text-grey-dark is-size-6 mb-4" style="line-height: 1.5;">
+                                Des générateurs et applications en ligne recommandés par nos soins pour équiper votre classe en quelques clics.
+                            </p>
+                            <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
+                            <ul style="list-style: none; margin-left: 0; padding-left: 0;">
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.index') }}" class="guide-link link-tech">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Livres en Classe
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Notre application gratuite pour scanner vos ISBN et prêter vos livres.</p>
+                                </li>
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.ressources_index') }}" class="guide-link link-tech">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Télécharger des étiquettes
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Imprimer des étiquettes physiques de rangement pour les bacs de livres.</p>
+                                </li>
+                                <li class="mb-4">
+                                    <span class="has-text-weight-bold has-text-grey-light" style="display: inline-flex; align-items: center;">
+                                        <i class="fas fa-lock chevron-icon"></i>Générateur de QR Codes
+                                    </span>
+                                    <p class="is-size-7 has-text-grey-light mt-1">Créer des codes QR pour renvoyer directement vers les fiches de lecture (prochainement).</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom CTA Section -->
+            <div class="box mt-6 p-6" style="border-radius: 16px; border: 1px solid hsl(0, 0%, 93%); background-color: hsl(0, 0%, 98.5%); box-shadow: none;">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h3 class="title is-3 mb-2" style="font-weight: 700;">Besoin d'un outil de suivi pour vos élèves ?</h3>
+                        <p class="is-size-5 has-text-grey">
+                            Gérez les prêts de livres, inscrivez vos classes et visualisez les statistiques de lecture globale en quelques clics.
+                        </p>
+                    </div>
+                    <div class="column is-4 has-text-centered">
+                        <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded" style="font-weight: 600;">
+                            Créer mon espace
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}

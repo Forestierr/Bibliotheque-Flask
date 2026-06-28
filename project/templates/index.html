@@ -1,8 +1,80 @@
 <!-- templates/index.html -->
 
 {% from "utils/navbar.html" import navbar %}
+{% from "components/feature_section.html" import feature_section %}
+{% from "components/stats_counter.html" import stats_counter %}
 
 {% extends "base.html" %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "Livres en Classe",
+      "operatingSystem": "Web, Android, iOS",
+      "applicationCategory": "EducationalApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "description": "Logiciel de gestion de bibliothèque pour les enseignants. Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves en quelques clics."
+    },
+    {
+      "@type": "Organization",
+      "name": "Livres en Classe",
+      "url": "https://votre-site.com",
+      "logo": "https://votre-site.com/static/image/icons/logo-w-512x512.png"
+    },
+    {
+      "@type": "WebSite",
+      "name": "Livres en Classe",
+      "url": "https://votre-site.com"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Comment gérer une bibliothèque de classe ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Livres en Classe vous permet de scanner le code-barres de vos livres, d'inscrire vos élèves et de suivre les emprunts en un clic."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Est-ce un logiciel gratuit ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, notre logiciel de gestion de bibliothèque scolaire est entièrement gratuit pour les enseignants."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Peut-on scanner les ISBN ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, il suffit d'utiliser la caméra de votre smartphone ou de votre tablette pour scanner les ISBN et importer automatiquement les informations du livre."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Est-ce compatible sur tablette et téléphone ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolument. Vous pouvez l'installer comme une application (PWA) sur Android ou iOS pour une gestion simplifiée de votre CDI primaire ou bibliothèque de classe."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, "Ma Bibliothèque") }}
@@ -11,115 +83,234 @@
 {% block content %}
 
     <section class="section">
-        <div class="section columns is-multiline is-centered is-vcentered">
+        <!-- Hero Section -->
+        <div class="section columns is-multiline is-centered is-vcentered" style="padding-top: 1rem;">
             <div class="column">
-                <h1 class="title is-1">La meilleure bibliothèque pour votre classe.</h1>
-                <h2 class="subtitle is-3">Ajoutez. Modifiez. Prêtez. <br>La meilleure gestion de livres en toute simplicité.</h2>
+                <h1 class="title is-1">Le logiciel de gestion de bibliothèque pour les enseignants</h1>
+                <h2 class="subtitle is-3" style="margin-top: 1.5rem;">Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves et développez la lecture dans votre classe.</h2>
+                <div style="margin-top: 2.5rem;">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-large is-link is-rounded">
+                        <span>Essayer gratuitement</span>
+                    </a>
+                </div>
             </div>
 
             <div class="column is-hidden-touch is-3-desktop is-2-widescreen is-2-fullhd">
                 <a href="{{ url_for('eleve.eleve_db') }}">
                     <figure class="image is-256x256">
                         <img src="{{ url_for('static',filename='/image/boy.png') }}"
-                        href="https://www.flaticon.com/free-stickers/reading"
-                         alt="Reading stickers created by Stickers - Flaticon">
+                         alt="Élève lisant un livre dans la bibliothèque de classe">
                     </figure>
                 </a>
             </div>
         </div>
 
+        {{ stats_counter(infos) }}
 
-        <div class="section block">
-            <h1 class="title is-1 is-spaced">Installer l'application <strong>Ma Biblio</strong></h1>
-            <h3 class="subtitle is-3">Installer l'application sur votre appareil pour un accès plus rapide et une meilleure expérience utilisateur.</h3>
-            <a href="{{ url_for('main.install') }}" class="button is-large is-link is-rounded is-outlined">
-                <span class="icon">
-                    <i class="fa-solid fa-download"></i>
-                </span>
-                <span>Installer l'application</span>
-            </a>
-        </div>
-
-
-        <div class="section block">
-            <nav class="level is-mobile block">
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Professeures</p>
-                  <p class="title">{{ infos.n_users if infos.n_users }}</p>
+        <!-- Pourquoi utiliser -->
+        <div class="section block" id="pourquoi" style="margin-top: 4rem;">
+            <h2 class="title is-2 has-text-centered mb-6">Pourquoi utiliser une bibliothèque de classe ?</h2>
+            <div class="columns is-multiline mt-5">
+                <div class="column is-4 has-text-centered">
+                    <span class="icon is-large has-text-link mb-4"><i class="fas fa-3x fa-book-open"></i></span>
+                    <h3 class="title is-4">Gagnez du temps</h3>
+                    <p>Fini les cahiers brouillons. En quelques clics, enregistrez un prêt ou un retour. Retrouvez un livre instantanément.</p>
                 </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Livres</p>
-                  <p class="title">{{ infos.n_books if infos.n_books }}</p>
+                <div class="column is-4 has-text-centered">
+                    <span class="icon is-large has-text-link mb-4"><i class="fas fa-3x fa-chart-line"></i></span>
+                    <h3 class="title is-4">Suivez la progression</h3>
+                    <p>Analysez les habitudes de lecture de vos élèves. Voyez qui a lu quoi, et encouragez ceux qui lisent moins.</p>
                 </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Élèves</p>
-                  <p class="title">{{ infos.n_students if infos.n_students }}</p>
+                <div class="column is-4 has-text-centered">
+                    <span class="icon is-large has-text-link mb-4"><i class="fas fa-3x fa-mobile-alt"></i></span>
+                    <h3 class="title is-4">100% Mobile</h3>
+                    <p>Scannez directement avec votre téléphone, sans équipement coûteux. L'application vous suit partout dans la classe.</p>
                 </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Prêts</p>
-                  <p class="title">{{ infos.n_loans if infos.n_loans }}</p>
-                </div>
-              </div>
-            </nav>
-
-            <div class="container">
-                <i>Crée-toi un compte et fais augmenter ces chiffres !</i>
             </div>
-
         </div>
 
         <!-- Dashboard -->
-        <div class="section block wow">
-            <div class="container block">
-                <h1 class="title is-1 is-spaced">Une vue globale</h1>
-                <p>Un dashboard pour une vue globale de votre bibliothèque.</p>
-            </div>
-            <div class="container is-fluid">
-                <figure class="images is-fullwidth">
-                    <img src="{{ url_for('static',filename='/image/screenshots/dashboard_1.webp') }}" alt="...">
-                    <img src="{{ url_for('static',filename='/image/screenshots/dashboard_phone.webp') }}" alt="..."
-                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
-                </figure>
+        {{ feature_section(
+            title="Une vue globale de votre bibliothèque scolaire",
+            description_lines=[
+                "Un tableau de bord complet pour gérer la bibliothèque de votre école primaire.",
+                "Suivez les tendances de prêt de livres et l'activité de vos élèves en un coup d'œil."
+            ],
+            desktop_img_url=url_for('static',filename='/image/screenshots/dashboard_1.webp'),
+            mobile_img_url=url_for('static',filename='/image/screenshots/dashboard_phone.webp')
+        ) }}
+
+        <!-- Livres -->
+        {{ feature_section(
+            title="Tous les livres de la classe au même endroit",
+            description_lines=[
+                "Scannez les codes-barres (ISBN) de vos livres pédagogiques pour les ajouter instantanément.",
+                "La gestion de votre inventaire n'a jamais été aussi simple et rapide."
+            ],
+            desktop_img_url=url_for('static',filename='/image/screenshots/livre_1.webp'),
+            mobile_img_url=url_for('static',filename='/image/screenshots/livre_phone.webp')
+        ) }}
+
+        <!-- Elèves -->
+        {{ feature_section(
+            title="Qui a lu quoi ? Suivez vos élèves",
+            description_lines=[
+                "Suivez le parcours de lecture de chaque élève. Consultez l'historique des emprunts.",
+                "Idéal pour le suivi pédagogique des enseignants et l'encouragement à la lecture."
+            ],
+            desktop_img_url=url_for('static',filename='/image/screenshots/eleve_1.webp'),
+            mobile_img_url=url_for('static',filename='/image/screenshots/eleve_phone.webp')
+        ) }}
+
+        <!-- Espace Ressources & Blog Promotion -->
+        <div class="section block" style="margin-top: 4rem; padding-bottom: 2rem;">
+            <h2 class="title is-2 has-text-centered mb-6">Ressources & Guides pour les Enseignants</h2>
+            <div class="columns is-multiline">
+                <div class="column is-6">
+                    <div class="box" style="border-radius: 12px; padding: 2.5rem; height: 100%; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid hsl(0, 0%, 93%); box-shadow: 0 4px 12px rgba(0,0,0,0.01);">
+                        <div>
+                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-2x fa-graduation-cap"></i></span>
+                            <h3 class="title is-4">Guides et Pédagogie</h3>
+                            <p class="has-text-grey-dark" style="line-height: 1.6;">
+                                Accédez à nos fiches pratiques d'organisation pour votre classe : choix du classement (par couleur ou par genre), gestion des prêts physiques, et conseils pour animer le quart d'heure lecture.
+                            </p>
+                        </div>
+                        <div class="mt-5">
+                            <a href="{{ url_for('main.enseignants_index') }}" class="button is-link is-outlined is-rounded">
+                                <span>Consulter nos Guides</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="column is-6">
+                    <div class="box" style="border-radius: 12px; padding: 2.5rem; height: 100%; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid hsl(0, 0%, 93%); box-shadow: 0 4px 12px rgba(0,0,0,0.01);">
+                        <div>
+                            <span class="icon is-large has-text-success mb-3"><i class="fas fa-2x fa-pen-nib"></i></span>
+                            <h3 class="title is-4">Le Blog d'actualités</h3>
+                            <p class="has-text-grey-dark" style="line-height: 1.6;">
+                                Retrouvez nos sélections de livres jeunesse pour le CP, des conseils pour installer des bacs de lecture inspirants, et des astuces concrètes rédigées par des enseignants pour des enseignants.
+                            </p>
+                        </div>
+                        <div class="mt-5">
+                            <a href="{{ url_for('main.blog_index') }}" class="button is-success is-outlined is-rounded">
+                                <span>Lire le Blog</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="section block wow">
-            <div class="container block">
-                <h1 class="title is-1 is-spaced">Tous tes livres à un seul endroit !</h1>
-                <p>Scanne les codes barres de tes livres pour les ajouter à ta bibliothèque.</p>
-                <p>Rien de plus simple !</p>
+        <!-- Fonctionnalités détaillées -->
+        <div class="section block has-background-white-bis" style="border-radius: 12px; padding: 3rem; margin-top: 4rem;" id="fonctionnalites">
+            <h2 class="title is-2 has-text-centered mb-6">Toutes vos fonctionnalités</h2>
+            <div class="columns is-multiline">
+                <div class="column is-6">
+                    <div class="box" style="height: 100%;">
+                        <h3 class="title is-5"><i class="fas fa-barcode has-text-link mr-2"></i> Scan ISBN ultra rapide</h3>
+                        <p class="mb-4">Ajoutez un livre en 2 secondes grâce à la caméra de votre smartphone. Titre et image récupérés automatiquement.</p>
+                        <h3 class="title is-5"><i class="fas fa-exchange-alt has-text-link mr-2"></i> Gestion des prêts</h3>
+                        <p class="mb-4">Prêtez et récupérez des livres d'un simple clic pour un suivi rigoureux.</p>
+                        <h3 class="title is-5"><i class="fas fa-history has-text-link mr-2"></i> Historique des emprunts</h3>
+                        <p>Gardez une trace de tous les livres empruntés par chaque élève tout au long de l'année.</p>
+                    </div>
+                </div>
+                <div class="column is-6">
+                    <div class="box" style="height: 100%;">
+                        <h3 class="title is-5"><i class="fas fa-search has-text-link mr-2"></i> Recherche instantanée</h3>
+                        <p class="mb-4">Retrouvez un livre ou un élève dans votre catalogue en une fraction de seconde grâce à notre moteur de recherche rapide.</p>
+                        <h3 class="title is-5"><i class="fas fa-users has-text-link mr-2"></i> Gestion des élèves</h3>
+                        <p class="mb-4">Importez facilement votre liste de classe et créez des profils individuels.</p>
+                        <h3 class="title is-5"><i class="fas fa-star has-text-link mr-2"></i> Statistiques de lecture</h3>
+                        <p>Identifiez les livres pédagogiques les plus populaires et les élèves les plus assidus avec le tableau de bord interactif.</p>
+                    </div>
+                </div>
             </div>
-            <div class="container is-fluid">
-                <figure class="images is-fullwidth">
-                    <img src="{{ url_for('static',filename='/image/screenshots/livre_1.webp') }}" alt="...">
-                    <img src="{{ url_for('static',filename='/image/screenshots/livre_phone.webp') }}" alt="..."
-                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
-                </figure>
+            <div class="has-text-centered mt-5">
+                <a href="{{ url_for('auth.signup') }}" class="button is-link is-rounded is-medium">Créer ma bibliothèque</a>
             </div>
         </div>
 
-        <div class="section block wow">
-            <div class="container block">
-                <h1 class="title is-1 is-spaced">Qui a lu quoi ?</h1>
-                <p>Tu peux voir qui a lu quel livre et combien de fois.</p>
-            </div>
-            <div class="container is-fluid">
-                <figure class="images is-fullwidth">
-                    <img src="{{ url_for('static',filename='/image/screenshots/eleve_1.webp') }}" alt="...">
-                    <img src="{{ url_for('static',filename='/image/screenshots/eleve_phone.webp') }}" alt="..."
-                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
-                </figure>
+        <!-- Comparatif Excel -->
+        <div class="section block" id="comparatif" style="margin-top: 4rem;">
+            <h2 class="title is-2 has-text-centered mb-6">Livres en Classe vs. Excel</h2>
+            <div class="table-container box">
+                <table class="table is-fullwidth is-striped is-hoverable" style="background-color: transparent;">
+                    <thead>
+                        <tr>
+                            <th>Fonctionnalité</th>
+                            <th class="has-text-centered" style="color: hsl(0, 0%, 48%);">Excel / Papier</th>
+                            <th class="has-text-centered has-text-link">Livres en Classe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ajout de livre par code-barres</td>
+                            <td class="has-text-centered"><i class="fas fa-times has-text-danger"></i></td>
+                            <td class="has-text-centered"><i class="fas fa-check has-text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Récupération auto de l'hauteur et du titre</td>
+                            <td class="has-text-centered"><i class="fas fa-times has-text-danger"></i></td>
+                            <td class="has-text-centered"><i class="fas fa-check has-text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Consultable partout (Mobile / PC)</td>
+                            <td class="has-text-centered"><i class="fas fa-times has-text-danger"></i></td>
+                            <td class="has-text-centered"><i class="fas fa-check has-text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Statistiques automatiques de lecture</td>
+                            <td class="has-text-centered"><i class="fas fa-times has-text-danger"></i></td>
+                            <td class="has-text-centered"><i class="fas fa-check has-text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Recherche rapide et filtre instantané</td>
+                            <td class="has-text-centered"><i class="fas fa-times has-text-danger"></i></td>
+                            <td class="has-text-centered"><i class="fas fa-check has-text-success"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+
+        <!-- FAQ -->
+        <div class="section block" id="faq" style="margin-top: 4rem;">
+            <h2 class="title is-2 has-text-centered mb-6">Questions Fréquentes</h2>
+            <div class="content box p-6">
+                <h3 class="title is-4">Comment gérer une bibliothèque de classe ?</h3>
+                <p>Livres en Classe vous permet de scanner le code-barres de vos livres, d'inscrire vos élèves et de suivre les emprunts en un clic depuis votre tableau de bord. C'est la méthode la plus rapide et la plus efficace pour les enseignants.</p>
+                <hr>
+                <h3 class="title is-4 mt-5">Est-ce un logiciel gratuit ?</h3>
+                <p>Oui, notre logiciel de gestion de bibliothèque scolaire est conçu pour être accessible aux enseignants avec des fonctionnalités entièrement gratuites pour débuter.</p>
+                <hr>
+                <h3 class="title is-4 mt-5">Peut-on scanner les ISBN ?</h3>
+                <p>Oui, il suffit d'utiliser la caméra de votre smartphone, tablette ou ordinateur portable pour scanner les ISBN et importer automatiquement le titre, l'auteur et des informations du livre dans votre catalogue.</p>
+                <hr>
+                <h3 class="title is-4 mt-5">Est-ce compatible sur tablette et téléphone ?</h3>
+                <p>Absolument. L'interface est conçue pour tous les écrans. De plus, vous pouvez l'installer comme une véritable application sur Android ou iOS pour une gestion encore plus rapide de votre bibliothèque.</p>
+            </div>
+        </div>
+
+        <!-- Install Section -->
+        <div class="section block has-text-centered has-background-white-bis py-6 mt-6" style="border-radius: 12px;">
+            <h2 class="title is-2">Prêt à gérer votre bibliothèque scolaire ?</h2>
+            <p class="subtitle is-4 mt-3">Installez l'application sur votre appareil pour un accès plus rapide, ou testez-la directement en ligne.</p>
+            <div class="buttons is-centered mt-5">
+                <a href="{{ url_for('main.install') }}" class="button is-large is-dark is-rounded is-outlined mx-2">
+                    <span class="icon">
+                        <i class="fa-solid fa-download"></i>
+                    </span>
+                    <span>Installer l'application</span>
+                </a>
+                <a href="{{ url_for('auth.signup') }}" class="button is-large is-link is-rounded mx-2">
+                    <span>Créer ma bibliothèque</span>
+                </a>
+            </div>
+        </div>
+
     </section>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -149,7 +340,6 @@
             });
         });
 
-        // Animation du dashboard au scroll
         // Animation des sections .section.block au scroll individuellement
         document.querySelectorAll(".section.block").forEach((section) => {
             gsap.from(section, {

@@ -1,0 +1,20 @@
+{# templates/components/feature_section.html #}
+{% macro feature_section(title, description_lines, desktop_img_url, mobile_img_url) %}
+<div class="section block wow">
+    <div class="container block has-text-centered">
+        <h2 class="title is-2 mb-6">{{ title }}</h2>
+        {% for line in description_lines %}
+        <p class="subtitle is-5">{{ line }}</p>
+        {% endfor %}
+    </div>
+    <div class="container is-fluid">
+        <figure class="images is-fullwidth" style="position: relative;">
+            <img src="{{ desktop_img_url }}" alt="Capture d'écran - {{ title }}" class="feature-desktop-img">
+            {% if mobile_img_url %}
+            <img src="{{ mobile_img_url }}" alt="Capture d'écran mobile - {{ title }}" class="feature-mobile-img"
+                style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));">
+            {% endif %}
+        </figure>
+    </div>
+</div>
+{% endmacro %}

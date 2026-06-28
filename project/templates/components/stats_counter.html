@@ -1,0 +1,35 @@
+{# templates/components/stats_counter.html #}
+{% macro stats_counter(infos) %}
+<div class="section block">
+    <nav class="level is-mobile block">
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Professeures</p>
+                <p class="title">{{ infos.n_users if infos.n_users else 0 }}</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Livres</p>
+                <p class="title">{{ infos.n_books if infos.n_books else 0 }}</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Élèves</p>
+                <p class="title">{{ infos.n_students if infos.n_students else 0 }}</p>
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Prêts</p>
+                <p class="title">{{ infos.n_loans if infos.n_loans else 0 }}</p>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <i>Crée-toi un compte et fais augmenter ces chiffres !</i>
+    </div>
+</div>
+{% endmacro %}

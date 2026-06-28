@@ -1,0 +1,212 @@
+<!-- templates/blog/comment-classer-livres.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Comment classer les livres de sa bibliothèque de classe ?{% endblock %}
+{% block meta_description %}Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD. {% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Sommaire (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Par genre littéraire</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Par thématique</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Par niveau de lecture</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Ordre alphabétique</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Gestion numérique</a></li>
+                                <li><a href="#section-6" style="color: #4a4a4a;">6. Liste de contrôle</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Comment classer les livres ?</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">Comment classer les livres de sa bibliothèque de classe ?</h1>
+                    <p class="subtitle is-5 has-text-grey">Temps de lecture : 9 min | Par la rédaction de Livres en Classe</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    C’est le cauchemar de tous les enseignants en fin de période : retrouver des bandes dessinées mélangées avec des albums de contes de fées, des documentaires sur l'espace égarés au milieu des romans policiers, et des livres sans nom empilés n’importe comment. Avoir des livres, c’est bien. Mais avoir des livres <strong>classés et faciles à retrouver</strong>, c’est encore mieux.
+                </p>
+                <p>
+                    Classer les livres de sa bibliothèque de classe n'est pas seulement une question d'esthétique ou de rangement ; c'est un véritable outil d'apprentissage de la catégorisation pour les élèves. Un classement réussi doit permettre à un enfant de 6 ans de trouver un livre de manière autonome et de le reposer exactement là où il l'a pris. 
+                </p>
+                <p>
+                    Découvrez dans ce guide détaillé les meilleures stratégies de classement, leurs avantages et inconvénients selon les cycles, et nos astuces concrètes pour que le rangement ne soit plus une corvée.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Sommaire -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Par genre littéraire</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Par thématique</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Par niveau de lecture</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Ordre alphabétique</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Gestion numérique</a></li>
+                        <li><a href="#section-6" style="color: #4a4a4a;">6. Liste de contrôle</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Le classement par genre littéraire : la structure classique</h2>
+                <p>
+                    C’est l'organisation la plus proche de ce que les élèves rencontreront plus tard dans les bibliothèques municipales, les BCD ou les CDI de collège. Elle consiste à diviser le fonds en grandes catégories physiques.
+                </p>
+                
+                <h3>Comment le structurer en classe ?</h3>
+                <p>
+                    Créez des zones distinctes (des étagères ou des bacs de couleurs différentes) pour :
+                </p>
+                <ul>
+                    <li><strong>Les albums :</strong> Généralement de grand format, ils nécessitent des bacs profonds où l'on peut voir la couverture de face.</li>
+                    <li><strong>Les bandes dessinées et mangas :</strong> Très consultés, ils doivent être regroupés ensemble pour faciliter les échanges rapides.</li>
+                    <li><strong>Les romans :</strong> Que vous pouvez subdiviser par niveaux de difficulté ou d'âge (premiers romans, romans illustrés, romans ados).</li>
+                    <li><strong>Les documentaires :</strong> Qui regroupent tous les ouvrages basés sur des faits réels et de l'information (animaux, sciences, géographie).</li>
+                </ul>
+                <p>
+                    <strong>Pour quel niveau ?</strong> Idéal pour les Cycles 2 et 3 (du CP au CM2), car les élèves commencent à faire la différence claire entre fiction (récit inventé) et documentaire (informations réelles).
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Le classement par thématique : parfait pour les plus jeunes</h2>
+                <p>
+                    Pour les élèves de maternelle ou de début de cycle 2, la distinction par genre littéraire (album vs conte vs court roman) est parfois trop abstraite. Le classement par thèmes ou par "centres d'intérêt" est alors beaucoup plus parlant.
+                </p>
+                
+                <h3>Comment le structurer ?</h3>
+                <p>
+                    Organisez vos bacs à livres selon les sujets abordés dans les ouvrages, en utilisant des étiquettes avec de grands visuels ou des pictogrammes :
+                </p>
+                <ul>
+                    <li>Le bac des <strong>Animaux</strong> (documentaires animaliers, histoires avec des loups, ours, chats...).</li>
+                    <li>Le bac de la <strong>Nature et des Saisons</strong>.</li>
+                    <li>Le bac de l'<strong>Espace et des Sciences</strong>.</li>
+                    <li>Le bac des <strong>Histoires d'école et de rentrée</strong>.</li>
+                    <li>Le bac des <strong>Contes de fées, chevaliers et princesses</strong>.</li>
+                </ul>
+                <p>
+                    <strong>Pour quel niveau ?</strong> Recommandé en maternelle (TPS-PS-MS-GS) et en début de CP. Ce système s'appuie sur le contenu direct du livre, ce qui stimule la curiosité thématique immédiate des enfants.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Le classement par niveau de lecture : guider sans stigmatiser</h2>
+                <p>
+                    C'est un classement très utilisé pour les livres de "premières lectures" (collections graduées type Sami et Julie, Ratus...). Il permet aux élèves de choisir en toute autonomie un livre correspondant exactement à leurs capacités techniques de décodage.
+                </p>
+                
+                <h3>Le système des gommettes couleurs</h3>
+                <p>
+                    Collez une gommette de couleur sur la tranche (le dos) de chaque livre :
+                </p>
+                <ul>
+                    <li><span class="has-text-success">●</span> <strong>Vert :</strong> Débutant (sons simples uniquement, phrases très courtes).</li>
+                    <li><span class="has-text-warning">●</span> <strong>Orange :</strong> Intermédiaire (premiers sons complexes : ou, an, on).</li>
+                    <li><span class="has-text-danger">●</span> <strong>Rouge :</strong> Confirmé (tous les sons complexes, textes plus longs).</li>
+                </ul>
+                <p>
+                    <strong>Le conseil du prof :</strong> Pour éviter la stigmatisation (par exemple qu'un élève de CE1 se sente honteux de prendre un livre "vert"), présentez ces couleurs comme des "niveaux de jeu" ou des "ceintures de lecture" (comme au judo), où l'objectif est simplement de s'entraîner pour passer au niveau supérieur.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. L'ordre alphabétique : pour les plus grands</h2>
+                <p>
+                    Le classement par ordre alphabétique des auteurs (A-B-C...) est la norme dans les grandes bibliothèques. En classe, il peut s'avérer fastidieux à maintenir au quotidien car il nécessite une rigueur constante lors du rangement.
+                </p>
+                <p>
+                    Toutefois, en fin de primaire (CM1 - CM2), c'est un excellent exercice pratique pour travailler l'ordre alphabétique et préparer les élèves aux codes du collège (CDI). Si vous optez pour cette méthode, vous pouvez coller des intercalaires cartonnés dans vos étagères avec de grandes lettres pour guider les élèves.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Comment le numérique vous aide à garder le contrôle</h2>
+                <p>
+                    Quel que soit le classement choisi, des livres finiront par être mal rangés ou égarés dans la classe. C'est ici que l'application <strong>Livres en Classe</strong> devient indispensable.
+                </p>
+                <p>
+                    En associant chaque livre de votre base de données à un "Bac de rangement virtuel" (que vous pouvez définir dans les détails ou les tags du livre), vous pouvez retrouver instantanément l'emplacement théorique d'un ouvrage perdu. De plus, lors du catalogage par scan ISBN, vous pouvez étiqueter vos livres en lot pour ne jamais perdre le fil de votre inventaire.
+                </p>
+                
+                <div class="box has-background-link-light has-text-centered p-5 my-5">
+                    <h3 class="title is-4">Gagnez du temps dans la gestion de votre classe</h3>
+                    <p>Fini la perte de livres scolaires. Cataloguez et suivez vos prêts facilement avec notre application.</p>
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Créer ma bibliothèque en ligne</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-6">6. Liste de contrôle pour installer votre classement physique</h2>
+                <p>
+                    Pour réussir la mise en place physique de votre organisation de bibliothèque de classe :
+                </p>
+                <ol>
+                    <li><strong>Triez et désencombrez :</strong> Retirez tous les livres trop abîmés, obsolètes ou inadaptés à l'âge de vos élèves.</li>
+                    <li><strong>Étiquetez les bacs :</strong> Utilisez des étiquettes combinant texte et pictogramme (ex: une image de dinosaure pour le bac "Documentaires Animaux").</li>
+                    <li><strong>Marquez les livres :</strong> Mettez un repère visuel clair sur le dos du livre (une gommette de couleur correspondante au bac).</li>
+                    <li><strong>Formez les élèves :</strong> Consacrez une séance pédagogique complète en début d'année pour expliquer le fonctionnement du classement et faire des exercices de rangement sous forme de jeu.</li>
+                </ol>
+
+                <hr class="my-6">
+
+                <h2>Conclusion</h2>
+                <p>
+                    Il n'y a pas de classement unique parfait, mais il y a un classement adapté à votre classe. Pour des élèves de maternelle, privilégiez le classement par thèmes. Pour des élèves de CP/CE1, favorisez le code couleur par difficulté de lecture. Pour les plus grands, glissez doucement vers le classement par genre ou par auteur. En impliquant vos élèves dans cette organisation et en vous appuyant sur des outils numériques comme <strong>Livres en Classe</strong>, votre bibliothèque restera un lieu accueillant et opérationnel toute l'année.
+                </p>
+
+                <!-- Articles suggérés -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 Vous aimerez aussi lire...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">GUIDE COMPLET</p>
+                                <p class="has-text-weight-bold has-text-dark">Le Guide Ultime pour Créer et Gérer une Bibliothèque de Classe Efficace</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">SÉLECTION LITTÉRAIRE</p>
+                                <p class="has-text-weight-bold has-text-dark">Les 10 meilleurs livres pour les élèves de CP : Notre sélection de la rentrée</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}
