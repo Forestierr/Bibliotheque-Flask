@@ -106,6 +106,12 @@ def robots():
     return render_template("utils/robots.txt")
 
 
+@main.route("/llms.txt")
+@main.route("/llms")
+def llms():
+    return render_template("utils/llms.txt")
+
+
 @main.route("/favicon.ico")
 def favicon():
     return send_from_directory(

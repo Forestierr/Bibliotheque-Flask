@@ -319,14 +319,13 @@
     document.addEventListener("DOMContentLoaded", function () {
         gsap.registerPlugin(ScrollTrigger);
 
-        gsap.from(".title.is-1", { opacity: 0, y: -20, duration: 1, ease: "power2.out" });
-        gsap.from(".subtitle.is-3", { opacity: 0, y: 20, duration: 1, delay: 0.3, ease: "power2.out" });
+        // Titre et sous-titre s'affichent sans animation pour améliorer le FCP et LCP
+        
+        gsap.from(".image img", { scale: 0.8, opacity: 0, duration: 0.6, delay: 0.1, ease: "back.out(1.7)" });
 
-        gsap.from(".image img", { scale: 0.8, opacity: 0, duration: 1, delay: 0.5, ease: "back.out(1.7)" });
+        gsap.from(".level-item", { opacity: 0, y: 20, duration: 0.6, stagger: 0.1, delay: 0.2, ease: "power2.out" });
 
-        gsap.from(".level-item", { opacity: 0, y: 20, duration: 1, stagger: 0.2, delay: 0.6, ease: "power2.out" });
-
-        gsap.from(".images img", { opacity: 0, scale: 0.9, duration: 1.2, delay: 0.8, ease: "power2.out" });
+        gsap.from(".images img", { opacity: 0, scale: 0.9, duration: 0.8, delay: 0.3, ease: "power2.out" });
 
         // Animation des compteurs
         document.querySelectorAll(".level-item .title").forEach((counter) => {
