@@ -190,23 +190,7 @@
                     }
 
                     if (data.multiple) {
-                        let form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = '/livre/search';
-                        
-                        let csrfInput = document.createElement('input');
-                        csrfInput.type = 'hidden';
-                        csrfInput.name = 'csrf_token';
-                        csrfInput.value = '{{ csrf_token() }}';
-                        form.appendChild(csrfInput);
-
-                        let input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'search';
-                        input.value = 'isbn:' + code;
-                        form.appendChild(input);
-                        document.body.appendChild(form);
-                        form.submit();
+                        window.location.href = `/livre?search=isbn:${code}`;
                     } else {
                         window.location.href = `/livre/${data.id}/edit`;
                     }
