@@ -88,6 +88,10 @@ def create_app():
 
     app.register_blueprint(auth_blueprint)
 
+    from .export import export as export_blueprint
+
+    app.register_blueprint(export_blueprint)
+
     # blueprint for livre parts of app
     from .livre import livre as livre_blueprint
 
