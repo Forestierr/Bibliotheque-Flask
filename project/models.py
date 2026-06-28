@@ -48,7 +48,9 @@ class User(UserMixin, db.Model):
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
         try:
             email = serializer.loads(
-                token, salt="email-verify-" + user.password, max_age=86400  # Token valid for 24 hours
+                token,
+                salt="email-verify-" + user.password,
+                max_age=86400,  # Token valid for 24 hours
             )
         except Exception:
             return None

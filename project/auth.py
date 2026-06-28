@@ -3,7 +3,10 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
-from .email import send_email_bienvenue, send_email_reset_password, send_email_verification
+from .email import (
+    send_email_reset_password,
+    send_email_verification,
+)
 from .models import User
 from . import db
 
@@ -73,8 +76,11 @@ def signup_post():
     # envoi d'un email de bienvenue à l'utilisateur
     # sans bloquer l'application
     send_email_verification(new_user)
-    
-    flash("Un e-mail de vérification vous a été envoyé. Veuillez vérifier votre boîte de réception.", "success")
+
+    flash(
+        "Un e-mail de vérification vous a été envoyé. Veuillez vérifier votre boîte de réception.",
+        "success",
+    )
     return redirect(url_for("auth.login"))
 
 
@@ -91,7 +97,10 @@ def verify_email(token, user_id):
 
     user.is_verified = True
     db.session.commit()
-    flash("Votre adresse e-mail a été vérifiée avec succès. Vous pouvez maintenant vous connecter.", "success")
+    flash(
+        "Votre adresse e-mail a été vérifiée avec succès. Vous pouvez maintenant vous connecter.",
+        "success",
+    )
     return redirect(url_for("auth.login"))
 
 
