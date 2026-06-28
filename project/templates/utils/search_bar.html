@@ -1,4 +1,4 @@
-{% macro search_bar(placeholder, list, url_preview, url_search) %}
+{% macro search_bar(placeholder, list, url_preview, url_search, value="") %}
 
 <div class="">
     <div class="control has-icons-left is-expanded">
@@ -10,6 +10,7 @@
                    class="input"
                    type="search"
                    name="search"
+                   value="{{ value }}"
                    list="suggestions"
                    placeholder="{{ placeholder }}"
                    hx-post="{{ url_preview }}"

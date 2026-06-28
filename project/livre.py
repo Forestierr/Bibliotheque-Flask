@@ -47,16 +47,46 @@ def livre_db():
     # Valeurs par défaut car la page est appelée sans paramètres
     # Puis on utilise HTMX pour avoir les valeurs des paramètres
     # dans les fonctions search et search_preview
-    page = 1
+    page = request.args.get("page", 1, type=int)
     n_books_by_page = 20
-    # get the number of books
-    nb_books = db.session.query(Book).filter(Book.user_id == current_user.id).count()
-    # nombre de page
-    nb_page = math.ceil(nb_books / n_books_by_page)
+    search_query = request.args.get("search", "")
 
-    # Query books and add the student name if the book is loaned
-    # (Book, Student, Tags, Loan_count)
-    books = get_books_student_tags(current_user.id, n_books_by_page, page)
+    if search_query:
+        search_type = ["titre", "isbn", "eleve", "tags"]
+        split = search_query.split(":")
+
+        if len(split) == 2 and split[0] in search_type:
+            search_val = split[1]
+            (books, nb_books) = search_books_by_types(
+                current_user.id,
+                split[0],
+                search_val,
+                "Book.id",
+                "asc",
+                n_books_by_page,
+                page,
+            )
+        else:
+            (books, nb_books) = search_books_by_types(
+                current_user.id,
+                "all",
+                search_query,
+                "Book.id",
+                "asc",
+                n_books_by_page,
+                page,
+            )
+    else:
+        # get the number of books
+        nb_books = (
+            db.session.query(Book).filter(Book.user_id == current_user.id).count()
+        )
+        # Query books and add the student name if the book is loaned
+        # (Book, Student, Tags, Loan_count)
+        books = get_books_student_tags(current_user.id, n_books_by_page, page)
+
+    # nombre de page
+    nb_page = math.ceil(nb_books / n_books_by_page) if nb_books > 0 else 1
 
     # When the user types "tags:" or "eleve:" in the search bar, we should display the tags and students
     all_students = get_students(current_user.id)
@@ -71,6 +101,7 @@ def livre_db():
         nb_page=nb_page,
         page=int(page),
         tags=tags,
+        search=search_query,
     )
 
 

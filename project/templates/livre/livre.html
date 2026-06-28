@@ -59,7 +59,7 @@
     {% else %}
 
     <div class="block">
-        {{ search_bar("Rechercher un livre", True, "/livre/search-preview", "/livre/search") }}
+        {{ search_bar("Rechercher un livre", True, "/livre/search-preview", "/livre/search", search) }}
     </div>
 
     {% with n_emprunt=true, url="/livre/search" %}
