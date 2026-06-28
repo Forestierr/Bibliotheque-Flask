@@ -41,5 +41,5 @@ jobs:
         run: pytest project/test/
         env:
           FLASK_APP: project
-          SQLALCHEMY_DATABASE_URI: sqlite:///:memory:
-          SECRET_KEY: dummy-secret-key-for-tests
+          SQLALCHEMY_DATABASE_URI: "sqlite:///:memory:"
+          SECRET_KEY: "dummy-secret-key-for-tests"
