@@ -17,6 +17,7 @@
 
     <div class="content">
         <form action="/livre/ajout" method="post">
+    {% include 'utils/csrf.html' %}
             <div class="field">
                 <label class="label" for="title">Titre</label>
                 <div class="control">
@@ -118,7 +119,7 @@
     <!-- Script pour la gestion des étiquettes -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const existingTags = {{ tags|safe }}; // Liste des tags existants
+      const existingTags = {{ tags|tojson }}; // Liste des tags existants
       const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
       const tagsInput = document.getElementById("tags-input");
       const tagsList = document.getElementById("tags-list");

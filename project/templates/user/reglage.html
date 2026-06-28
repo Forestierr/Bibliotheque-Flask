@@ -83,6 +83,7 @@
 
     <div class="container">
         <form method="POST" action="{{ url_for('auth.reglage') }}">
+    {% include 'utils/csrf.html' %}
             <div class="field">
                 <label class="label">Nom</label>
                 <div class="control">
@@ -143,7 +144,8 @@
                         <p class="modal-card-title">Supprimer tous les élèves ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('eleve.eleve_delete_all') }}" id="delet_student"></form>
+                        <form method="POST" action="{{ url_for('eleve.eleve_delete_all') }}" id="delet_student">
+    {% include 'utils/csrf.html' %}</form>
                         <button class="button is-normal is-danger is-responsive" form="delet_student" value="Submit">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
@@ -186,7 +188,8 @@
                         <p class="modal-card-title">Supprimer tous les prêts ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('emprunt.delete_all_loans') }}" id="delet_loan"></form>
+                        <form method="POST" action="{{ url_for('emprunt.delete_all_loans') }}" id="delet_loan">
+    {% include 'utils/csrf.html' %}</form>
                         <button class="button is-normal is-danger is-responsive" form="delet_loan" value="Submit">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
@@ -229,7 +232,8 @@
                         <p class="modal-card-title">Supprimer tous les livres ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('livre.livre_delete_all') }}" id="delet_book"></form>
+                        <form method="POST" action="{{ url_for('livre.livre_delete_all') }}" id="delet_book">
+    {% include 'utils/csrf.html' %}</form>
                         <button class="button is-normal is-danger is-responsive" form="delet_book" value="Submit">
                             <div class="icon-text">
                                 <span class="icon has-text-info">
@@ -276,7 +280,8 @@
                         <p class="modal-card-title">Supprimer mon compte ?</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('auth.delete_account') }}" id="delet_user"></form>
+                        <form method="POST" action="{{ url_for('auth.delete_account') }}" id="delet_user">
+    {% include 'utils/csrf.html' %}</form>
                         <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
                             <div class="icon-text">
                                 <span class="icon has-text-info">

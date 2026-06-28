@@ -38,14 +38,17 @@
                                 <p class="modal-card-title">Supprimer l'emprunt ?</p>
                             </header>
                             <footer class="modal-card-foot">
-                                <a href="/emprunt/{{ book.Loan.id }}/delete" class="button is-normal is-danger is-responsive">
-                                    <div class="icon-text">
-                                        <span class="icon has-text-info">
-                                            <i class="fa-solid fa-trash has-text-black"></i>
-                                        </span>
-                                        <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
-                                    </div>
-                                </a>
+                                <form action="/emprunt/{{ book.Loan.id }}/delete" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="button is-normal is-danger is-responsive">
+                                        <div class="icon-text">
+                                            <span class="icon has-text-info">
+                                                <i class="fa-solid fa-trash has-text-black"></i>
+                                            </span>
+                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                        </div>
+                                    </button>
+                                </form>
                                 <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">Annuler</a>
                             </footer>
                         </div>
@@ -54,11 +57,14 @@
                     </div>
 
                     <div class="column has-text-right">
-                        <a href="/emprunt/{{ book.Loan.id }}" class="button is-success is-small">
-                            <span class="icon is-small">
-                              <i class="fa-solid fa-calendar-check"></i>
-                            </span>
-                        </a>
+                        <form action="/emprunt/{{ book.Loan.id }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="button is-success is-small">
+                                <span class="icon is-small">
+                                  <i class="fa-solid fa-calendar-check"></i>
+                                </span>
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -128,14 +134,17 @@
                                 <p class="modal-card-title">Supprimer l'emprunt ?</p>
                             </header>
                             <footer class="modal-card-foot">
-                                <a href="/emprunt/{{ book.Loan.id }}/delete" class="button is-normal is-danger is-responsive">
-                                    <div class="icon-text">
-                                        <span class="icon has-text-info">
-                                            <i class="fa-solid fa-trash has-text-black"></i>
-                                        </span>
-                                        <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
-                                    </div>
-                                </a>
+                                <form action="/emprunt/{{ book.Loan.id }}/delete" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="button is-normal is-danger is-responsive">
+                                        <div class="icon-text">
+                                            <span class="icon has-text-info">
+                                                <i class="fa-solid fa-trash has-text-black"></i>
+                                            </span>
+                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                        </div>
+                                    </button>
+                                </form>
                                 <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">Annuler</a>
                             </footer>
                         </div>
@@ -172,14 +181,17 @@
                     <p class="modal-card-title">Supprimer l'élève ?</p>
                 </header>
                 <footer class="modal-card-foot">
-                    <a href="/eleve/{{ student.id }}/delete" class="button is-normal is-danger is-responsive">
-                        <div class="icon-text">
-                            <span class="icon has-text-info">
-                                <i class="fas fa-user-slash has-text-black"></i>
-                            </span>
-                            <span class="has-text-black has-text-weight-semibold">Supprimer l'élève</span>
-                        </div>
-                    </a>
+                    <form action="/eleve/{{ student.id }}/delete" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="button is-normal is-danger is-responsive">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fas fa-user-slash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer l'élève</span>
+                            </div>
+                        </button>
+                    </form>
                     <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">Annuler</a>
                 </footer>
             </div>

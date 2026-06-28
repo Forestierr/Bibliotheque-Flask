@@ -38,6 +38,7 @@
                 {% include "utils/flash_message.html" %}
 
                 <form method="POST" action="/signup">
+    {% include 'utils/csrf.html' %}
                     <div class="field">
                         <label class="label">Email</label>
                         <div class="control">

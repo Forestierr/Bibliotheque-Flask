@@ -17,6 +17,7 @@
 
     <div class="content">
         <form action="/livre/{{ book.id }}/edit" method="post">
+    {% include 'utils/csrf.html' %}
             <div class="field">
                 <label class="label" for="title">Titre</label>
                 <div class="control">
@@ -118,14 +119,17 @@
                     <p class="modal-card-title">Supprimer le livre</p>
                 </header>
                 <footer class="modal-card-foot">
-                    <a href="/livre/{{ book.id }}/delete" class="button is-normal is-danger is-responsive">
-                        <div class="icon-text">
-                            <span class="icon has-text-info">
-                                <i class="fa-solid fa-trash has-text-black"></i>
-                            </span>
-                            <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
-                        </div>
-                    </a>
+                    <form action="/livre/{{ book.id }}/delete" method="POST" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="button is-normal is-danger is-responsive">
+                            <div class="icon-text">
+                                <span class="icon has-text-info">
+                                    <i class="fa-solid fa-trash has-text-black"></i>
+                                </span>
+                                <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
+                            </div>
+                        </button>
+                    </form>
                     <a href="/livre/{{ book.id }}/edit" class="button is-normal is-responsive">Annuler</a>
                 </footer>
             </div>
@@ -146,7 +150,7 @@
     <!-- Script pour les tags -->
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const existingTags = {{ tags|safe }}; // Liste des tags existants
+      const existingTags = {{ tags|tojson }}; // Liste des tags existants
       const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
       const tagsInput = document.getElementById("tags-input");
       const tagsList = document.getElementById("tags-list");
@@ -155,7 +159,7 @@
       const suggestionsList = document.getElementById("suggestions-list");
 
       window.onload = function () {
-        for (let tag of {{ book_tags|safe }}) {
+        for (let tag of {{ book_tags|tojson }}) {
             if (tag) {
                 addTag(tag);
             }

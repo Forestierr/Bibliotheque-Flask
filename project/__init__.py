@@ -1,6 +1,7 @@
 # init.py
 
-from flask import Flask, url_for  # noqa: F401
+from flask import Flask
+from flask_wtf.csrf import CSRFProtect  # noqa: F401
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -51,6 +52,9 @@ def create_app():
     app.config["MAIL_USE_SSL"] = True
 
     db.init_app(app)
+
+    csrf = CSRFProtect()
+    csrf.init_app(app)
     Migrate(app, db)
     mail.init_app(app)
 

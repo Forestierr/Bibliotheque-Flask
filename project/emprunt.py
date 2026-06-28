@@ -48,24 +48,32 @@ def emprunt_db():
     )
 
 
-@emprunt.route("/emprunt/<id>", methods=["GET", "POST"])
+@emprunt.route("/emprunt/<id>", methods=["POST"])
 @login_required
 def return_loan(id):
     from_url = request.referrer
+    if not from_url or not from_url.startswith(request.host_url):
+        from_url = url_for("emprunt.emprunt_db")
 
     loan = db.session.query(Loan).filter(Loan.id == id).first()
 
     if loan:
-        loan.date_return = date.today()
-        db.session.commit()
+        book = db.session.query(Book).filter(Book.id == loan.book_id).first()
+        if book and book.user_id == current_user.id:
+            loan.date_return = date.today()
+            db.session.commit()
+        else:
+            flash("Accès non autorisé.", "error")
 
     return redirect(from_url)
 
 
-@emprunt.route("/emprunt/<id>/delete", methods=["GET", "POST"])
+@emprunt.route("/emprunt/<id>/delete", methods=["POST"])
 @login_required
 def delete_loan(id):
     from_url = request.referrer
+    if not from_url or not from_url.startswith(request.host_url):
+        from_url = url_for("emprunt.emprunt_db")
 
     loan = db.session.query(Loan).filter(Loan.id == id).first()
 
@@ -76,6 +84,7 @@ def delete_loan(id):
     book = db.session.query(Book).filter(Book.id == loan.book_id).first()
 
     if book.user_id != current_user.id:
+        flash("Accès non autorisé.", "error")
         return redirect(from_url)
 
     if loan:

@@ -203,7 +203,17 @@ def reglage():
             return redirect(url_for("auth.reglage"))
 
         if user.email != email:
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                flash("Cette adresse email est déjà utilisée.", "error")
+                return redirect(url_for("auth.reglage"))
             user.email = email
+            user.is_verified = False
+            send_email_verification(user)
+            flash(
+                "Un e-mail de vérification a été envoyé à votre nouvelle adresse.",
+                "info",
+            )
 
         if user.name != name:
             user.name = name

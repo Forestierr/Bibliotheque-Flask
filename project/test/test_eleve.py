@@ -116,7 +116,7 @@ def test_eleve_delete(client, app):
             mock_user.id = 1
             mock_query.filter_by().first.return_value = mock_student
             mock_loan_query.filter_by().all.return_value = []
-            response = client.get("/eleve/1/delete")
+            response = client.post("/eleve/1/delete")
             assert response.status_code == 302
 
 

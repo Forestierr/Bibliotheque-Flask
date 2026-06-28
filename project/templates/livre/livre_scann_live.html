@@ -439,7 +439,8 @@
                   canvas = Quagga.canvas.dom.image;
                 $node = $(
                   '<div class="result"> ' +
-                    '<form method="POST" action="/livre/ajout">' +
+                    '<form method="POST" action="/livre/ajout">
+    {% include 'utils/csrf.html' %}' +
                     '<label class="label">Titre </label>' +
                     '<div class="control">' +
                     '<input class="input" type="text" name="title" value="' +
