@@ -1,10 +1,6 @@
 name: PR Validation
 
 on:
-  push:
-    branches:
-      - main
-      - master
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
@@ -12,7 +8,7 @@ jobs:
   lint-format-test:
     name: Lint, Format, and Test
     # Ne pas lancer le job si c'est une pull request en draft
-    if: github.event.pull_request.draft == false || github.event_name == 'push'
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
 
     steps:

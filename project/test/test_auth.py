@@ -54,6 +54,7 @@ def test_login_post_success(client, app):
         mock_user = MagicMock()
         mock_user.password = "hash"  # Nécessaire pour check_password_hash
         mock_user.is_active = True
+        mock_user.is_verified = True
         mock_user.get_id.return_value = 1
         with (
             patch("project.auth.User.query") as mock_query,
@@ -99,7 +100,7 @@ def test_signup_post_success(client, app):
         with (
             patch("project.auth.User.query") as mock_query,
             patch("project.auth.db.session"),
-            patch("project.auth.send_email_bienvenue") as mock_send_email,
+            patch("project.auth.send_email_verification") as mock_send_email,
         ):
             mock_query.filter_by().first.return_value = None
             with client:
