@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Envoyer une Newsletter - Livres en Classe{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container" style="max-width: 800px;">
+        
+        <div class="level mb-5">
+            <div class="level-left">
+                <a href="{{ url_for('admin.index') }}" class="button is-light">
+                    <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                    <span>Retour au tableau de bord</span>
+                </a>
+            </div>
+        </div>
+
+        <h1 class="title is-2 mb-6">Envoyer une Newsletter</h1>
+
+        <!-- Messages Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="notification is-{{ category }} is-light">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="box">
+            <form action="{{ url_for('admin.emails') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                <div class="field">
+                    <label class="label">Cible</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="target" required>
+                                <option value="all">Tous les utilisateurs inscrits (même non vérifiés)</option>
+                                <option value="verified" selected>Utilisateurs vérifiés uniquement (Recommandé)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p class="help">L'envoi se fera en arrière-plan (1 email par seconde) pour éviter le spam. Limite Google : 500/jour.</p>
+                </div>
+
+                <div class="field mt-4">
+                    <label class="label">Modèle d'email (Design)</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="template_choice" required>
+                                <option value="newsletter.html" selected>Vierge / Classique (Texte simple avec entête)</option>
+                                <option value="newsletter_update.html">Mise à jour (Encadré coloré pour nouveautés)</option>
+                                <option value="newsletter_promo.html">Promotion / Alerte (Couleurs vives et urgentes)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field mt-4">
+                    <label class="label">Sujet de l'email</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" name="subject" placeholder="Ex: Nouveautés sur LivresEnClasse !" required>
+                        <span class="icon is-small is-left"><i class="fas fa-heading"></i></span>
+                    </div>
+                </div>
+
+                <div class="field mt-5">
+                    <label class="label">Message (HTML autorisé)</label>
+                    <div class="control">
+                        <textarea class="textarea" name="message" rows="15" placeholder="Bonjour,<br><br>Voici les dernières nouveautés...<br><br>L'équipe LivresEnClasse" required></textarea>
+                    </div>
+                    <p class="help">Vous pouvez utiliser des balises HTML basiques comme &lt;b&gt;, &lt;br&gt;, &lt;a href="..."&gt;</p>
+                </div>
+
+                <div class="field mt-6">
+                    <div class="control buttons are-medium">
+                        <button type="submit" name="action" value="preview" formtarget="_blank" class="button is-info is-outlined is-fullwidth mb-3">
+                            <span class="icon"><i class="fas fa-eye"></i></span>
+                            <span>Prévisualiser (Ouvre un nouvel onglet)</span>
+                        </button>
+                        <button type="submit" name="action" value="send" class="button is-link is-fullwidth" onclick="return confirm('Êtes-vous sûr de vouloir envoyer cet email en masse ? Cette action est irréversible.');">
+                            <span class="icon"><i class="fas fa-paper-plane"></i></span>
+                            <span>Envoyer la Newsletter</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            const $notification = $delete.parentNode;
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
+        });
+    });
+</script>
+{% endblock %}

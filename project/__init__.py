@@ -116,4 +116,9 @@ def create_app():
 
     app.register_blueprint(main_blueprint)
 
+    # blueprint for admin
+    from .admin import admin as admin_blueprint
+
+    app.register_blueprint(admin_blueprint)
+
     return app

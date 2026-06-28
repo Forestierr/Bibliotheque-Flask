@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Administration - Livres en Classe{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        
+        <h1 class="title is-2 mb-6">Panneau d'Administration</h1>
+
+        <!-- Messages Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="notification is-{{ category }} is-light">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="level">
+            <div class="level-left">
+                <div class="level-item">
+                    <h2 class="title is-4 mb-0">Utilisateurs inscrits ({{ users|length }})</h2>
+                </div>
+            </div>
+            <div class="level-right">
+                <div class="level-item">
+                    <a href="{{ url_for('admin.emails') }}" class="button is-link">
+                        <span class="icon"><i class="fas fa-envelope"></i></span>
+                        <span>Envoyer une Newsletter</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <div class="field mb-5">
+                <p class="control has-icons-left">
+                    <input class="input is-rounded" type="text" id="searchInput" placeholder="Rechercher par ID, Email ou Nom...">
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </p>
+            </div>
+
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Nom</th>
+                            <th>Statut</th>
+                            <th>Livres</th>
+                            <th>Élèves</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr class="user-row">
+                            <td class="user-id">{{ u.id }}</td>
+                            <td class="user-email"><strong>{{ u.email }}</strong></td>
+                            <td class="user-name">{{ u.name or '-' }}</td>
+                            <td>
+                                {% if u.is_verified %}
+                                    <span class="tag is-success is-light">Vérifié</span>
+                                {% else %}
+                                    <span class="tag is-warning is-light">Non vérifié</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ u.books|length }}</td>
+                            <td>{{ u.students|length }}</td>
+                            <td>
+                                <div class="buttons are-small">
+                                    {% if not u.is_verified %}
+                                    <form action="{{ url_for('admin.verify_user', user_id=u.id) }}" method="POST" class="is-inline">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="button is-success is-outlined" title="Forcer la vérification">
+                                            <span class="icon"><i class="fas fa-check"></i></span>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    
+                                    <form action="{{ url_for('admin.reset_password', user_id=u.id) }}" method="POST" class="is-inline" onsubmit="return confirm('Générer un nouveau mot de passe pour cet utilisateur ?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="button is-info is-outlined" title="Réinitialiser le MDP">
+                                            <span class="icon"><i class="fas fa-key"></i></span>
+                                        </button>
+                                    </form>
+
+                                    <form action="{{ url_for('admin.delete_user', user_id=u.id) }}" method="POST" class="is-inline" onsubmit="return confirm('ATTENTION ! Voulez-vous vraiment supprimer DÉFINITIVEMENT ce compte et toutes ses données (Livres, Élèves, Emprunts) ? Cette action est irréversible.');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="button is-danger is-outlined" title="Supprimer le compte">
+                                            <span class="icon"><i class="fas fa-trash"></i></span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div id="noResults" class="has-text-centered has-text-grey mt-5 is-hidden">
+                    Aucun utilisateur trouvé.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Flash messages dismissal
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            const $notification = $delete.parentNode;
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const userRows = document.querySelectorAll('.user-row');
+        const noResults = document.getElementById('noResults');
+
+        if(searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                let hasVisible = false;
+
+                userRows.forEach(row => {
+                    const id = row.querySelector('.user-id').textContent.toLowerCase();
+                    const email = row.querySelector('.user-email').textContent.toLowerCase();
+                    const name = row.querySelector('.user-name').textContent.toLowerCase();
+
+                    if (id.includes(term) || email.includes(term) || name.includes(term)) {
+                        row.style.display = '';
+                        hasVisible = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                if (hasVisible) {
+                    noResults.classList.add('is-hidden');
+                } else {
+                    noResults.classList.remove('is-hidden');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
