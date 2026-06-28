@@ -117,17 +117,17 @@ def test_search_preview_with_result(mock_user, client):
 
 # Test existence d'un livre par ISBN
 @patch('project.livre.current_user')
-@patch('project.livre.get_book_by_isbn')
-def test_livre_exist_found(mock_get_book, mock_user, client):
+@patch('project.livre.get_books_by_isbn')
+def test_livre_exist_found(mock_get_books, mock_user, client):
     mock_user.id = 1
-    mock_get_book.return_value = MagicMock(id=42)
+    mock_get_books.return_value = [MagicMock(id=42)]
     response = client.get('/livre/1234567890/exist')
     assert response.status_code == 200
     assert b'42' in response.data
 
 @patch('project.livre.current_user')
-@patch('project.livre.get_book_by_isbn', return_value=None)
-def test_livre_exist_not_found(mock_get_book, mock_user, client):
+@patch('project.livre.get_books_by_isbn', return_value=[])
+def test_livre_exist_not_found(mock_get_books, mock_user, client):
     mock_user.id = 1
     response = client.get('/livre/0000000000/exist')
     assert response.status_code == 404

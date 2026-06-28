@@ -1,0 +1,43 @@
+name: PR Validation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  lint-format-test:
+    name: Lint, Format, and Test
+    # Ne pas lancer le job si c'est une pull request en draft
+    if: github.event.pull_request.draft == false || github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest
+          if [ -f project/requirements.txt ]; then pip install -r project/requirements.txt; fi
+
+      - name: Check formatting with Ruff
+        run: ruff format --check project/
+        
+      - name: Lint with Ruff
+        run: ruff check project/
+
+      - name: Run tests with pytest
+        run: pytest project/test/
+        env:
+          FLASK_APP: project
