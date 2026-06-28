@@ -64,6 +64,25 @@ def send_email_bienvenue(name, email):
     send_html_email(subject, sender, recipients, html_body)
 
 
+def send_email_verification(user):
+    subject = "Vérification de votre compte LivresEnClasse"
+    sender = os.getenv("MAIL_USERNAME")
+    recipients = [user.email]
+
+    verification_url = url_for(
+        "auth.verify_email",
+        token=user.get_verification_token(),
+        user_id=user.id,
+        _external=True,
+    )
+
+    html_body = render_template(
+        "email/email_verification.html", user=user, verification_url=verification_url
+    )
+    send_html_email(subject, sender, recipients, html_body)
+    logging.info(f"Email de vérification envoyé à {user.email}")
+
+
 def send_email_reset_password(user):
     subject = "Réinitialisation de votre mot de passe"
     sender = os.getenv("MAIL_USERNAME")

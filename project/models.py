@@ -23,6 +23,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
+    is_verified = db.Column(db.Boolean, default=False)
 
     # One-to-Many relationship with books
     books = relationship("Book", backref="user", lazy=True)  # User can have many books
@@ -32,6 +33,30 @@ class User(UserMixin, db.Model):
     )  # User can have many students
     # One-to-Many relationship with tags
     tags = relationship("Tags", backref="user", lazy=True)  # User can have many tags
+
+    def get_verification_token(self):
+        serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
+        return serializer.dumps(self.email, salt="email-verify-" + self.password)
+
+    @staticmethod
+    def validate_verification_token(token: str, user_id: int):
+        user = User.query.get(user_id)
+
+        if not user:
+            return None
+
+        serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
+        try:
+            email = serializer.loads(
+                token, salt="email-verify-" + user.password, max_age=86400  # Token valid for 24 hours
+            )
+        except Exception:
+            return None
+
+        if email != user.email:
+            return None
+
+        return user
 
     def get_reset_password_token(self):
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))

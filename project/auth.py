@@ -3,7 +3,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
-from .email import send_email_bienvenue, send_email_reset_password
+from .email import send_email_bienvenue, send_email_reset_password, send_email_verification
 from .models import User
 from . import db
 
@@ -30,6 +30,10 @@ def login_post():
         return redirect(
             url_for("auth.login")
         )  # if user doesn't exist or password is wrong, reload the page
+
+    if not user.is_verified:
+        flash("Veuillez vérifier votre adresse e-mail avant de vous connecter.")
+        return redirect(url_for("auth.login"))
 
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
@@ -68,8 +72,26 @@ def signup_post():
 
     # envoi d'un email de bienvenue à l'utilisateur
     # sans bloquer l'application
-    send_email_bienvenue(name, email)
+    send_email_verification(new_user)
+    
+    flash("Un e-mail de vérification vous a été envoyé. Veuillez vérifier votre boîte de réception.", "success")
+    return redirect(url_for("auth.login"))
 
+
+@auth.route("/verify_email/<token>/<int:user_id>")
+def verify_email(token, user_id):
+    user = User.validate_verification_token(token, user_id)
+    if not user:
+        flash("Le lien de vérification est invalide ou a expiré.", "error")
+        return redirect(url_for("auth.login"))
+
+    if user.is_verified:
+        flash("Votre compte est déjà vérifié.", "info")
+        return redirect(url_for("auth.login"))
+
+    user.is_verified = True
+    db.session.commit()
+    flash("Votre adresse e-mail a été vérifiée avec succès. Vous pouvez maintenant vous connecter.", "success")
     return redirect(url_for("auth.login"))
 
 
