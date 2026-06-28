@@ -1,0 +1,95 @@
+<!-- templates/ressources/index.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Ressources pour enseignants | Livres en Classe{% endblock %}
+{% block meta_description %}Téléchargez nos ressources gratuites pour la gestion de votre bibliothèque de classe : affiches, étiquettes, diplômes de lecteur et plus encore.{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container max-w-800" style="max-width: 900px; margin: 0 auto;">
+            
+            <h1 class="title is-1 has-text-centered mb-6">Centre de Ressources</h1>
+            <h2 class="subtitle is-3 has-text-centered mb-6">Téléchargez nos outils gratuits pour animer votre classe</h2>
+
+            <div class="columns is-multiline mt-5">
+                
+                <div class="column is-4">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-tags"></i></span>
+                            <p class="title is-4 mt-3">Étiquettes de Rangement</p>
+                            <p class="content">Des étiquettes prêtes à imprimer pour classer vos bacs par genre ou niveau de lecture.</p>
+                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-4">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-image"></i></span>
+                            <p class="title is-4 mt-3">Affiches "Coin lecture"</p>
+                            <p class="content">Décorez votre espace de lecture avec nos affiches motivantes et illustrées.</p>
+                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-4">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-award"></i></span>
+                            <p class="title is-4 mt-3">Diplômes de Lecteur</p>
+                            <p class="content">Récompensez vos élèves avec des diplômes à remplir en fin de période ou d'année.</p>
+                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="column is-4">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-clipboard-list"></i></span>
+                            <p class="title is-4 mt-3">Fiches de Lecture</p>
+                            <p class="content">Des modèles de fiches de lecture adaptés pour le Cycle 2 et le Cycle 3.</p>
+                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-4">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-passport"></i></span>
+                            <p class="title is-4 mt-3">Passeports Lecture</p>
+                            <p class="content">Un livret ludique pour encourager les élèves à suivre leurs lectures personnelles.</p>
+                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-4">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content has-text-centered">
+                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-bookmark"></i></span>
+                            <p class="title is-4 mt-3">Marque-pages</p>
+                            <p class="content">Des modèles de marque-pages à colorier ou à imprimer directement.</p>
+                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}

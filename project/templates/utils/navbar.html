@@ -1,10 +1,36 @@
 {% macro navbar(current_user, titre) %}
 
-<nav class="navbar is-fixed-top is-white has-shadow" style="background-color: #fff">
+<style>
+    .custom-navbar {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid hsl(0, 0%, 93%);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .navbar-item-custom {
+        color: hsl(0, 0%, 30%) !important;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    .navbar-item-custom:hover, .navbar-item-custom.is-active-link {
+        color: hsl(217, 71%, 53%) !important;
+        background-color: transparent !important;
+    }
+    .navbar-logo-text {
+        font-weight: 700;
+        color: hsl(0, 0%, 15%);
+        font-size: 1.2rem;
+        letter-spacing: -0.5px;
+    }
+</style>
+
+<nav class="navbar is-fixed-top custom-navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-        <a class="navbar-item" href="{{ url_for('main.index') }}">
-            <img src="/static/image/icons/favicon-96x96.png" alt="Logo"/>
-            <p class="navbar-item" style="user-select: none;">{{ titre }}</p>
+        <a class="navbar-item" href="{{ url_for('main.index') }}" style="background-color: transparent !important;">
+            <img src="/static/image/icons/favicon-96x96.png" alt="Logo" style="max-height: 2.2rem; margin-right: 0.5rem;"/>
+            <span class="navbar-logo-text">{{ titre }}</span>
         </a>
 
         <!-- Navbar burger -->
@@ -13,80 +39,75 @@
             class="navbar-burger"
             id="burger"
             data-target="navbarMenuHeroC"
+            aria-label="menu"
+            aria-expanded="false"
         >
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
         </a>
     </div>
-    {% if current_user.is_authenticated %}
+
     <div id="navbarMenuHeroC" class="navbar-menu">
+        {% if current_user.is_authenticated %}
+        <!-- Menu connecté -->
         <div class="navbar-end">
-            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item {% if request.endpoint == 'livre.livre_db' or request.endpoint == 'livre.livre_edit' %}is-active{% endif %}">
-                <div class="icon-text">
-                    <span class="icon has-text-info">
-                        <i class="fas fa-book has-text-grey"></i>
-                    </span>
-                    <span>Livres</span>
-                </div>
+            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item navbar-item-custom {% if 'livre.' in request.endpoint %}is-active-link{% endif %}">
+                <span class="icon mr-2">
+                    <i class="fas fa-book"></i>
+                </span>
+                <span>Livres</span>
             </a>
-            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item {% if request.endpoint == 'eleve.eleve_db' %}is-active{% endif %}">
-                <div class="icon-text">
-                    <span class="icon has-text-info">
-                        <i class="fas fa-users has-text-grey"></i>
-                    </span>
-                    <span>Elèves</span>
-                </div>
+            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item navbar-item-custom {% if 'eleve.' in request.endpoint %}is-active-link{% endif %}">
+                <span class="icon mr-2">
+                    <i class="fas fa-users"></i>
+                </span>
+                <span>Elèves</span>
             </a>
-            <a
-                href="{{ url_for('emprunt.emprunt_db') }}"
-                class="navbar-item {% if request.endpoint == 'emprunt.emprunt_db' %}is-active{% endif %}"
-            >
-                <div class="icon-text">
-                    <span class="icon">
-                        <i class="fas fa-address-book has-text-grey"></i>
-                    </span>
-                    <span>Emprunts</span>
-                </div>
+            <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item navbar-item-custom {% if 'emprunt.' in request.endpoint %}is-active-link{% endif %}">
+                <span class="icon mr-2">
+                    <i class="fas fa-exchange-alt"></i>
+                </span>
+                <span>Emprunts</span>
             </a>
-            <a href="{{ url_for('auth.reglage') }}" class="navbar-item {% if request.endpoint == 'auth.reglage' %}is-active{% endif %}">
-                <div class="icon-text">
-                    <span class="icon has-text-info">
-                        <i class="fa-solid fa-cog has-text-grey"></i>
-                    </span>
-                    <span>Réglages</span>
-                </div>
+            <a href="{{ url_for('auth.reglage') }}" class="navbar-item navbar-item-custom {% if 'auth.reglage' == request.endpoint %}is-active-link{% endif %}">
+                <span class="icon mr-2">
+                    <i class="fa-solid fa-cog"></i>
+                </span>
+                <span>Réglages</span>
             </a>
+            <div class="navbar-item">
+                <a href="{{ url_for('auth.logout') }}" class="button is-light is-rounded is-small">Deconnexion</a>
+            </div>
         </div>
-    </div>
-    {% else %}
-    <div id="navbarMenuHeroC" class="navbar-menu">
+        {% else %}
+        <!-- Menu déconnecté (Visiteur / SEO) -->
         <div class="navbar-end">
-            <a href="{{ url_for('main.apropos') }}" class="navbar-item">
+            <a href="{{ url_for('main.enseignants_index') }}" class="navbar-item navbar-item-custom {% if 'enseignants' in request.path %}is-active-link{% endif %}">
+                Guides
+            </a>
+            <a href="{{ url_for('main.ressources_index') }}" class="navbar-item navbar-item-custom {% if 'ressources' in request.path %}is-active-link{% endif %}">
+                Ressources
+            </a>
+            <a href="{{ url_for('main.blog_index') }}" class="navbar-item navbar-item-custom {% if 'blog' in request.path %}is-active-link{% endif %}">
+                Blog
+            </a>
+            <a href="{{ url_for('main.apropos') }}" class="navbar-item navbar-item-custom {% if 'apropos' in request.path %}is-active-link{% endif %}">
                 À propos
             </a>
-            <a href="{{ url_for('main.mentions_legales') }}" class="navbar-item {% if request.endpoint == 'eleve.eleve_db' %}is-active{% endif %}">
-                Mentions legales
-            </a>
-            <a href="{{ url_for('auth.login') }}" class="navbar-item">
-                <div class="button is-fullwidth">
-                    <span class="icon is-grey">
-                        <i class="fas fa-sign-in-alt"></i>
-                    </span>
-                    <span>Se connecter</span>
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a href="{{ url_for('auth.login') }}" class="button is-rounded is-light">
+                        <span>Se connecter</span>
+                    </a>
+                    <a href="{{ url_for('auth.signup') }}" class="button is-rounded is-link">
+                        <strong>Essayer gratuitement</strong>
+                    </a>
                 </div>
-            </a>
-            <a href="{{ url_for('auth.signup') }}" class="navbar-item">
-                <div class="button is-fullwidth is-info">
-                    <span class="icon">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </span>
-                    <span>Créer un compte</span>
-                </div>
-            </a>
+            </div>
         </div>
+        {% endif %}
     </div>
-    {% endif %}
 </nav>
 
-{%endmacro%}
+{% endmacro %}

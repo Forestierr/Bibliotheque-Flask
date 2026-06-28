@@ -1,10 +1,10 @@
 {# templates/components/feature_section.html #}
 {% macro feature_section(title, description_lines, desktop_img_url, mobile_img_url) %}
 <div class="section block wow">
-    <div class="container block">
-        <h2 class="title is-1 is-spaced">{{ title }}</h2>
+    <div class="container block has-text-centered">
+        <h2 class="title is-2 mb-6">{{ title }}</h2>
         {% for line in description_lines %}
-        <p>{{ line }}</p>
+        <p class="subtitle is-5">{{ line }}</p>
         {% endfor %}
     </div>
     <div class="container is-fluid">

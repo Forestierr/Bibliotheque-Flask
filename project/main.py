@@ -168,6 +168,46 @@ def apropos():
     return render_template("apropos.html")
 
 
+# SEO Dynamic Routes
+@main.route("/blog")
+def blog_index():
+    return render_template("blog/index.html")
+
+
+@main.route("/blog/<path:article_slug>")
+def blog_article(article_slug):
+    try:
+        return render_template(f"blog/{article_slug}.html")
+    except Exception:
+        return render_template("error.html", error="Article non trouvé"), 404
+
+
+@main.route("/ressources")
+def ressources_index():
+    return render_template("ressources/index.html")
+
+
+@main.route("/ressources/<path:ressource_slug>")
+def ressource_article(ressource_slug):
+    try:
+        return render_template(f"ressources/{ressource_slug}.html")
+    except Exception:
+        return render_template("error.html", error="Ressource non trouvée"), 404
+
+
+@main.route("/enseignants")
+def enseignants_index():
+    return render_template("enseignants/index.html")
+
+
+@main.route("/enseignants/<path:guide_slug>")
+def enseignants_guide(guide_slug):
+    try:
+        return render_template(f"enseignants/{guide_slug}.html")
+    except Exception:
+        return render_template("error.html", error="Guide non trouvé"), 404
+
+
 @main.route("/install")
 def install():
     return render_template("utils/app_install.html")

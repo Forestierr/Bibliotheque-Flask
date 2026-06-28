@@ -1,0 +1,78 @@
+<!-- templates/blog/index.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Le Blog des Enseignants | Livres en Classe{% endblock %}
+{% block meta_description %}Retrouvez tous nos articles et conseils pour créer, organiser et gérer efficacement votre bibliothèque de classe.{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container max-w-800" style="max-width: 900px; margin: 0 auto;">
+            
+            <h1 class="title is-1 has-text-centered mb-6">Le Blog des Enseignants</h1>
+            <h2 class="subtitle is-3 has-text-centered mb-6">Conseils, astuces et sélections littéraires pour votre classe</h2>
+
+            <div class="columns is-multiline mt-5">
+                <!-- Example Article -->
+                <div class="column is-6">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content">
+                            <p class="subtitle is-6 has-text-grey mb-2">Gestion de Bibliothèque</p>
+                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="has-text-dark">Comment créer une bibliothèque de classe ?</a></p>
+                            <div class="content">
+                                Découvrez les étapes clés pour mettre en place une bibliothèque efficace dans votre classe, du choix des livres au système de prêt.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stub Articles from the user list -->
+                <div class="column is-6">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content">
+                            <p class="subtitle is-6 has-text-grey mb-2">Sélection Littéraire</p>
+                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="has-text-dark">Les meilleurs livres pour le CP</a></p>
+                            <div class="content">
+                                Notre sélection de romans et d'albums parfaitement adaptés pour les lecteurs débutants en cycle 2.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="column is-6">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content">
+                            <p class="subtitle is-6 has-text-grey mb-2">Organisation</p>
+                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="has-text-dark">Comment classer les livres ?</a></p>
+                            <div class="content">
+                                Code couleur, par auteur, ou par niveau de lecture ? Découvrez les différentes méthodes de classement.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="column is-6">
+                    <div class="card" style="height: 100%; border-radius: 8px;">
+                        <div class="card-content">
+                            <p class="subtitle is-6 has-text-grey mb-2">Pédagogie</p>
+                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="has-text-dark">Comment donner envie de lire ?</a></p>
+                            <div class="content">
+                                Astuces et rituels (quart d'heure lecture, rallye) pour encourager le plaisir de lire chez vos élèves.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+{% endblock %}

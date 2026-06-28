@@ -4,6 +4,9 @@
 
 {% extends "base.html" %}
 
+{% block title %}À propos de Livres en Classe | Logiciel de gestion de bibliothèque{% endblock %}
+{% block meta_description %}Découvrez Livres en Classe, la bibliothèque numérique pensée pour les enseignants. Application open-source développée par Robin Forestier.{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, "Ma Bibliothèque") }}
 {% endblock %}
@@ -11,63 +14,63 @@
 {% block content %}
 
     <section class="section">
+        <div class="container max-w-800" style="max-width: 800px; margin: 0 auto;">
+            
+            <h1 class="title is-1 has-text-centered mb-6">À propos de Livres en Classe</h1>
+            <h2 class="subtitle is-3 has-text-centered mb-6">La bibliothèque numérique pensée pour les enseignants</h2>
 
-        <div class="columns is-multiline is-centered is-vcentered m-2">
-            <div class="column is-4-mobile is-offset-8-mobile is-3-tablet is-3-desktop is-2-widescreen is-2-fullhd">
-                <a href="{{ url_for('eleve.eleve_db') }}">
-                    <figure class="image is-256x256">
-                        <img src="{{ url_for('static',filename='/image/girl.png') }}"
-                             href="https://www.flaticon.com/free-stickers/literature"
-                             alt="Literature stickers created by Stickers - Flaticon">
-                    </figure>
-                </a>
-            </div>
+            <div class="content is-medium">
+                <p>
+                    <strong>Livres en Classe</strong> est une application web qui aide les enseignants à gérer simplement la bibliothèque de leur classe.
+                </p>
 
-            <div class="column">
-              <div class="myHero">
-                <h1 class="title is-1 is-spaced has-text-centered">A propos</h1>
+                <p>
+                    Que vous enseigniez en maternelle, en primaire ou au collège, il devient rapidement difficile de suivre les centaines de livres disponibles, les emprunts des élèves et l'état de votre bibliothèque. Livres en Classe centralise toutes ces informations dans une interface simple, rapide et accessible depuis n'importe quel appareil.
+                </p>
 
-                <hr>
+                <h3 class="title is-4 mt-6">Grâce à l'application, vous pouvez :</h3>
+                <ul>
+                    <li>Ajouter vos livres en quelques secondes grâce au scan du code ISBN.</li>
+                    <li>Organiser votre bibliothèque par auteur, collection, niveau ou thème.</li>
+                    <li>Gérer les prêts et les retours des élèves.</li>
+                    <li>Consulter l'historique des emprunts.</li>
+                    <li>Identifier les livres les plus lus.</li>
+                    <li>Accéder à votre bibliothèque depuis un ordinateur, une tablette ou un smartphone.</li>
+                </ul>
 
-                <div class="block">
-                    <h4 class="title is-4">LivresEnClasse.com</h4>
-                    <p class="has-text-justified">
-                        <strong>Ma bibliothèque</strong> est une application web spécialement conçue pour répondre aux
-                        besoins des enseignants dans la gestion de leur bibliothèque de classe. Cette plateforme
-                        intuitive leur permet de centraliser et d’organiser facilement leur collection de livres.
-                        Ils ont la possibilité d’ajouter de nouveaux ouvrages, de modifier les informations existantes
-                        ou de supprimer des livres qui ne sont plus nécessaires. En outre, l'application offre un suivi
-                        détaillé des emprunts effectués par leurs élèves, leur permettant de savoir quels livres ont été
-                        empruntés, par qui et pour combien de temps. Grâce à LivresEnClasse.com, les enseignants peuvent
-                        ainsi encourager la lecture tout en gardant une vue d’ensemble claire et précise sur
-                        l’utilisation des ressources de leur bibliothèque.
-                    </p>
+                <article class="message is-link mt-5">
+                    <div class="message-body">
+                        Notre objectif est simple : permettre aux enseignants de consacrer moins de temps à l'administration et davantage à la lecture et à l'accompagnement de leurs élèves.
+                    </div>
+                </article>
+
+                <hr class="my-6">
+
+                <h3 class="title is-3">Un projet open source</h3>
+                <p>
+                    Livres en Classe est développé par <strong>Robin Forestier</strong>.
+                </p>
+                <p>
+                    Le projet est distribué sous licence MIT et son code source est disponible publiquement sur <a href="https://github.com/Forestierr/Bibliotheque-Flask" target="_blank">GitHub</a> afin de favoriser la transparence, les contributions et l'amélioration continue de l'application.
+                </p>
+
+                <hr class="my-6">
+
+                <h3 class="title is-3">Notre ambition</h3>
+                <p>
+                    Nous souhaitons faire de Livres en Classe la plateforme de référence pour la gestion des bibliothèques de classe francophones.
+                </p>
+                <p>
+                    Au-delà de l'application, nous développons progressivement un ensemble de ressources gratuites destinées aux enseignants : conseils, fiches pratiques, idées de lecture, outils pédagogiques et guides pour encourager le plaisir de lire à l'école.
+                </p>
+                
+                <div class="buttons is-centered mt-6">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded">Découvrir l'application</a>
+                    <a href="{{ url_for('main.contact') }}" class="button is-light is-large is-rounded ml-3">Nous contacter</a>
                 </div>
-              </div>
-
-                <hr>
-
-                <div class="block">
-                    <h4 class="title is-4">Auteurs</h4>
-                    <p class="has-text-justified">
-                        Cette application a été développée par <strong>Robin Forestier</strong> et est disponible
-                        librement sur <a href="https://github.com/Forestierr/Bibliotheque-Flask">GitHub</a>.
-                        Sous licence MIT, offrant ainsi une utilisation libre et ouverte à tous.
-                    </p>
-                </div>
             </div>
 
-            <div class="column is-4-mobile is-3-tablet is-3-desktop is-2-widescreen is-2-fullhd">
-                <a href="{{ url_for('livre.livre_db') }}">
-                    <figure class="image is-256x256 is-pulled-right">
-                        <img src="{{ url_for('static',filename='/image/book_2.png') }}"
-                        href="https://www.flaticon.com/free-stickers/literature"
-                         alt="Literature stickers created by Stickers - Flaticon">
-                    </figure>
-                </a>
-            </div>
         </div>
-
     </section>
 
 {% endblock %}
