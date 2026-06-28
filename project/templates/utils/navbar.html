@@ -28,7 +28,7 @@
 
 <nav class="navbar is-fixed-top custom-navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-        <a class="navbar-item" href="{{ url_for('main.index') }}" style="background-color: transparent !important;">
+        <a class="navbar-item" href="{% if current_user.is_authenticated %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}" style="background-color: transparent !important;">
             <img src="/static/image/icons/favicon-96x96.png" alt="Logo" style="max-height: 2.2rem; margin-right: 0.5rem;"/>
             <span class="navbar-logo-text">{{ titre }}</span>
         </a>
