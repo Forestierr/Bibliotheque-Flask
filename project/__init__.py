@@ -1,10 +1,10 @@
 # init.py
 
-from flask import Flask, url_for
+from flask import Flask, url_for  # noqa: F401
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from flask_mail import Mail, Message
+from flask_mail import Mail, Message  # noqa: F401
 from dotenv import load_dotenv
 import os
 import logging
@@ -22,54 +22,57 @@ load_dotenv()
 
 # logging configuration
 # Définir le chemin du fichier de log
-LOG_DIR = 'logs'
-LOG_FILE = os.path.join(LOG_DIR, 'app.log')
+LOG_DIR = "logs"
+LOG_FILE = os.path.join(LOG_DIR, "app.log")
 
 # Vérifier et créer le répertoire si nécessaire
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
-LOG_FILE = 'logs/app.log'
-handler = RotatingFileHandler(LOG_FILE, maxBytes=1*1024*1024, backupCount=10)
+LOG_FILE = "logs/app.log"
+handler = RotatingFileHandler(LOG_FILE, maxBytes=1 * 1024 * 1024, backupCount=10)
 handler.setLevel(logging.ERROR)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
 logging.getLogger().addHandler(handler)
+
 
 def create_app():
     app = Flask(__name__)
 
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
 
-    app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
-    app.config['MAIL_PORT'] = 465
-    app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
-    app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
-    app.config['MAIL_USE_TLS'] = False
-    app.config['MAIL_USE_SSL'] = True
+    app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+    app.config["MAIL_PORT"] = 465
+    app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+    app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+    app.config["MAIL_USE_TLS"] = False
+    app.config["MAIL_USE_SSL"] = True
 
     db.init_app(app)
-    migrate = Migrate(app, db)
+    Migrate(app, db)
     mail.init_app(app)
 
     app.logger.addHandler(handler)
-    mail_handler = MailCriticalHandler(mail_instance=mail, app=app, recipients=os.getenv("MAIL_USERNAME"))
+    mail_handler = MailCriticalHandler(
+        mail_instance=mail, app=app, recipients=os.getenv("MAIL_USERNAME")
+    )
     app.logger.addHandler(mail_handler)
 
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
     # set the locale to french for the date format
     try:
-        locale.setlocale(locale.LC_TIME, 'C.UTF-8')
+        locale.setlocale(locale.LC_TIME, "C.UTF-8")
     except locale.Error:
         print("Locale not supported, falling back to default.")
-        locale.setlocale(locale.LC_TIME, '')
+        locale.setlocale(locale.LC_TIME, "")
 
     # import data base models
-    from .models import User, Book, Student, Loan
+    from .models import User, Book, Student, Loan  # noqa: F401
 
     # create database
     with app.app_context():
@@ -82,22 +85,27 @@ def create_app():
 
     # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint
+
     app.register_blueprint(auth_blueprint)
 
     # blueprint for livre parts of app
     from .livre import livre as livre_blueprint
+
     app.register_blueprint(livre_blueprint)
 
     # blueprint for eleve parts of app
     from .eleve import eleve as eleve_blueprint
+
     app.register_blueprint(eleve_blueprint)
 
     # blueprint for emprunt parts of app
     from .emprunt import emprunt as emprunt_blueprint
+
     app.register_blueprint(emprunt_blueprint)
 
     # blueprint for non-auth parts of app
     from .main import main as main_blueprint
+
     app.register_blueprint(main_blueprint)
 
     return app

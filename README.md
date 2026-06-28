@@ -83,6 +83,32 @@ Il se peut que vous deviez utiliser un server en HTTPS.
 Pour cela, vous pouvez utiliser le flag  `--cert=adhoc`.
 
 
+## Tests et Qualité du code (CI/CD)
+
+Pour que votre code soit accepté lors d'une Pull Request (PR), il doit respecter les standards de formatage et passer tous les tests automatisés. Si ces vérifications échouent, la PR sera bloquée.
+
+### Formater et vérifier le code (Ruff)
+
+Nous utilisons **Ruff** pour le linting (vérification des erreurs) et le formatage du code.
+
+- **Formater automatiquement le code** (à faire avant de commit) :
+  ```bash
+  ruff format project/
+  ```
+- **Vérifier les erreurs de style et de lint** :
+  ```bash
+  ruff check project/
+  ```
+
+### Lancer les tests (Pytest)
+
+Assurez-vous que tous les tests réussissent avant de soumettre vos changements :
+
+```bash
+pytest project/test/
+```
+
+
 ## Publication
 
 Pour publier l'application, j'ai décider d'utiliser [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)

@@ -4,54 +4,67 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from sqlalchemy import and_, or_
 
-from .models import Student, Loan, Book
+from .models import Student, Loan
 from . import db
-from .query import *
 
-eleve = Blueprint('eleve', __name__)
 
-@eleve.route('/eleve')
+from .query import (
+    get_all_students_info,
+    get_student_infos,
+    get_search_all_students_info,
+)
+
+eleve = Blueprint("eleve", __name__)
+
+
+@eleve.route("/eleve")
 @login_required
 def eleve_db():
     students = get_all_students_info(current_user.id)
 
-    return render_template('eleve/eleve.html', students=students)
+    return render_template("eleve/eleve.html", students=students)
 
-@eleve.route('/eleve/ajout', methods=['GET', 'POST'])
+
+@eleve.route("/eleve/ajout", methods=["GET", "POST"])
 @login_required
 def ajouter_eleve():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        firstname = request.form.get('firstname')
+    if request.method == "POST":
+        name = request.form.get("name")
+        firstname = request.form.get("firstname")
 
         # verify if the fields are not empty
         if not name or not firstname:
-            flash('Veuillez remplir tous les champs.')
-            return redirect(url_for('eleve.ajouter_eleve'))
+            flash("Veuillez remplir tous les champs.")
+            return redirect(url_for("eleve.ajouter_eleve"))
 
         # verify if the student already exists
-        student = Student.query.filter_by(user_id=current_user.id, name=name, firstname=firstname).first()
+        student = Student.query.filter_by(
+            user_id=current_user.id, name=name, firstname=firstname
+        ).first()
         if student:
-            flash('L\'élève existe déjà.')
-            return redirect(url_for('eleve.ajouter_eleve'))
+            flash("L'élève existe déjà.")
+            return redirect(url_for("eleve.ajouter_eleve"))
 
         new_student = Student(user_id=current_user.id, name=name, firstname=firstname)
         db.session.add(new_student)
         db.session.commit()
 
-        redirect(url_for('eleve.eleve_db'))
+        redirect(url_for("eleve.eleve_db"))
 
-    return render_template('eleve/eleve_add.html')
+    return render_template("eleve/eleve_add.html")
 
-@eleve.route('/eleve/<id>')
+
+@eleve.route("/eleve/<id>")
 @login_required
 def eleve_infos(id):
     student, books, old_books = get_student_infos(current_user.id, id)
 
-    return render_template('eleve/eleve_info.html', student=student, books=books, old_books=old_books)
+    return render_template(
+        "eleve/eleve_info.html", student=student, books=books, old_books=old_books
+    )
 
 
-@eleve.route('/eleve/<id>/delete')
+@eleve.route("/eleve/<id>/delete")
 @login_required
 def eleve_delete(id):
     student = Student.query.filter_by(user_id=current_user.id, id=id).first()
@@ -63,10 +76,10 @@ def eleve_delete(id):
     db.session.delete(student)
     db.session.commit()
 
-    return redirect(url_for('eleve.eleve_db'))
+    return redirect(url_for("eleve.eleve_db"))
 
 
-@eleve.route('/eleve/delete_all', methods=['POST'])
+@eleve.route("/eleve/delete_all", methods=["POST"])
 @login_required
 def eleve_delete_all():
     students = Student.query.filter_by(user_id=current_user.id).all()
@@ -77,23 +90,35 @@ def eleve_delete_all():
         db.session.delete(student)
     db.session.commit()
 
-    return redirect(url_for('auth.reglage'))
+    return redirect(url_for("auth.reglage"))
 
 
-@eleve.route('/eleve/search-preview', methods=['POST'])
+@eleve.route("/eleve/search-preview", methods=["POST"])
 @login_required
 def search_preview():
-    search = request.form.get('search')
-    students = Student.query.filter(and_(Student.user_id == current_user.id, or_(Student.name.like('%' + search + '%'), Student.firstname.like('%' + search + '%')))).limit(5).all()
+    search = request.form.get("search")
+    students = (
+        Student.query.filter(
+            and_(
+                Student.user_id == current_user.id,
+                or_(
+                    Student.name.like("%" + search + "%"),
+                    Student.firstname.like("%" + search + "%"),
+                ),
+            )
+        )
+        .limit(5)
+        .all()
+    )
 
-    return render_template('eleve/search_preview.html', students=students)
+    return render_template("eleve/search_preview.html", students=students)
 
 
-@eleve.route('/eleve/search', methods=['POST'])
+@eleve.route("/eleve/search", methods=["POST"])
 @login_required
 def search():
-    search = request.form.get('search')
+    search = request.form.get("search")
 
     students = get_search_all_students_info(current_user.id, search)
 
-    return render_template('eleve/eleve_list.html', students=students)
+    return render_template("eleve/eleve_list.html", students=students)

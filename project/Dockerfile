@@ -21,3 +21,6 @@ RUN pip install --no-cache-dir -r project/requirements.txt
 
 # Exposer le port utilisé par Gunicorn
 EXPOSE 5602
+
+# Lancer Gunicorn
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5602", "wsgi:app"]
