@@ -128,9 +128,9 @@
                 {# {{ navbar(current_user, "Ma Bibliothèque") }} #}
             {% endblock %}
         </div>
-        <div class="hero-body block" style="margin-bottom: 2rem">
+        <main class="hero-body block" style="margin-bottom: 2rem">
             <div class="container">{% block content %} {% endblock %}</div>
-        </div>
+        </main>
     </div>
 
     {% if request.endpoint in ['main.index', 'main.install', 'auth.login', 'auth.signup', 'main.mentions_legales', 'main.apropos'] %}
