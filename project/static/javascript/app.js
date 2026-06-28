@@ -31,22 +31,25 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-if ('windowControlsOverlay' in navigator) {
-  const { x } = navigator.windowControlsOverlay.getTitlebarAreaRect();
-  console.log(x)
-  // Window controls are on the right (like on Windows).
-  // Chrome menu is left of the window controls.
-  // [ windowControlsOverlay___________________ […] [_] [■] [X] ]
-  if (x === 0) {
-    nav.classList.add('search-controls-right');
-  }
-  // Window controls are on the left (like on macOS).
-  // Chrome menu is right of the window controls overlay.
-  // [ [X] [_] [■] ___________________windowControlsOverlay [⋮] ]
-  else {
-    div.classList.add('search-controls-left');
-  }
-} else {
-  // When running in a non-supporting browser tab.
-  div.classList.add('search-controls-right');
-}
+// PWA Install Prompt Global Handler
+window.deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredPrompt = e;
+    // Notify other scripts that the app is installable
+    window.dispatchEvent(new Event('app-installable'));
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const nav = document.querySelector('.navbar');
+    if (nav && 'windowControlsOverlay' in navigator) {
+        const { x } = navigator.windowControlsOverlay.getTitlebarAreaRect();
+        if (x === 0) {
+            nav.classList.add('search-controls-right');
+        } else {
+            nav.classList.add('search-controls-left');
+        }
+    } else if (nav) {
+        nav.classList.add('search-controls-right');
+    }
+});

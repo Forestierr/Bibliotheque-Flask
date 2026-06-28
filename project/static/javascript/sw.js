@@ -5,7 +5,7 @@ const CACHE_NAME = "livres-en-classe-v1";
 const STATIC_ASSETS = [
   "/",
   "/static/css/style.css",
-  "/static/js/app.js",
+  "/static/javascript/app.js",
   "/static/image/favicon-32x32.png",
   "/static/image/favicon-512x512.png",
   "/static/image/screenshots/dashboard_2.webp",

@@ -8,11 +8,11 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="description" content="La bibliothèque pour votre classe"/>
-    <meta name="keywords" content="livres, classe, bibliothèque, emprunt, scolaire"/>
-    <meta property="og:title" content="Ma bibliothèque"/>
-    <meta property="og:description" content="La bibliothèque pour votre classe"/>
-    <title>Ma bibliothèque</title>
+    <meta name="description" content="{% block meta_description %}Application de gestion de bibliothèque pour les classes et les écoles. Suivez les emprunts et les livres facilement.{% endblock %}"/>
+    <meta name="keywords" content="bibliothèque, classe, école, livre, emprunt, élèves, scolaire, gestion"/>
+    <meta property="og:title" content="{% block og_title %}Ma Bibliothèque - Gestion pour école et classe{% endblock %}"/>
+    <meta property="og:description" content="{% block og_description %}La bibliothèque pour votre classe d'école{% endblock %}"/>
+    <title>{% block title %}Ma Bibliothèque - Gestion pour école et classe{% endblock %}</title>
 
     <!-- Android -->
     <meta name="theme-color" content="#ffffffff"/>
@@ -131,7 +131,7 @@
         </div>
     </div>
 
-    {% if request.endpoint == 'main.index' %}
+    {% if request.endpoint in ['main.index', 'main.install', 'auth.login', 'auth.signup', 'main.mentions_legales', 'main.apropos'] %}
         {# pass #}
     {% elif request.endpoint == 'livre.livre_db' %}
         {{ footer_mobile(1) }}

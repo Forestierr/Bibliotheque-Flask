@@ -1,8 +1,15 @@
 <!-- templates/index.html -->
 
 {% from "utils/navbar.html" import navbar %}
+{% from "components/feature_section.html" import feature_section %}
+{% from "components/stats_counter.html" import stats_counter %}
 
 {% extends "base.html" %}
+
+{% block title %}Ma Bibliothèque - Gestion de livres pour école et classe{% endblock %}
+{% block meta_description %}Application de gestion de bibliothèque pour les classes et les écoles. Suivez les emprunts, les élèves et les livres très facilement. Idéal pour les professeurs.{% endblock %}
+{% block og_title %}Ma Bibliothèque - Gestion de livres pour école et classe{% endblock %}
+{% block og_description %}Application de gestion de bibliothèque pour les classes et les écoles. Suivez les emprunts, les élèves et les livres très facilement. Idéal pour les professeurs.{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, "Ma Bibliothèque") }}
@@ -13,8 +20,8 @@
     <section class="section">
         <div class="section columns is-multiline is-centered is-vcentered">
             <div class="column">
-                <h1 class="title is-1">La meilleure bibliothèque pour votre classe.</h1>
-                <h2 class="subtitle is-3">Ajoutez. Modifiez. Prêtez. <br>La meilleure gestion de livres en toute simplicité.</h2>
+                <h1 class="title is-1">La meilleure bibliothèque pour votre classe d'école.</h1>
+                <h2 class="subtitle is-3">Ajoutez. Modifiez. Prêtez. <br>La gestion de vos livres et de vos élèves en toute simplicité.</h2>
             </div>
 
             <div class="column is-hidden-touch is-3-desktop is-2-widescreen is-2-fullhd">
@@ -22,16 +29,15 @@
                     <figure class="image is-256x256">
                         <img src="{{ url_for('static',filename='/image/boy.png') }}"
                         href="https://www.flaticon.com/free-stickers/reading"
-                         alt="Reading stickers created by Stickers - Flaticon">
+                         alt="Étudiant lisant un livre dans la bibliothèque de classe">
                     </figure>
                 </a>
             </div>
         </div>
 
-
         <div class="section block">
-            <h1 class="title is-1 is-spaced">Installer l'application <strong>Ma Biblio</strong></h1>
-            <h3 class="subtitle is-3">Installer l'application sur votre appareil pour un accès plus rapide et une meilleure expérience utilisateur.</h3>
+            <h2 class="title is-1 is-spaced">Installer l'application <strong>Ma Biblio</strong></h2>
+            <h3 class="subtitle is-3">Installez l'application sur votre appareil pour un accès plus rapide à la gestion de votre bibliothèque scolaire.</h3>
             <a href="{{ url_for('main.install') }}" class="button is-large is-link is-rounded is-outlined">
                 <span class="icon">
                     <i class="fa-solid fa-download"></i>
@@ -40,86 +46,41 @@
             </a>
         </div>
 
-
-        <div class="section block">
-            <nav class="level is-mobile block">
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Professeures</p>
-                  <p class="title">{{ infos.n_users if infos.n_users }}</p>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Livres</p>
-                  <p class="title">{{ infos.n_books if infos.n_books }}</p>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Élèves</p>
-                  <p class="title">{{ infos.n_students if infos.n_students }}</p>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Prêts</p>
-                  <p class="title">{{ infos.n_loans if infos.n_loans }}</p>
-                </div>
-              </div>
-            </nav>
-
-            <div class="container">
-                <i>Crée-toi un compte et fais augmenter ces chiffres !</i>
-            </div>
-
-        </div>
+        {{ stats_counter(infos) }}
 
         <!-- Dashboard -->
-        <div class="section block wow">
-            <div class="container block">
-                <h1 class="title is-1 is-spaced">Une vue globale</h1>
-                <p>Un dashboard pour une vue globale de votre bibliothèque.</p>
-            </div>
-            <div class="container is-fluid">
-                <figure class="images is-fullwidth">
-                    <img src="{{ url_for('static',filename='/image/screenshots/dashboard_1.webp') }}" alt="...">
-                    <img src="{{ url_for('static',filename='/image/screenshots/dashboard_phone.webp') }}" alt="..."
-                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
-                </figure>
-            </div>
-        </div>
+        {{ feature_section(
+            title="Une vue globale de votre bibliothèque",
+            description_lines=[
+                "Un dashboard complet pour une vue globale de la bibliothèque de votre classe.",
+                "Suivez les tendances d'emprunt et l'activité de vos élèves en un coup d'œil."
+            ],
+            desktop_img_url=url_for('static',filename='/image/screenshots/dashboard_1.webp'),
+            mobile_img_url=url_for('static',filename='/image/screenshots/dashboard_phone.webp')
+        ) }}
 
-        <div class="section block wow">
-            <div class="container block">
-                <h1 class="title is-1 is-spaced">Tous tes livres à un seul endroit !</h1>
-                <p>Scanne les codes barres de tes livres pour les ajouter à ta bibliothèque.</p>
-                <p>Rien de plus simple !</p>
-            </div>
-            <div class="container is-fluid">
-                <figure class="images is-fullwidth">
-                    <img src="{{ url_for('static',filename='/image/screenshots/livre_1.webp') }}" alt="...">
-                    <img src="{{ url_for('static',filename='/image/screenshots/livre_phone.webp') }}" alt="..."
-                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
-                </figure>
-            </div>
-        </div>
+        <!-- Livres -->
+        {{ feature_section(
+            title="Tous les livres de la classe au même endroit !",
+            description_lines=[
+                "Scannez les codes-barres de vos livres scolaires pour les ajouter à votre bibliothèque.",
+                "La gestion de votre inventaire n'a jamais été aussi simple et rapide."
+            ],
+            desktop_img_url=url_for('static',filename='/image/screenshots/livre_1.webp'),
+            mobile_img_url=url_for('static',filename='/image/screenshots/livre_phone.webp')
+        ) }}
 
-        <div class="section block wow">
-            <div class="container block">
-                <h1 class="title is-1 is-spaced">Qui a lu quoi ?</h1>
-                <p>Tu peux voir qui a lu quel livre et combien de fois.</p>
-            </div>
-            <div class="container is-fluid">
-                <figure class="images is-fullwidth">
-                    <img src="{{ url_for('static',filename='/image/screenshots/eleve_1.webp') }}" alt="...">
-                    <img src="{{ url_for('static',filename='/image/screenshots/eleve_phone.webp') }}" alt="..."
-                        style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px;">
-                </figure>
-            </div>
-        </div>
+        <!-- Elèves -->
+        {{ feature_section(
+            title="Qui a lu quoi ? Suivez vos élèves",
+            description_lines=[
+                "Vous pouvez voir facilement quel élève a lu quel livre et à quelle fréquence.",
+                "Idéal pour le suivi pédagogique et l'encouragement à la lecture à l'école."
+            ],
+            desktop_img_url=url_for('static',filename='/image/screenshots/eleve_1.webp'),
+            mobile_img_url=url_for('static',filename='/image/screenshots/eleve_phone.webp')
+        ) }}
     </section>
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -149,7 +110,6 @@
             });
         });
 
-        // Animation du dashboard au scroll
         // Animation des sections .section.block au scroll individuellement
         document.querySelectorAll(".section.block").forEach((section) => {
             gsap.from(section, {
