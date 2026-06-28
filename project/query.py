@@ -125,12 +125,11 @@ Get all books and the student who have the book actually
 """
 
 
-
 def get_books_student(current_user_id, n_par_page, page) -> list:
     books = (
         db.session.query(Book, Student)
         .filter(Book.user_id == current_user_id)
-        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return .is_(None)))
+        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return.is_(None)))
         .outerjoin(Student, Loan.student_id == Student.id)
         .limit(n_par_page)
         .offset((page - 1) * n_par_page)
@@ -145,7 +144,6 @@ The tags and the count of loans are also returned
     :param current_user_id: the user id
     :return: the list of books (Book, Student, tags, loan_count)
 """
-
 
 
 def get_books_student_tags(current_user_id, n_par_page, page) -> list:
@@ -172,7 +170,7 @@ def get_books_student_tags(current_user_id, n_par_page, page) -> list:
             func.coalesce(subquery_loan_count.c.loan_count, 0).label("loan_count"),
         )
         .filter(Book.user_id == current_user_id)
-        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return .is_(None)))
+        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return.is_(None)))
         .outerjoin(Student, Loan.student_id == Student.id)
         .outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
         .outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
@@ -259,7 +257,9 @@ def get_all_students_info(current_user_id) -> list:
             func.coalesce(subquery_loan_count.c.loan_count, 0).label("loan_count"),
         )
         .filter(Student.user_id == current_user_id)
-        .outerjoin(Loan, and_(Student.id == Loan.student_id, Loan.date_return .is_(None)))
+        .outerjoin(
+            Loan, and_(Student.id == Loan.student_id, Loan.date_return.is_(None))
+        )
         .outerjoin(Book, Loan.book_id == Book.id)
         .outerjoin(last_loan_alias, Student.id == last_loan_alias.student_id)
         .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
@@ -302,7 +302,9 @@ def get_search_all_students_info(current_user_id, search) -> list:
                 ),
             )
         )
-        .outerjoin(Loan, and_(Student.id == Loan.student_id, Loan.date_return .is_(None)))
+        .outerjoin(
+            Loan, and_(Student.id == Loan.student_id, Loan.date_return.is_(None))
+        )
         .outerjoin(Book, Loan.book_id == Book.id)
         .outerjoin(last_loan_alias, Student.id == last_loan_alias.student_id)
         .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
@@ -336,7 +338,7 @@ def get_student_infos(current_user_id, student_id) -> (Student, list, list):
         .filter(
             Book.user_id == current_user_id,
             Loan.student_id == student_id,
-            Loan.date_return .is_(None),
+            Loan.date_return.is_(None),
         )
         .join(Book, Loan.book_id == Book.id)
         .all()
@@ -348,7 +350,7 @@ def get_student_infos(current_user_id, student_id) -> (Student, list, list):
         .filter(
             Book.user_id == current_user_id,
             Loan.student_id == student_id,
-            Loan.date_return .is_not(None),
+            Loan.date_return.is_not(None),
         )
         .join(Book, Loan.book_id == Book.id)
         .all()
@@ -394,7 +396,6 @@ Get loans with the book and the student
 """
 
 
-
 def get_loans_with_infos(
     current_user_id,
     actualy_loan=False,
@@ -408,7 +409,7 @@ def get_loans_with_infos(
     )
 
     if actualy_loan:
-        query = query.filter(Loan.date_return .is_(None))
+        query = query.filter(Loan.date_return.is_(None))
 
     query = query.join(Book, Loan.book_id == Book.id).join(
         Student, Loan.student_id == Student.id
@@ -435,9 +436,9 @@ def get_loans_with_infos_bookid(current_user_id, book_id, actualy_loan=False) ->
     )
 
     if actualy_loan:
-        query = query.filter(Loan.date_return .is_(None))
+        query = query.filter(Loan.date_return.is_(None))
     else:
-        query = query.filter(Loan.date_return .is_not(None))
+        query = query.filter(Loan.date_return.is_not(None))
         query = query.order_by(Loan.date_loan.desc(), Loan.date_return.desc())
 
     query = query.join(Book, Loan.book_id == Book.id).join(
@@ -465,7 +466,7 @@ def get_book_actual_loan(current_user_id, book_id) -> Loan:
         db.session.query(Loan)
         .filter(
             Loan.book_id == book_id,
-            Loan.date_return .is_(None),
+            Loan.date_return.is_(None),
             Book.user_id == current_user_id,
         )
         .join(Book, Loan.book_id == Book.id)
@@ -507,7 +508,7 @@ def get_book_loan_by_student(current_user_id, book_id) -> Student:
         .filter(
             Student.user_id == current_user_id,
             Loan.book_id == book_id,
-            Loan.date_return .is_(None),
+            Loan.date_return.is_(None),
         )
         .first()
     )
@@ -734,7 +735,7 @@ def get_search_5_books(current_user_id, search) -> list:
                 Student.firstname.ilike("%" + search + "%"),
             ),
         )
-        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return .is_(None)))
+        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return.is_(None)))
         .outerjoin(Student, Loan.student_id == Student.id)
         .limit(5)
         .all()
@@ -779,7 +780,7 @@ def get_books_sorted(
             func.coalesce(subquery_loan_count.c.loan_count, 0).label("loan_count"),
         )
         .filter(Book.user_id == current_user_id)
-        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return .is_(None)))
+        .outerjoin(Loan, and_(Book.id == Loan.book_id, Loan.date_return.is_(None)))
         .outerjoin(Student, Loan.student_id == Student.id)
         .outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
         .outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
@@ -834,7 +835,7 @@ def search_books_by_types(
     )
     query = query.filter(Book.user_id == current_user_id)
     query = query.outerjoin(
-        Loan, and_(Book.id == Loan.book_id, Loan.date_return .is_(None))
+        Loan, and_(Book.id == Loan.book_id, Loan.date_return.is_(None))
     )
     query = query.outerjoin(Student, Loan.student_id == Student.id)
     query = query.outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
@@ -940,7 +941,7 @@ def search_loans_by_types(
     )
 
     if actualy_loan:
-        query = query.filter(Loan.date_return .is_(None))
+        query = query.filter(Loan.date_return.is_(None))
 
     query = query.join(Book, Loan.book_id == Book.id).join(
         Student, Loan.student_id == Student.id
@@ -1033,7 +1034,7 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
         .filter(Student.user_id == current_user_id)
         .filter(
             (Loan.date_loan >= date_from) & (Loan.date_loan <= date_to)
-            | (Loan.id .is_(None))
+            | (Loan.id.is_(None))
         )
         .group_by(Student.id)
         .order_by(func.count(Loan.id).desc())

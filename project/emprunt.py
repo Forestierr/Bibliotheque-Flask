@@ -19,7 +19,7 @@ from .query import (
     get_search_5_loans,
     search_loans_by_types,
     get_loans_count,
-    get_loans_with_infos
+    get_loans_with_infos,
 )
 
 emprunt = Blueprint("emprunt", __name__)

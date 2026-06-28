@@ -11,8 +11,9 @@ from . import db
 from .query import (
     get_all_students_info,
     get_student_infos,
-    get_search_all_students_info
+    get_search_all_students_info,
 )
+
 eleve = Blueprint("eleve", __name__)
 
 

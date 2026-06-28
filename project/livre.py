@@ -1,4 +1,5 @@
 from . import db
+
 # livre.py
 import math
 import json
@@ -35,7 +36,7 @@ from .query import (
     get_books_count,
     get_books_sorted,
     get_students,
-    get_books_student_tags
+    get_books_student_tags,
 )
 
 livre = Blueprint("livre", __name__)
