@@ -1,7 +1,8 @@
-import os
 import logging
+import os
 from threading import Thread
-from flask import render_template, current_app, url_for
+
+from flask import current_app, render_template, url_for
 from flask_mail import Message
 
 from . import mail

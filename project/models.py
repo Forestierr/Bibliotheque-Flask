@@ -1,11 +1,13 @@
 # models.py
 # look at the file docs/model.png
 
+import os
+
 from flask_login import UserMixin
+from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from itsdangerous import URLSafeTimedSerializer
-import os
+
 from . import db
 
 # Table d'association pour la relation Many-to-Many entre Book et Tags

@@ -1,16 +1,17 @@
 # init.py
 
-from flask import Flask
-from flask_wtf.csrf import CSRFProtect  # noqa: F401
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_migrate import Migrate
-from flask_mail import Mail, Message  # noqa: F401
-from dotenv import load_dotenv
-import os
-import logging
-from logging.handlers import RotatingFileHandler
 import locale
+import logging
+import os
+from logging.handlers import RotatingFileHandler
+
+from dotenv import load_dotenv
+from flask import Flask
+from flask_login import LoginManager
+from flask_mail import Mail, Message  # noqa: F401
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect  # noqa: F401
 
 from .emailError import MailCriticalHandler
 
@@ -76,7 +77,7 @@ def create_app():
         locale.setlocale(locale.LC_TIME, "")
 
     # import data base models
-    from .models import User, Book, Student, Loan  # noqa: F401
+    from .models import Book, Loan, Student, User  # noqa: F401
 
     # create database
     with app.app_context():

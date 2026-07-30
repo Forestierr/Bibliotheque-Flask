@@ -3,13 +3,13 @@ query.py: This file contains all the queries to the database.
 """
 
 from datetime import datetime, timedelta
-from sqlalchemy import or_, and_, text, func
+
+from sqlalchemy import and_, func, or_, text
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import collate
 
-from .models import User, Book, Student, Loan, Tags, BookTags
 from . import db
-
+from .models import Book, BookTags, Loan, Student, Tags, User
 
 """
 Get all books from a user
@@ -1014,8 +1014,10 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
     :return: liste de tuples (nom complet, nombre de livres lus)
     """
     from datetime import datetime
-    from .models import Student, Loan
+
     from sqlalchemy import func
+
+    from .models import Loan, Student
 
     # Conversion des dates
     try:

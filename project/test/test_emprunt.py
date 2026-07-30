@@ -1,8 +1,10 @@
-import pytest
-from datetime import date
-from unittest.mock import patch, MagicMock
-from project import create_app
 import math
+from datetime import date
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from project import create_app
 
 
 @pytest.fixture

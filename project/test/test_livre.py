@@ -1,9 +1,10 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-from project.livre import get_book_from_api
 
 # On suppose que tu as une factory create_app dans project/__init__.py
 from project import create_app
+from project.livre import get_book_from_api
 
 
 @pytest.fixture

@@ -4,22 +4,22 @@ from datetime import date
 
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    request,
     flash,
     make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
-from flask_login import login_required, current_user
+from flask_login import current_user, login_required
 
-from .models import Book, Loan
 from . import db
+from .models import Book, Loan
 from .query import (
-    get_search_5_loans,
-    search_loans_by_types,
     get_loans_count,
     get_loans_with_infos,
+    get_search_5_loans,
+    search_loans_by_types,
 )
 
 emprunt = Blueprint("emprunt", __name__)

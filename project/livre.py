@@ -1,41 +1,40 @@
-from . import db
-
 # livre.py
 import math
 import os
+from datetime import date
 
 import requests
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    request,
     flash,
-    make_response,
     jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
-from flask_login import login_required, current_user
-from datetime import date
+from flask_login import current_user, login_required
 
-from .models import Book, Loan, BookTags, Tags
+from . import db
+from .models import Book, BookTags, Loan, Tags
 from .query import (
-    get_book_loan_by_student,
     get_book_actual_loan,
-    get_book_by_title,
-    get_loans_with_infos_bookid,
-    get_tags,
     get_book_by_id,
+    get_book_by_title,
+    get_book_loan_by_student,
     get_book_tags,
-    get_student_by_id,
-    get_books_by_isbn,
     get_books,
-    search_books_by_types,
-    get_search_5_books,
+    get_books_by_isbn,
     get_books_count,
     get_books_sorted,
-    get_students,
     get_books_student_tags,
+    get_loans_with_infos_bookid,
+    get_search_5_books,
+    get_student_by_id,
+    get_students,
+    get_tags,
+    search_books_by_types,
 )
 
 livre = Blueprint("livre", __name__)

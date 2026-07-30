@@ -3,29 +3,29 @@ import os
 
 from flask import (
     Blueprint,
+    flash,
+    jsonify,
+    redirect,
     render_template,
     request,
-    url_for,
-    send_from_directory,
-    flash,
-    redirect,
     send_file,
-    jsonify,
+    send_from_directory,
+    url_for,
 )
-from flask_login import login_required, current_user
+from flask_login import current_user, login_required
 from werkzeug.exceptions import HTTPException
 
-from .email import send_email_to_me, send_email_confirmation
+from .email import send_email_confirmation, send_email_to_me
 from .query import (
     get_app_infos,
     get_books_count,
-    get_students_count,
     get_books_most_borrowed,
-    get_students_most_borrowed,
+    get_books_read_by_students,
     get_last_book_loan,
     get_loans_over_the_year,
+    get_students_count,
+    get_students_most_borrowed,
     get_user,
-    get_books_read_by_students,
 )
 
 main = Blueprint("main", __name__)

@@ -1,20 +1,22 @@
-import string
 import random
+import string
 import time
 from threading import Thread
+
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    flash,
-    request,
     current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
-from werkzeug.security import generate_password_hash
 from flask_mail import Message
-from .models import User
+from werkzeug.security import generate_password_hash
+
 from . import db, mail
+from .models import User
 
 admin = Blueprint("admin", __name__)
 

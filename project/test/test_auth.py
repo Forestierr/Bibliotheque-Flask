@@ -1,6 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 from flask import get_flashed_messages
-from unittest.mock import patch, MagicMock
+
 from project import create_app
 
 
