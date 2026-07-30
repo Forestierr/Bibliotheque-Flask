@@ -34,20 +34,19 @@ def test_login_get(client):
 
 # Test connexion avec mauvais identifiants
 def test_login_post_bad_credentials(client, app):
-    with app.app_context():
-        with patch("project.auth.User.query") as mock_query:
-            mock_query.filter_by().first.return_value = None
-            with client:
-                client.post(
-                    "/login",
-                    data={"email": "test@test.com", "password": "wrong"},
-                    follow_redirects=True,
-                )
-                flashed = get_flashed_messages()
-            assert any(
-                "Vérifier si votre email et votre mot de passe sont correcte." in msg
-                for msg in flashed
+    with app.app_context(), patch("project.auth.User.query") as mock_query:
+        mock_query.filter_by().first.return_value = None
+        with client:
+            client.post(
+                "/login",
+                data={"email": "test@test.com", "password": "wrong"},
+                follow_redirects=True,
             )
+            flashed = get_flashed_messages()
+        assert any(
+            "Vérifier si votre email et votre mot de passe sont correcte." in msg
+            for msg in flashed
+        )
 
 
 # Test connexion avec bons identifiants
@@ -84,43 +83,40 @@ def test_signup_get(client):
 
 # Test inscription avec email déjà utilisé
 def test_signup_post_email_exists(client, app):
-    with app.app_context():
-        with patch("project.auth.User.query") as mock_query:
-            mock_query.filter_by().first.return_value = MagicMock()
-            with client:
-                client.post(
-                    "/signup",
-                    data={"email": "test@test.com", "password": "1234"},
-                    follow_redirects=True,
-                )
-                flashed = get_flashed_messages()
-            assert any("Cette email est déjà utilisé." in msg for msg in flashed)
+    with app.app_context(), patch("project.auth.User.query") as mock_query:
+        mock_query.filter_by().first.return_value = MagicMock()
+        with client:
+            client.post(
+                "/signup",
+                data={"email": "test@test.com", "password": "1234"},
+                follow_redirects=True,
+            )
+            flashed = get_flashed_messages()
+        assert any("Cette email est déjà utilisé." in msg for msg in flashed)
 
 
 # Test inscription avec succès
 def test_signup_post_success(client, app):
-    with app.app_context():
-        with (
-            patch("project.auth.User.query") as mock_query,
-            patch("project.auth.db.session"),
-            patch("project.auth.send_email_verification") as mock_send_email,
-        ):
-            mock_query.filter_by().first.return_value = None
-            with client:
-                response = client.post(
-                    "/signup",
-                    data={"email": "test2@test.com", "password": "1234"},
-                    follow_redirects=True,
-                )
-                assert response.status_code in (200, 302)
-                mock_send_email.assert_called_once()
+    with (
+        app.app_context(),
+        patch("project.auth.User.query") as mock_query,
+        patch("project.auth.db.session"),
+        patch("project.auth.send_email_verification") as mock_send_email,
+    ):
+        mock_query.filter_by().first.return_value = None
+        with client:
+            response = client.post(
+                "/signup",
+                data={"email": "test2@test.com", "password": "1234"},
+                follow_redirects=True,
+            )
+            assert response.status_code in (200, 302)
+            mock_send_email.assert_called_once()
 
 
 # Test déconnexion
 def test_logout(client, app):
-    with app.app_context():
-        with patch("project.auth.logout_user") as mock_logout:
-            with client:
-                response = client.get("/logout", follow_redirects=True)
-                assert response.status_code in (200, 302)
-                mock_logout.assert_called_once()
+    with app.app_context(), patch("project.auth.logout_user") as mock_logout, client:
+        response = client.get("/logout", follow_redirects=True)
+        assert response.status_code in (200, 302)
+        mock_logout.assert_called_once()

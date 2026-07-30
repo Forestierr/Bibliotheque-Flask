@@ -1,7 +1,7 @@
 # livre.py
 import math
 import os
-from datetime import date
+from datetime import datetime, timezone
 
 import requests
 from flask import (
@@ -320,23 +320,27 @@ def livre_edit(id):
                 if loan.student_id != student.id:
                     # changement de l'élève
                     # fin de la location
-                    loan.date_return = date.today()
+                    loan.date_return = datetime.now(tz=timezone.utc).date()
 
                     # nouvelle location
                     new_loan = Loan(
-                        student_id=student.id, book_id=id, date_loan=date.today()
+                        student_id=student.id,
+                        book_id=id,
+                        date_loan=datetime.now(tz=timezone.utc).date(),
                     )
                     db.session.add(new_loan)
             else:
                 # nouvelle location
                 new_loan = Loan(
-                    student_id=student.id, book_id=id, date_loan=date.today()
+                    student_id=student.id,
+                    book_id=id,
+                    date_loan=datetime.now(tz=timezone.utc).date(),
                 )
                 db.session.add(new_loan)
         else:
             if loan:
                 # fin de la location
-                loan.date_return = date.today()
+                loan.date_return = datetime.now(tz=timezone.utc).date()
 
         # Remove the tags to the book
         book_tags = BookTags.query.filter_by(book_id=id).all()
@@ -428,7 +432,11 @@ def livre_edit_student(id):
         return redirect(url_for("livre.livre_infos", id=id))
 
     # Create a new loan
-    loan = Loan(student_id=student.id, book_id=id, date_loan=date.today())
+    loan = Loan(
+        student_id=student.id,
+        book_id=id,
+        date_loan=datetime.now(tz=timezone.utc).date(),
+    )
     db.session.add(loan)
     db.session.commit()
 

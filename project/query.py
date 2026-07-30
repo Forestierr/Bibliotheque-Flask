@@ -2,7 +2,7 @@
 query.py: This file contains all the queries to the database.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import and_, func, or_, text
 from sqlalchemy.orm import aliased
@@ -653,7 +653,7 @@ Exemple of result: ('2024-01', 2), ('2024-02', 3), ('2024-03', 1)
 
 def get_loans_over_the_year(current_user_id) -> list:
     # Generate a list of 365 days
-    today = datetime.today()
+    today = datetime.now(tz=timezone.utc)
 
     # Le nombre de jour est 365 + le jour de la semaine pour que notre graphique soit correctement aligné.
     # 52 * 7 = 364, la colonne 53 est la semaine en cours.
@@ -663,7 +663,7 @@ def get_loans_over_the_year(current_user_id) -> list:
     start_date = today - timedelta(days=number_of_day)
     days = [
         (start_date + timedelta(days=i)).strftime("%Y-%m-%d")
-        for i in range(0, number_of_day + 1)
+        for i in range(number_of_day + 1)
     ]
 
     # Query to get loans per day
@@ -705,7 +705,7 @@ def get_loans_over_the_year(current_user_id) -> list:
 
     result = [
         (
-            datetime.strptime(day, "%Y-%m-%d"),
+            datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=timezone.utc),
             combined[day]["loan_count"],
             combined[day]["return_count"],
         )
@@ -1021,9 +1021,11 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
 
     # Conversion des dates
     try:
-        date_from = datetime.strptime(date_from, "%Y-%m-%d")
-        date_to = datetime.strptime(date_to, "%Y-%m-%d")
-    except Exception:
+        date_from = datetime.strptime(date_from, "%Y-%m-%d").replace(
+            tzinfo=timezone.utc
+        )
+        date_to = datetime.strptime(date_to, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except ValueError:
         return []
 
     # Requête : inclure tous les élèves, même sans emprunt

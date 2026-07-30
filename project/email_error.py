@@ -21,5 +21,5 @@ class MailCriticalHandler(logging.Handler):
                 from .email import send_email
 
                 send_email(subject, sender, recipients, body)
-        except Exception as e:
+        except OSError as e:
             print(f"Failed to send log email: {e}")

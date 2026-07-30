@@ -81,7 +81,7 @@ def send_newsletter_async(app, subject, sender, recipients, html_body):
                 msg.html = html_body
                 mail.send(msg)
                 time.sleep(1)  # Small delay between emails
-            except Exception as e:
+            except OSError as e:
                 app.logger.error(
                     f"Erreur lors de l'envoi de la newsletter à {email}: {e}"
                 )

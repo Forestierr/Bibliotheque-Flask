@@ -11,9 +11,9 @@ from flask_login import LoginManager
 from flask_mail import Mail, Message  # noqa: F401
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CSRFProtect  # noqa: F401
+from flask_wtf.csrf import CSRFProtect
 
-from .emailError import MailCriticalHandler
+from .email_error import MailCriticalHandler
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()

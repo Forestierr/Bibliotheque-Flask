@@ -1,6 +1,7 @@
 # main.py
 import os
 
+import jinja2
 from flask import (
     Blueprint,
     flash,
@@ -184,7 +185,7 @@ def blog_index():
 def blog_article(article_slug):
     try:
         return render_template(f"blog/{article_slug}.html")
-    except Exception:
+    except jinja2.TemplateNotFound:
         return render_template("error.html", error="Article non trouvé"), 404
 
 
@@ -197,7 +198,7 @@ def ressources_index():
 def ressource_article(ressource_slug):
     try:
         return render_template(f"ressources/{ressource_slug}.html")
-    except Exception:
+    except jinja2.TemplateNotFound:
         return render_template("error.html", error="Ressource non trouvée"), 404
 
 
@@ -210,7 +211,7 @@ def enseignants_index():
 def enseignants_guide(guide_slug):
     try:
         return render_template(f"enseignants/{guide_slug}.html")
-    except Exception:
+    except jinja2.TemplateNotFound:
         return render_template("error.html", error="Guide non trouvé"), 404
 
 
