@@ -1,17 +1,15 @@
 # eleve.py
 
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_required, current_user
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 from sqlalchemy import and_, or_
 
-from .models import Student, Loan
 from . import db
-
-
+from .models import Loan, Student
 from .query import (
     get_all_students_info,
-    get_student_infos,
     get_search_all_students_info,
+    get_student_infos,
 )
 
 eleve = Blueprint("eleve", __name__)

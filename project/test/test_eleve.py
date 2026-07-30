@@ -1,6 +1,8 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 from flask import get_flashed_messages
-from unittest.mock import patch, MagicMock
+
 from project import create_app
 
 
@@ -46,20 +48,20 @@ def test_ajouter_eleve_get(client):
 
 # Test ajout d'un élève (POST, succès)
 def test_ajouter_eleve_post_success(client, app):
-    with app.app_context():
-        with (
-            patch("project.eleve.current_user") as mock_user,
-            patch("project.eleve.Student.query") as mock_query,
-            patch("project.eleve.db.session"),
-        ):
-            mock_user.id = 1
-            mock_query.filter_by().first.return_value = None
-            response = client.post(
-                "/eleve/ajout",
-                data={"name": "Dupont", "firstname": "Jean"},
-                follow_redirects=True,
-            )
-            assert response.status_code in (200, 302)
+    with (
+        app.app_context(),
+        patch("project.eleve.current_user") as mock_user,
+        patch("project.eleve.Student.query") as mock_query,
+        patch("project.eleve.db.session"),
+    ):
+        mock_user.id = 1
+        mock_query.filter_by().first.return_value = None
+        response = client.post(
+            "/eleve/ajout",
+            data={"name": "Dupont", "firstname": "Jean"},
+            follow_redirects=True,
+        )
+        assert response.status_code in (200, 302)
 
 
 # Test ajout d'un élève (POST, champs vides)
@@ -74,22 +76,22 @@ def test_ajouter_eleve_post_empty(client):
 
 # Test ajout d'un élève (POST, déjà existant)
 def test_ajouter_eleve_post_exists(client, app):
-    with app.app_context():
-        with (
-            patch("project.eleve.current_user") as mock_user,
-            patch("project.eleve.Student.query") as mock_query,
-        ):
-            mock_user.id = 1
-            mock_query.filter_by().first.return_value = MagicMock()
-            # Utiliser le contexte de requête pour récupérer les messages flash
-            with client:
-                client.post(
-                    "/eleve/ajout",
-                    data={"name": "Dupont", "firstname": "Jean"},
-                    follow_redirects=True,
-                )
-                flashed = get_flashed_messages()
-            assert "L'élève existe déjà." in flashed
+    with (
+        app.app_context(),
+        patch("project.eleve.current_user") as mock_user,
+        patch("project.eleve.Student.query") as mock_query,
+    ):
+        mock_user.id = 1
+        mock_query.filter_by().first.return_value = MagicMock()
+        # Utiliser le contexte de requête pour récupérer les messages flash
+        with client:
+            client.post(
+                "/eleve/ajout",
+                data={"name": "Dupont", "firstname": "Jean"},
+                follow_redirects=True,
+            )
+            flashed = get_flashed_messages()
+        assert "L'élève existe déjà." in flashed
 
 
 # Test affichage infos élève
@@ -139,15 +141,15 @@ def test_eleve_delete_all(client, app):
 
 # Test recherche preview
 def test_search_preview(client, app):
-    with app.app_context():
-        with (
-            patch("project.eleve.current_user") as mock_user,
-            patch("project.eleve.Student.query") as mock_query,
-        ):
-            mock_user.id = 1
-            mock_query.filter().limit().all.return_value = []
-            response = client.post("/eleve/search-preview", data={"search": "Jean"})
-            assert response.status_code == 200
+    with (
+        app.app_context(),
+        patch("project.eleve.current_user") as mock_user,
+        patch("project.eleve.Student.query") as mock_query,
+    ):
+        mock_user.id = 1
+        mock_query.filter().limit().all.return_value = []
+        response = client.post("/eleve/search-preview", data={"search": "Jean"})
+        assert response.status_code == 200
 
 
 # Test recherche complète

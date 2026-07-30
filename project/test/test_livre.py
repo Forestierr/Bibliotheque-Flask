@@ -1,9 +1,10 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-from project.livre import get_book_from_api
 
 # On suppose que tu as une factory create_app dans project/__init__.py
 from project import create_app
+from project.livre import get_book_from_api
 
 
 @pytest.fixture
@@ -82,12 +83,11 @@ def test_livre_db_route(mock_user, mock_db, client):
 @patch("project.livre.current_user")
 def test_livre_ajout_get(mock_user, client, app):
     mock_user.id = 1
-    with app.app_context():
-        with patch("project.livre.Tags.query") as mock_tags:
-            mock_tags.filter_by().all.return_value = []
-            response = client.get("/livre/ajout")
-            assert response.status_code == 200
-            assert b"ajouter" in response.data or b"Ajouter" in response.data
+    with app.app_context(), patch("project.livre.Tags.query") as mock_tags:
+        mock_tags.filter_by().all.return_value = []
+        response = client.get("/livre/ajout")
+        assert response.status_code == 200
+        assert b"ajouter" in response.data or b"Ajouter" in response.data
 
 
 # Test suppression d'un livre inexistant

@@ -1,10 +1,12 @@
-from flask import Blueprint, send_file
-from flask_login import login_required, current_user
-import pandas as pd
+from datetime import datetime, timezone
 from io import BytesIO
-from datetime import datetime
-from .models import Book, Student, Loan
+
+import pandas as pd
+from flask import Blueprint, send_file
+from flask_login import current_user, login_required
+
 from . import db
+from .models import Book, Loan, Student
 
 export = Blueprint("export", __name__)
 
@@ -34,7 +36,7 @@ def export_books():
         df.to_excel(writer, index=False, sheet_name="Livres")
     output.seek(0)
 
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    date_str = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     return send_file(
         output, download_name=f"livres_{date_str}.xlsx", as_attachment=True
     )
@@ -78,7 +80,7 @@ def export_students_reads():
         df.to_excel(writer, index=False, sheet_name="Lectures des élèves")
     output.seek(0)
 
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    date_str = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     return send_file(
         output, download_name=f"lectures_eleves_{date_str}.xlsx", as_attachment=True
     )
@@ -117,7 +119,7 @@ def export_active_loans():
         df.to_excel(writer, index=False, sheet_name="Prêts en cours")
     output.seek(0)
 
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    date_str = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     return send_file(
         output, download_name=f"prets_en_cours_{date_str}.xlsx", as_attachment=True
     )
@@ -160,7 +162,7 @@ def export_all_loans():
         df.to_excel(writer, index=False, sheet_name="Tous les prêts")
     output.seek(0)
 
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    date_str = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     return send_file(
         output, download_name=f"historique_prets_{date_str}.xlsx", as_attachment=True
     )

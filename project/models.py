@@ -1,11 +1,13 @@
 # models.py
 # look at the file docs/model.png
 
+import os
+
 from flask_login import UserMixin
+from itsdangerous import BadSignature, URLSafeTimedSerializer
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from itsdangerous import URLSafeTimedSerializer
-import os
+
 from . import db
 
 # Table d'association pour la relation Many-to-Many entre Book et Tags
@@ -52,7 +54,7 @@ class User(UserMixin, db.Model):
                 salt="email-verify-" + user.password,
                 max_age=86400,  # Token valid for 24 hours
             )
-        except Exception:
+        except BadSignature:
             return None
 
         if email != user.email:
@@ -76,7 +78,7 @@ class User(UserMixin, db.Model):
             email = serializer.loads(
                 token, salt=user.password, max_age=3600
             )  # Token valid for 1 hour
-        except Exception:
+        except BadSignature:
             return None
 
         if email != user.email:

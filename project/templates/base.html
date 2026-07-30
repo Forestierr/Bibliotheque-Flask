@@ -16,6 +16,8 @@
 
     {% block head_extra %}{% endblock %}
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Android -->
     <meta name="theme-color" content="#ffffffff"/>
     <meta name="mobile-web-app-capable" content="yes"/>
@@ -172,6 +174,14 @@
 
     // Réappliquer après une mise à jour HTMX
     document.body.addEventListener('htmx:afterSwap', attachDeleteHandlers);
+
+    // Configurer HTMX pour inclure le token CSRF dans toutes les requêtes
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        if (csrfToken) {
+            event.detail.headers['X-CSRFToken'] = csrfToken;
+        }
+    });
 </script>
 
 </body>

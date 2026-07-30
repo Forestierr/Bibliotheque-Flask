@@ -1,10 +1,13 @@
-import os
 import logging
+import os
 from threading import Thread
-from flask import render_template, current_app, url_for
+
+from flask import current_app, render_template, url_for
 from flask_mail import Message
 
 from . import mail
+
+logger = logging.getLogger(__name__)
 
 
 def send_email_async(app, msg):
@@ -80,7 +83,7 @@ def send_email_verification(user):
         "email/email_verification.html", user=user, verification_url=verification_url
     )
     send_html_email(subject, sender, recipients, html_body)
-    logging.info(f"Email de vérification envoyé à {user.email}")
+    logger.info(f"Email de vérification envoyé à {user.email}")
 
 
 def send_email_reset_password(user):
@@ -99,4 +102,4 @@ def send_email_reset_password(user):
         "email/email_reset_password.html", reset_password_url=reset_password_url
     )
     send_html_email(subject, sender, recipients, html_body)
-    logging.info(f"Email de réinitialisation de mot de passe envoyé à {user.email}")
+    logger.info(f"Email de réinitialisation de mot de passe envoyé à {user.email}")

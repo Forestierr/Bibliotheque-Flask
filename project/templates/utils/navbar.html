@@ -52,25 +52,25 @@
         {% if current_user.is_authenticated %}
         <!-- Menu connecté -->
         <div class="navbar-end">
-            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item navbar-item-custom {% if 'livre.' in request.endpoint %}is-active-link{% endif %}">
+            <a href="{{ url_for('livre.livre_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'livre.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2">
                     <i class="fas fa-book"></i>
                 </span>
                 <span>Livres</span>
             </a>
-            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item navbar-item-custom {% if 'eleve.' in request.endpoint %}is-active-link{% endif %}">
+            <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'eleve.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2">
                     <i class="fas fa-users"></i>
                 </span>
                 <span>Elèves</span>
             </a>
-            <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item navbar-item-custom {% if 'emprunt.' in request.endpoint %}is-active-link{% endif %}">
+            <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'emprunt.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2">
                     <i class="fas fa-exchange-alt"></i>
                 </span>
                 <span>Emprunts</span>
             </a>
-            <a href="{{ url_for('auth.reglage') }}" class="navbar-item navbar-item-custom {% if 'auth.reglage' == request.endpoint %}is-active-link{% endif %}">
+            <a href="{{ url_for('auth.reglage') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'auth.reglage' == request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2">
                     <i class="fa-solid fa-cog"></i>
                 </span>

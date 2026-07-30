@@ -1,25 +1,25 @@
 # emprunt.py
 import math
-from datetime import date
+from datetime import datetime, timezone
 
 from flask import (
     Blueprint,
-    render_template,
-    redirect,
-    url_for,
-    request,
     flash,
     make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
-from flask_login import login_required, current_user
+from flask_login import current_user, login_required
 
-from .models import Book, Loan
 from . import db
+from .models import Book, Loan
 from .query import (
-    get_search_5_loans,
-    search_loans_by_types,
     get_loans_count,
     get_loans_with_infos,
+    get_search_5_loans,
+    search_loans_by_types,
 )
 
 emprunt = Blueprint("emprunt", __name__)
@@ -35,7 +35,7 @@ def emprunt_db():
     # nombre de page
     nb_page = math.ceil(nb_books / n_books_by_page)
 
-    only_active_loans = True if request.form.get("active_loan") == "1" else False
+    only_active_loans = request.form.get("active_loan") == "1"
 
     loans, nb_books = get_loans_with_infos(current_user.id, only_active_loans)
 
@@ -60,7 +60,7 @@ def return_loan(id):
     if loan:
         book = db.session.query(Book).filter(Book.id == loan.book_id).first()
         if book and book.user_id == current_user.id:
-            loan.date_return = date.today()
+            loan.date_return = datetime.now(tz=timezone.utc).date()
             db.session.commit()
         else:
             flash("Accès non autorisé.", "error")
@@ -148,7 +148,7 @@ def search(page=1):
     )
     page = request.form.get("page") if request.form.get("page") else page
     print(request.form.get("active_loan"))
-    only_active_loans = True if request.form.get("active_loan") == "1" else False
+    only_active_loans = request.form.get("active_loan") == "1"
 
     n_books_by_page = int(n_books_by_page)
     page = int(page)
