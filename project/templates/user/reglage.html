@@ -1,425 +1,486 @@
+<!-- templates/user/reglage.html -->
+
 {% from "utils/navbar.html" import navbar %}
 
 {% extends "base.html" %}
 
+{% block title %}Réglages de votre compte | Livres en Classe{% endblock %}
+
 {% block navbar %}
-    {{ navbar(current_user, "Réglage") }}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
 {% endblock %}
 
 {% block content %}
 
-<div class="block">
-    <h1 class="title is-1">Bonjour {{ user.name }}</h1>
-    <div class=container>
-        <div class="columns is-three-fifths">
-            <div class="column">
-                <h3 class="subtitle is-3">Bienvenue sur votre page de réglages</h3>
-            </div>
-            <div class="column is-narrow">
-                <div class="columns is-mobile">
-                    <div class="column is-narrow">
-                        <a href="{{ url_for('auth.logout') }}" class="button is-normal is-white is-responsive is-fullwidth">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-arrow-right-from-bracket has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Se déconecter</span>
-                            </div>
-                        </a>
-                        <a href="{{ url_for('main.mentions_legales') }}" class="button is-normal is-white is-responsive is-fullwidth">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-shield-halved has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Mentions Légales</span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="column is-narrow">
-                        <a href="{{ url_for('main.apropos') }}" class="button is-normal is-white is-responsive is-fullwidth">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-question has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">A-propos</span>
-                            </div>
-                        </a>
-                        <a href="{{ url_for('main.contact') }}" class="button is-normal is-white is-responsive is-fullwidth">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-envelope has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Contact</span>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    .settings-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid hsl(0, 0%, 93%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .profile-header-card {
+        background: linear-gradient(135deg, hsl(210, 60%, 97%) 0%, hsl(250, 50%, 96%) 100%);
+        border: 1px solid hsl(210, 50%, 88%);
+        border-radius: 16px;
+        padding: 1.75rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .profile-avatar-big {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, hsl(217, 71%, 53%), hsl(250, 60%, 60%));
+        color: white;
+        font-weight: 800;
+        font-size: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 14px rgba(66, 133, 244, 0.3);
+    }
+    .settings-tabs {
+        border-bottom: 2px solid hsl(0, 0%, 93%);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 0.5rem;
+    }
+    .settings-tab-btn {
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: hsl(0, 0%, 45%);
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.15s, border-color 0.15s;
+        margin-bottom: -2px;
+    }
+    .settings-tab-btn:hover {
+        color: hsl(217, 71%, 53%);
+    }
+    .settings-tab-btn.is-active {
+        color: hsl(217, 71%, 53%);
+        border-bottom-color: hsl(217, 71%, 53%);
+    }
+    .export-box {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid hsl(0, 0%, 93%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .export-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    .danger-zone-box {
+        background: hsl(0, 60%, 98.5%);
+        border: 1px solid hsl(0, 50%, 90%);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+</style>
 
-<div class="tabs is-centered is-boxed">
-    <ul>
-        <li class="is-active" id="tab-link-compte">
-            <a onclick="switchTab('compte')">
-                <span class="icon is-small"><i class="fas fa-user" aria-hidden="true"></i></span>
-                <span>Mon Compte</span>
-            </a>
-        </li>
-        <li id="tab-link-export">
-            <a onclick="switchTab('export')">
-                <span class="icon is-small"><i class="fas fa-file-export" aria-hidden="true"></i></span>
-                <span>Exporter mes données</span>
-            </a>
-        </li>
-    </ul>
-</div>
+<section class="section">
+    <div class="container" style="max-width: 920px; margin: 0 auto;">
 
-<div id="tab-content-compte" class="block">
-    <h2 class="title is-3">Modifier mes informations personnelles</h2>
-
-    {% include 'utils/flash_message.html' %}
-
-    <div class="container">
-        <form method="POST" action="{{ url_for('auth.reglage') }}">
-    {% include 'utils/csrf.html' %}
-            <div class="field">
-                <label class="label">Nom</label>
-                <div class="control">
-                    <input class="input" type="text" name="name" value="{{ user.name }}">
-                </div>
+        <!-- Carte Profil En-tête -->
+        <div class="profile-header-card">
+            <div class="profile-avatar-big">
+                {{ user.name[0]|upper if user.name else '?' }}
             </div>
-            <div class="field">
-                <label class="label">Email</label>
-                <div class="control">
-                    <input class="input" type="email" name="email" value="{{ user.email }}">
-                </div>
-            </div>
-            <div class="field">
-                <label class="label">Mot de passe actuelle</label>
-                <div class="control">
-                    <input class="input" type="password" name="password">
-                </div>
-            </div>
-            <div class="field">
-                <label class="label">Nouveau mot de passe</label>
-                <div class="control">
-                    <input class="input" type="password" name="new_password">
-                </div>
-            </div>
-            <p><i>Si vous ne souhaitez pas modifier le mot de passe, laisser les deux champs précédents vides.</i></p>
-            <br>
-            <div class="notification is-warning is-light">
-                <button class="delete"></button>
-                <p>
-                    Pour garantir la sécurité de votre compte, veuillez utiliser un mot de passe fort qui respecte les
-                    critères suivants :
-                    Au moins 8 caractères.
-                    Inclure des lettres majuscules et minuscules (ex. : A, a).
-                    Au moins un chiffre (ex. : 1, 9).
-                    Au moins un caractère spécial (ex. : @, #, $, %).
+            <div style="flex: 1;">
+                <h1 class="title is-3 mb-1" style="color: hsl(210, 40%, 20%); font-weight: 800;">{{ user.name }}</h1>
+                <p class="subtitle is-6 mb-0" style="color: hsl(210, 20%, 45%);">
+                    <span class="icon is-small mr-1"><i class="fas fa-envelope"></i></span>
+                    {{ user.email }}
                 </p>
             </div>
-            <div class="field">
-                <div class="control">
-                    <button class="button is-link">Mettre à jour</button>
-                </div>
-            </div>
-        </form>
-    </div>
+        </div>
 
-    <hr>
+        <!-- Onglets -->
+        <div class="settings-tabs">
+            <button class="settings-tab-btn is-active" onclick="switchSettingsTab('compte')" id="tabBtnCompte">
+                <span class="icon"><i class="fas fa-user-cog"></i></span>
+                <span>Mon Compte</span>
+            </button>
+            <button class="settings-tab-btn" onclick="switchSettingsTab('export')" id="tabBtnExport">
+                <span class="icon"><i class="fas fa-file-export"></i></span>
+                <span>Exporter mes données</span>
+            </button>
+            <button class="settings-tab-btn" onclick="switchSettingsTab('danger')" id="tabBtnDanger">
+                <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+                <span>Zone de danger</span>
+            </button>
+        </div>
 
-    <h2 class="title is-3">Supprimer tous les élèves</h2>
-    <div class="container">
-        <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> Cette action est irréversible.</i></p>
-        <br>
-        <!-- Supprimer tous les élèves -->
-        <div id="delete-modal-1" class="modal">
-            <div class="modal-background"></div>
-            <div class="modal-content">
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">Supprimer tous les élèves ?</p>
-                    </header>
-                    <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('eleve.eleve_delete_all') }}" id="delet_student">
-    {% include 'utils/csrf.html' %}</form>
-                        <button class="button is-normal is-danger is-responsive" form="delet_student" value="Submit">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-trash has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Supprimer tous les élèves</span>
-                            </div>
-                        </button>
-                        </form>
-                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
-                    </footer>
-                </div>
-                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
+        <!-- Messages Flash -->
+        {% include 'utils/flash_message.html' %}
+
+        <!-- TAB 1 : Mon Compte -->
+        <div id="tabContentCompte" class="settings-tab-content">
+            <div class="settings-card">
+                <h2 class="title is-4 mb-4">Informations personnelles & Sécurité</h2>
+
+                <form method="POST" action="{{ url_for('auth.reglage') }}">
+                    {% include 'utils/csrf.html' %}
+
+                    <div class="field">
+                        <label class="label">Nom d'affichage</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="text" name="name" value="{{ user.name }}" required>
+                            <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Adresse e-mail</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="email" name="email" value="{{ user.email }}" required>
+                            <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        <p class="help has-text-grey">Changer votre e-mail nécessitera une nouvelle vérification.</p>
+                    </div>
+
+                    <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
+
+                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">Changer de mot de passe</h3>
+                    <p class="has-text-grey is-size-7 mb-4">Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot de passe.</p>
+
+                    <div class="field">
+                        <label class="label">Mot de passe actuel</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="password" name="password" placeholder="Mot de passe actuel">
+                            <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Nouveau mot de passe</label>
+                        <div class="control has-icons-left">
+                            <input class="input" type="password" name="new_password" placeholder="Nouveau mot de passe">
+                            <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Exigences de sécurité -->
+                    <div style="background: hsl(210, 60%, 97%); border: 1px solid hsl(210, 50%, 88%); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; margin-bottom: 1.5rem;">
+                        <p class="has-text-weight-semibold is-size-7 mb-1" style="color: hsl(210, 40%, 30%);">
+                            <i class="fas fa-shield-alt mr-1"></i> Conseils pour un mot de passe sécurisé :
+                        </p>
+                        <ul class="is-size-7 has-text-grey" style="list-style: disc; margin-left: 1.25rem; line-height: 1.8;">
+                            <li>Au moins 8 caractères</li>
+                            <li>Mélange de majuscules et minuscules (ex. : A, a)</li>
+                            <li>Au moins un chiffre (ex. : 1, 9) et un caractère spécial (ex. : @, #, $, %)</li>
+                        </ul>
+                    </div>
+
+                    <div class="field mt-5">
+                        <div class="control">
+                            <button class="button is-link is-rounded">
+                                <span class="icon"><i class="fas fa-check"></i></span>
+                                <span>Enregistrer les modifications</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <br>
-        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
-            href="#delete-modal-1">
-            <div class="icon-text">
-                <span class="icon has-text-info">
-                    <i class="fa-solid fa-trash has-text-black"></i>
-                </span>
-                <span class="has-text-black has-text-weight-semibold">Supprimer tous les élèves</span>
-            </div>
-        </button>
-    </div>
 
-    <hr>
+        <!-- TAB 2 : Export de données -->
+        <div id="tabContentExport" class="settings-tab-content" style="display: none;">
+            <div class="settings-card mb-5">
+                <h2 class="title is-4 mb-2">Télécharger vos données</h2>
+                <p class="has-text-grey mb-5">Générez et téléchargez facilement vos fichiers au format Excel pour les sauvegarder ou les analyser.</p>
 
-    <h2 class="title is-3">Supprimer tous les prêts</h2>
-    <div class="container">
-        <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> Cette action est irréversible.</i></p>
-        <br>
-        <!-- Supprimer tous les prêts -->
-        <div id="delete-modal-2" class="modal">
-            <div class="modal-background"></div>
-            <div class="modal-content">
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">Supprimer tous les prêts ?</p>
-                    </header>
-                    <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('emprunt.delete_all_loans') }}" id="delet_loan">
-    {% include 'utils/csrf.html' %}</form>
-                        <button class="button is-normal is-danger is-responsive" form="delet_loan" value="Submit">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-trash has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Supprimer tous les prêts</span>
+                <div class="columns is-multiline">
+                    <div class="column is-6">
+                        <div class="export-box">
+                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                                    <i class="fas fa-book fa-lg"></i>
+                                </div>
+                                <h4 class="title is-5 mb-0">Tous les livres</h4>
                             </div>
-                        </button>
-                        </form>
-                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
-                    </footer>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">La liste complète de tous les livres enregistrés dans votre bibliothèque.</p>
+                            <a href="{{ url_for('export.export_books') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                                <span class="icon"><i class="fas fa-file-excel"></i></span>
+                                <span>Télécharger (Excel)</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="export-box">
+                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                                    <i class="fas fa-user-graduate fa-lg"></i>
+                                </div>
+                                <h4 class="title is-5 mb-0">Lectures par élève</h4>
+                            </div>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">Historique des livres lus et empruntés classé par élève.</p>
+                            <a href="{{ url_for('export.export_students_reads') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                                <span class="icon"><i class="fas fa-file-excel"></i></span>
+                                <span>Télécharger (Excel)</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="export-box">
+                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                                    <i class="fas fa-exchange-alt fa-lg"></i>
+                                </div>
+                                <h4 class="title is-5 mb-0">Prêts en cours</h4>
+                            </div>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">La liste des emprunts actifs non encore retournés.</p>
+                            <a href="{{ url_for('export.export_active_loans') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                                <span class="icon"><i class="fas fa-file-excel"></i></span>
+                                <span>Télécharger (Excel)</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="column is-6">
+                        <div class="export-box">
+                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                                    <i class="fas fa-history fa-lg"></i>
+                                </div>
+                                <h4 class="title is-5 mb-0">Historique des prêts</h4>
+                            </div>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">L'ensemble de tous les prêts réalisés depuis la création de la bibliothèque.</p>
+                            <a href="{{ url_for('export.export_all_loans') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                                <span class="icon"><i class="fas fa-file-excel"></i></span>
+                                <span>Télécharger (Excel)</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
             </div>
         </div>
-        <br>
-        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
-            href="#delete-modal-2">
-            <div class="icon-text">
-                <span class="icon has-text-info">
-                    <i class="fa-solid fa-trash has-text-black"></i>
-                </span>
-                <span class="has-text-black has-text-weight-semibold">Supprimer tous les prêts</span>
-            </div>
-        </button>
-    </div>
 
-    <hr>
-
-    <h2 class="title is-3">Supprimer tous les livres</h2>
-    <div class="container">
-        <p><i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> Cette action est irréversible.</i></p>
-        <br>
-        <!-- Supprimer tous les livres -->
-        <div id="delete-modal-3" class="modal">
-            <div class="modal-background"></div>
-            <div class="modal-content">
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">Supprimer tous les livres ?</p>
-                    </header>
-                    <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('livre.livre_delete_all') }}" id="delet_book">
-    {% include 'utils/csrf.html' %}</form>
-                        <button class="button is-normal is-danger is-responsive" form="delet_book" value="Submit">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-trash has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Supprimer tous les livres</span>
-                            </div>
-                        </button>
-                        </form>
-                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
-                    </footer>
+        <!-- TAB 3 : Zone de Danger -->
+        <div id="tabContentDanger" class="settings-tab-content" style="display: none;">
+            <div class="settings-card" style="border-color: hsl(0, 50%, 88%);">
+                <h2 class="title is-4 mb-2 has-text-danger">
+                    <span class="mr-3">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </span>
+                    Zone de danger
+                </h2>
+                
+                <!-- Message d'avertissement bien espacé -->
+                <div class="notification is-danger is-light mb-6" style="border-radius: 12px; margin-top: 1rem;">
+                    <span class="icon"><i class="fas fa-exclamation-circle"></i></span>
+                    <strong>Attention :</strong> Les actions ci-dessous sont irréversibles et entraînent la suppression définitive de vos données.
                 </div>
-                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
+
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Supprimer les élèves -->
+                    <div class="danger-zone-box">
+                        <div>
+                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">Supprimer tous les élèves</p>
+                            <p class="is-size-7 has-text-grey mb-0">Efface l'ensemble de vos élèves ainsi que l'historique de leurs prêts.</p>
+                        </div>
+                        <button class="button is-danger is-outlined is-rounded ml-3" onclick="openModal('modalDeleteStudents')">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Supprimer tous les élèves</span>
+                        </button>
+                    </div>
+
+                    <!-- Supprimer les prêts -->
+                    <div class="danger-zone-box">
+                        <div>
+                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">Supprimer tous les prêts</p>
+                            <p class="is-size-7 has-text-grey mb-0">Efface tous les enregistrements de prêts (en cours et retournés).</p>
+                        </div>
+                        <button class="button is-danger is-outlined is-rounded ml-3" onclick="openModal('modalDeleteLoans')">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Supprimer tous les prêts</span>
+                        </button>
+                    </div>
+
+                    <!-- Supprimer les livres -->
+                    <div class="danger-zone-box">
+                        <div>
+                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">Supprimer tous les livres</p>
+                            <p class="is-size-7 has-text-grey mb-0">Vide totalement votre catalogue de livres.</p>
+                        </div>
+                        <button class="button is-danger is-outlined is-rounded ml-3" onclick="openModal('modalDeleteBooks')">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                            <span>Supprimer tous les livres</span>
+                        </button>
+                    </div>
+
+                    <!-- Séparateur avant suppression compte -->
+                    <hr style="background-color: hsl(0, 50%, 92%); margin: 1rem 0;">
+
+                    <!-- Supprimer le compte -->
+                    <div class="danger-zone-box" style="background: hsl(0, 60%, 96%); border-color: hsl(0, 60%, 85%);">
+                        <div>
+                            <p class="has-text-weight-bold mb-1 has-text-danger">Supprimer mon compte</p>
+                            <p class="is-size-7 has-text-grey mb-0">Supprime définitivement votre compte et l'intégralité de vos données.</p>
+                        </div>
+                        <button class="button is-danger is-rounded ml-3" onclick="openModal('modalDeleteAccount')">
+                            <span class="icon"><i class="fas fa-user-slash"></i></span>
+                            <span>Supprimer mon compte</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-        <br>
-        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
-            href="#delete-modal-3">
-            <div class="icon-text">
-                <span class="icon has-text-info">
-                    <i class="fa-solid fa-trash has-text-black"></i>
-                </span>
-                <span class="has-text-black has-text-weight-semibold">Supprimer tous les livres</span>
-            </div>
-        </button>
+
     </div>
+</section>
 
-    <hr>
+<!-- MODALES BULMA STANDARDS -->
 
-    <h2 class="title is-3">Supprimer le compte</h2>
-    <div class="container">
-        <p>
-            <i class="fa-solid fa-triangle-exclamation has-text-black"></i> <i> Cette action est irréversible. <br>
-                Vous perdrez l'accès à votre compte et toutes les données associées.</i>
-        </p>
-        <br>
-
-        <!-- Supprimer l'utilisateur -->
-        <div id="delete-modal-4" class="modal">
-            <div class="modal-background"></div>
-            <div class="modal-content">
-                <div class="modal-card">
-                    <header class="modal-card-head">
-                        <p class="modal-card-title">Supprimer mon compte ?</p>
-                    </header>
-                    <footer class="modal-card-foot">
-                        <form method="POST" action="{{ url_for('auth.delete_account') }}" id="delet_user">
-    {% include 'utils/csrf.html' %}</form>
-                        <button class="button is-normal is-danger is-responsive" form="delet_user" value="Submit">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fas fa-user-slash has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">Supprimer mon compte</span>
-                            </div>
-                        </button>
-                        </form>
-                        <a href="{{ url_for('auth.reglage') }}" class="button is-normal is-responsive">Annuler</a>
-                    </footer>
-                </div>
-                <button class="modal-close is-large close" id="modal-close" aria-label="close"></button>
-            </div>
-        </div>
-        <br>
-        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal"
-            href="#delete-modal-4">
-            <div class="icon-text">
-                <span class="icon has-text-info">
-                    <i class="fas fa-user-slash has-text-black"></i>
-                </span>
-                <span class="has-text-black has-text-weight-semibold">Supprimer mon compte</span>
-            </div>
-        </button>
+<!-- Modale 1 : Élèves -->
+<div id="modalDeleteStudents" class="modal">
+    <div class="modal-background" onclick="closeModal('modalDeleteStudents')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+        <header class="modal-card-head">
+            <p class="modal-card-title has-text-danger">Supprimer tous les élèves ?</p>
+            <button class="delete" aria-label="close" onclick="closeModal('modalDeleteStudents')"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>Êtes-vous sûr de vouloir supprimer tous les élèves ? Cette action est <strong>irréversible</strong>.</p>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end;">
+            <button class="button is-light" onclick="closeModal('modalDeleteStudents')">Annuler</button>
+            <form method="POST" action="{{ url_for('eleve.eleve_delete_all') }}">
+                {% include 'utils/csrf.html' %}
+                <button type="submit" class="button is-danger ml-2">Oui, supprimer</button>
+            </form>
+        </footer>
     </div>
 </div>
 
-<div id="tab-content-export" class="block" style="display: none;">
-    <h2 class="title is-3">Télécharger vos données</h2>
-    <div class="container">
-        <p>Générez et téléchargez facilement vos données au format Excel pour les conserver ou les analyser.</p>
-        <br>
-        <div class="columns is-multiline">
-            <div class="column is-half">
-                <div class="box">
-                    <h4 class="title is-4"><i class="fa-solid fa-book has-text-info"></i> Tous les livres</h4>
-                    <p>Exportez la liste complète des livres de votre bibliothèque avec leurs informations.</p>
-                    <br>
-                    <a href="{{ url_for('export.export_books') }}" class="button is-info is-fullwidth">Télécharger (Excel)</a>
-                </div>
-            </div>
-            
-            <div class="column is-half">
-                <div class="box">
-                    <h4 class="title is-4"><i class="fa-solid fa-graduation-cap has-text-success"></i> Lectures par élève</h4>
-                    <p>Une liste groupée par élève affichant tous les livres qu'ils ont lus ou empruntés.</p>
-                    <br>
-                    <a href="{{ url_for('export.export_students_reads') }}" class="button is-success is-fullwidth">Télécharger (Excel)</a>
-                </div>
-            </div>
-
-            <div class="column is-half">
-                <div class="box">
-                    <h4 class="title is-4"><i class="fa-solid fa-rotate has-text-warning"></i> Prêts en cours</h4>
-                    <p>Exportez la liste des livres actuellement prêtés, qui n'ont pas encore été rendus.</p>
-                    <br>
-                    <a href="{{ url_for('export.export_active_loans') }}" class="button is-warning is-fullwidth">Télécharger (Excel)</a>
-                </div>
-            </div>
-
-            <div class="column is-half">
-                <div class="box">
-                    <h4 class="title is-4"><i class="fa-solid fa-clock-rotate-left has-text-primary"></i> Tous les prêts</h4>
-                    <p>L'historique complet de tous les prêts (terminés ou en cours) réalisés dans la bibliothèque.</p>
-                    <br>
-                    <a href="{{ url_for('export.export_all_loans') }}" class="button is-primary is-fullwidth">Télécharger (Excel)</a>
-                </div>
-            </div>
-        </div>
+<!-- Modale 2 : Prêts -->
+<div id="modalDeleteLoans" class="modal">
+    <div class="modal-background" onclick="closeModal('modalDeleteLoans')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+        <header class="modal-card-head">
+            <p class="modal-card-title has-text-danger">Supprimer tous les prêts ?</p>
+            <button class="delete" aria-label="close" onclick="closeModal('modalDeleteLoans')"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>Êtes-vous sûr de vouloir réinitialiser l'historique des prêts ? Cette action est <strong>irréversible</strong>.</p>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end;">
+            <button class="button is-light" onclick="closeModal('modalDeleteLoans')">Annuler</button>
+            <form method="POST" action="{{ url_for('emprunt.delete_all_loans') }}">
+                {% include 'utils/csrf.html' %}
+                <button type="submit" class="button is-danger ml-2">Oui, supprimer</button>
+            </form>
+        </footer>
     </div>
 </div>
 
-<!-- Utilisé pour supprimer les notifications -->
+<!-- Modale 3 : Livres -->
+<div id="modalDeleteBooks" class="modal">
+    <div class="modal-background" onclick="closeModal('modalDeleteBooks')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+        <header class="modal-card-head">
+            <p class="modal-card-title has-text-danger">Supprimer tous les livres ?</p>
+            <button class="delete" aria-label="close" onclick="closeModal('modalDeleteBooks')"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? Cette action est <strong>irréversible</strong>.</p>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end;">
+            <button class="button is-light" onclick="closeModal('modalDeleteBooks')">Annuler</button>
+            <form method="POST" action="{{ url_for('livre.livre_delete_all') }}">
+                {% include 'utils/csrf.html' %}
+                <button type="submit" class="button is-danger ml-2">Oui, supprimer</button>
+            </form>
+        </footer>
+    </div>
+</div>
+
+<!-- Modale 4 : Compte -->
+<div id="modalDeleteAccount" class="modal">
+    <div class="modal-background" onclick="closeModal('modalDeleteAccount')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+        <header class="modal-card-head">
+            <p class="modal-card-title has-text-danger">Supprimer définitivement mon compte ?</p>
+            <button class="delete" aria-label="close" onclick="closeModal('modalDeleteAccount')"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>Attention : Cette action supprimera <strong>définitivement</strong> votre compte et l'ensemble des données associées (livres, élèves, prêts).</p>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end;">
+            <button class="button is-light" onclick="closeModal('modalDeleteAccount')">Annuler</button>
+            <form method="POST" action="{{ url_for('auth.delete_account') }}">
+                {% include 'utils/csrf.html' %}
+                <button type="submit" class="button is-danger ml-2">Supprimer mon compte</button>
+            </form>
+        </footer>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-            const $notification = $delete.parentNode;
+    function switchSettingsTab(tabName) {
+        document.getElementById('tabContentCompte').style.display = 'none';
+        document.getElementById('tabContentExport').style.display = 'none';
+        document.getElementById('tabContentDanger').style.display = 'none';
 
-            $delete.addEventListener('click', () => {
-                $notification.parentNode.removeChild($notification);
+        document.getElementById('tabBtnCompte').classList.remove('is-active');
+        document.getElementById('tabBtnExport').classList.remove('is-active');
+        document.getElementById('tabBtnDanger').classList.remove('is-active');
+
+        if (tabName === 'compte') {
+            document.getElementById('tabContentCompte').style.display = 'block';
+            document.getElementById('tabBtnCompte').classList.add('is-active');
+        } else if (tabName === 'export') {
+            document.getElementById('tabContentExport').style.display = 'block';
+            document.getElementById('tabBtnExport').classList.add('is-active');
+        } else if (tabName === 'danger') {
+            document.getElementById('tabContentDanger').style.display = 'block';
+            document.getElementById('tabBtnDanger').classList.add('is-active');
+        }
+    }
+
+    function openModal(id) {
+        document.getElementById(id).classList.add('is-active');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('is-active');
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal.is-active').forEach(function (m) {
+                m.classList.remove('is-active');
             });
-        });
+        }
     });
 </script>
-
-<script>
-    function switchTab(tabName) {
-        // Cacher tous les contenus
-        document.getElementById('tab-content-compte').style.display = 'none';
-        document.getElementById('tab-content-export').style.display = 'none';
-        
-        // Retirer la classe is-active de tous les liens
-        document.getElementById('tab-link-compte').classList.remove('is-active');
-        document.getElementById('tab-link-export').classList.remove('is-active');
-        
-        // Afficher le contenu désiré et mettre le lien en active
-        document.getElementById('tab-content-' + tabName).style.display = 'block';
-        document.getElementById('tab-link-' + tabName).classList.add('is-active');
-    }
-</script>
-
-<!-- Utilisé pour les validation de suppression -->
-<script>
-    let modals = document.getElementsByClassName('modal');
-    let modalBtns = document.getElementsByClassName('showModal');
-    let closeBtns = document.getElementsByClassName('close');
-
-    for (let modalBtn of modalBtns) {
-        modalBtn.onclick = function (event) {
-            document.querySelector(event.currentTarget.getAttribute('href')).style.display = 'flex';
-        }
-    }
-
-    for (let closeBtn of closeBtns) {
-        closeBtn.onclick = function (event) {
-            console.log(event.target.currentTarget.parentNode.parentNode.parentNode)
-            event.target.parentNode.parentNode.parentNode.style.display = 'none';
-        }
-    }
-
-    window.onclick = function (event) {
-        if (event.target.classList.contains('modal')) {
-            for (let modal of modals) {
-                if (typeof modal.style !== 'undefined') {
-                    modal.style.display = 'none';
-                }
-            }
-        }
-    }
-
-    window.onkeydown = function (event) {
-        if (event.key == 'Escape') {
-            for (let modal of modals) {
-                modal.style.display = 'none';
-            }
-        }
-    }
-</script>
-
 {% endblock %}

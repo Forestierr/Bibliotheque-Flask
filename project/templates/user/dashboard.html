@@ -13,79 +13,99 @@
 
 {% if n_books == 0 and n_students == 0 %}
 <!-- Onboarding checklist pour les nouveaux utilisateurs -->
-<div class="container block">
-  <div style="background: linear-gradient(135deg, hsl(210, 60%, 97%) 0%, hsl(145, 50%, 96%) 100%); border: 1px solid hsl(210, 50%, 88%); border-radius: 16px; padding: 2rem;">
-    <div style="display:flex; align-items:center; gap: 1rem; margin-bottom: 1.5rem;">
-      <div style="width: 44px; height: 44px; border-radius: 12px; background: hsl(210, 60%, 90%); color: hsl(210, 50%, 45%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-        <i class="fas fa-compass fa-lg"></i>
+<div class="block">
+  <div class="box">
+    <article class="media mb-4">
+      <figure class="media-left">
+        <span class="icon is-large has-text-link">
+          <i class="fas fa-compass fa-2x"></i>
+        </span>
+      </figure>
+      <div class="media-content">
+        <h2 class="title is-4 mb-1">Bienvenue dans votre bibliothèque !</h2>
+        <p class="subtitle is-6 mb-0">Suivez ces 3 étapes pour commencer en moins de 5 minutes</p>
       </div>
-      <div>
-        <h2 class="title is-4 mb-1" style="color: hsl(210, 40%, 25%);">Bienvenue dans votre bibliothèque !</h2>
-        <p class="subtitle is-6 mb-0" style="color: hsl(210, 20%, 50%);">Suivez ces 3 étapes pour commencer en moins de 5 minutes</p>
-      </div>
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+    </article>
+    <div class="block">
       <!-- Étape 1 -->
-      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(210, 50%, 60%);">
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: hsl(210, 60%, 96%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="fas fa-book"></i>
-        </div>
-        <div style="flex:1;">
-          <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 1 — Ajoutez vos livres</p>
-          <p class="is-size-7 has-text-grey mb-0">Scannez le code-barres ISBN ou saisissez manuellement le titre</p>
-        </div>
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-          <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded">
-            <span class="icon"><i class="fas fa-barcode"></i></span>
-            <span>Scanner</span>
-          </a>
-          <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-small is-rounded">
-            <span class="icon"><i class="fas fa-plus"></i></span>
-            <span>Manuel</span>
-          </a>
+      <div class="box mb-3">
+        <div class="columns is-vcentered is-desktop">
+          <div class="column is-narrow is-hidden-touch">
+            <span class="icon is-medium has-text-link">
+              <i class="fas fa-book fa-lg"></i>
+            </span>
+          </div>
+          <div class="column">
+            <p class="has-text-weight-semibold mb-0">Étape 1 — Ajoutez vos livres</p>
+            <p class="is-size-7 has-text-grey mb-0">Scannez le code-barres ISBN ou saisissez manuellement le titre</p>
+          </div>
+          <div class="column is-narrow">
+            <div class="buttons mb-0">
+              <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded">
+                <span class="icon"><i class="fas fa-barcode"></i></span>
+                <span>Scanner</span>
+              </a>
+              <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-small is-rounded">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span>Manuel</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       <!-- Étape 2 -->
-      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(145, 40%, 55%); opacity: 0.85;">
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: hsl(145, 50%, 95%); color: hsl(145, 40%, 42%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="fas fa-user-graduate"></i>
+      <div class="box mb-3">
+        <div class="columns is-vcentered is-desktop">
+          <div class="column is-narrow is-hidden-touch">
+            <span class="icon is-medium has-text-success">
+              <i class="fas fa-user-graduate fa-lg"></i>
+            </span>
+          </div>
+          <div class="column">
+            <p class="has-text-weight-semibold mb-0">Étape 2 — Ajoutez vos élèves</p>
+            <p class="is-size-7 has-text-grey mb-0">Ajoutez la liste de vos élèves pour pouvoir leur prêter des livres</p>
+          </div>
+          <div class="column is-narrow">
+            <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-light is-small is-rounded">
+              <span class="icon"><i class="fas fa-plus"></i></span>
+              <span>Ajouter</span>
+            </a>
+          </div>
         </div>
-        <div style="flex:1;">
-          <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 2 — Ajoutez vos élèves</p>
-          <p class="is-size-7 has-text-grey mb-0">Ajoutez la liste de vos élèves pour pouvoir leur prêter des livres</p>
-        </div>
-        <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-light is-small is-rounded">
-          <span class="icon"><i class="fas fa-plus"></i></span>
-          <span>Ajouter</span>
-        </a>
       </div>
       <!-- Étape 3 -->
-      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(38, 60%, 55%); opacity: 0.7;">
-        <div style="width: 36px; height: 36px; border-radius: 50%; background: hsl(38, 70%, 95%); color: hsl(38, 60%, 45%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="fas fa-exchange-alt"></i>
+      <div class="box mb-3">
+        <div class="columns is-vcentered is-desktop">
+          <div class="column is-narrow is-hidden-touch">
+            <span class="icon is-medium has-text-warning">
+              <i class="fas fa-exchange-alt fa-lg"></i>
+            </span>
+          </div>
+          <div class="column">
+            <p class="has-text-weight-semibold mb-0">Étape 3 — Faites votre premier prêt</p>
+            <p class="is-size-7 has-text-grey mb-0">Sélectionnez un livre → choisissez un élève → c'est fait !</p>
+          </div>
+          <div class="column is-narrow">
+            <a href="{{ url_for('emprunt.emprunt_db') }}" class="button is-light is-small is-rounded">
+              <span class="icon"><i class="fas fa-exchange-alt"></i></span>
+              <span>Emprunts</span>
+            </a>
+          </div>
         </div>
-        <div style="flex:1;">
-          <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 3 — Faites votre premier prêt</p>
-          <p class="is-size-7 has-text-grey mb-0">Sélectionnez un livre → choisissez un élève → c'est fait !</p>
-        </div>
-        <a href="{{ url_for('emprunt.emprunt_db') }}" class="button is-light is-small is-rounded">
-          <span class="icon"><i class="fas fa-exchange-alt"></i></span>
-          <span>Emprunts</span>
-        </a>
       </div>
     </div>
     <div class="mt-4 has-text-centered">
-      <a href="/aide" class="is-size-7" style="color: hsl(210, 50%, 45%);">
+      <a href="/aide" class="is-size-7 has-text-link">
         <span class="icon is-small"><i class="fas fa-question-circle"></i></span>
-        Besoin d'aide ? Consulter le guide complet
+        <span>Besoin d'aide ? Consulter le guide complet</span>
       </a>
     </div>
   </div>
 </div>
 {% elif n_books == 0 %}
 <!-- Seulement si pas de livres mais des élèves -->
-<div class="container block">
-  <div class="notification is-link is-light" style="border-radius: 12px;">
+<div class="block">
+  <div class="notification is-link is-light">
     <span class="icon"><i class="fas fa-info-circle"></i></span>
     <strong>Ajoutez vos premiers livres</strong> pour pouvoir faire des prêts.
     <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded ml-3">
@@ -96,8 +116,8 @@
 </div>
 {% elif n_students == 0 %}
 <!-- Seulement si pas d'élèves mais des livres -->
-<div class="container block">
-  <div class="notification is-info is-light" style="border-radius: 12px;">
+<div class="block">
+  <div class="notification is-info is-light">
     <span class="icon"><i class="fas fa-users"></i></span>
     <strong>Ajoutez vos élèves</strong> pour pouvoir effectuer des prêts.
     <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-info is-small is-rounded ml-3">
@@ -108,7 +128,7 @@
 </div>
 {% endif %}
 
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Infos</h4>
   <div class="box">
     <p>Nombre de livres : <strong>{{ n_books }}</strong></p>
@@ -117,7 +137,7 @@
 </div>
 
 {% if books %}
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Meilleurs livres</h4>
       <div class="box">
         {% for book in books %}
@@ -135,7 +155,7 @@
       </div>
 </div>
 {% else %}
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Meilleurs livres</h4>
   <div class="box">
     <p class="block">Vous n'avez pas encore de livres dans votre bibliothèque.</p>
@@ -156,7 +176,7 @@
 {% endif %}
 
 {% if students %}
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
   <div class="box">
     {% for student in students %}
@@ -174,7 +194,7 @@
   </div>
 </div>
 {% else %}
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
   <div class="box">
     <p class="block">Vous n'avez pas encore d'élèves dans votre bibliothèque.</p>
@@ -189,7 +209,7 @@
 {% endif %}
 
 {% if books_loaned %}
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Derniers prêts</h4>
   <div class="box">
     {% for book in books_loaned %}
@@ -209,7 +229,7 @@
   </div>
 </div>
 {% else %}
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Derniers prèts</h4>
   <div class="box">
     <p>Vous n'avez pas encore effectué de prêts.</p>
@@ -226,7 +246,7 @@
 
 {% macro level(l) %}{% if l < 1 %}0{% elif l < 3 %}1{% elif l < 5 %}2{% elif l < 7 %}3{% else %}4{% endif %}{% endmacro %}
 
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Prêts sur l'année</h4>
   <div class="box">
     <!-- table formating error on mobile : -->
@@ -287,15 +307,27 @@
   </div>
 </div>
 
-<div class="container block">
+<div class="block">
   <h4 class="title is-4 block">Livres lus par élève</h4>
   <div class="box">
-    <form id="student-books-form" class="mb-4 block" style="display: flex; gap: 1em; align-items: center;">
-      <label for="date_from">De :</label>
-      <input type="date" id="date_from" name="date_from" style="border-radius: 5px; padding: 5px 12px">
-      <label for="date_to">À :</label>
-      <input type="date" id="date_to" name="date_to" style="border-radius: 5px; padding: 5px 12px">
-      <button type="submit" class="button is-dark">Afficher</button>
+    <form id="student-books-form" class="mb-4 block">
+      <div class="field is-grouped is-grouped-multiline is-vcentered">
+        <div class="control">
+          <label for="date_from" class="label is-size-7 mb-0">De :</label>
+        </div>
+        <div class="control">
+          <input type="date" id="date_from" name="date_from" class="input is-small">
+        </div>
+        <div class="control">
+          <label for="date_to" class="label is-size-7 mb-0">À :</label>
+        </div>
+        <div class="control">
+          <input type="date" id="date_to" name="date_to" class="input is-small">
+        </div>
+        <div class="control">
+          <button type="submit" class="button is-dark is-small">Afficher</button>
+        </div>
+      </div>
     </form>
     <div class="chart-container" style="width: 100%; max-width: 100%; overflow-x: auto">
         <canvas id="studentBooksChart" height="100"></canvas>
