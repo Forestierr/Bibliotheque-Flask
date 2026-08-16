@@ -144,10 +144,10 @@
                                     <p class="is-size-7 has-text-grey mt-1">Utiliser le code couleur, les genres ou les thèmes pour faciliter le rangement.</p>
                                 </li>
                                 <li class="mb-4">
-                                    <span class="has-text-weight-bold has-text-grey-light" style="display: inline-flex; align-items: center;">
-                                        <i class="fas fa-lock chevron-icon"></i>Choisir ses livres
-                                    </span>
-                                    <p class="is-size-7 has-text-grey-light mt-1">Constituer un catalogue équilibré et attractif (prochainement).</p>
+                                    <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="guide-link link-method">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Sélectionner ses livres
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Notre sélection de livres adaptés au cycle 2 pour enrichir votre bibliothèque.</p>
                                 </li>
                             </ul>
                         </div>
@@ -185,10 +185,10 @@
                                     <p class="is-size-7 has-text-grey mt-1">Comment mettre en place un défi lecture motivant et bienveillant.</p>
                                 </li>
                                 <li class="mb-4">
-                                    <span class="has-text-weight-bold has-text-grey-light" style="display: inline-flex; align-items: center;">
-                                        <i class="fas fa-lock chevron-icon"></i>La lecture offerte
-                                    </span>
-                                    <p class="is-size-7 has-text-grey-light mt-1">Travailler l'écoute et l'imaginaire par la lecture à haute voix (prochainement).</p>
+                                    <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="guide-link link-pedagogy">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>La lecture à haute voix
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Conseils pour pratiquer la lecture offerte et développer l'imaginaire de vos élèves.</p>
                                 </li>
                             </ul>
                         </div>
@@ -221,15 +221,15 @@
                                 </li>
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.ressources_index') }}" class="guide-link link-tech">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Télécharger des étiquettes
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Ressources en ligne
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Imprimer des étiquettes physiques de rangement pour les bacs de livres.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">Liens vers Eduscol, BNF, Canopé et d'autres ressources vérifiées pour enseignants.</p>
                                 </li>
                                 <li class="mb-4">
-                                    <span class="has-text-weight-bold has-text-grey-light" style="display: inline-flex; align-items: center;">
-                                        <i class="fas fa-lock chevron-icon"></i>Générateur de QR Codes
-                                    </span>
-                                    <p class="is-size-7 has-text-grey-light mt-1">Créer des codes QR pour renvoyer directement vers les fiches de lecture (prochainement).</p>
+                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="guide-link link-tech">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>Guide de l'application
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">Comment utiliser Livres en Classe pour gérer emprunts et catalogue numérique.</p>
                                 </li>
                             </ul>
                         </div>

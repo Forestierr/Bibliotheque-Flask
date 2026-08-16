@@ -16,7 +16,9 @@
 <div class="container block">
   <div style="background: linear-gradient(135deg, hsl(210, 60%, 97%) 0%, hsl(145, 50%, 96%) 100%); border: 1px solid hsl(210, 50%, 88%); border-radius: 16px; padding: 2rem;">
     <div style="display:flex; align-items:center; gap: 1rem; margin-bottom: 1.5rem;">
-      <span style="font-size: 2rem;">👋</span>
+      <div style="width: 44px; height: 44px; border-radius: 12px; background: hsl(210, 60%, 90%); color: hsl(210, 50%, 45%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <i class="fas fa-compass fa-lg"></i>
+      </div>
       <div>
         <h2 class="title is-4 mb-1" style="color: hsl(210, 40%, 25%);">Bienvenue dans votre bibliothèque !</h2>
         <p class="subtitle is-6 mb-0" style="color: hsl(210, 20%, 50%);">Suivez ces 3 étapes pour commencer en moins de 5 minutes</p>
@@ -25,7 +27,9 @@
     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
       <!-- Étape 1 -->
       <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(210, 50%, 60%);">
-        <span style="font-size: 1.5rem; min-width: 2rem; text-align:center;">📚</span>
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: hsl(210, 60%, 96%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fas fa-book"></i>
+        </div>
         <div style="flex:1;">
           <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 1 — Ajoutez vos livres</p>
           <p class="is-size-7 has-text-grey mb-0">Scannez le code-barres ISBN ou saisissez manuellement le titre</p>
@@ -42,11 +46,13 @@
         </div>
       </div>
       <!-- Étape 2 -->
-      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(145, 40%, 55%); opacity: 0.6;">
-        <span style="font-size: 1.5rem; min-width: 2rem; text-align:center;">🧒</span>
+      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(145, 40%, 55%); opacity: 0.85;">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: hsl(145, 50%, 95%); color: hsl(145, 40%, 42%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fas fa-user-graduate"></i>
+        </div>
         <div style="flex:1;">
           <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 2 — Ajoutez vos élèves</p>
-          <p class="is-size-7 has-text-grey mb-0">Importez votre liste de classe ou ajoutez-les un par un</p>
+          <p class="is-size-7 has-text-grey mb-0">Ajoutez la liste de vos élèves pour pouvoir leur prêter des livres</p>
         </div>
         <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-light is-small is-rounded">
           <span class="icon"><i class="fas fa-plus"></i></span>
@@ -54,8 +60,10 @@
         </a>
       </div>
       <!-- Étape 3 -->
-      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(38, 60%, 55%); opacity: 0.4;">
-        <span style="font-size: 1.5rem; min-width: 2rem; text-align:center;">🔄</span>
+      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(38, 60%, 55%); opacity: 0.7;">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: hsl(38, 70%, 95%); color: hsl(38, 60%, 45%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fas fa-exchange-alt"></i>
+        </div>
         <div style="flex:1;">
           <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 3 — Faites votre premier prêt</p>
           <p class="is-size-7 has-text-grey mb-0">Sélectionnez un livre → choisissez un élève → c'est fait !</p>

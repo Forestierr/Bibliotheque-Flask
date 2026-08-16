@@ -25,7 +25,25 @@
         letter-spacing: -0.5px;
     }
 
-    /* Avatar dropdown */
+    /* Responsive visibility rules */
+    @media screen and (max-width: 1023px) {
+        .desktop-only-avatar {
+            display: none !important;
+        }
+        .mobile-only-nav {
+            display: flex !important;
+        }
+    }
+    @media screen and (min-width: 1024px) {
+        .desktop-only-avatar {
+            display: flex !important;
+        }
+        .mobile-only-nav {
+            display: none !important;
+        }
+    }
+
+    /* Avatar dropdown (Desktop) */
     .avatar-wrapper {
         position: relative;
         display: flex;
@@ -155,15 +173,29 @@
             </a>
             <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'eleve.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-users"></i></span>
-                <span>Eleves</span>
+                <span>Élèves</span>
             </a>
             <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'emprunt.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-exchange-alt"></i></span>
                 <span>Emprunts</span>
             </a>
 
-            <!-- Avatar dropdown -->
-            <div class="navbar-item" style="padding-right: 0.5rem;">
+            <!-- Liens directs visibles uniquement sur mobile -->
+            <a href="{{ url_for('main.aide') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint == 'main.aide' %}is-active-link{% endif %}">
+                <span class="icon mr-2"><i class="fas fa-question-circle"></i></span>
+                <span>Aide</span>
+            </a>
+            <a href="{{ url_for('auth.reglage') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint and 'auth.reglage' == request.endpoint %}is-active-link{% endif %}">
+                <span class="icon mr-2"><i class="fas fa-cog"></i></span>
+                <span>Réglages</span>
+            </a>
+            <a href="{{ url_for('auth.logout') }}" class="navbar-item navbar-item-custom mobile-only-nav style-danger" style="color: hsl(0, 60%, 50%) !important;">
+                <span class="icon mr-2" style="color: hsl(0, 60%, 50%);"><i class="fas fa-sign-out-alt"></i></span>
+                <span>Déconnexion</span>
+            </a>
+
+            <!-- Avatar dropdown (Desktop uniquement) -->
+            <div class="navbar-item desktop-only-avatar" style="padding-right: 0.5rem;">
                 <div class="avatar-wrapper" id="avatarWrapper">
                     <button class="avatar-btn" id="avatarBtn" aria-label="Menu utilisateur" aria-haspopup="true" aria-expanded="false">
                         {{ current_user.name[0]|upper if current_user.name else '?' }}
@@ -178,12 +210,12 @@
                         </a>
                         <a href="{{ url_for('auth.reglage') }}" class="avatar-dropdown-item" role="menuitem">
                             <span class="icon"><i class="fas fa-cog"></i></span>
-                            Reglages
+                            Réglages
                         </a>
                         <div class="avatar-dropdown-divider"></div>
                         <a href="{{ url_for('auth.logout') }}" class="avatar-dropdown-item logout" role="menuitem">
                             <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
-                            Deconnexion
+                            Déconnexion
                         </a>
                     </div>
                 </div>
@@ -202,7 +234,7 @@
                 Blog
             </a>
             <a href="{{ url_for('main.apropos') }}" class="navbar-item navbar-item-custom {% if 'apropos' in request.path %}is-active-link{% endif %}">
-                A propos
+                À propos
             </a>
             <div class="navbar-item">
                 <div class="buttons">

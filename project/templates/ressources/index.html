@@ -5,7 +5,7 @@
 {% extends "base.html" %}
 
 {% block title %}Ressources pour enseignants | Livres en Classe{% endblock %}
-{% block meta_description %}Téléchargez nos ressources gratuites pour la gestion de votre bibliothèque de classe : affiches, étiquettes, diplômes de lecteur et plus encore.{% endblock %}
+{% block meta_description %}Ressources gratuites pour gérer une bibliothèque de classe : guides pratiques, liens utiles et outils pour les enseignants du primaire.{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, "Ma Bibliothèque") }}
@@ -13,83 +13,177 @@
 
 {% block content %}
 
-    <section class="section">
-        <div class="container max-w-800" style="max-width: 900px; margin: 0 auto;">
-            
-            <h1 class="title is-1 has-text-centered mb-6">Centre de Ressources</h1>
-            <h2 class="subtitle is-3 has-text-centered mb-6">Téléchargez nos outils gratuits pour animer votre classe</h2>
+<style>
+    .ressource-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid hsl(0, 0%, 93%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .ressource-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+    .ressource-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+    .ressource-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: hsl(0, 0%, 15%);
+        margin: 0;
+    }
+    .ressource-desc {
+        font-size: 0.875rem;
+        color: hsl(0, 0%, 45%);
+        line-height: 1.5;
+        flex: 1;
+    }
+    .ressource-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        color: hsl(217, 71%, 53%);
+        margin-top: auto;
+    }
+    .ressource-link:hover { color: hsl(217, 71%, 40%); }
+    .coming-soon-banner {
+        background: linear-gradient(135deg, hsl(38, 70%, 96%), hsl(38, 60%, 93%));
+        border: 1px solid hsl(38, 60%, 85%);
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+</style>
 
-            <div class="columns is-multiline mt-5">
-                
-                <div class="column is-4">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content has-text-centered">
-                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-tags"></i></span>
-                            <p class="title is-4 mt-3">Étiquettes de Rangement</p>
-                            <p class="content">Des étiquettes prêtes à imprimer pour classer vos bacs par genre ou niveau de lecture.</p>
-                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
-                        </div>
-                    </div>
-                </div>
+<section class="section">
+    <div class="container" style="max-width: 960px; margin: 0 auto;">
 
-                <div class="column is-4">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content has-text-centered">
-                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-image"></i></span>
-                            <p class="title is-4 mt-3">Affiches "Coin lecture"</p>
-                            <p class="content">Décorez votre espace de lecture avec nos affiches motivantes et illustrées.</p>
-                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
-                        </div>
-                    </div>
-                </div>
+        <!-- En-tête -->
+        <div class="has-text-centered mb-6">
+            <h1 class="title is-2" style="font-weight: 800;">Centre de Ressources</h1>
+            <p class="subtitle is-5 has-text-grey">Outils et liens utiles pour votre bibliothèque de classe</p>
+        </div>
 
-                <div class="column is-4">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content has-text-centered">
-                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-award"></i></span>
-                            <p class="title is-4 mt-3">Diplômes de Lecteur</p>
-                            <p class="content">Récompensez vos élèves avec des diplômes à remplir en fin de période ou d'année.</p>
-                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="column is-4">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content has-text-centered">
-                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-clipboard-list"></i></span>
-                            <p class="title is-4 mt-3">Fiches de Lecture</p>
-                            <p class="content">Des modèles de fiches de lecture adaptés pour le Cycle 2 et le Cycle 3.</p>
-                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Bannière ressources téléchargeables en construction -->
+        <div class="coming-soon-banner">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: hsl(38, 70%, 90%); color: hsl(38, 60%, 40%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-tools fa-lg"></i>
+            </div>
+            <div>
+                <p class="has-text-weight-bold is-size-5 mb-1" style="color: hsl(38, 40%, 30%);">Ressources téléchargeables en préparation</p>
+                <p class="is-size-6" style="color: hsl(38, 30%, 45%);">Étiquettes, affiches, diplômes, fiches de lecture et passeports lecture arrivent bientôt. En attendant, retrouvez ci-dessous une sélection de ressources en ligne de qualité.</p>
+            </div>
+        </div>
 
-                <div class="column is-4">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content has-text-centered">
-                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-passport"></i></span>
-                            <p class="title is-4 mt-3">Passeports Lecture</p>
-                            <p class="content">Un livret ludique pour encourager les élèves à suivre leurs lectures personnelles.</p>
-                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Section : Ressources en ligne -->
+        <h2 class="title is-4 mb-4"><i class="fas fa-globe mr-2 style-blue" style="color: hsl(217, 71%, 53%);"></i>Ressources en ligne recommandées</h2>
+        <p class="has-text-grey mb-5">Une sélection de sites et outils gratuits, vérifiés et utilisés par des enseignants.</p>
 
-                <div class="column is-4">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content has-text-centered">
-                            <span class="icon is-large has-text-link mb-3"><i class="fas fa-3x fa-bookmark"></i></span>
-                            <p class="title is-4 mt-3">Marque-pages</p>
-                            <p class="content">Des modèles de marque-pages à colorier ou à imprimer directement.</p>
-                            <button class="button is-light is-fullwidth" disabled>Bientôt disponible</button>
-                        </div>
-                    </div>
-                </div>
+        <div class="columns is-multiline mb-6">
 
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="ressource-icon" style="background: hsl(210, 60%, 95%); color: hsl(210, 50%, 45%);"><i class="fas fa-school"></i></div>
+                    <p class="ressource-title">Eduscol — Lire et écrire au cycle 2</p>
+                    <p class="ressource-desc">La ressource officielle de l'Éducation nationale sur l'enseignement de la lecture au CP et CE1, avec des pistes pédagogiques détaillées.</p>
+                    <a href="https://eduscol.education.fr/721/lire-et-ecrire-au-cycle-2" target="_blank" rel="noopener" class="ressource-link">
+                        Visiter Eduscol <i class="fas fa-external-link-alt fa-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="ressource-icon" style="background: hsl(145, 50%, 94%); color: hsl(145, 40%, 40%);"><i class="fas fa-book-open"></i></div>
+                    <p class="ressource-title">BNF — Littérature jeunesse</p>
+                    <p class="ressource-desc">Le portail de la Bibliothèque nationale de France dédié à la littérature jeunesse : bibliographies, conseils et sélections par âge et par thème.</p>
+                    <a href="https://www.bnf.fr/fr/la-litterature-de-jeunesse" target="_blank" rel="noopener" class="ressource-link">
+                        Visiter la BNF <i class="fas fa-external-link-alt fa-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="ressource-icon" style="background: hsl(38, 70%, 94%); color: hsl(38, 50%, 40%);"><i class="fas fa-palette"></i></div>
+                    <p class="ressource-title">Canopé — Bibliothèque de classe</p>
+                    <p class="ressource-desc">Le réseau Canopé propose des fiches pratiques, des outils et des formations pour organiser et animer le coin lecture de votre classe.</p>
+                    <a href="https://www.reseau-canope.fr" target="_blank" rel="noopener" class="ressource-link">
+                        Visiter Canopé <i class="fas fa-external-link-alt fa-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="ressource-icon" style="background: hsl(270, 50%, 95%); color: hsl(270, 40%, 50%);"><i class="fas fa-search"></i></div>
+                    <p class="ressource-title">Ricochet — Littérature jeunesse</p>
+                    <p class="ressource-desc">Base de données collaborative sur la littérature de jeunesse internationale. Idéal pour trouver des livres adaptés à un thème, un niveau ou une occasion particulière.</p>
+                    <a href="https://www.ricochet-jeunes.org" target="_blank" rel="noopener" class="ressource-link">
+                        Visiter Ricochet <i class="fas fa-external-link-alt fa-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="ressource-icon" style="background: hsl(0, 60%, 96%); color: hsl(0, 50%, 50%);"><i class="fas fa-mobile-alt"></i></div>
+                    <p class="ressource-title">Livres en Classe — Scanner ISBN</p>
+                    <p class="ressource-desc">Notre propre application : scannez les codes-barres ISBN de vos livres pour les ajouter en quelques secondes à votre catalogue et gérer les prêts d'élèves.</p>
+                    <a href="{{ url_for('main.index') }}" class="ressource-link">
+                        Essayer gratuitement <i class="fas fa-arrow-right fa-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="ressource-icon" style="background: hsl(180, 50%, 94%); color: hsl(180, 40%, 38%);"><i class="fas fa-newspaper"></i></div>
+                    <p class="ressource-title">Nos articles — Blog enseignants</p>
+                    <p class="ressource-desc">Des guides écrits par notre équipe : comment classer vos livres, créer un système de prêt, donner envie de lire, et sélectionner les meilleurs albums pour le CP.</p>
+                    <a href="{{ url_for('main.blog_index') }}" class="ressource-link">
+                        Lire le blog <i class="fas fa-arrow-right fa-xs"></i>
+                    </a>
+                </div>
             </div>
 
         </div>
-    </section>
+
+        <!-- CTA inscription -->
+        <div class="box has-text-centered" style="border-radius: 16px; background: hsl(210, 60%, 97%); border: 1px solid hsl(210, 50%, 88%);">
+            <p class="is-size-5 has-text-weight-semibold mb-2" style="color: hsl(210, 40%, 30%);">Être prévenu quand les ressources téléchargeables arrivent</p>
+            <p class="has-text-grey mb-4">Créez un compte gratuit et nous vous informerons dès que les étiquettes, affiches et diplômes seront disponibles.</p>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.signup') }}" class="button is-link is-rounded">
+                <span class="icon"><i class="fas fa-bell"></i></span>
+                <span>Créer mon compte gratuit</span>
+            </a>
+            {% else %}
+            <p class="has-text-grey is-size-6"><i class="fas fa-check-circle has-text-success"></i> Vous êtes déjà inscrit — nous vous avertirons !</p>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
 
 {% endblock %}
