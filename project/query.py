@@ -996,13 +996,36 @@ Get infos about the app
 
 def get_app_infos():
     infos = {
-        "n_users": db.session.query(User).count(),
+        "n_users": db.session.query(User).filter(User.is_verified == True).count(),  # noqa: E712
         "n_books": db.session.query(Book).count(),
         "n_students": db.session.query(Student).count(),
         "n_loans": db.session.query(Loan).count(),
     }
 
     return infos
+
+
+def delete_unverified_users():
+    """
+    Supprime les comptes non vérifiés créés depuis plus de 7 jours.
+    :return: nombre de comptes supprimés
+    """
+    from datetime import datetime, timedelta, timezone
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+
+    unverified_users = (
+        db.session.query(User)
+        .filter(User.is_verified == False, User.created_at < cutoff)  # noqa: E712
+        .all()
+    )
+
+    count = len(unverified_users)
+    for user in unverified_users:
+        db.session.delete(user)
+
+    db.session.commit()
+    return count
 
 
 def get_books_read_by_students(current_user_id, date_from, date_to):

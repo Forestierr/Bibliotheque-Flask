@@ -57,6 +57,9 @@
                             <input class="input" type="password" name="password" placeholder="Votre mot de passe" required>
                         </div>
                     </div>
+                    {% if hcaptcha_site_key %}
+                    <div class="field h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
+                    {% endif %}
                     <div class="field has-text-centered">
                         <button class="button is-primary is-fullwidth">S'inscrire</button>
                     </div>
@@ -65,4 +68,10 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% if hcaptcha_site_key %}
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+{% endif %}
 {% endblock %}

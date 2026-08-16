@@ -3,6 +3,7 @@
 import locale
 import logging
 import os
+from datetime import datetime, timedelta, timezone
 from logging.handlers import RotatingFileHandler
 
 from dotenv import load_dotenv
@@ -82,6 +83,25 @@ def create_app():
     # create database
     with app.app_context():
         db.create_all()
+
+    # Nettoyage quotidien des comptes non vérifiés (max 1x/jour)
+    _last_cleanup = {"ts": None}
+
+    @app.before_request
+    def cleanup_unverified_accounts():
+        """Supprime les comptes non vérifiés âgés de plus de 7 jours, une fois par jour."""
+        if app.config.get("TESTING"):
+            return
+        now = datetime.now(timezone.utc)
+        if _last_cleanup["ts"] is None or now - _last_cleanup["ts"] > timedelta(days=1):
+            _last_cleanup["ts"] = now
+            from .query import delete_unverified_users
+
+            count = delete_unverified_users()
+            if count:
+                app.logger.info(
+                    "Nettoyage automatique : %d compte(s) non vérifié(s) supprimé(s).", count
+                )
 
     @login_manager.user_loader
     def load_user(user_id):
