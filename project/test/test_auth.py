@@ -81,9 +81,13 @@ def test_signup_get(client):
     assert b"signup" in response.data or b"Signup" in response.data
 
 
-# Test inscription avec email déjà utilisé
+# Test inscription avec email deja utilise
 def test_signup_post_email_exists(client, app):
-    with app.app_context(), patch("project.auth.User.query") as mock_query:
+    with (
+        app.app_context(),
+        patch("project.auth.User.query") as mock_query,
+        patch("project.auth.os.getenv", return_value=""),
+    ):
         mock_query.filter_by().first.return_value = MagicMock()
         with client:
             client.post(
@@ -95,13 +99,14 @@ def test_signup_post_email_exists(client, app):
         assert any("Cette email est déjà utilisé." in msg for msg in flashed)
 
 
-# Test inscription avec succès
+# Test inscription avec succes
 def test_signup_post_success(client, app):
     with (
         app.app_context(),
         patch("project.auth.User.query") as mock_query,
         patch("project.auth.db.session"),
         patch("project.auth.send_email_verification") as mock_send_email,
+        patch("project.auth.os.getenv", return_value=""),
     ):
         mock_query.filter_by().first.return_value = None
         with client:

@@ -11,6 +11,95 @@
 
 {% block content %}
 
+{% if n_books == 0 and n_students == 0 %}
+<!-- Onboarding checklist pour les nouveaux utilisateurs -->
+<div class="container block">
+  <div style="background: linear-gradient(135deg, hsl(210, 60%, 97%) 0%, hsl(145, 50%, 96%) 100%); border: 1px solid hsl(210, 50%, 88%); border-radius: 16px; padding: 2rem;">
+    <div style="display:flex; align-items:center; gap: 1rem; margin-bottom: 1.5rem;">
+      <span style="font-size: 2rem;">👋</span>
+      <div>
+        <h2 class="title is-4 mb-1" style="color: hsl(210, 40%, 25%);">Bienvenue dans votre bibliothèque !</h2>
+        <p class="subtitle is-6 mb-0" style="color: hsl(210, 20%, 50%);">Suivez ces 3 étapes pour commencer en moins de 5 minutes</p>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <!-- Étape 1 -->
+      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(210, 50%, 60%);">
+        <span style="font-size: 1.5rem; min-width: 2rem; text-align:center;">📚</span>
+        <div style="flex:1;">
+          <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 1 — Ajoutez vos livres</p>
+          <p class="is-size-7 has-text-grey mb-0">Scannez le code-barres ISBN ou saisissez manuellement le titre</p>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded">
+            <span class="icon"><i class="fas fa-barcode"></i></span>
+            <span>Scanner</span>
+          </a>
+          <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-small is-rounded">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>Manuel</span>
+          </a>
+        </div>
+      </div>
+      <!-- Étape 2 -->
+      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(145, 40%, 55%); opacity: 0.6;">
+        <span style="font-size: 1.5rem; min-width: 2rem; text-align:center;">🧒</span>
+        <div style="flex:1;">
+          <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 2 — Ajoutez vos élèves</p>
+          <p class="is-size-7 has-text-grey mb-0">Importez votre liste de classe ou ajoutez-les un par un</p>
+        </div>
+        <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-light is-small is-rounded">
+          <span class="icon"><i class="fas fa-plus"></i></span>
+          <span>Ajouter</span>
+        </a>
+      </div>
+      <!-- Étape 3 -->
+      <div style="background: white; border-radius: 10px; padding: 1rem 1.25rem; display:flex; align-items:center; gap: 1rem; border-left: 4px solid hsl(38, 60%, 55%); opacity: 0.4;">
+        <span style="font-size: 1.5rem; min-width: 2rem; text-align:center;">🔄</span>
+        <div style="flex:1;">
+          <p class="has-text-weight-semibold mb-0" style="color: hsl(210, 40%, 25%);">Étape 3 — Faites votre premier prêt</p>
+          <p class="is-size-7 has-text-grey mb-0">Sélectionnez un livre → choisissez un élève → c'est fait !</p>
+        </div>
+        <a href="{{ url_for('emprunt.emprunt_db') }}" class="button is-light is-small is-rounded">
+          <span class="icon"><i class="fas fa-exchange-alt"></i></span>
+          <span>Emprunts</span>
+        </a>
+      </div>
+    </div>
+    <div class="mt-4 has-text-centered">
+      <a href="/aide" class="is-size-7" style="color: hsl(210, 50%, 45%);">
+        <span class="icon is-small"><i class="fas fa-question-circle"></i></span>
+        Besoin d'aide ? Consulter le guide complet
+      </a>
+    </div>
+  </div>
+</div>
+{% elif n_books == 0 %}
+<!-- Seulement si pas de livres mais des élèves -->
+<div class="container block">
+  <div class="notification is-link is-light" style="border-radius: 12px;">
+    <span class="icon"><i class="fas fa-info-circle"></i></span>
+    <strong>Ajoutez vos premiers livres</strong> pour pouvoir faire des prêts.
+    <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded ml-3">
+      <span class="icon"><i class="fas fa-barcode"></i></span>
+      <span>Scanner un livre</span>
+    </a>
+  </div>
+</div>
+{% elif n_students == 0 %}
+<!-- Seulement si pas d'élèves mais des livres -->
+<div class="container block">
+  <div class="notification is-info is-light" style="border-radius: 12px;">
+    <span class="icon"><i class="fas fa-users"></i></span>
+    <strong>Ajoutez vos élèves</strong> pour pouvoir effectuer des prêts.
+    <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-info is-small is-rounded ml-3">
+      <span class="icon"><i class="fas fa-plus"></i></span>
+      <span>Ajouter un élève</span>
+    </a>
+  </div>
+</div>
+{% endif %}
+
 <div class="container block">
   <h4 class="title is-4 block">Infos</h4>
   <div class="box">
