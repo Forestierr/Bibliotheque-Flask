@@ -31,6 +31,22 @@ def login_post():
     password = request.form.get("password")
     remember = bool(request.form.get("remember"))
 
+    # Vérification hCaptcha (ignorée si la clé n'est pas configurée)
+    hcaptcha_secret = os.getenv("HCAPTCHA_SECRET_KEY", "")
+    if hcaptcha_secret:
+        captcha_token = request.form.get("h-captcha-response", "")
+        if not captcha_token:
+            flash("Veuillez compléter le CAPTCHA.", "error")
+            return redirect(url_for("auth.login"))
+        verify_response = requests.post(
+            "https://api.hcaptcha.com/siteverify",
+            data={"secret": hcaptcha_secret, "response": captcha_token},
+            timeout=5,
+        )
+        if not verify_response.json().get("success", False):
+            flash("CAPTCHA invalide. Veuillez réessayer.", "error")
+            return redirect(url_for("auth.login"))
+
     user = User.query.filter_by(email=email).first()
 
     # check if user actually exists
