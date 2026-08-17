@@ -84,15 +84,15 @@ def test_login_post_missing_captcha(client, app):
     with (
         app.app_context(),
         patch("project.auth.os.getenv", return_value="dummy_secret"),
+        client,
     ):
-        with client:
-            client.post(
-                "/login",
-                data={"email": "test@test.com", "password": "good"},
-                follow_redirects=True,
-            )
-            flashed = get_flashed_messages()
-            assert any("Veuillez compléter le CAPTCHA." in msg for msg in flashed)
+        client.post(
+            "/login",
+            data={"email": "test@test.com", "password": "good"},
+            follow_redirects=True,
+        )
+        flashed = get_flashed_messages()
+        assert any("Veuillez compléter le CAPTCHA." in msg for msg in flashed)
 
 
 # Test affichage du formulaire d'inscription
