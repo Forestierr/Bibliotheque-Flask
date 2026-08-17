@@ -100,7 +100,8 @@ def create_app():
             count = delete_unverified_users()
             if count:
                 app.logger.info(
-                    "Nettoyage automatique : %d compte(s) non vérifié(s) supprimé(s).", count
+                    "Nettoyage automatique : %d compte(s) non vérifié(s) supprimé(s).",
+                    count,
                 )
 
     @login_manager.user_loader

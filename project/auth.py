@@ -19,7 +19,10 @@ auth = Blueprint("auth", __name__)
 
 @auth.route("/login")
 def login():
-    return render_template("auth/login.html")
+    return render_template(
+        "auth/login.html",
+        hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
+    )
 
 
 @auth.route("/login", methods=["POST"])
