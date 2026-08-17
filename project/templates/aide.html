@@ -1,0 +1,431 @@
+<!-- templates/aide.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Centre d'aide | Livres en Classe{% endblock %}
+{% block meta_description %}Guides, tutoriels et FAQ pour utiliser Livres en Classe : scanner vos livres, gérer vos élèves et effectuer vos premiers prêts.{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .aide-section {
+        scroll-margin-top: 5rem;
+    }
+    .step-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        border-left: 4px solid hsl(210, 50%, 60%);
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        display: flex;
+        gap: 1.25rem;
+        align-items: flex-start;
+    }
+    .step-num {
+        background: hsl(210, 50%, 60%);
+        color: white;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+        font-size: 0.9rem;
+    }
+    .faq-item {
+        border-bottom: 1px solid hsl(0, 0%, 93%);
+        padding: 1rem 0;
+        cursor: pointer;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-question {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: hsl(0, 0%, 20%);
+    }
+    .faq-answer {
+        display: none;
+        margin-top: 0.75rem;
+        color: hsl(0, 0%, 40%);
+        line-height: 1.7;
+    }
+    .faq-chevron {
+        transition: transform 0.2s ease;
+        color: hsl(0, 0%, 60%);
+    }
+    .faq-item.open .faq-answer { display: block; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .aide-nav-pill {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        background: hsl(210, 60%, 97%);
+        border: 1px solid hsl(210, 50%, 88%);
+        border-radius: 20px;
+        color: hsl(210, 50%, 45%);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        margin: 0.25rem;
+        transition: background 0.15s, color 0.15s;
+    }
+    .aide-nav-pill:hover {
+        background: hsl(210, 50%, 90%);
+        color: hsl(210, 50%, 35%);
+    }
+    .tip-box {
+        background: hsl(38, 70%, 96%);
+        border: 1px solid hsl(38, 60%, 85%);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        font-size: 0.9rem;
+        color: hsl(38, 40%, 35%);
+        margin-top: 1rem;
+    }
+    .warning-box {
+        background: hsl(0, 60%, 97%);
+        border: 1px solid hsl(0, 50%, 88%);
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        font-size: 0.9rem;
+        color: hsl(0, 40%, 40%);
+        margin-top: 0.75rem;
+    }
+    .aide-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid hsl(0, 0%, 93%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        padding: 2rem;
+        height: 100%;
+        margin-bottom: 2rem;
+    }
+    .section-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<section class="section">
+    <div class="container" style="max-width: 860px; margin: 0 auto;">
+
+        <!-- En-tete -->
+        <div class="has-text-centered mb-6">
+            <h1 class="title is-2" style="font-weight: 800;">Centre d'aide</h1>
+            <p class="subtitle is-5 has-text-grey">Trouvez rapidement les reponses a vos questions</p>
+            <div class="mt-4">
+                <a href="#premiers-pas" class="aide-nav-pill">Premiers pas</a>
+                <a href="#scanner" class="aide-nav-pill">Scanner</a>
+                <a href="#emprunts" class="aide-nav-pill">Emprunts</a>
+                <a href="#faq" class="aide-nav-pill">FAQ</a>
+            </div>
+        </div>
+
+        <!-- SECTION 1 : Premiers pas -->
+        <div id="premiers-pas" class="aide-section">
+            <div class="aide-card">
+                <div class="section-icon" style="background: hsl(210, 60%, 96%);">
+                    <span class="icon is-medium" style="color: hsl(210, 50%, 50%);"><i class="fas fa-lg fa-rocket"></i></span>
+                </div>
+                <h2 class="title is-4 mb-4">Premiers pas &mdash; Debuter en 3 etapes</h2>
+
+                <div class="step-card" style="border-left-color: hsl(210, 50%, 60%);">
+                    <div class="step-num">1</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Ajoutez vos livres</p>
+                        <p class="is-size-6 has-text-grey mb-2">
+                            La methode la plus rapide est de <strong>scanner le code-barres ISBN</strong> a l'aide de votre smartphone.
+                            L'application recupere automatiquement le titre, l'auteur et l'editeur.
+                            Vous pouvez aussi cliquer sur <strong>"Ajouter un livre"</strong> pour saisir manuellement les informations.
+                        </p>
+                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded">
+                                <span class="icon"><i class="fas fa-barcode"></i></span>
+                                <span>Scanner un livre</span>
+                            </a>
+                            <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-small is-rounded">
+                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                <span>Saisie manuelle</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
+                    <div class="step-num" style="background: hsl(145, 40%, 55%);">2</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Ajoutez vos eleves</p>
+                        <p class="is-size-6 has-text-grey mb-2">
+                            Rendez-vous dans l'onglet <strong>"Élèves"</strong> et ajoutez vos élèves un par un avec leur nom et prénom.
+                        </p>
+                        <a href="{{ url_for('eleve.eleve_db') }}" class="button is-light is-small is-rounded">
+                            <span class="icon"><i class="fas fa-users"></i></span>
+                            <span>Gerer mes eleves</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
+                    <div class="step-num" style="background: hsl(38, 60%, 55%);">3</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Effectuez votre premier pret</p>
+                        <p class="is-size-6 has-text-grey mb-2">
+                            Sur la fiche d'un livre, cliquez sur <strong>"Preter ce livre"</strong>,
+                            selectionnez l'eleve et confirmez. La date de retour est optionnelle.
+                        </p>
+                        <a href="{{ url_for('emprunt.emprunt_db') }}" class="button is-light is-small is-rounded">
+                            <span class="icon"><i class="fas fa-exchange-alt"></i></span>
+                            <span>Voir les emprunts</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2 : Guide du scanner -->
+        <div id="scanner" class="aide-section">
+            <div class="aide-card">
+                <div class="section-icon" style="background: hsl(145, 50%, 95%);">
+                    <span class="icon is-medium" style="color: hsl(145, 40%, 42%);"><i class="fas fa-lg fa-camera"></i></span>
+                </div>
+                <h2 class="title is-4 mb-2">Guide du scanner</h2>
+                <p class="has-text-grey mb-4">Le scanner utilise votre camera pour lire le code-barres ISBN et recuperer les informations du livre automatiquement.</p>
+
+                <h3 class="title is-6 mb-3" style="color: hsl(0, 0%, 30%);">Comment scanner un livre</h3>
+
+                <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
+                    <div class="step-num" style="background: hsl(145, 40%, 55%);">1</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Retournez le livre</p>
+                        <p class="is-size-6 has-text-grey">Le code-barres ISBN se trouve au <strong>verso</strong> (4eme de couverture), generalement en bas a droite.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
+                    <div class="step-num" style="background: hsl(145, 40%, 55%);">2</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Verifiez que c'est bien un ISBN</p>
+                        <p class="is-size-6 has-text-grey">Le code doit commencer par <code>978</code> ou <code>979</code> et faire 13 chiffres. Les autres codes-barres (prix, editeur) ne fonctionnent pas.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
+                    <div class="step-num" style="background: hsl(145, 40%, 55%);">3</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Positionnez votre camera</p>
+                        <p class="is-size-6 has-text-grey">Maintenez l'appareil a <strong>15-20 cm</strong> du code, de face, bien aligne. Le scan se declenche automatiquement en quelques secondes.</p>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <span class="icon is-small"><i class="fas fa-lightbulb"></i></span>
+                    <strong>Astuces pour un meilleur scan :</strong>
+                    <ul style="list-style: disc; margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.9;">
+                        <li>Essayez le <strong>zoom 1x</strong> si le scan ne fonctionne pas en ultra-large (.5x)</li>
+                        <li>Activez la <strong>torche</strong> si la piece est sombre</li>
+                        <li>Evitez les reflets : posez le livre a plat et filmez de dessus</li>
+                    </ul>
+                </div>
+
+                <h3 class="title is-6 mt-5 mb-3" style="color: hsl(0, 0%, 30%);">Depannage &mdash; La camera ne s'ouvre pas</h3>
+
+                <div class="warning-box">
+                    <p class="mb-2"><strong>Erreur : "Impossible d'acceder a la camera"</strong></p>
+                    <ol style="list-style: decimal; margin-left: 1.25rem; line-height: 2;">
+                        <li><strong>Autorisez la camera</strong> dans les parametres de votre navigateur (icone cadenas dans la barre d'adresse)</li>
+                        <li>Verifiez qu'<strong>aucune autre application</strong> n'utilise la camera en meme temps</li>
+                        <li><strong>Rechargez la page</strong> et autorisez lorsque le navigateur le demande</li>
+                        <li>Sur <strong>iOS</strong> : utilisez Safari &mdash; Chrome sur iOS ne supporte pas toujours l'acces camera</li>
+                    </ol>
+                </div>
+
+                <div class="mt-4 has-text-centered">
+                    <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-rounded">
+                        <span class="icon"><i class="fas fa-camera"></i></span>
+                        <span>Ouvrir le scanner</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3 : Emprunts -->
+        <div id="emprunts" class="aide-section">
+            <div class="aide-card">
+                <div class="section-icon" style="background: hsl(38, 70%, 95%);">
+                    <span class="icon is-medium" style="color: hsl(38, 60%, 45%);"><i class="fas fa-lg fa-exchange-alt"></i></span>
+                </div>
+                <h2 class="title is-4 mb-4">Gerer les emprunts</h2>
+
+                <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
+                    <div class="step-num" style="background: hsl(38, 60%, 55%); font-size:0.85rem;">1</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Prêter un livre</p>
+                        <p class="is-size-6 has-text-grey">Ouvrez la fiche du livre (onglet Livres), cliquez <strong>"Prêter ce livre"</strong>, sélectionnez l'élève et validez. L'emprunt apparaît immédiatement dans l'onglet Emprunts.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
+                    <div class="step-num" style="background: hsl(38, 60%, 55%); font-size:0.85rem;">2</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Marquer un retour</p>
+                        <p class="is-size-6 has-text-grey">Dans l'onglet <strong>Emprunts</strong>, trouvez le prêt en cours et cliquez sur <strong>"Retourné"</strong>. La date de retour est enregistrée automatiquement.</p>
+                    </div>
+                </div>
+
+                <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
+                    <div class="step-num" style="background: hsl(38, 60%, 55%); font-size:0.85rem;">3</div>
+                    <div>
+                        <p class="has-text-weight-semibold mb-1">Suivre les statistiques</p>
+                        <p class="is-size-6 has-text-grey">Le <strong>Dashboard</strong> affiche les livres les plus empruntés, les élèves les plus lecteurs, et un graphique de l'activité sur l'année.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4 : FAQ -->
+        <div id="faq" class="aide-section">
+            <div class="aide-card">
+                <div class="section-icon" style="background: hsl(270, 50%, 96%);">
+                    <span class="icon is-medium" style="color: hsl(270, 40%, 55%);"><i class="fas fa-lg fa-question-circle"></i></span>
+                </div>
+                <h2 class="title is-4 mb-4">Questions frequentes</h2>
+
+                <div id="faq-list">
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>Le scanner ne detecte pas le code-barres, pourquoi ?</span>
+                            <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            Plusieurs raisons possibles :
+                            <ul style="list-style: disc; margin-left: 1.25rem; margin-top: 0.5rem; line-height: 2;">
+                                <li>Le code ne commence pas par <strong>978</strong> ou <strong>979</strong> &mdash; ce n'est pas un ISBN</li>
+                                <li>La distance est trop courte ou trop longue &mdash; essayez entre 15 et 25 cm</li>
+                                <li>Trop peu de lumiere &mdash; activez la torche</li>
+                                <li>Essayez le zoom <strong>1x</strong> au lieu du .5x</li>
+                                <li>Evitez les reflets : posez le livre a plat et filmez de dessus</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>Le livre scanne n'est pas trouve dans la base de donnees ?</span>
+                            <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            Certains livres anciens, autoedites ou tres locaux ne sont pas dans la base Google Books.
+                            Dans ce cas, l'application vous redirige vers le formulaire de <strong>saisie manuelle</strong>
+                            avec l'ISBN pre-rempli &mdash; il vous suffit de completer le titre et l'auteur.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>Puis-je utiliser l'application sur ordinateur ?</span>
+                            <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            Oui ! Toutes les fonctionnalites (sauf le scanner) fonctionnent parfaitement sur ordinateur.
+                            Pour scanner des livres, utilisez votre <strong>smartphone ou tablette</strong>.
+                            L'application est progressive (PWA) : vous pouvez l'installer sur l'ecran d'accueil de votre telephone.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>Comment installer l'application sur mon telephone ?</span>
+                            <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            L'application est une PWA (Progressive Web App) : vous pouvez l'installer directement
+                            sur votre ecran d'accueil, sans passer par un store.<br><br>
+                            <strong>Sur iPhone / iPad (Safari) :</strong>
+                            <ol style="list-style: decimal; margin-left: 1.25rem; margin-top: 0.4rem; line-height: 2;">
+                                <li>Ouvrez le site dans <strong>Safari</strong></li>
+                                <li>Appuyez sur l'icone de partage <span style="font-style:normal;">&#x2BAD;</span> en bas de l'ecran</li>
+                                <li>Faites defiler et appuyez sur <strong>"Sur l'ecran d'accueil"</strong></li>
+                                <li>Confirmez avec <strong>"Ajouter"</strong></li>
+                            </ol>
+                            <strong>Sur Android (Chrome) :</strong>
+                            <ol style="list-style: decimal; margin-left: 1.25rem; margin-top: 0.4rem; line-height: 2;">
+                                <li>Ouvrez le site dans <strong>Chrome</strong></li>
+                                <li>Appuyez sur le menu <strong>&#8942;</strong> (trois points) en haut a droite</li>
+                                <li>Appuyez sur <strong>"Installer l'application"</strong> ou <strong>"Ajouter a l'ecran d'accueil"</strong></li>
+                                <li>Confirmez avec <strong>"Installer"</strong></li>
+                            </ol>
+                            <div style="margin-top: 0.75rem; padding: 0.6rem 0.9rem; background: hsl(38, 70%, 96%); border-radius: 8px; font-size: 0.85rem; color: hsl(38, 40%, 35%);">
+                                Une fois installee, l'application s'ouvre comme une vraie app, sans barre de navigateur.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>Comment exporter mes donnees ?</span>
+                            <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            Vous pouvez exporter vos livres et emprunts au format Excel depuis les
+                            <strong>Reglages</strong> de votre compte.
+                        </div>
+                    </div>
+
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>Comment supprimer un livre ou un eleve ?</span>
+                            <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
+                        </div>
+                        <div class="faq-answer">
+                            Ouvrez la fiche du livre ou de l'eleve, puis utilisez le bouton
+                            <strong>"Supprimer"</strong> en bas de la page. Attention : supprimer un eleve
+                            supprime aussi l'historique de ses emprunts.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="box has-text-centered" style="border-radius: 14px; background: hsl(210, 60%, 97%); border: 1px solid hsl(210, 50%, 88%);">
+            <p class="is-size-5 has-text-weight-semibold mb-2" style="color: hsl(210, 40%, 30%);">
+                Vous n'avez pas trouve votre reponse ?
+            </p>
+            <p class="has-text-grey mb-4">Notre equipe repond au plus vite !</p>
+            <a href="{{ url_for('main.contact') }}" class="button is-link is-rounded">
+                <span class="icon"><i class="fas fa-envelope"></i></span>
+                <span>Contacter le support</span>
+            </a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleFaq(item) {
+        const wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(function(el) { el.classList.remove('open'); });
+        if (!wasOpen) item.classList.add('open');
+    }
+</script>
+{% endblock %}

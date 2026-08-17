@@ -24,6 +24,121 @@
         font-size: 1.2rem;
         letter-spacing: -0.5px;
     }
+
+    /* Responsive visibility rules (matching Bulma navbar breakpoint: 1087px) */
+    @media screen and (max-width: 1087px) {
+        .desktop-only-avatar {
+            display: none !important;
+        }
+        .mobile-only-nav {
+            display: flex !important;
+        }
+    }
+    @media screen and (min-width: 1088px) {
+        .desktop-only-avatar {
+            display: flex !important;
+        }
+        .mobile-only-nav {
+            display: none !important;
+        }
+    }
+
+    /* Avatar dropdown (Desktop) */
+    .avatar-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-left: 0.75rem;
+    }
+    .avatar-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, hsl(217, 71%, 53%), hsl(250, 60%, 60%));
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        flex-shrink: 0;
+        letter-spacing: 0;
+    }
+    .avatar-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 4px 14px rgba(66, 133, 244, 0.35);
+    }
+    .avatar-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        background: white;
+        border: 1px solid hsl(0, 0%, 92%);
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+        min-width: 200px;
+        z-index: 9999;
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+        pointer-events: none;
+        transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .avatar-dropdown.is-open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+    .avatar-dropdown-header {
+        padding: 0.85rem 1rem 0.6rem 1rem;
+        border-bottom: 1px solid hsl(0, 0%, 94%);
+    }
+    .avatar-dropdown-name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: hsl(0, 0%, 15%);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .avatar-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+        color: hsl(0, 0%, 30%);
+        text-decoration: none;
+        transition: background 0.12s;
+    }
+    .avatar-dropdown-item:hover {
+        background: hsl(0, 0%, 97%);
+        color: hsl(217, 71%, 53%);
+    }
+    .avatar-dropdown-item .icon {
+        width: 1.25rem;
+        text-align: center;
+        color: hsl(0, 0%, 55%);
+        flex-shrink: 0;
+    }
+    .avatar-dropdown-item:hover .icon { color: hsl(217, 71%, 53%); }
+    .avatar-dropdown-divider {
+        height: 1px;
+        background: hsl(0, 0%, 94%);
+        margin: 0.25rem 0;
+    }
+    .avatar-dropdown-item.logout {
+        color: hsl(0, 60%, 50%);
+        border-radius: 0 0 12px 12px;
+    }
+    .avatar-dropdown-item.logout .icon { color: hsl(0, 55%, 60%); }
+    .avatar-dropdown-item.logout:hover {
+        background: hsl(0, 60%, 97%);
+        color: hsl(0, 60%, 40%);
+    }
+    .avatar-dropdown-item.logout:hover .icon { color: hsl(0, 60%, 45%); }
 </style>
 
 <nav class="navbar is-fixed-top custom-navbar" role="navigation" aria-label="main navigation">
@@ -50,38 +165,64 @@
 
     <div id="navbarMenuHeroC" class="navbar-menu">
         {% if current_user.is_authenticated %}
-        <!-- Menu connecté -->
-        <div class="navbar-end">
+        <!-- Menu connecte -->
+        <div class="navbar-end" style="align-items: center;">
             <a href="{{ url_for('livre.livre_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'livre.' in request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2">
-                    <i class="fas fa-book"></i>
-                </span>
+                <span class="icon mr-2"><i class="fas fa-book"></i></span>
                 <span>Livres</span>
             </a>
             <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'eleve.' in request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2">
-                    <i class="fas fa-users"></i>
-                </span>
-                <span>Elèves</span>
+                <span class="icon mr-2"><i class="fas fa-users"></i></span>
+                <span>Élèves</span>
             </a>
             <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'emprunt.' in request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2">
-                    <i class="fas fa-exchange-alt"></i>
-                </span>
+                <span class="icon mr-2"><i class="fas fa-exchange-alt"></i></span>
                 <span>Emprunts</span>
             </a>
-            <a href="{{ url_for('auth.reglage') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'auth.reglage' == request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2">
-                    <i class="fa-solid fa-cog"></i>
-                </span>
+
+            <!-- Liens directs visibles uniquement sur mobile -->
+            <a href="{{ url_for('main.aide') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint == 'main.aide' %}is-active-link{% endif %}">
+                <span class="icon mr-2"><i class="fas fa-question-circle"></i></span>
+                <span>Aide</span>
+            </a>
+            <a href="{{ url_for('auth.reglage') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint and 'auth.reglage' == request.endpoint %}is-active-link{% endif %}">
+                <span class="icon mr-2"><i class="fas fa-cog"></i></span>
                 <span>Réglages</span>
             </a>
-            <div class="navbar-item">
-                <a href="{{ url_for('auth.logout') }}" class="button is-light is-rounded is-small">Deconnexion</a>
+            <a href="{{ url_for('auth.logout') }}" class="navbar-item navbar-item-custom mobile-only-nav style-danger" style="color: hsl(0, 60%, 50%) !important;">
+                <span class="icon mr-2" style="color: hsl(0, 60%, 50%);"><i class="fas fa-sign-out-alt"></i></span>
+                <span>Déconnexion</span>
+            </a>
+
+            <!-- Avatar dropdown (Desktop uniquement) -->
+            <div class="navbar-item desktop-only-avatar" style="padding-right: 0.5rem;">
+                <div class="avatar-wrapper" id="avatarWrapper">
+                    <button class="avatar-btn" id="avatarBtn" aria-label="Menu utilisateur" aria-haspopup="true" aria-expanded="false">
+                        {{ current_user.name[0]|upper if current_user.name else '?' }}
+                    </button>
+                    <div class="avatar-dropdown" id="avatarDropdown" role="menu">
+                        <div class="avatar-dropdown-header">
+                            <div class="avatar-dropdown-name">{{ current_user.name }}</div>
+                        </div>
+                        <a href="{{ url_for('main.aide') }}" class="avatar-dropdown-item" role="menuitem">
+                            <span class="icon"><i class="fas fa-question-circle"></i></span>
+                            Aide
+                        </a>
+                        <a href="{{ url_for('auth.reglage') }}" class="avatar-dropdown-item" role="menuitem">
+                            <span class="icon"><i class="fas fa-cog"></i></span>
+                            Réglages
+                        </a>
+                        <div class="avatar-dropdown-divider"></div>
+                        <a href="{{ url_for('auth.logout') }}" class="avatar-dropdown-item logout" role="menuitem">
+                            <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+                            Déconnexion
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         {% else %}
-        <!-- Menu déconnecté (Visiteur / SEO) -->
+        <!-- Menu deconnecte (Visiteur / SEO) -->
         <div class="navbar-end">
             <a href="{{ url_for('main.enseignants_index') }}" class="navbar-item navbar-item-custom {% if 'enseignants' in request.path %}is-active-link{% endif %}">
                 Guides
@@ -109,5 +250,32 @@
         {% endif %}
     </div>
 </nav>
+
+<script>
+(function () {
+    var btn = document.getElementById('avatarBtn');
+    var dropdown = document.getElementById('avatarDropdown');
+    if (!btn || !dropdown) return;
+
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isOpen = dropdown.classList.contains('is-open');
+        dropdown.classList.toggle('is-open', !isOpen);
+        btn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    document.addEventListener('click', function () {
+        dropdown.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            dropdown.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
+})();
+</script>
 
 {% endmacro %}

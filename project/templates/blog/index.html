@@ -5,7 +5,7 @@
 {% extends "base.html" %}
 
 {% block title %}Le Blog des Enseignants | Livres en Classe{% endblock %}
-{% block meta_description %}Retrouvez tous nos articles et conseils pour créer, organiser et gérer efficacement votre bibliothèque de classe.{% endblock %}
+{% block meta_description %}Conseils pratiques, sélections littéraires et stratégies pédagogiques pour les enseignants qui gèrent une bibliothèque de classe.{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, "Ma Bibliothèque") }}
@@ -13,66 +13,187 @@
 
 {% block content %}
 
-    <section class="section">
-        <div class="container max-w-800" style="max-width: 900px; margin: 0 auto;">
-            
-            <h1 class="title is-1 has-text-centered mb-6">Le Blog des Enseignants</h1>
-            <h2 class="subtitle is-3 has-text-centered mb-6">Conseils, astuces et sélections littéraires pour votre classe</h2>
+<style>
+    .blog-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid hsl(0, 0%, 93%);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .blog-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .blog-card-body {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .blog-tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    .tag-gestion { background: hsl(210, 60%, 95%); color: hsl(210, 50%, 45%); }
+    .tag-selection { background: hsl(145, 50%, 94%); color: hsl(145, 40%, 38%); }
+    .tag-organisation { background: hsl(38, 70%, 94%); color: hsl(38, 50%, 38%); }
+    .tag-pedagogie { background: hsl(270, 50%, 95%); color: hsl(270, 40%, 50%); }
+    .blog-title-link {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: hsl(0, 0%, 12%);
+        text-decoration: none;
+        line-height: 1.4;
+        display: block;
+        margin-bottom: 0.6rem;
+    }
+    .blog-title-link:hover { color: hsl(217, 71%, 53%); }
+    .blog-excerpt {
+        font-size: 0.9rem;
+        color: hsl(0, 0%, 45%);
+        line-height: 1.6;
+        flex: 1;
+    }
+    .blog-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid hsl(0, 0%, 95%);
+        font-size: 0.78rem;
+        color: hsl(0, 0%, 60%);
+    }
+    .blog-meta span { display: flex; align-items: center; gap: 0.3rem; }
+    .blog-hero-card {
+        background: linear-gradient(135deg, hsl(210, 60%, 96%) 0%, hsl(250, 50%, 96%) 100%);
+        border-radius: 16px;
+        padding: 2.5rem;
+        border: 1px solid hsl(210, 50%, 88%);
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        margin-bottom: 2.5rem;
+    }
+    .blog-hero-icon {
+        font-size: 3rem;
+        flex-shrink: 0;
+    }
+    .blog-read-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: hsl(217, 71%, 53%);
+        text-decoration: none;
+        margin-top: 1rem;
+    }
+    .blog-read-link:hover { color: hsl(217, 71%, 40%); }
+</style>
 
-            <div class="columns is-multiline mt-5">
-                <!-- Example Article -->
-                <div class="column is-6">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content">
-                            <p class="subtitle is-6 has-text-grey mb-2">Gestion de Bibliothèque</p>
-                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="has-text-dark">Comment créer une bibliothèque de classe ?</a></p>
-                            <div class="content">
-                                Découvrez les étapes clés pour mettre en place une bibliothèque efficace dans votre classe, du choix des livres au système de prêt.
-                            </div>
+<section class="section">
+    <div class="container" style="max-width: 940px; margin: 0 auto;">
+
+        <!-- En-tête -->
+        <div class="has-text-centered mb-6">
+            <h1 class="title is-2" style="font-weight: 800;">Le Blog des Enseignants</h1>
+            <p class="subtitle is-5 has-text-grey">Conseils, astuces et sélections littéraires pour votre classe</p>
+        </div>
+
+        <!-- Article à la une -->
+        <div class="blog-hero-card">
+            <div style="width: 54px; height: 54px; border-radius: 14px; background: hsl(210, 60%, 90%); color: hsl(210, 50%, 45%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <i class="fas fa-book-open fa-lg"></i>
+            </div>
+            <div>
+                <span class="blog-tag tag-gestion">Gestion de Bibliothèque</span>
+                <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="blog-title-link" style="font-size: 1.4rem; margin-bottom: 0.75rem; display:block;">Comment créer une bibliothèque de classe ?</a>
+                <p class="blog-excerpt">
+                    Découvrez les étapes clés pour mettre en place une bibliothèque efficace dans votre classe : choisir les premiers livres, organiser les étagères, définir les règles de prêt et impliquer les élèves dans la gestion.
+                </p>
+                <div class="blog-meta" style="border: none; padding: 0; margin-top: 0.75rem;">
+                    <span><i class="fas fa-clock"></i> 5 min de lecture</span>
+                    <span><i class="fas fa-folder"></i> Guide pratique</span>
+                </div>
+                <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="blog-read-link">
+                    Lire l'article <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Grille articles -->
+        <div class="columns is-multiline">
+
+            <div class="column is-6">
+                <div class="blog-card">
+                    <div class="blog-card-body">
+                        <span class="blog-tag tag-selection">Sélection Littéraire</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-title-link">Les meilleurs livres pour le CP</a>
+                        <p class="blog-excerpt">Notre sélection de romans et d'albums parfaitement adaptés pour les lecteurs débutants en cycle 2. Des titres choisis pour leur accessibilité et leur pouvoir d'accroche.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 4 min</span>
+                            <span><i class="fas fa-folder"></i> Cycle 2</span>
                         </div>
+                        <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-read-link">Lire <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
+            </div>
 
-                <!-- Stub Articles from the user list -->
-                <div class="column is-6">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content">
-                            <p class="subtitle is-6 has-text-grey mb-2">Sélection Littéraire</p>
-                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="has-text-dark">Les meilleurs livres pour le CP</a></p>
-                            <div class="content">
-                                Notre sélection de romans et d'albums parfaitement adaptés pour les lecteurs débutants en cycle 2.
-                            </div>
+            <div class="column is-6">
+                <div class="blog-card">
+                    <div class="blog-card-body">
+                        <span class="blog-tag tag-organisation">Organisation</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="blog-title-link">Comment classer les livres de sa classe ?</a>
+                        <p class="blog-excerpt">Code couleur, par auteur, par niveau ou par genre littéraire ? Découvrez les différentes méthodes de classement et leurs avantages selon l'âge de vos élèves.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 3 min</span>
+                            <span><i class="fas fa-folder"></i> Méthodologie</span>
                         </div>
+                        <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="blog-read-link">Lire <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
-                
-                <div class="column is-6">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content">
-                            <p class="subtitle is-6 has-text-grey mb-2">Organisation</p>
-                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="has-text-dark">Comment classer les livres ?</a></p>
-                            <div class="content">
-                                Code couleur, par auteur, ou par niveau de lecture ? Découvrez les différentes méthodes de classement.
-                            </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="blog-card">
+                    <div class="blog-card-body">
+                        <span class="blog-tag tag-pedagogie">Pédagogie</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="blog-title-link">Comment donner envie de lire à ses élèves ?</a>
+                        <p class="blog-excerpt">Rituels quotidiens, rallye lecture, présentations de livres entre élèves... Des stratégies concrètes pour ancrer le plaisir de lire dans le quotidien de votre classe.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 6 min</span>
+                            <span><i class="fas fa-folder"></i> Motivation</span>
                         </div>
+                        <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="blog-read-link">Lire <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
+            </div>
 
-                <div class="column is-6">
-                    <div class="card" style="height: 100%; border-radius: 8px;">
-                        <div class="card-content">
-                            <p class="subtitle is-6 has-text-grey mb-2">Pédagogie</p>
-                            <p class="title is-4"><a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="has-text-dark">Comment donner envie de lire ?</a></p>
-                            <div class="content">
-                                Astuces et rituels (quart d'heure lecture, rallye) pour encourager le plaisir de lire chez vos élèves.
-                            </div>
+            <div class="column is-6">
+                <div class="blog-card" style="background: hsl(0, 0%, 98.5%); border-style: dashed;">
+                    <div class="blog-card-body" style="justify-content: center; align-items: center; text-align: center;">
+                        <div style="width: 44px; height: 44px; border-radius: 50%; background: hsl(0, 0%, 93%); color: hsl(0, 0%, 50%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
+                            <i class="fas fa-pen"></i>
                         </div>
+                        <p class="has-text-weight-semibold" style="color: hsl(0, 0%, 40%);">Prochain article</p>
+                        <p class="is-size-7 has-text-grey mt-2">Nous préparons de nouveaux guides pratiques et sélections de livres.</p>
                     </div>
                 </div>
-
             </div>
 
         </div>
-    </section>
+
+    </div>
+</section>
 
 {% endblock %}

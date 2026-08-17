@@ -175,6 +175,13 @@ def apropos():
     return render_template("apropos.html")
 
 
+@main.route("/aide")
+@main.route("/help")
+@login_required
+def aide():
+    return render_template("aide.html")
+
+
 # SEO Dynamic Routes
 @main.route("/blog")
 def blog_index():

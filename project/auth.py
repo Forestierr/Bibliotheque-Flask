@@ -1,5 +1,8 @@
 # auth.py
 
+import os
+
+import requests
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -16,7 +19,10 @@ auth = Blueprint("auth", __name__)
 
 @auth.route("/login")
 def login():
-    return render_template("auth/login.html")
+    return render_template(
+        "auth/login.html",
+        hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
+    )
 
 
 @auth.route("/login", methods=["POST"])
@@ -24,6 +30,22 @@ def login_post():
     email = request.form.get("email")
     password = request.form.get("password")
     remember = bool(request.form.get("remember"))
+
+    # Vérification hCaptcha (ignorée si la clé n'est pas configurée)
+    hcaptcha_secret = os.getenv("HCAPTCHA_SECRET_KEY", "")
+    if hcaptcha_secret:
+        captcha_token = request.form.get("h-captcha-response", "")
+        if not captcha_token:
+            flash("Veuillez compléter le CAPTCHA.", "error")
+            return redirect(url_for("auth.login"))
+        verify_response = requests.post(
+            "https://api.hcaptcha.com/siteverify",
+            data={"secret": hcaptcha_secret, "response": captcha_token},
+            timeout=5,
+        )
+        if not verify_response.json().get("success", False):
+            flash("CAPTCHA invalide. Veuillez réessayer.", "error")
+            return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(email=email).first()
 
@@ -46,7 +68,10 @@ def login_post():
 
 @auth.route("/signup")
 def signup():
-    return render_template("auth/signup.html")
+    return render_template(
+        "auth/signup.html",
+        hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
+    )
 
 
 @auth.route("/signup", methods=["POST"])
@@ -54,6 +79,22 @@ def signup_post():
     email = request.form.get("email")
     name = request.form.get("name")
     password = request.form.get("password")
+
+    # Vérification hCaptcha (ignorée si la clé n'est pas configurée)
+    hcaptcha_secret = os.getenv("HCAPTCHA_SECRET_KEY", "")
+    if hcaptcha_secret:
+        captcha_token = request.form.get("h-captcha-response", "")
+        if not captcha_token:
+            flash("Veuillez compléter le CAPTCHA.", "error")
+            return redirect(url_for("auth.signup"))
+        verify_response = requests.post(
+            "https://api.hcaptcha.com/siteverify",
+            data={"secret": hcaptcha_secret, "response": captcha_token},
+            timeout=5,
+        )
+        if not verify_response.json().get("success", False):
+            flash("CAPTCHA invalide. Veuillez réessayer.", "error")
+            return redirect(url_for("auth.signup"))
 
     user = User.query.filter_by(
         email=email

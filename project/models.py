@@ -2,6 +2,7 @@
 # look at the file docs/model.png
 
 import os
+from datetime import datetime, timezone
 
 from flask_login import UserMixin
 from itsdangerous import BadSignature, URLSafeTimedSerializer
@@ -26,6 +27,9 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
     is_verified = db.Column(db.Boolean, default=False)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
 
     # One-to-Many relationship with books
     books = relationship("Book", backref="user", lazy=True)  # User can have many books
