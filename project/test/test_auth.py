@@ -146,3 +146,81 @@ def test_logout(client, app):
         response = client.get("/logout", follow_redirects=True)
         assert response.status_code in (200, 302)
         mock_logout.assert_called_once()
+
+
+# Test configuration de la durée des sessions
+def test_session_lifetimes_config(app):
+    from datetime import timedelta
+
+    assert app.config["PERMANENT_SESSION_LIFETIME"] == timedelta(days=7)
+    assert app.config["REMEMBER_COOKIE_DURATION"] == timedelta(days=30)
+    assert app.config["REMEMBER_COOKIE_REFRESH_EACH_REQUEST"] is True
+
+
+# Test présence du champ remember dans le formulaire
+def test_login_remember_me_checkbox_in_template(client):
+    response = client.get("/login")
+    assert response.status_code == 200
+    assert b'name="remember"' in response.data
+
+
+# Test connexion avec option "se souvenir de moi"
+def test_login_post_with_remember_me(client, app):
+    from flask import session
+
+    with app.app_context():
+        mock_user = MagicMock()
+        mock_user.password = "hash"
+        mock_user.is_active = True
+        mock_user.is_verified = True
+        mock_user.get_id.return_value = 1
+        with (
+            patch("project.auth.User.query") as mock_query,
+            patch("project.auth.login_user", autospec=True) as mock_login_user,
+            patch("project.auth.check_password_hash", return_value=True),
+            patch("project.auth.os.getenv", return_value=""),
+        ):
+            mock_query.filter_by().first.return_value = mock_user
+            with client:
+                response = client.post(
+                    "/login",
+                    data={
+                        "email": "test@test.com",
+                        "password": "good",
+                        "remember": "on",
+                    },
+                    follow_redirects=False,
+                )
+                assert response.status_code == 302
+                assert mock_login_user.call_count == 1
+                assert mock_login_user.call_args[1]["remember"] is True
+                assert session.permanent is True
+
+
+# Test connexion sans option "se souvenir de moi"
+def test_login_post_without_remember_me(client, app):
+    from flask import session
+
+    with app.app_context():
+        mock_user = MagicMock()
+        mock_user.password = "hash"
+        mock_user.is_active = True
+        mock_user.is_verified = True
+        mock_user.get_id.return_value = 1
+        with (
+            patch("project.auth.User.query") as mock_query,
+            patch("project.auth.login_user", autospec=True) as mock_login_user,
+            patch("project.auth.check_password_hash", return_value=True),
+            patch("project.auth.os.getenv", return_value=""),
+        ):
+            mock_query.filter_by().first.return_value = mock_user
+            with client:
+                response = client.post(
+                    "/login",
+                    data={"email": "test@test.com", "password": "good"},
+                    follow_redirects=False,
+                )
+                assert response.status_code == 302
+                assert mock_login_user.call_count == 1
+                assert mock_login_user.call_args[1]["remember"] is False
+                assert session.permanent is True

@@ -53,6 +53,11 @@ def create_app():
     app.config["MAIL_USE_TLS"] = False
     app.config["MAIL_USE_SSL"] = True
 
+    # Configuration de la durée des sessions
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
+    app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=30)
+    app.config["REMEMBER_COOKIE_REFRESH_EACH_REQUEST"] = True
+
     db.init_app(app)
 
     csrf = CSRFProtect()

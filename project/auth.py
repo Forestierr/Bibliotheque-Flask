@@ -3,8 +3,22 @@
 import os
 
 import requests
-from flask import Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import current_user, login_required, login_user, logout_user
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+from flask_login import (
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+    user_loaded_from_cookie,
+)
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import db
@@ -15,6 +29,11 @@ from .email import (
 from .models import User
 
 auth = Blueprint("auth", __name__)
+
+
+@user_loaded_from_cookie.connect
+def on_user_loaded_from_cookie(sender, user):
+    session.permanent = True
 
 
 @auth.route("/login")
@@ -62,6 +81,7 @@ def login_post():
         return redirect(url_for("auth.login"))
 
     # if the above check passes, then we know the user has the right credentials
+    session.permanent = True
     login_user(user, remember=remember)
     return redirect(url_for("main.dashboard"))
 
