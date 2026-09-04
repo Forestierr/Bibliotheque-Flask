@@ -1,34 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ subject }}</title>
 </head>
-<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #2c3e50; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9fa;">
-    
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 1px;">LivresEnClasse</h1>
-        <p style="color: #e0e7ff; margin: 5px 0 0 0; font-size: 14px;">Mise à jour & Nouveautés</p>
-    </div>
-    
-    <div style="background-color: #ffffff; padding: 40px 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
-        
-        <div style="background-color: #f8fafc; border-left: 4px solid #667eea; padding: 15px 20px; margin-bottom: 25px; border-radius: 0 4px 4px 0;">
-            <h3 style="margin: 0 0 10px 0; color: #4a5568;">Au programme :</h3>
-            <p style="margin: 0; color: #718096; font-size: 15px;">Découvrez les dernières améliorations apportées à votre bibliothèque de classe.</p>
-        </div>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.6; color: #0f172a;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f1f5f9; padding: 36px 12px;">
+        <tr>
+            <td align="center">
+                <!-- Main Container -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 28px 36px; border-bottom: 1px solid #e2e8f0; background-color: #ffffff;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="left" style="vertical-align: middle;">
+                                        <span style="font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; text-transform: uppercase;">
+                                            Livres en Classe
+                                        </span>
+                                    </td>
+                                    <td align="right" style="vertical-align: middle;">
+                                        <span style="display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #475569; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Note de version
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-        <div style="font-size: 16px; color: #4a5568;">
-            {{ content|safe }}
-        </div>
-        
-        <div style="text-align: center; margin-top: 35px;">
-            <a href="https://livresenclasse.com" style="display: inline-block; background-color: #667eea; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 6px; font-weight: bold;">Accéder à mon espace</a>
-        </div>
-    </div>
-    
-    <div style="margin-top: 25px; text-align: center; font-size: 13px; color: #a0aec0;">
-        <p>Vous recevez cet email car vous êtes inscrit sur <a href="https://livresenclasse.com" style="color: #718096; text-decoration: underline;">LivresEnClasse.com</a>.</p>
-    </div>
+                    <!-- Subject / Title -->
+                    <tr>
+                        <td style="padding: 32px 36px 12px 36px;">
+                            <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.35; letter-spacing: -0.3px;">
+                                {{ subject }}
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 12px 36px 28px 36px; font-size: 15px; color: #334155; line-height: 1.7;">
+                            {{ content|safe }}
+                        </td>
+                    </tr>
+
+                    <!-- Call To Action Button -->
+                    <tr>
+                        <td style="padding: 0 36px 36px 36px;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td style="border-radius: 6px; background-color: #0f172a;">
+                                        <a href="https://livresenclasse.com" style="display: inline-block; padding: 12px 24px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">
+                                            Accéder à la plateforme &rarr;
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer Divider -->
+                    <tr>
+                        <td style="padding: 0 36px;">
+                            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 0;">
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 24px 36px; background-color: #f8fafc; font-size: 12px; color: #64748b; line-height: 1.6;">
+                            <p style="margin: 0 0 6px 0;">
+                                Notification produit transmise aux utilisateurs de <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>.
+                            </p>
+                            <p style="margin: 0;">
+                                <a href="{{ url_for('auth.reglage', _external=True) }}" style="color: #475569; text-decoration: underline;">Préférences de notification</a>
+                                &nbsp;&bull;&nbsp;
+                                <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">Se désabonner</a>
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

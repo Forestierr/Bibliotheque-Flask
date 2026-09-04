@@ -54,6 +54,7 @@
                             <th>Email</th>
                             <th>Nom</th>
                             <th>Statut</th>
+                            <th>Newsletter</th>
                             <th>Livres</th>
                             <th>Élèves</th>
                             <th>Actions</th>
@@ -70,6 +71,17 @@
                                     <span class="tag is-success is-light">Vérifié</span>
                                 {% else %}
                                     <span class="tag is-warning is-light">Non vérifié</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if u.newsletter_subscribed %}
+                                    <span class="tag is-success is-light" title="Abonné à la newsletter">
+                                        <i class="fas fa-bell mr-1"></i> Abonné
+                                    </span>
+                                {% else %}
+                                    <span class="tag is-light" title="Désabonné de la newsletter">
+                                        <i class="fas fa-bell-slash mr-1"></i> Non
+                                    </span>
                                 {% endif %}
                             </td>
                             <td>{{ u.books|length }}</td>
