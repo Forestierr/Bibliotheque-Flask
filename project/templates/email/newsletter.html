@@ -55,6 +55,32 @@
                         </td>
                     </tr>
 
+                    <!-- Feedback Section -->
+                    <tr>
+                        <td style="padding: 0 40px 28px 40px;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px;">
+                                <tr>
+                                    <td style="padding: 16px 20px;">
+                                        <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0f172a;">
+                                            Votre avis nous intéresse
+                                        </p>
+                                        <p style="margin: 0 0 10px 0; font-size: 13px; color: #475569; line-height: 1.5;">
+                                            Une suggestion pour votre classe ou un problème technique rencontré ?
+                                        </p>
+                                        <p style="margin: 0; font-size: 13px;">
+                                            <a href="{{ feedback_idea_url }}" style="color: #0f172a; font-weight: 600; text-decoration: underline; margin-right: 16px;">
+                                                Proposer une idée &rarr;
+                                            </a>
+                                            <a href="{{ feedback_bug_url }}" style="color: #64748b; font-weight: 500; text-decoration: underline;">
+                                                Signaler un problème
+                                            </a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
                     <!-- Footer Divider -->
                     <tr>
                         <td style="padding: 0 40px;">
@@ -70,7 +96,7 @@
                                 <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>.
                             </p>
                             <p style="margin: 0;">
-                                <a href="{{ url_for('auth.reglage', _external=True) }}" style="color: #475569; text-decoration: underline;">Gérer mes préférences</a>
+                                <a href="{{ reglage_url }}" style="color: #475569; text-decoration: underline;">Gérer mes préférences</a>
                                 &nbsp;&bull;&nbsp;
                                 <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">Se désabonner</a>
                             </p>
@@ -81,5 +107,8 @@
             </td>
         </tr>
     </table>
+    {% if tracking_pixel_url %}
+    <img src="{{ tracking_pixel_url }}" alt="" width="1" height="1" border="0" style="display:block; width:1px; min-width:1px; max-width:1px; height:1px; min-height:1px; max-height:1px; border:0; outline:none; margin:0; padding:0;" />
+    {% endif %}
 </body>
 </html>

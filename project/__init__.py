@@ -90,7 +90,15 @@ def create_app(test_config=None):
         locale.setlocale(locale.LC_TIME, "")
 
     # import data base models
-    from .models import Book, Loan, Student, User  # noqa: F401
+    from .models import (  # noqa: F401
+        Book,
+        Feedback,
+        Loan,
+        NewsletterCampaign,
+        NewsletterDelivery,
+        Student,
+        User,
+    )
 
     # create database
     with app.app_context():
