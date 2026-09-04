@@ -3,8 +3,22 @@
 import os
 
 import requests
-from flask import Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import current_user, login_required, login_user, logout_user
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+from flask_login import (
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+    user_loaded_from_cookie,
+)
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import db
@@ -17,8 +31,15 @@ from .models import User
 auth = Blueprint("auth", __name__)
 
 
+@user_loaded_from_cookie.connect
+def on_user_loaded_from_cookie(sender, user):
+    session.permanent = True
+
+
 @auth.route("/login")
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
     return render_template(
         "auth/login.html",
         hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
@@ -27,6 +48,9 @@ def login():
 
 @auth.route("/login", methods=["POST"])
 def login_post():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
+
     email = request.form.get("email")
     password = request.form.get("password")
     remember = bool(request.form.get("remember"))
@@ -62,12 +86,15 @@ def login_post():
         return redirect(url_for("auth.login"))
 
     # if the above check passes, then we know the user has the right credentials
+    session.permanent = True
     login_user(user, remember=remember)
     return redirect(url_for("main.dashboard"))
 
 
 @auth.route("/signup")
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
     return render_template(
         "auth/signup.html",
         hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
@@ -76,6 +103,9 @@ def signup():
 
 @auth.route("/signup", methods=["POST"])
 def signup_post():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
+
     email = request.form.get("email")
     name = request.form.get("name")
     password = request.form.get("password")

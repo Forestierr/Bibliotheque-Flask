@@ -1,9 +1,8 @@
 // sw.js
 // Service Worker for PWA
 
-const CACHE_NAME = "livres-en-classe-v1";
+const CACHE_NAME = "livres-en-classe-v2";
 const STATIC_ASSETS = [
-  "/",
   "/static/css/style.css",
   "/static/javascript/app.js",
   "/static/image/favicon-32x32.png",
@@ -16,6 +15,7 @@ const STATIC_ASSETS = [
 // Install event: Cache static assets
 self.addEventListener("install", (event) => {
   console.log("[Service Worker] Installing...");
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log("[Service Worker] Caching static assets...");
@@ -36,13 +36,21 @@ self.addEventListener("activate", (event) => {
           .filter((key) => key !== CACHE_NAME)
           .map((key) => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
 });
 
 // Fetch event: Serve from cache or fetch from network
 self.addEventListener("fetch", (event) => {
-  console.log("[Service Worker] Fetching...", event.request.url);
+  // Navigation requests (pages HTML) : toujours Network-First pour respecter les sessions et redirections
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Ressources statiques : Cache-First
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       return cachedResponse || fetch(event.request);
