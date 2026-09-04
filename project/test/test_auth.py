@@ -224,3 +224,25 @@ def test_login_post_without_remember_me(client, app):
                 assert mock_login_user.call_count == 1
                 assert mock_login_user.call_args[1]["remember"] is False
                 assert session.permanent is True
+
+
+# Test redirection de /login si deja connecte
+def test_login_get_authenticated_redirects(client, app):
+    with app.app_context():
+        mock_user = MagicMock()
+        mock_user.is_authenticated = True
+        with patch("project.auth.current_user", mock_user):
+            response = client.get("/login", follow_redirects=False)
+            assert response.status_code == 302
+            assert "/dashboard" in response.headers.get("Location", "")
+
+
+# Test redirection de /signup si deja connecte
+def test_signup_get_authenticated_redirects(client, app):
+    with app.app_context():
+        mock_user = MagicMock()
+        mock_user.is_authenticated = True
+        with patch("project.auth.current_user", mock_user):
+            response = client.get("/signup", follow_redirects=False)
+            assert response.status_code == 302
+            assert "/dashboard" in response.headers.get("Location", "")

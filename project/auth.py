@@ -38,6 +38,8 @@ def on_user_loaded_from_cookie(sender, user):
 
 @auth.route("/login")
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
     return render_template(
         "auth/login.html",
         hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
@@ -46,6 +48,9 @@ def login():
 
 @auth.route("/login", methods=["POST"])
 def login_post():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
+
     email = request.form.get("email")
     password = request.form.get("password")
     remember = bool(request.form.get("remember"))
@@ -88,6 +93,8 @@ def login_post():
 
 @auth.route("/signup")
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
     return render_template(
         "auth/signup.html",
         hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
@@ -96,6 +103,9 @@ def signup():
 
 @auth.route("/signup", methods=["POST"])
 def signup_post():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
+
     email = request.form.get("email")
     name = request.form.get("name")
     password = request.form.get("password")
