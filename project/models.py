@@ -27,6 +27,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
     is_verified = db.Column(db.Boolean, default=False)
+    newsletter_subscribed = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
@@ -46,7 +47,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def validate_verification_token(token: str, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return None
@@ -72,7 +73,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def validate_reset_password_token(token: str, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return None
@@ -82,6 +83,28 @@ class User(UserMixin, db.Model):
             email = serializer.loads(
                 token, salt=user.password, max_age=3600
             )  # Token valid for 1 hour
+        except BadSignature:
+            return None
+
+        if email != user.email:
+            return None
+
+        return user
+
+    def get_unsubscribe_token(self):
+        serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
+        return serializer.dumps(self.email, salt="newsletter-unsubscribe")
+
+    @staticmethod
+    def validate_unsubscribe_token(token: str, user_id: int):
+        user = db.session.get(User, user_id)
+
+        if not user:
+            return None
+
+        serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
+        try:
+            email = serializer.loads(token, salt="newsletter-unsubscribe")
         except BadSignature:
             return None
 

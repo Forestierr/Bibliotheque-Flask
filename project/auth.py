@@ -21,7 +21,7 @@ from flask_login import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from . import db
+from . import csrf, db
 from .email import (
     send_email_reset_password,
     send_email_verification,
@@ -263,6 +263,7 @@ def reglage():
         email = request.form.get("email")
         password = request.form.get("password")
         new_password = request.form.get("new_password")
+        newsletter_subscribed = "newsletter_subscribed" in request.form
 
         user = db.session.query(User).filter(User.id == current_user.id).first()
 
@@ -290,6 +291,8 @@ def reglage():
         if user.name != name:
             user.name = name
 
+        user.newsletter_subscribed = newsletter_subscribed
+
         if password:
             if not check_password_hash(user.password, password):
                 flash("Votre mot de passe est incorrect.", "error")
@@ -308,9 +311,51 @@ def reglage():
 
     user = (
         db.session.query(User)
-        .with_entities(User.name, User.email)
+        .with_entities(User.name, User.email, User.newsletter_subscribed)
         .filter(User.id == current_user.id)
         .first()
     )
 
     return render_template("user/reglage.html", user=user)
+
+
+@auth.route("/unsubscribe/<token>/<int:user_id>", methods=["GET", "POST"])
+@csrf.exempt
+def unsubscribe(token, user_id):
+    user = User.validate_unsubscribe_token(token, user_id)
+    if not user:
+        return render_template("auth/unsubscribe.html", status="invalid", user=None)
+
+    if request.method == "POST":
+        user.newsletter_subscribed = False
+        db.session.commit()
+        return render_template(
+            "auth/unsubscribe.html", status="unsubscribed", user=user, token=token
+        )
+
+    # GET request
+    if not user.newsletter_subscribed:
+        return render_template(
+            "auth/unsubscribe.html",
+            status="already_unsubscribed",
+            user=user,
+            token=token,
+        )
+
+    return render_template(
+        "auth/unsubscribe.html", status="confirm", user=user, token=token
+    )
+
+
+@auth.route("/resubscribe/<token>/<int:user_id>", methods=["POST"])
+@csrf.exempt
+def resubscribe(token, user_id):
+    user = User.validate_unsubscribe_token(token, user_id)
+    if not user:
+        return render_template("auth/unsubscribe.html", status="invalid", user=None)
+
+    user.newsletter_subscribed = True
+    db.session.commit()
+    return render_template(
+        "auth/unsubscribe.html", status="resubscribed", user=user, token=token
+    )
