@@ -28,6 +28,9 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(1000))
     is_verified = db.Column(db.Boolean, default=False)
     newsletter_subscribed = db.Column(db.Boolean, default=True, nullable=False)
+    preferred_language = db.Column(
+        db.String(5), default="fr", nullable=False, server_default="fr"
+    )
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )

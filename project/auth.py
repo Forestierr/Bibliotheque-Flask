@@ -88,6 +88,9 @@ def login_post():
 
     # if the above check passes, then we know the user has the right credentials
     session.permanent = True
+    pref = getattr(user, "preferred_language", None)
+    if isinstance(pref, str) and pref:
+        session["lang"] = pref
     login_user(user, remember=remember)
     return redirect(url_for("main.dashboard"))
 
@@ -136,10 +139,12 @@ def signup_post():
         return redirect(url_for("auth.signup"))
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
+    current_lang = session.get("lang")
     new_user = User(
         email=email,
         name=name,
         password=generate_password_hash(password, method="pbkdf2:sha256"),
+        preferred_language=current_lang if current_lang in ["fr", "en", "de"] else "fr",
     )
 
     # add the new user to the database
@@ -300,6 +305,11 @@ def reglage():
 
         user.newsletter_subscribed = newsletter_subscribed
 
+        preferred_language = request.form.get("preferred_language")
+        if preferred_language in ["fr", "en", "de"]:
+            user.preferred_language = preferred_language
+            session["lang"] = preferred_language
+
         if password:
             if not check_password_hash(user.password, password):
                 flash(_("Votre mot de passe est incorrect."), "error")
@@ -318,7 +328,12 @@ def reglage():
 
     user = (
         db.session.query(User)
-        .with_entities(User.name, User.email, User.newsletter_subscribed)
+        .with_entities(
+            User.name,
+            User.email,
+            User.newsletter_subscribed,
+            User.preferred_language,
+        )
         .filter(User.id == current_user.id)
         .first()
     )

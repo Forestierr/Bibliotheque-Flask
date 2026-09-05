@@ -1,8 +1,10 @@
-﻿"""
+"""
 Fill EN .po from dictionary mapping of all source French strings.
 """
+
 import pathlib
-import babel.messages.pofile as pofile
+
+from babel.messages import pofile
 
 po_path = pathlib.Path("project/translations/en/LC_MESSAGES/messages.po")
 
@@ -31,14 +33,11 @@ translations = {
     "Vous devez indiquer votre mot de passe actuel.": "You must enter your current password.",
     "Vos informations ont été mises à jour.": "Your information has been updated.",
     "Veuillez remplir tous les champs.": "Please fill in all fields.",
-
     # Eleve Python flash messages
     "L'élève existe déjà.": "The student already exists.",
-
     # Emprunt Python flash messages
     "Accès non autorisé.": "Unauthorized access.",
     "Emprunt introuvable.": "Loan not found.",
-
     # Livre Python flash messages
     "Le livre que vous souhaitiez voir n'existe pas.": "The book you were looking for does not exist.",
     "Veuillez ajouter un titre.": "Please enter a title.",
@@ -51,12 +50,10 @@ translations = {
     "L'élève n'existe pas.": "The student does not exist.",
     "Le livre a été supprimé.": "The book has been deleted.",
     "Tous les livres ont été supprimés.": "All books have been deleted.",
-
     # Main / Feedback Python flash messages
     "Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation.": "Your message has been sent successfully. A confirmation email has been sent to you.",
     "Veuillez renseigner l'objet et la description de votre retour.": "Please provide the subject and description of your feedback.",
     "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !": "Your feedback has been successfully submitted. Thank you for your valuable help!",
-
     # Feedback page
     "Donner votre avis & Signaler un problème": "Give Feedback & Report an Issue",
     "Ma Bibliothèque": "My Library",
@@ -77,7 +74,6 @@ translations = {
     "Decrivez votre idee ou les etapes ayant conduit a l anomalie...": "Describe your idea or the steps that led to the issue...",
     "Expliquez le besoin dans votre pratique de classe ou ce que vous souhaiteriez voir évoluer.": "Explain the need in your classroom practice or what you would like to see improved.",
     "Transmettre mon retour": "Submit feedback",
-
     # Auth templates
     "Gérez vos livres en toute simplicité.": "Manage your books with ease.",
     "Connexion": "Log In",
@@ -99,7 +95,6 @@ translations = {
     "Nom": "Name",
     "Votre nom": "Your name",
     "S'inscrire": "Sign Up",
-
     # Eleve templates
     "Mes Élèves": "My Students",
     "Mes élèves": "My students",
@@ -128,7 +123,6 @@ translations = {
     "Livre emprunté précédemment": "Book previously borrowed",
     "Supprimer l'élève ?": "Delete student?",
     "Supprimer l'élève": "Delete student",
-
     # Emprunt templates
     "Mes emprunts": "My Loans",
     "Emprunts": "Loans",
@@ -137,7 +131,6 @@ translations = {
     "Rechercher un emprunt": "Search for a loan",
     "Tout": "All",
     "Actifs": "Active",
-
     # Livre templates
     "Mes Livres": "My Books",
     "Mes livres": "My books",
@@ -175,7 +168,6 @@ translations = {
     "Emprunté du": "Loaned from",
     "au": "to",
     "Dupliquer le livre": "Duplicate book",
-
     # Dashboard
     "Bienvenue dans votre bibliothèque !": "Welcome to your library!",
     "Suivez ces 3 étapes pour commencer en moins de 5 minutes": "Follow these 3 steps to get started in less than 5 minutes",
@@ -227,7 +219,6 @@ translations = {
     "Livres lus": "Books read",
     "Élèves": "Students",
     "Nombre de livres lus": "Number of books read",
-
     # Settings (Reglage)
     "Réglages de votre compte": "Account settings",
     "Mon Compte": "My Account",
@@ -236,6 +227,7 @@ translations = {
     "Informations personnelles & Sécurité": "Personal Information & Security",
     "Nom d'affichage": "Display name",
     "Adresse e-mail": "Email address",
+    "Langue de l'interface": "Interface language",
     "Changer votre e-mail nécessitera une nouvelle vérification.": "Changing your email address will require a new verification.",
     "Changer de mot de passe": "Change password",
     "Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot de passe.": "Leave both fields blank if you do not wish to change your password.",
@@ -284,7 +276,6 @@ translations = {
     "Attention : Cette action supprimera": "Warning: This action will permanently delete",
     "définitivement": "permanently",
     "votre compte et l'ensemble des données associées (livres, élèves, prêts).": "your account and all associated data (books, students, loans).",
-
     # Navbar
     "Livres": "Books",
     "Aide": "Help",

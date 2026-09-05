@@ -99,7 +99,7 @@
 
             <div class="columns" style="margin-bottom: 0;">
                 <div class="column">
-                    <p>{{ _("Emprunté le") }} {{ actual_loans.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                    <p>{{ _("Emprunté le") }} {{ format_date(actual_loans.Loan.date_loan, format='medium') }}</p>
                 </div>
 
                 <div class="column has-text-right">
@@ -147,7 +147,7 @@
 
                 <div class="columns is-mobile">
                     <div class="column">
-                        <p>{{ _("Emprunté du") }} {{ loan.Loan.date_loan.strftime('%d %b %Y') }} {{ _("au") }} {{ loan.Loan.date_return.strftime('%d %b %Y') }}</p>
+                        <p>{{ _("Emprunté du") }} {{ format_date(loan.Loan.date_loan, format='medium') }} {{ _("au") }} {{ format_date(loan.Loan.date_return, format='medium') }}</p>
                     </div>
 
                     <!-- Delete modal -->

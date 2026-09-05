@@ -16,9 +16,9 @@
             </div>
 
             {% if loan.Loan.date_return == None %}
-                <p>Emprunté le : {{ loan.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                <p>{{ _("Emprunté le") }} : {{ format_date(loan.Loan.date_loan, format='medium') }}</p>
             {% else %}
-                <p>Emprunté du : {{ loan.Loan.date_loan.strftime('%d %b %Y') }} au {{ loan.Loan.date_return.strftime('%d %b %Y') }}</p>
+                <p>{{ _("Emprunté du") }} : {{ format_date(loan.Loan.date_loan, format='medium') }} {{ _("au") }} {{ format_date(loan.Loan.date_return, format='medium') }}</p>
             {% endif %}
         </div>
 

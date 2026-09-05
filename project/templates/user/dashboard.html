@@ -219,9 +219,9 @@
             </div>
             <div class="column narrow has-text-right">
                 {% if book.Loan.date_return != None %}
-                {{ _("Du") }} {{ book.Loan.date_loan.strftime('%d %b %Y') }} {{ _("au") }} {{ book.Loan.date_return.strftime('%d %b %Y') }}
+                {{ _("Du") }} {{ format_date(book.Loan.date_loan, format='medium') }} {{ _("au") }} {{ format_date(book.Loan.date_return, format='medium') }}
                 {% else %}
-                {{ _("Prêté le") }} {{ book.Loan.date_loan.strftime('%d %b %Y') }}
+                {{ _("Prêté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}
                 {% endif %}
             </div>
         </div>

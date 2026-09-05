@@ -1,8 +1,10 @@
-﻿"""
+"""
 Fill DE .po from dictionary mapping of all source French strings.
 """
+
 import pathlib
-import babel.messages.pofile as pofile
+
+from babel.messages import pofile
 
 po_path = pathlib.Path("project/translations/de/LC_MESSAGES/messages.po")
 
@@ -31,14 +33,11 @@ translations = {
     "Vous devez indiquer votre mot de passe actuel.": "Sie müssen Ihr aktuelles Passwort eingeben.",
     "Vos informations ont été mises à jour.": "Ihre Informationen wurden aktualisiert.",
     "Veuillez remplir tous les champs.": "Bitte füllen Sie alle Felder aus.",
-
     # Eleve Python flash messages
     "L'élève existe déjà.": "Der Schüler existiert bereits.",
-
     # Emprunt Python flash messages
     "Accès non autorisé.": "Nicht autorisierter Zugriff.",
     "Emprunt introuvable.": "Ausleihe nicht gefunden.",
-
     # Livre Python flash messages
     "Le livre que vous souhaitiez voir n'existe pas.": "Das gesuchte Buch existiert nicht.",
     "Veuillez ajouter un titre.": "Bitte geben Sie einen Titel ein.",
@@ -51,12 +50,10 @@ translations = {
     "L'élève n'existe pas.": "Der Schüler existiert nicht.",
     "Le livre a été supprimé.": "Das Buch wurde gelöscht.",
     "Tous les livres ont été supprimés.": "Alle Bücher wurden gelöscht.",
-
     # Main / Feedback Python flash messages
     "Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation.": "Ihre Nachricht wurde erfolgreich gesendet. Sie haben eine Bestätigungs-E-Mail erhalten.",
     "Veuillez renseigner l'objet et la description de votre retour.": "Bitte geben Sie Betreff und Beschreibung Ihres Feedbacks an.",
     "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !": "Ihr Feedback wurde erfolgreich übermittelt. Vielen Dank für Ihre wertvolle Hilfe!",
-
     # Feedback page
     "Donner votre avis & Signaler un problème": "Feedback geben & Problem melden",
     "Ma Bibliothèque": "Meine Bibliothek",
@@ -77,7 +74,6 @@ translations = {
     "Decrivez votre idee ou les etapes ayant conduit a l anomalie...": "Beschreiben Sie Ihre Idee oder die Schritte, die zum Problem geführt haben...",
     "Expliquez le besoin dans votre pratique de classe ou ce que vous souhaiteriez voir évoluer.": "Erklären Sie den Bedarf in Ihrer Unterrichtspraxis oder was Sie gerne ändern würden.",
     "Transmettre mon retour": "Feedback absenden",
-
     # Auth templates
     "Gérez vos livres en toute simplicité.": "Verwalten Sie Ihre Bücher ganz einfach.",
     "Connexion": "Anmelden",
@@ -99,7 +95,6 @@ translations = {
     "Nom": "Name",
     "Votre nom": "Ihr Name",
     "S'inscrire": "Registrieren",
-
     # Eleve templates
     "Mes Élèves": "Meine Schüler",
     "Mes élèves": "Meine Schüler",
@@ -128,7 +123,6 @@ translations = {
     "Livre emprunté précédemment": "Zuvor ausgeliehenes Buch",
     "Supprimer l'élève ?": "Schüler löschen?",
     "Supprimer l'élève": "Schüler löschen",
-
     # Emprunt templates
     "Mes emprunts": "Meine Ausleihen",
     "Emprunts": "Ausleihen",
@@ -137,7 +131,6 @@ translations = {
     "Rechercher un emprunt": "Ausleihe suchen",
     "Tout": "Alle",
     "Actifs": "Aktiv",
-
     # Livre templates
     "Mes Livres": "Meine Bücher",
     "Mes livres": "Meine Bücher",
@@ -175,7 +168,6 @@ translations = {
     "Emprunté du": "Ausgeliehen vom",
     "au": "bis",
     "Dupliquer le livre": "Buch duplizieren",
-
     # Dashboard
     "Bienvenue dans votre bibliothèque !": "Willkommen in Ihrer Bibliothek!",
     "Suivez ces 3 étapes pour commencer en moins de 5 minutes": "Folgen Sie diesen 3 Schritten, um in weniger als 5 Minuten zu starten",
@@ -227,7 +219,6 @@ translations = {
     "Livres lus": "Gelesene Bücher",
     "Élèves": "Schüler",
     "Nombre de livres lus": "Anzahl gelesener Bücher",
-
     # Settings (Reglage)
     "Réglages de votre compte": "Kontoeinstellungen",
     "Mon Compte": "Mein Konto",
@@ -236,6 +227,7 @@ translations = {
     "Informations personnelles & Sécurité": "Persönliche Daten & Sicherheit",
     "Nom d'affichage": "Anzeigename",
     "Adresse e-mail": "E-Mail-Adresse",
+    "Langue de l'interface": "Sprache der Benutzeroberfläche",
     "Changer votre e-mail nécessitera une nouvelle vérification.": "Eine Änderung Ihrer E-Mail erfordert eine erneute Bestätigung.",
     "Changer de mot de passe": "Passwort ändern",
     "Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot de passe.": "Lassen Sie beide Felder leer, wenn Sie Ihr Passwort nicht ändern möchten.",
@@ -284,7 +276,6 @@ translations = {
     "Attention : Cette action supprimera": "Achtung: Diese Aktion löscht",
     "définitivement": "dauerhaft",
     "votre compte et l'ensemble des données associées (livres, élèves, prêts).": "Ihr Konto und alle zugehörigen Daten (Bücher, Schüler, Ausleihen).",
-
     # Navbar
     "Livres": "Bücher",
     "Aide": "Hilfe",

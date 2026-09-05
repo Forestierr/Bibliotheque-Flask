@@ -44,10 +44,13 @@ main = Blueprint("main", __name__)
 @main.route("/set-lang/<lang>")
 def set_language(lang):
     """Change la langue de l'interface et redirige vers la page précédente."""
-    from . import LANGUAGES
+    from . import LANGUAGES, db
 
     if lang in LANGUAGES:
         session["lang"] = lang
+        if current_user.is_authenticated:
+            current_user.preferred_language = lang
+            db.session.commit()
     return redirect(request.referrer or url_for("main.index"))
 
 

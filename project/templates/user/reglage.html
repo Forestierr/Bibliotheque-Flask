@@ -163,6 +163,20 @@
                         <p class="help has-text-grey">{{ _("Changer votre e-mail nécessitera une nouvelle vérification.") }}</p>
                     </div>
 
+                    <div class="field">
+                        <label class="label">{{ _("Langue de l'interface") }}</label>
+                        <div class="control has-icons-left">
+                            <div class="select is-fullwidth">
+                                <select name="preferred_language">
+                                    <option value="fr" {% if (user.preferred_language or get_locale()) == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
+                                    <option value="en" {% if (user.preferred_language or get_locale()) == 'en' %}selected{% endif %}>🇬🇧 English</option>
+                                    <option value="de" {% if (user.preferred_language or get_locale()) == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                                </select>
+                            </div>
+                            <span class="icon is-small is-left"><i class="fas fa-globe"></i></span>
+                        </div>
+                    </div>
+
                     <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
 
                     <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Changer de mot de passe") }}</h3>

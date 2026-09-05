@@ -70,7 +70,7 @@
 
                 <div class="columns is-mobile" style="margin-bottom: 0;">
                     <div class="column">
-                        <p>{{ _("Emprunté le") }} {{ book.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                        <p>{{ _("Emprunté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}</p>
                     </div>
                     <div class="column has-text-right">
                         <button class="button is-danger is-small showModal" href="#delete-moda-l-{{ loop.index }}">
@@ -161,7 +161,7 @@
                     </div>
                 </div>
 
-                <p>{{ _("Emprunté le") }} {{ book.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                <p>{{ _("Emprunté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}</p>
             </div>
 
             {# Add hr if last element #}

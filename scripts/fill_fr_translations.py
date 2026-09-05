@@ -2,6 +2,7 @@
 Regenerate clean FR .po from .pot, filling msgstr = msgid (source language).
 Handles both single-line and multi-line msgid entries.
 """
+
 import pathlib
 import re
 
@@ -14,12 +15,9 @@ content = pot_path.read_bytes().decode("utf-8-sig")  # handle BOM
 # Fix header
 content = content.replace(
     '"Content-Type: text/plain; charset=charset\\n"',
-    '"Content-Type: text/plain; charset=UTF-8\\n"'
+    '"Content-Type: text/plain; charset=UTF-8\\n"',
 )
-content = content.replace(
-    '"Language: \\n"',
-    '"Language: fr\\n"'
-)
+content = content.replace('"Language: \\n"', '"Language: fr\\n"')
 
 # Remove fuzzy markers
 content = content.replace("#, fuzzy\n", "")
@@ -44,17 +42,16 @@ def build_po_string(value: str) -> str:
 # followed immediately by an empty msgstr line.
 BLOCK_RE = re.compile(
     r'(msgid\s+(?:"(?:[^"\\]|\\.)*"\s*\n?)+)'  # msgid + quoted lines
-    r'(msgstr\s+"")',                            # empty msgstr
-    re.MULTILINE
+    r'(msgstr\s+"")',  # empty msgstr
+    re.MULTILINE,
 )
 
 
 def fill_msgstr(m: re.Match) -> str:
     msgid_block = m.group(1)
-    msgstr_part = m.group(2)
 
     # Extract raw content after "msgid "
-    raw = msgid_block[len("msgid"):].strip()
+    raw = msgid_block[len("msgid") :].strip()
     value = parse_po_string(raw)
 
     if not value:
@@ -71,6 +68,8 @@ result = BLOCK_RE.sub(fill_msgstr, content)
 fr_po_path.write_text(result, encoding="utf-8", newline="\n")
 
 lines = result.count("\n")
-msgs  = result.count("msgstr ")
+msgs = result.count("msgstr ")
 empty = result.count('msgstr ""')
-print(f"FR .po created: {lines} lines, {msgs} msgstr entries, {empty} still empty (header only)")
+print(
+    f"FR .po created: {lines} lines, {msgs} msgstr entries, {empty} still empty (header only)"
+)
