@@ -1,27 +1,257 @@
 {% extends "base.html" %}
 
-{% block title %}Envoyer une Newsletter - Livres en Classe{% endblock %}
+{% block title %}Diffusion Newsletter - Administration Livres en Classe{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container" style="max-width: 800px;">
+<style>
+    /* Palette & Base */
+    :root {
+        --color-slate-900: #0f172a;
+        --color-slate-800: #1e293b;
+        --color-slate-700: #334155;
+        --color-slate-500: #64748b;
+        --color-slate-200: #e2e8f0;
+        --color-slate-100: #f1f5f9;
+        --color-slate-50:  #f8fafc;
+    }
+
+    /* Top Metric Cards - Lethe inspired */
+    .metric-card {
+        background: #ffffff;
+        border: 1px solid var(--color-slate-200);
+        border-radius: 8px;
+        padding: 1.1rem 1.25rem;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .metric-card:hover {
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+    }
+    .metric-card-content {
+        display: flex;
+        flex-direction: column;
+    }
+    .metric-card-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--color-slate-500);
+        margin-bottom: 0.25rem;
+    }
+    .metric-card-val {
+        font-size: 1.75rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--color-slate-900);
+    }
+    .metric-card-sub {
+        font-size: 0.75rem;
+        color: var(--color-slate-500);
+        margin-top: 0.25rem;
+    }
+    .metric-card-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    /* Template Cards */
+    .template-selector-card {
+        border: 1px solid var(--color-slate-200);
+        border-radius: 8px;
+        padding: 1rem;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    .template-selector-card:hover {
+        border-color: var(--color-slate-500);
+    }
+    .template-selector-card.is-selected {
+        border-color: var(--color-slate-900);
+        border-width: 2px;
+        background-color: var(--color-slate-50);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+    .template-preview-thumbnail {
+        height: 60px;
+        background: var(--color-slate-100);
+        border: 1px solid var(--color-slate-200);
+        border-radius: 4px;
+        margin-bottom: 0.75rem;
+        padding: 6px 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Editor & Tabs */
+    .editor-tab-btn {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        color: var(--color-slate-500);
+        border-radius: 6px;
+        transition: all 0.15s ease;
+    }
+    .editor-tab-btn:hover {
+        color: var(--color-slate-900);
+        background: var(--color-slate-100);
+    }
+    .editor-tab-btn.is-active {
+        color: var(--color-slate-900);
+        background: #ffffff;
+        border-color: var(--color-slate-200);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Device Preview Toggle */
+    .preview-viewport-toggle {
+        display: inline-flex;
+        background: var(--color-slate-100);
+        padding: 2px;
+        border-radius: 6px;
+        border: 1px solid var(--color-slate-200);
+    }
+    .viewport-btn {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border: none;
+        background: transparent;
+        color: var(--color-slate-500);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .viewport-btn.is-active {
+        background: #ffffff;
+        color: var(--color-slate-900);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Preview Frame Stage */
+    .preview-stage {
+        background: #e2e8f0;
+        border: 1px solid var(--color-slate-200);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        overflow-x: auto;
+        min-height: 480px;
+    }
+    .preview-wrapper-desktop {
+        width: 100%;
+        max-width: 640px;
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .preview-wrapper-mobile {
+        width: 375px;
+        background: #ffffff;
+        border: 8px solid #334155;
+        border-radius: 28px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+
+    /* Side Panel Tables & Widgets */
+    .dashboard-panel-box {
+        background: #ffffff;
+        border: 1px solid var(--color-slate-200);
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .dashboard-panel-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--color-slate-800);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .metric-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--color-slate-100);
+        font-size: 0.85rem;
+    }
+    .metric-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .recent-user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--color-slate-100);
+        font-size: 0.82rem;
+    }
+    .recent-user-item:last-child {
+        border-bottom: none;
+    }
+</style>
+
+<section class="section pt-4 pb-6">
+    <div class="container" style="max-width: 1200px;">
         
-        <div class="level mb-5">
+        <!-- Header & Nav -->
+        <div class="level mb-4">
             <div class="level-left">
-                <a href="{{ url_for('admin.index') }}" class="button is-light">
-                    <span class="icon"><i class="fas fa-arrow-left"></i></span>
-                    <span>Retour au tableau de bord</span>
+                <a href="{{ url_for('admin.index') }}" class="button is-small is-light" style="border: 1px solid var(--color-slate-200);">
+                    <span class="icon is-small"><i class="fas fa-chevron-left"></i></span>
+                    <span>Tableau de bord administration</span>
                 </a>
+            </div>
+            <div class="level-right">
+                <span class="tag is-white" style="border: 1px solid var(--color-slate-200); font-weight: 600; color: var(--color-slate-700);">
+                    <i class="fas fa-server mr-2 has-text-grey"></i> Service d'e-mailing actif
+                </span>
             </div>
         </div>
 
-        <h1 class="title is-2 mb-6">Envoyer une Newsletter</h1>
+        <div class="mb-5">
+            <h1 class="title is-3 mb-1" style="color: var(--color-slate-900); font-weight: 800; letter-spacing: -0.5px;">
+                Diffusion & Campagnes d'Information
+            </h1>
+            <p class="subtitle is-6 has-text-grey mb-0">
+                Gestion des listes de diffusion, conformité légale (RFC 8058) et expédition de courriels d'information.
+            </p>
+        </div>
 
-        <!-- Messages Flash -->
+        <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="notification is-{{ category }} is-light">
+                    <div class="notification is-{{ category }} is-light mb-5" style="border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);">
                         <button class="delete"></button>
                         {{ message }}
                     </div>
@@ -29,77 +259,1136 @@
             {% endif %}
         {% endwith %}
 
-        <div class="box">
-            <form action="{{ url_for('admin.emails') }}" method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-
-                <div class="field">
-                    <label class="label">Cible</label>
-                    <div class="control">
-                        <div class="select is-fullwidth">
-                            <select name="target" required>
-                                <option value="all">Tous les utilisateurs inscrits (même non vérifiés)</option>
-                                <option value="verified" selected>Utilisateurs vérifiés uniquement (Recommandé)</option>
-                            </select>
-                        </div>
+        <!-- TOP METRICS CARDS (Inspired by Lethe Mailing System) -->
+        <div class="columns is-multiline mb-5">
+            <!-- 1. Cible vérifiée / Prêts -->
+            <div class="column is-3">
+                <div class="metric-card">
+                    <div class="metric-card-content">
+                        <span class="metric-card-label">Cible Recommandée</span>
+                        <span class="metric-card-val" style="color: #0f172a;">{{ stats.verified_subscribed }}</span>
+                        <span class="metric-card-sub">Comptes vérifiés & consentants</span>
                     </div>
-                    <p class="help">L'envoi se fera en arrière-plan (1 email par seconde) pour éviter le spam. Limite Google : 500/jour.</p>
-                </div>
-
-                <div class="field mt-4">
-                    <label class="label">Modèle d'email (Design)</label>
-                    <div class="control">
-                        <div class="select is-fullwidth">
-                            <select name="template_choice" required>
-                                <option value="newsletter.html" selected>Vierge / Classique (Texte simple avec entête)</option>
-                                <option value="newsletter_update.html">Mise à jour (Encadré coloré pour nouveautés)</option>
-                                <option value="newsletter_promo.html">Promotion / Alerte (Couleurs vives et urgentes)</option>
-                            </select>
-                        </div>
+                    <div class="metric-card-icon" style="background: #e0f2fe; color: #0284c7;">
+                        <i class="fas fa-bullhorn"></i>
                     </div>
                 </div>
+            </div>
 
-                <div class="field mt-4">
-                    <label class="label">Sujet de l'email</label>
-                    <div class="control has-icons-left">
-                        <input class="input" type="text" name="subject" placeholder="Ex: Nouveautés sur LivresEnClasse !" required>
-                        <span class="icon is-small is-left"><i class="fas fa-heading"></i></span>
+            <!-- 2. Abonnés actifs -->
+            <div class="column is-3">
+                <div class="metric-card">
+                    <div class="metric-card-content">
+                        <span class="metric-card-label">Abonnés Actifs</span>
+                        <span class="metric-card-val" style="color: #166534;">{{ stats.subscribed }}</span>
+                        <span class="metric-card-sub">{{ stats.active_rate }}% de l'audience totale</span>
+                    </div>
+                    <div class="metric-card-icon" style="background: #dcfce7; color: #16a34a;">
+                        <i class="fas fa-check-circle"></i>
                     </div>
                 </div>
+            </div>
 
-                <div class="field mt-5">
-                    <label class="label">Message (HTML autorisé)</label>
-                    <div class="control">
-                        <textarea class="textarea" name="message" rows="15" placeholder="Bonjour,<br><br>Voici les dernières nouveautés...<br><br>L'équipe LivresEnClasse" required></textarea>
+            <!-- 3. Désabonnés / Opt-out -->
+            <div class="column is-3">
+                <div class="metric-card">
+                    <div class="metric-card-content">
+                        <span class="metric-card-label">Désabonnés</span>
+                        <span class="metric-card-val" style="color: #475569;">{{ stats.unsubscribed }}</span>
+                        <span class="metric-card-sub">Opt-out respecté</span>
                     </div>
-                    <p class="help">Vous pouvez utiliser des balises HTML basiques comme &lt;b&gt;, &lt;br&gt;, &lt;a href="..."&gt;</p>
-                </div>
-
-                <div class="field mt-6">
-                    <div class="control buttons are-medium">
-                        <button type="submit" name="action" value="preview" formtarget="_blank" class="button is-info is-outlined is-fullwidth mb-3">
-                            <span class="icon"><i class="fas fa-eye"></i></span>
-                            <span>Prévisualiser (Ouvre un nouvel onglet)</span>
-                        </button>
-                        <button type="submit" name="action" value="send" class="button is-link is-fullwidth" onclick="return confirm('Êtes-vous sûr de vouloir envoyer cet email en masse ? Cette action est irréversible.');">
-                            <span class="icon"><i class="fas fa-paper-plane"></i></span>
-                            <span>Envoyer la Newsletter</span>
-                        </button>
+                    <div class="metric-card-icon" style="background: #f1f5f9; color: #64748b;">
+                        <i class="fas fa-user-slash"></i>
                     </div>
                 </div>
-            </form>
+            </div>
+
+            <!-- 4. Total Inscrits -->
+            <div class="column is-3">
+                <div class="metric-card">
+                    <div class="metric-card-content">
+                        <span class="metric-card-label">Inscrits Totaux</span>
+                        <span class="metric-card-val" style="color: #0f172a;">{{ stats.total }}</span>
+                        <span class="metric-card-sub">{{ stats.verified }} comptes vérifiés</span>
+                    </div>
+                    <div class="metric-card-icon" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- TABS NAVIGATION -->
+        <div class="tabs is-boxed mb-5" style="border-bottom: 2px solid var(--color-slate-200);">
+            <ul style="margin: 0;">
+                <li id="tabBtnCompose" class="{% if active_tab != 'history' %}is-active{% endif %}">
+                    <a href="javascript:void(0)" onclick="switchTab('compose')" style="font-weight: 600; font-size: 0.95rem;">
+                        <span class="icon is-small mr-2"><i class="fas fa-edit"></i></span>
+                        <span>Rédiger une lettre d'information</span>
+                    </a>
+                </li>
+                <li id="tabBtnHistory" class="{% if active_tab == 'history' %}is-active{% endif %}">
+                    <a href="javascript:void(0)" onclick="switchTab('history')" style="font-weight: 600; font-size: 0.95rem;">
+                        <span class="icon is-small mr-2"><i class="fas fa-history"></i></span>
+                        <span>Historique & Statistiques d'ouverture</span>
+                        <span class="tag is-rounded is-small ml-2" style="background: var(--color-slate-200); font-weight: 700;">{{ campaigns|length }}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- TAB 1: REDACTION & INSIGHTS -->
+        <div id="tabContentCompose" style="display: {% if active_tab == 'history' %}none{% else %}block{% endif %};">
+            <div class="columns is-variable is-5">
+            
+            <!-- LEFT COLUMN: Campaign Composer -->
+            <div class="column is-8">
+                <div class="box p-5" style="border: 1px solid var(--color-slate-200); border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
+                    <form id="newsletterForm" action="{{ url_for('admin.emails') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                        <!-- 1. Cible -->
+                        <div class="field mb-5">
+                            <label class="label is-size-6" style="color: var(--color-slate-900); font-weight: 700;">
+                                1. Destinataires ciblés
+                            </label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="target" id="targetSelect" onchange="updateRecipientCount()">
+                                        <option value="verified_subscribed" selected data-count="{{ stats.verified_subscribed }}">
+                                            Comptes vérifiés et abonnés à la lettre d'information ({{ stats.verified_subscribed }} destinataires) — Recommandé
+                                        </option>
+                                        <option value="all_subscribed" data-count="{{ stats.subscribed }}">
+                                            Tous les comptes abonnés, vérifiés ou en attente ({{ stats.subscribed }} destinataires)
+                                        </option>
+                                        <option value="system_all" data-count="{{ stats.total }}">
+                                            Communication technique ou légale prioritaire ({{ stats.total }} comptes inscrits)
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="help has-text-grey mt-2">
+                                <i class="fas fa-shield-alt mr-1"></i>
+                                Les demandes de désabonnement sont automatiquement appliquées à chaque envoi conformément aux directives de délivrabilité.
+                            </p>
+                        </div>
+
+                        <hr style="background-color: var(--color-slate-100); margin: 1.5rem 0;">
+
+                        <!-- 2. Choix du gabarit (Pro, sans marqueurs IA) -->
+                        <div class="field mb-5">
+                            <label class="label is-size-6 mb-3" style="color: var(--color-slate-900); font-weight: 700;">
+                                2. Gabarit de mise en page
+                            </label>
+                            <input type="hidden" name="template_choice" id="templateChoiceInput" value="newsletter.html">
+
+                            <div class="columns is-multiline">
+                                <!-- Modèle 1 : Gazette Éditoriale -->
+                                <div class="column is-4">
+                                    <div class="template-selector-card is-selected" id="card-newsletter" onclick="selectTemplate('newsletter.html', 'card-newsletter')">
+                                        <div class="template-preview-thumbnail">
+                                            <div style="font-size: 8px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; text-align: center; border-bottom: 1px solid #0f172a; padding-bottom: 2px;">
+                                                LIVRES EN CLASSE
+                                            </div>
+                                            <div style="height: 4px; width: 60%; background: #94a3b8; margin: 4px auto 0 auto; border-radius: 1px;"></div>
+                                            <div style="height: 3px; width: 80%; background: #cbd5e1; margin: 3px auto 0 auto; border-radius: 1px;"></div>
+                                        </div>
+                                        <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                                            <h4 class="title is-7 mb-0" style="font-weight: 700; color: #0f172a;">Gazette Éditoriale</h4>
+                                            <span class="icon is-small check-icon"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
+                                        </div>
+                                        <p class="is-size-7 has-text-grey" style="line-height: 1.3;">
+                                            Typographie classique, aérée et sobre. Recommandé pour les bilans et articles.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Modèle 2 : Note de Version -->
+                                <div class="column is-4">
+                                    <div class="template-selector-card" id="card-update" onclick="selectTemplate('newsletter_update.html', 'card-update')">
+                                        <div class="template-preview-thumbnail">
+                                            <div class="is-flex is-justify-content-space-between is-align-items-center" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">
+                                                <span style="font-size: 8px; font-weight: 800; color: #0f172a;">LIVRES EN CLASSE</span>
+                                                <span style="font-size: 7px; background: #e2e8f0; padding: 1px 3px; border-radius: 2px; color: #475569;">NOTE</span>
+                                            </div>
+                                            <div style="height: 4px; width: 50%; background: #334155; margin-top: 4px; border-radius: 1px;"></div>
+                                            <div style="height: 6px; width: 40px; background: #0f172a; margin-top: 4px; border-radius: 2px;"></div>
+                                        </div>
+                                        <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                                            <h4 class="title is-7 mb-0" style="font-weight: 700; color: #0f172a;">Note de Version</h4>
+                                            <span class="icon is-small check-icon is-hidden"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
+                                        </div>
+                                        <p class="is-size-7 has-text-grey" style="line-height: 1.3;">
+                                            Style produit épuré avec bloc récapitulatif et bouton d'action neutre.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Modèle 3 : Circulaire Officielle -->
+                                <div class="column is-4">
+                                    <div class="template-selector-card" id="card-promo" onclick="selectTemplate('newsletter_promo.html', 'card-promo')">
+                                        <div class="template-preview-thumbnail" style="border-top: 2px solid #0f172a;">
+                                            <div class="is-flex is-justify-content-space-between is-align-items-center" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">
+                                                <span style="font-size: 7px; font-weight: 700; color: #0f172a;">DIFFUSION OFFICIELLE</span>
+                                                <span style="font-size: 6px; border: 1px solid #cbd5e1; padding: 1px 2px;">AVIS</span>
+                                            </div>
+                                            <div style="height: 4px; width: 70%; background: #475569; margin-top: 4px; border-radius: 1px;"></div>
+                                            <div style="height: 3px; width: 90%; background: #cbd5e1; margin-top: 3px; border-radius: 1px;"></div>
+                                        </div>
+                                        <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                                            <h4 class="title is-7 mb-0" style="font-weight: 700; color: #0f172a;">Circulaire Officielle</h4>
+                                            <span class="icon is-small check-icon is-hidden"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
+                                        </div>
+                                        <p class="is-size-7 has-text-grey" style="line-height: 1.3;">
+                                            Cadre formel et administratif pour informations prioritaires et consignes.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="background-color: var(--color-slate-100); margin: 1.5rem 0;">
+
+                        <!-- 3. Objet -->
+                        <div class="field mb-5">
+                            <label class="label is-size-6" style="color: var(--color-slate-900); font-weight: 700;">
+                                3. Objet du message
+                            </label>
+                            <div class="control">
+                                <input class="input" type="text" name="subject" id="subjectInput" placeholder="Ex : Nouveautés de rentrée et organisation de la bibliothèque" required oninput="updateLivePreview()">
+                            </div>
+                        </div>
+
+                        <!-- 4. Contenu avec Rédacteur & Barre d'outils -->
+                        <div class="field mb-5">
+                            <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                                <label class="label is-size-6 mb-0" style="color: var(--color-slate-900); font-weight: 700;">
+                                    4. Corps du message
+                                </label>
+                                <div class="is-flex is-align-items-center" style="gap: 8px;">
+                                    <div class="preview-viewport-toggle" id="viewportToggleGroup" style="display: none;">
+                                        <button type="button" class="viewport-btn is-active" id="btnViewDesktop" onclick="setPreviewViewport('desktop')">
+                                            <i class="fas fa-desktop mr-1"></i> Ordinateur
+                                        </button>
+                                        <button type="button" class="viewport-btn" id="btnViewMobile" onclick="setPreviewViewport('mobile')">
+                                            <i class="fas fa-mobile-alt mr-1"></i> Mobile
+                                        </button>
+                                    </div>
+                                    <div style="background: var(--color-slate-100); padding: 2px; border-radius: 6px; border: 1px solid var(--color-slate-200);">
+                                        <button type="button" class="editor-tab-btn is-active" id="btnTabEdit" onclick="switchEditorTab('edit')">
+                                            <i class="fas fa-code mr-1"></i> Rédacteur
+                                        </button>
+                                        <button type="button" class="editor-tab-btn" id="btnTabPreview" onclick="switchEditorTab('preview')">
+                                            <i class="fas fa-eye mr-1"></i> Aperçu direct
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Barre d'outils pro -->
+                            <div id="formattingToolbar" class="p-2 mb-2" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 6px;">
+                                <div class="buttons are-small mb-0">
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<strong>', '</strong>')" title="Gras">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<em>', '</em>')" title="Italique">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<h3 style=\'color: #0f172a; margin: 24px 0 10px 0; font-size: 18px; font-weight: 700;\'>', '</h3>')" title="Sous-titre">
+                                        <i class="fas fa-heading"></i>
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertLink()" title="Lien hypertexte">
+                                        <i class="fas fa-link mr-1"></i> Lien
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertButton()" title="Bouton d'action">
+                                        <i class="fas fa-external-link-alt mr-1"></i> Bouton
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertCallout()" title="Encadré sobre">
+                                        <i class="fas fa-quote-left mr-1"></i> Encadré
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertList()" title="Liste à puces">
+                                        <i class="fas fa-list-ul mr-1"></i> Liste
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertFeedbackCallout()" title="Insérer le bloc d'avis et de signalement de bug">
+                                        <i class="fas fa-comment-dots mr-1"></i> Bloc Avis / Bug
+                                    </button>
+                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<hr style=\'border:0; border-top:1px solid #e2e8f0; margin:24px 0;\'>\n', '')" title="Filet séparateur">
+                                        <i class="fas fa-minus mr-1"></i> Filet
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Zone Textarea -->
+                            <div id="editorContainer">
+                                <div class="control">
+                                    <textarea class="textarea" name="message" id="messageInput" rows="13" style="font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 13.5px; line-height: 1.55; color: var(--color-slate-800);" placeholder="<p>Bonjour,</p>&#10;<p>Nous vous informons de la mise à disposition de nouvelles options de gestion pour votre classe...</p>" required oninput="updateLivePreview()"></textarea>
+                                </div>
+                                <p class="help has-text-grey mt-2">
+                                    Le pied de page réglementaire avec le <strong>lien de désabonnement individuel</strong> sera joint automatiquement en bas du message.
+                                </p>
+                            </div>
+
+                            <!-- Stage d'Aperçu en direct -->
+                            <div id="livePreviewContainer" style="display: none;">
+                                <div class="preview-stage">
+                                    <div class="preview-wrapper-desktop" id="previewViewportWrapper">
+                                        <iframe id="livePreviewIframe" style="width: 100%; min-height: 520px; border: none; background: white; display: block;"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions d'envoi -->
+                        <div class="field mt-5">
+                            <div class="columns">
+                                <div class="column is-6">
+                                    <button type="submit" name="action" value="preview" formtarget="_blank" class="button is-light is-fullwidth" style="border: 1px solid var(--color-slate-200); font-weight: 600;">
+                                        <span class="icon is-small"><i class="fas fa-external-link-alt"></i></span>
+                                        <span>Aperçu plein écran (HTML)</span>
+                                    </button>
+                                </div>
+                                <div class="column is-6">
+                                    <button type="button" class="button is-fullwidth" style="background-color: var(--color-slate-900); color: #ffffff; font-weight: 700;" onclick="openConfirmModal()">
+                                        <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
+                                        <span>Procéder à l'expédition</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Dashboard & Audience Insights (Lethe Mailing System style) -->
+            <div class="column is-4">
+                
+                <!-- Panneau 1 : Santé de l'Audience & Délivrabilité -->
+                <div class="dashboard-panel-box">
+                    <div class="dashboard-panel-title">
+                        <span>Santé de l'Audience</span>
+                        <span class="tag is-small is-light" style="background: #e2e8f0; color: #334155; font-weight: 700;">Métriques</span>
+                    </div>
+
+                    <div class="metric-row">
+                        <span class="has-text-grey">Taux de consentement</span>
+                        <span class="has-text-weight-bold" style="color: #166534;">{{ stats.active_rate }}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="has-text-grey">Qualité de la liste (vérifiés)</span>
+                        <span class="has-text-weight-bold" style="color: #0f172a;">{{ stats.quality_rate }}%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="has-text-grey">Désinscriptions (opt-out)</span>
+                        <span class="has-text-weight-bold" style="color: #475569;">{{ stats.unsubscribed }}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="has-text-grey">Conformité RFC 8058</span>
+                        <span class="has-text-weight-bold" style="color: #0f172a;">Actif (1-Click)</span>
+                    </div>
+                </div>
+
+                <!-- Panneau 2 : Dernières Inscriptions (Precious Subscribers) -->
+                <div class="dashboard-panel-box">
+                    <div class="dashboard-panel-title">
+                        <span>Derniers Abonnés</span>
+                        <span class="tag is-small is-light">{{ recent_users|length }} récents</span>
+                    </div>
+
+                    {% if recent_users %}
+                        <div class="recent-users-list">
+                            {% for u in recent_users %}
+                                <div class="recent-user-item">
+                                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;">
+                                        <span class="has-text-weight-semibold" style="color: var(--color-slate-900);">
+                                            {{ u.name or u.email.split('@')[0] }}
+                                        </span>
+                                        <div class="is-size-7 has-text-grey" style="font-size: 0.72rem;">
+                                            {{ u.email }}
+                                        </div>
+                                    </div>
+                                    <div class="is-flex is-align-items-center" style="gap: 4px;">
+                                        {% if u.newsletter_subscribed %}
+                                            <span class="tag is-success is-light is-rounded is-small" style="font-size: 0.65rem; height: 1.4em;">
+                                                Abonné
+                                            </span>
+                                        {% else %}
+                                            <span class="tag is-light is-rounded is-small" style="font-size: 0.65rem; height: 1.4em; color: #94a3b8;">
+                                                Désinscrit
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="is-size-7 has-text-grey mb-0">Aucun utilisateur enregistré pour le moment.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Panneau 3 : Paramètres d'Acheminement SMTP -->
+                <div class="dashboard-panel-box" style="background: var(--color-slate-50);">
+                    <div class="dashboard-panel-title">
+                        <span>Spécifications SMTP</span>
+                        <i class="fas fa-shield-alt has-text-grey"></i>
+                    </div>
+                    <ul class="is-size-7 has-text-grey" style="line-height: 1.6;">
+                        <li class="mb-2">
+                            <strong>Cadence :</strong> 1 courriel par seconde (asynchrone en arrière-plan).
+                        </li>
+                        <li class="mb-2">
+                            <strong>Plafond :</strong> 500 courriels / 24 heures (recommandation fournisseur).
+                        </li>
+                        <li>
+                            <strong>En-têtes :</strong> <code>List-Unsubscribe</code> et <code>List-Unsubscribe-Post</code> intégrés systématiquement.
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Fin TAB 1 -->
+
+    <!-- TAB 2: HISTORIQUE DES CAMPAGNES & STATISTIQUES -->
+        <div id="tabContentHistory" style="display: {% if active_tab == 'history' %}block{% else %}none{% endif %};">
+            <div class="box p-5" style="border: 1px solid var(--color-slate-200); border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
+                <div class="level mb-4 pb-3" style="border-bottom: 1px solid var(--color-slate-100);">
+                    <div class="level-left">
+                        <div>
+                            <h2 class="title is-5 mb-1" style="color: var(--color-slate-900); font-weight: 700;">
+                                Historique des campagnes & Taux d'ouverture
+                            </h2>
+                            <p class="subtitle is-7 has-text-grey mb-0">
+                                Archives complètes des envois, suivi des ouvertures en direct par pixel invisible et délivrabilité.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <button class="button is-small" style="background: var(--color-slate-900); color: white; font-weight: 600;" onclick="switchTab('compose')">
+                            <span class="icon is-small"><i class="fas fa-plus"></i></span>
+                            <span>Nouvelle campagne</span>
+                        </button>
+                    </div>
+                </div>
+
+                {% if campaigns %}
+                    <div class="table-container">
+                        <table class="table is-fullwidth is-hoverable is-striped" style="font-size: 0.88rem; vertical-align: middle;">
+                            <thead>
+                                <tr style="background: #f8fafc; color: #475569; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <th style="padding: 10px 14px;">Date d'envoi</th>
+                                    <th style="padding: 10px 14px;">Objet & Gabarit</th>
+                                    <th style="padding: 10px 14px;">Cible</th>
+                                    <th style="padding: 10px 14px; text-align: center;">Délivrés</th>
+                                    <th style="padding: 10px 14px; text-align: center;">Ouvertures uniques</th>
+                                    <th style="padding: 10px 14px; text-align: center;">Taux d'ouverture</th>
+                                    <th style="padding: 10px 14px; text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in campaigns %}
+                                    <tr>
+                                        <td style="padding: 12px 14px; white-space: nowrap; color: #334155; font-weight: 500;">
+                                            <i class="far fa-calendar-alt mr-1 has-text-grey"></i>
+                                            {{ c.created_at.strftime('%d/%m/%Y à %H:%M') }}
+                                        </td>
+                                        <td style="padding: 12px 14px;">
+                                            <div style="font-weight: 700; color: #0f172a; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                <a href="javascript:void(0)" onclick="openCampaignModal({{ c.id }}, 'message')" style="color: #0f172a; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" title="Cliquer pour voir le courriel envoyé">
+                                                    {{ c.subject }}
+                                                </a>
+                                            </div>
+                                            <div class="mt-1">
+                                                {% if c.template == 'newsletter_update.html' %}
+                                                    <span class="tag is-small is-light" style="background: #f1f5f9; color: #334155; font-size: 0.68rem; font-weight: 600;">Note de version</span>
+                                                {% elif c.template == 'newsletter_promo.html' %}
+                                                    <span class="tag is-small is-light" style="background: #f1f5f9; color: #334155; font-size: 0.68rem; font-weight: 600;">Circulaire</span>
+                                                {% else %}
+                                                    <span class="tag is-small is-light" style="background: #f1f5f9; color: #334155; font-size: 0.68rem; font-weight: 600;">Gazette</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td style="padding: 12px 14px; white-space: nowrap;">
+                                            {% if c.target in ('verified_subscribed', 'verified') %}
+                                                <span class="tag is-small is-success is-light" style="font-size: 0.72rem;">Vérifiés abonnés</span>
+                                            {% elif c.target in ('all_subscribed', 'all') %}
+                                                <span class="tag is-small is-info is-light" style="font-size: 0.72rem;">Tous abonnés</span>
+                                            {% else %}
+                                                <span class="tag is-small is-warning is-light" style="font-size: 0.72rem;">Général</span>
+                                            {% endif %}
+                                        </td>
+                                        <td style="padding: 12px 14px; text-align: center; font-weight: 600; color: #0f172a; white-space: nowrap;">
+                                            {{ c.sent_count }} / {{ c.total_recipients }}
+                                        </td>
+                                        <td style="padding: 12px 14px; text-align: center; white-space: nowrap;">
+                                            <span class="has-text-weight-bold" style="color: #0f172a;">{{ c.open_count }}</span>
+                                            <span class="is-size-7 has-text-grey">({{ c.open_count }} / {{ c.sent_count }})</span>
+                                        </td>
+                                        <td style="padding: 12px 14px; text-align: center; white-space: nowrap;">
+                                            {% set rate = c.open_rate %}
+                                            {% if rate >= 50 %}
+                                                <span class="tag is-success is-light" style="font-weight: 700;">{{ rate }}%</span>
+                                            {% elif rate > 0 %}
+                                                <span class="tag is-info is-light" style="font-weight: 700;">{{ rate }}%</span>
+                                            {% else %}
+                                                <span class="tag is-light" style="color: #64748b; font-weight: 600;">0%</span>
+                                            {% endif %}
+                                        </td>
+                                        <td style="padding: 12px 14px; text-align: right; white-space: nowrap;">
+                                            <button class="button is-small is-light mr-1" onclick="openCampaignModal({{ c.id }}, 'message')" title="Visualiser le courriel envoyé" style="border: 1px solid #cbd5e1;">
+                                                <span class="icon is-small"><i class="fas fa-envelope-open-text"></i></span>
+                                                <span>Aperçu</span>
+                                            </button>
+                                            <button class="button is-small is-light" onclick="openCampaignModal({{ c.id }}, 'recipients')" title="Consulter le rapport détaillé et les destinataires" style="border: 1px solid #cbd5e1;">
+                                                <span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
+                                                <span>Rapport</span>
+                                            </button>
+                                            <form action="{{ url_for('admin.delete_campaign', campaign_id=c.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Supprimer définitivement cette campagne et ses statistiques ?');">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="button is-small is-light is-danger" title="Supprimer l'archive">
+                                                    <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="has-text-centered py-6">
+                        <span class="icon is-large has-text-grey-light mb-3">
+                            <i class="fas fa-envelope-open-text fa-3x" style="color: #cbd5e1;"></i>
+                        </span>
+                        <h3 class="title is-6 mb-2" style="color: #334155;">Aucune campagne envoyée pour le moment</h3>
+                        <p class="subtitle is-7 has-text-grey mb-4" style="max-width: 420px; margin: 0 auto;">
+                            Toutes vos diffusions apparaîtront ici automatiquement avec leur date, le détail des destinataires et leur taux d'ouverture en direct.
+                        </p>
+                        <button class="button is-small" style="background: var(--color-slate-900); color: white; font-weight: 600;" onclick="switchTab('compose')">
+                            <span class="icon is-small"><i class="fas fa-edit"></i></span>
+                            <span>Rédiger une lettre d'information</span>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Fin TAB 2 -->
+
     </div>
 </section>
 
+<!-- MODALE DE CONFIRMATION DE PRÉ-VOL -->
+<div id="confirmModal" class="modal">
+    <div class="modal-background" onclick="closeConfirmModal()"></div>
+    <div class="modal-card" style="border-radius: 8px; overflow: hidden; max-width: 500px;">
+        <header class="modal-card-head" style="background: var(--color-slate-50); border-bottom: 1px solid var(--color-slate-200);">
+            <p class="modal-card-title is-size-6" style="font-weight: 800; color: var(--color-slate-900);">
+                Confirmation d'expédition
+            </p>
+            <button class="delete" aria-label="close" onclick="closeConfirmModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            <p class="is-size-6 mb-3" style="color: var(--color-slate-800);">
+                Veuillez contrôler les paramètres de diffusion avant le lancement :
+            </p>
+            
+            <div class="p-3 mb-4" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 6px;">
+                <div class="is-size-7 has-text-grey mb-1">Objet :</div>
+                <div class="has-text-weight-bold mb-3" id="modalSubject" style="color: var(--color-slate-900);"></div>
+                
+                <div class="is-size-7 has-text-grey mb-1">Audience & Volume :</div>
+                <div class="has-text-weight-bold mb-3" id="modalRecipients" style="color: #0f172a;"></div>
+
+                <div class="is-size-7 has-text-grey mb-1">Gabarit sélectionné :</div>
+                <div class="has-text-weight-semibold mb-3" id="modalTemplate" style="color: var(--color-slate-700);"></div>
+
+                <div class="is-size-7 has-text-grey mb-1">Durée d'expédition estimée :</div>
+                <div class="has-text-weight-semibold" id="modalEstimatedTime" style="color: var(--color-slate-700);"></div>
+            </div>
+
+            <p class="is-size-7 has-text-grey">
+                <i class="fas fa-info-circle mr-1"></i>
+                L'envoi sera exécuté de manière sécurisée en arrière-plan sans bloquer votre navigation.
+            </p>
+        </section>
+        <footer class="modal-card-foot is-justify-content-flex-end" style="border-top: 1px solid var(--color-slate-200);">
+            <button class="button is-small is-light" onclick="closeConfirmModal()">Modifier</button>
+            <button class="button is-small" style="background: var(--color-slate-900); color: white; font-weight: 700;" onclick="triggerSend()">
+                Confirmer l'envoi
+            </button>
+        </footer>
+    </div>
+</div>
+
+<!-- MODALE DE RAPPORT DÉTAILLÉ DE CAMPAGNE -->
+<div id="campaignDetailModal" class="modal">
+    <div class="modal-background" onclick="closeCampaignModal()"></div>
+    <div class="modal-card" style="border-radius: 8px; overflow: hidden; max-width: 840px; width: 95%;">
+        <header class="modal-card-head" style="background: var(--color-slate-50); border-bottom: 1px solid var(--color-slate-200); padding: 14px 20px;">
+            <div style="flex: 1; overflow: hidden; padding-right: 12px;">
+                <p class="modal-card-title is-size-6" style="font-weight: 800; color: var(--color-slate-900); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span id="cdmSubject">Rapport de campagne</span>
+                </p>
+                <div class="is-size-7 has-text-grey" id="cdmMeta" style="margin-top: 2px;"></div>
+            </div>
+            <button class="delete" aria-label="close" onclick="closeCampaignModal()"></button>
+        </header>
+        <section class="modal-card-body" style="padding: 20px;">
+            <!-- KPI CARDS -->
+            <div class="columns is-multiline mb-4">
+                <div class="column is-3">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px;">
+                        <div class="is-size-7 has-text-grey">Total ciblé</div>
+                        <div class="is-size-5 has-text-weight-bold" id="cdmTotal" style="color: #0f172a;">0</div>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px;">
+                        <div class="is-size-7 has-text-grey">Remis avec succès</div>
+                        <div class="is-size-5 has-text-weight-bold" id="cdmSent" style="color: #166534;">0</div>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px;">
+                        <div class="is-size-7 has-text-grey">Ouvertures uniques</div>
+                        <div class="is-size-5 has-text-weight-bold" id="cdmOpened" style="color: #0284c7;">0</div>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px;">
+                        <div class="is-size-7 has-text-grey">Taux d'ouverture</div>
+                        <div class="is-size-5 has-text-weight-bold" id="cdmRate" style="color: #0f172a;">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-TABS: Destinataires vs Message -->
+            <div class="tabs is-small is-boxed mb-3">
+                <ul>
+                    <li id="cdmTabBtnRecipients" class="is-active">
+                        <a onclick="switchCdmTab('recipients')">
+                            <span class="icon is-small"><i class="fas fa-users"></i></span>
+                            <span>Destinataires (<span id="cdmRecipientsCount">0</span>)</span>
+                        </a>
+                    </li>
+                    <li id="cdmTabBtnMessage">
+                        <a onclick="switchCdmTab('message')">
+                            <span class="icon is-small"><i class="fas fa-file-alt"></i></span>
+                            <span>Message envoyé</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- VIEW 1: RECIPIENTS TABLE -->
+            <div id="cdmViewRecipients">
+                <div class="mb-3">
+                    <input type="text" id="cdmSearchInput" oninput="filterCdmRecipients()" class="input is-small" placeholder="Filtrer par adresse courriel..." style="border-radius: 4px; max-width: 320px;">
+                </div>
+                <div style="max-height: 320px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <table class="table is-fullwidth is-striped is-narrow" style="font-size: 0.82rem; margin: 0;">
+                        <thead style="position: sticky; top: 0; background: #f8fafc; z-index: 1;">
+                            <tr>
+                                <th>Destinataire</th>
+                                <th style="text-align: center;">Statut d'envoi</th>
+                                <th style="text-align: center;">Horodatage envoi</th>
+                                <th>Ouverture</th>
+                                <th style="text-align: center;">Lectures</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cdmDeliveriesTbody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 2: MESSAGE CONTENT PREVIEW -->
+            <div id="cdmViewMessage" style="display: none;">
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+                    <div style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <span class="is-size-7 has-text-weight-bold has-text-grey" style="text-transform: uppercase;">
+                            <i class="fas fa-desktop mr-1"></i> Rendu réel du courriel envoyé
+                        </span>
+                        <button type="button" class="button is-small is-white is-size-7" onclick="toggleCdmRawContent()" id="cdmToggleRawBtn" style="color: #64748b;">
+                            <span class="icon is-small"><i class="fas fa-code mr-1"></i></span>
+                            <span>Afficher texte brut</span>
+                        </button>
+                    </div>
+                    <iframe id="cdmMessageIframe" style="width: 100%; height: 420px; border: none; display: block;" sandbox="allow-same-origin"></iframe>
+                    <div id="cdmRawContentBox" style="display: none; padding: 16px; background: #f8fafc; border-top: 1px solid #e2e8f0; max-height: 200px; overflow-y: auto;">
+                        <div id="cdmMessageContent" style="font-size: 14px; line-height: 1.6; color: #334155;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <footer class="modal-card-foot is-justify-content-flex-end" style="border-top: 1px solid var(--color-slate-200); padding: 12px 20px;">
+            <button class="button is-small is-light" onclick="closeCampaignModal()">Fermer</button>
+        </footer>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Notification dismissal
         (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
             const $notification = $delete.parentNode;
             $delete.addEventListener('click', () => {
                 $notification.parentNode.removeChild($notification);
             });
         });
+
+        // Check if URL or hash requests history tab
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'history' || window.location.hash === '#history') {
+            switchTab('history');
+        }
+
+        // Initialize Live Preview
+        updateLivePreview();
     });
+
+    function selectTemplate(templateFile, cardId) {
+        document.getElementById('templateChoiceInput').value = templateFile;
+        document.querySelectorAll('.template-selector-card').forEach(c => {
+            c.classList.remove('is-selected');
+            const check = c.querySelector('.check-icon');
+            if (check) check.classList.add('is-hidden');
+        });
+        const selected = document.getElementById(cardId);
+        if (selected) {
+            selected.classList.add('is-selected');
+            const check = selected.querySelector('.check-icon');
+            if (check) check.classList.remove('is-hidden');
+        }
+        updateLivePreview();
+    }
+
+    function switchEditorTab(tab) {
+        const btnEdit = document.getElementById('btnTabEdit');
+        const btnPreview = document.getElementById('btnTabPreview');
+        const editContainer = document.getElementById('editorContainer');
+        const previewContainer = document.getElementById('livePreviewContainer');
+        const toolbar = document.getElementById('formattingToolbar');
+        const viewportToggleGroup = document.getElementById('viewportToggleGroup');
+
+        if (tab === 'edit') {
+            btnEdit.classList.add('is-active');
+            btnPreview.classList.remove('is-active');
+            editContainer.style.display = 'block';
+            toolbar.style.display = 'block';
+            previewContainer.style.display = 'none';
+            viewportToggleGroup.style.display = 'none';
+        } else {
+            btnPreview.classList.add('is-active');
+            btnEdit.classList.remove('is-active');
+            editContainer.style.display = 'none';
+            toolbar.style.display = 'none';
+            previewContainer.style.display = 'block';
+            viewportToggleGroup.style.display = 'inline-flex';
+            updateLivePreview();
+        }
+    }
+
+    function setPreviewViewport(device) {
+        const btnDesktop = document.getElementById('btnViewDesktop');
+        const btnMobile = document.getElementById('btnViewMobile');
+        const wrapper = document.getElementById('previewViewportWrapper');
+
+        if (device === 'desktop') {
+            btnDesktop.classList.add('is-active');
+            btnMobile.classList.remove('is-active');
+            wrapper.className = 'preview-wrapper-desktop';
+        } else {
+            btnMobile.classList.add('is-active');
+            btnDesktop.classList.remove('is-active');
+            wrapper.className = 'preview-wrapper-mobile';
+        }
+    }
+
+    function insertTag(startTag, endTag) {
+        const textarea = document.getElementById('messageInput');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        const replacement = startTag + (selectedText || 'Texte') + endTag;
+        textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + startTag.length, start + replacement.length - endTag.length);
+        updateLivePreview();
+    }
+
+    function insertLink() {
+        const url = prompt("Adresse web du lien (URL) :", "https://");
+        if (url) {
+            insertTag(`<a href="${url}" style="color: #0f172a; font-weight: 600; text-decoration: underline;">`, '</a>');
+        }
+    }
+
+    function insertButton() {
+        const url = prompt("Destination du bouton :", "https://livresenclasse.com");
+        const label = prompt("Intitulé du bouton :", "Consulter l'espace de classe");
+        if (url && label) {
+            const btnHtml = `\n<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
+  <tr>
+    <td style="background-color: #0f172a; border-radius: 6px;">
+      <a href="${url}" style="display: inline-block; padding: 11px 22px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">
+        ${label} &rarr;
+      </a>
+    </td>
+  </tr>
+</table>\n`;
+            insertTag(btnHtml, '');
+        }
+    }
+
+    function insertCallout() {
+        const calloutHtml = `\n<div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #0f172a; padding: 14px 18px; margin: 18px 0; border-radius: 0 4px 4px 0; font-size: 14px; color: #334155;">
+  <strong>Remarque importante :</strong> Votre texte explicatif ici.
+</div>\n`;
+        insertTag(calloutHtml, '');
+    }
+
+    function insertList() {
+        const listHtml = `\n<ul style="padding-left: 20px; margin: 16px 0; line-height: 1.7; color: #334155;">
+  <li>Premier point d'information</li>
+  <li>Second point à souligner</li>
+</ul>\n`;
+        insertTag(listHtml, '');
+    }
+
+    function insertFeedbackCallout() {
+        const feedbackHtml = `\n<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 24px 0; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+  <tr>
+    <td style="padding: 16px 20px;">
+      <p style="margin: 0 0 6px 0; font-size: 14px; font-weight: 700; color: #0f172a;">
+        Votre avis nous intéresse
+      </p>
+      <p style="margin: 0 0 12px 0; font-size: 13px; color: #475569; line-height: 1.5;">
+        Une idée d'amélioration pour votre classe ou un problème technique rencontré ?
+      </p>
+      <p style="margin: 0; font-size: 13px;">
+        <a href="https://livresenclasse.com/feedback?type=idea" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 7px 14px; font-size: 13px; font-weight: 600; text-decoration: none; border-radius: 4px; margin-right: 12px;">
+          Proposer une idée &rarr;
+        </a>
+        <a href="https://livresenclasse.com/feedback?type=bug" style="display: inline-block; color: #64748b; font-size: 13px; font-weight: 600; text-decoration: underline;">
+          Signaler un problème
+        </a>
+      </p>
+    </td>
+  </tr>
+</table>\n`;
+        insertTag(feedbackHtml, '');
+    }
+
+    function updateLivePreview() {
+        const subject = document.getElementById('subjectInput').value || "Objet de la communication";
+        const message = document.getElementById('messageInput').value || "<p>Rédigez le contenu de votre message pour observer le rendu en direct ici...</p>";
+        const templateChoice = document.getElementById('templateChoiceInput').value;
+        const iframe = document.getElementById('livePreviewIframe');
+
+        let renderedHtml = "";
+
+        if (templateChoice === 'newsletter_update.html') {
+            renderedHtml = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 20px; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #0f172a;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden;">
+    <div style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Livres en Classe</span>
+      <span style="font-size: 11px; font-weight: 600; color: #475569; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 3px 8px; border-radius: 4px;">NOTE DE VERSION</span>
+    </div>
+    <div style="padding: 28px 32px 10px 32px;">
+      <h1 style="margin: 0; font-size: 21px; font-weight: 700; color: #0f172a; line-height: 1.35;">${escapeHtml(subject)}</h1>
+    </div>
+    <div style="padding: 10px 32px 28px 32px; font-size: 15px; color: #334155; line-height: 1.7;">
+      ${message}
+    </div>
+    <div style="padding: 0 32px 24px 32px;">
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px 18px; font-size: 13px;">
+        <p style="margin: 0 0 4px 0; font-weight: 700; color: #0f172a;">Retours d'expérience & Anomalies</p>
+        <p style="margin: 0 0 8px 0; color: #475569;">Aidez-nous à faire évoluer Livres en Classe selon vos besoins.</p>
+        <p style="margin: 0;">
+          <span style="color: #0f172a; font-weight: 600; text-decoration: underline; margin-right: 14px;">Suggérer une amélioration &rarr;</span>
+          <span style="color: #64748b; text-decoration: underline;">Signaler un bug</span>
+        </p>
+      </div>
+    </div>
+    <div style="padding: 20px 32px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6;">
+      <p style="margin: 0 0 6px 0;">Notification produit transmise aux utilisateurs de LivresEnClasse.com.</p>
+      <p style="margin: 0;"><span style="text-decoration: underline;">Se désabonner</span></p>
+    </div>
+  </div>
+</body>
+</html>`;
+        } else if (templateChoice === 'newsletter_promo.html') {
+            renderedHtml = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 20px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #0f172a;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #cbd5e1; border-top: 3px solid #0f172a; border-radius: 4px; overflow: hidden;">
+    <div style="padding: 24px 32px 18px 32px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: top;">
+      <div>
+        <p style="margin: 0; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Livres en Classe</p>
+        <p style="margin: 2px 0 0 0; font-size: 11px; color: #64748b; text-transform: uppercase;">Service de gestion &bull; Communication officielle</p>
+      </div>
+      <span style="font-size: 11px; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 3px;">CIRCULAIRE</span>
+    </div>
+    <div style="padding: 24px 32px 10px 32px;">
+      <h1 style="margin: 0; font-size: 20px; font-weight: 700; color: #0f172a; line-height: 1.35;">${escapeHtml(subject)}</h1>
+    </div>
+    <div style="padding: 10px 32px 28px 32px; font-size: 15px; color: #334155; line-height: 1.7;">
+      ${message}
+    </div>
+    <div style="padding: 0 32px 24px 32px;">
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 3px solid #0f172a; padding: 14px 18px; font-size: 13px;">
+        <p style="margin: 0 0 4px 0; font-weight: 700; color: #0f172a;">Canal de retour utilisateur</p>
+        <p style="margin: 0 0 8px 0; color: #475569;">Transmettez vos suggestions ou signalez tout dysfonctionnement.</p>
+        <p style="margin: 0;">
+          <span style="color: #0f172a; font-weight: 600; text-decoration: underline; margin-right: 14px;">Proposer une idée</span>
+          &bull;&nbsp;
+          <span style="color: #64748b; text-decoration: underline;">Signaler un problème</span>
+        </p>
+      </div>
+    </div>
+    <div style="padding: 20px 32px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6;">
+      <p style="margin: 0 0 6px 0;">Communication administrative émise par l'équipe de LivresEnClasse.com.</p>
+      <p style="margin: 0;"><span style="text-decoration: underline;">Se désabonner</span></p>
+    </div>
+  </div>
+</body>
+</html>`;
+        } else {
+            // Gazette Éditoriale
+            renderedHtml = `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 20px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.65; color: #1e293b;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden;">
+    <div style="padding: 30px 32px 18px 32px; text-align: center; border-bottom: 1px solid #0f172a;">
+      <p style="margin: 0 0 4px 0; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">Plateforme de gestion de bibliothèque scolaire</p>
+      <h1 style="margin: 0; font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: 1.5px; text-transform: uppercase;">LIVRES EN CLASSE</h1>
+    </div>
+    <div style="padding: 28px 32px 10px 32px;">
+      <h2 style="margin: 0; font-family: 'Charter', 'Georgia', serif; font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.35;">${escapeHtml(subject)}</h2>
+    </div>
+    <div style="padding: 10px 32px 28px 32px; font-size: 15px; color: #334155; line-height: 1.7;">
+      ${message}
+    </div>
+    <div style="padding: 0 32px 20px 32px; font-size: 13px; color: #64748b; font-style: italic;">
+      L'équipe Livres en Classe
+    </div>
+    <div style="padding: 0 32px 24px 32px;">
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 14px 18px; font-size: 13px;">
+        <p style="margin: 0 0 4px 0; font-weight: 700; color: #0f172a;">Votre avis nous intéresse</p>
+        <p style="margin: 0 0 8px 0; color: #475569;">Une suggestion pour votre classe ou un problème rencontré ?</p>
+        <p style="margin: 0;">
+          <span style="color: #0f172a; font-weight: 600; text-decoration: underline; margin-right: 14px;">Proposer une idée &rarr;</span>
+          <span style="color: #64748b; text-decoration: underline;">Signaler un problème</span>
+        </p>
+      </div>
+    </div>
+    <div style="padding: 20px 32px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6;">
+      <p style="margin: 0 0 6px 0;">Lettre d'information transmise aux membres enregistrés sur LivresEnClasse.com.</p>
+      <p style="margin: 0;"><span style="text-decoration: underline;">Se désabonner</span></p>
+    </div>
+  </div>
+</body>
+</html>`;
+        }
+
+        iframe.srcdoc = renderedHtml;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.innerText = text;
+        return div.innerHTML;
+    }
+
+    function updateRecipientCount() {
+        const select = document.getElementById('targetSelect');
+        const count = select.options[select.selectedIndex].getAttribute('data-count');
+    }
+
+    function openConfirmModal() {
+        const subject = document.getElementById('subjectInput').value.trim();
+        const message = document.getElementById('messageInput').value.trim();
+
+        if (!subject) {
+            alert("Veuillez renseigner l'objet du courriel.");
+            document.getElementById('subjectInput').focus();
+            return;
+        }
+        if (!message) {
+            alert("Veuillez renseigner le contenu du message.");
+            document.getElementById('messageInput').focus();
+            return;
+        }
+
+        const select = document.getElementById('targetSelect');
+        const targetText = select.options[select.selectedIndex].text;
+        const targetCount = parseInt(select.options[select.selectedIndex].getAttribute('data-count')) || 0;
+
+        const templateVal = document.getElementById('templateChoiceInput').value;
+        let templateLabel = "Gazette Éditoriale (Classique)";
+        if (templateVal === 'newsletter_update.html') templateLabel = "Note de Version (Produit)";
+        if (templateVal === 'newsletter_promo.html') templateLabel = "Circulaire Officielle (Administrative)";
+
+        document.getElementById('modalSubject').textContent = subject;
+        document.getElementById('modalRecipients').textContent = `${targetCount} destinataire(s) [${targetText.split('(')[0].trim()}]`;
+        document.getElementById('modalTemplate').textContent = templateLabel;
+        document.getElementById('modalEstimatedTime').textContent = targetCount > 0 ? `~${targetCount} secondes (1 email/seconde)` : "Instantané (0 destinataire)";
+
+        document.getElementById('confirmModal').classList.add('is-active');
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.remove('is-active');
+    }
+
+    function triggerSend() {
+        document.getElementById('confirmModal').classList.remove('is-active');
+        document.getElementById('newsletterForm').submit();
+    }
+
+    // --- Gestion des onglets principaux (Rédaction vs Historique) ---
+    function switchTab(tab) {
+        const btnCompose = document.getElementById('tabBtnCompose');
+        const btnHistory = document.getElementById('tabBtnHistory');
+        const contentCompose = document.getElementById('tabContentCompose');
+        const contentHistory = document.getElementById('tabContentHistory');
+
+        if (tab === 'history') {
+            if (btnCompose) btnCompose.classList.remove('is-active');
+            if (btnHistory) btnHistory.classList.add('is-active');
+            if (contentCompose) contentCompose.style.display = 'none';
+            if (contentHistory) contentHistory.style.display = 'block';
+            window.history.replaceState(null, '', '?tab=history');
+        } else {
+            if (btnHistory) btnHistory.classList.remove('is-active');
+            if (btnCompose) btnCompose.classList.add('is-active');
+            if (contentHistory) contentHistory.style.display = 'none';
+            if (contentCompose) contentCompose.style.display = 'block';
+            window.history.replaceState(null, '', '?tab=compose');
+        }
+    }
+
+    // --- Gestion du modal de rapport de campagne ---
+    let currentCdmDeliveries = [];
+
+    function openCampaignModal(campaignId, defaultTab = 'recipients') {
+        fetch(`/admin/campaigns/${campaignId}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Erreur réseau');
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('cdmSubject').textContent = data.subject;
+                document.getElementById('cdmMeta').textContent = `${data.created_at} • Gabarit : ${data.template} • Cible : ${data.target}`;
+                document.getElementById('cdmTotal').textContent = data.total_recipients;
+                document.getElementById('cdmSent').textContent = data.sent_count;
+                document.getElementById('cdmOpened').textContent = data.open_count;
+                document.getElementById('cdmRate').textContent = `${data.open_rate}%`;
+                document.getElementById('cdmRecipientsCount').textContent = data.deliveries ? data.deliveries.length : 0;
+
+                const iframe = document.getElementById('cdmMessageIframe');
+                if (iframe && data.rendered_email) {
+                    iframe.srcdoc = data.rendered_email;
+                }
+                const contentEl = document.getElementById('cdmMessageContent');
+                if (contentEl) {
+                    contentEl.innerHTML = data.content || '';
+                }
+
+                currentCdmDeliveries = data.deliveries || [];
+                renderCdmDeliveries(currentCdmDeliveries);
+                switchCdmTab(defaultTab);
+                document.getElementById('campaignDetailModal').classList.add('is-active');
+            })
+            .catch(err => {
+                alert('Impossible de charger les données de la campagne.');
+                console.error(err);
+            });
+    }
+
+    function toggleCdmRawContent() {
+        const box = document.getElementById('cdmRawContentBox');
+        const btn = document.getElementById('cdmToggleRawBtn');
+        if (box.style.display === 'none') {
+            box.style.display = 'block';
+            btn.innerHTML = '<span class="icon is-small"><i class="fas fa-eye-slash mr-1"></i></span><span>Masquer texte brut</span>';
+        } else {
+            box.style.display = 'none';
+            btn.innerHTML = '<span class="icon is-small"><i class="fas fa-code mr-1"></i></span><span>Afficher texte brut</span>';
+        }
+    }
+
+    function closeCampaignModal() {
+        document.getElementById('campaignDetailModal').classList.remove('is-active');
+    }
+
+    function switchCdmTab(tab) {
+        const btnRec = document.getElementById('cdmTabBtnRecipients');
+        const btnMsg = document.getElementById('cdmTabBtnMessage');
+        const viewRec = document.getElementById('cdmViewRecipients');
+        const viewMsg = document.getElementById('cdmViewMessage');
+
+        if (tab === 'message') {
+            if (btnRec) btnRec.classList.remove('is-active');
+            if (btnMsg) btnMsg.classList.add('is-active');
+            if (viewRec) viewRec.style.display = 'none';
+            if (viewMsg) viewMsg.style.display = 'block';
+        } else {
+            if (btnMsg) btnMsg.classList.remove('is-active');
+            if (btnRec) btnRec.classList.add('is-active');
+            if (viewMsg) viewMsg.style.display = 'none';
+            if (viewRec) viewRec.style.display = 'block';
+        }
+    }
+
+    function renderCdmDeliveries(list) {
+        const tbody = document.getElementById('cdmDeliveriesTbody');
+        if (!tbody) return;
+        if (!list || list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="has-text-centered has-text-grey py-4">Aucun destinataire trouvé</td></tr>';
+            return;
+        }
+        tbody.innerHTML = list.map(d => {
+            let statusBadge = '<span class="tag is-small is-light" style="font-size: 0.72rem;">En attente</span>';
+            if (d.status === 'sent') {
+                statusBadge = '<span class="tag is-small is-success is-light" style="font-size: 0.72rem;"><i class="fas fa-check mr-1"></i> Envoyé</span>';
+            } else if (d.status === 'failed') {
+                statusBadge = '<span class="tag is-small is-danger is-light" style="font-size: 0.72rem;"><i class="fas fa-times mr-1"></i> Échec</span>';
+            }
+
+            let openBadge = '<span class="tag is-small is-light" style="color: #94a3b8; font-size: 0.72rem;">Non ouvert</span>';
+            if (d.opened_at) {
+                openBadge = `<span class="tag is-small is-info is-light" style="font-weight: 700; font-size: 0.72rem;"><i class="fas fa-envelope-open mr-1"></i> ${d.opened_at}</span>`;
+            }
+
+            return `<tr>
+                <td style="font-weight: 600; color: #0f172a;">${escapeHtml(d.email)}</td>
+                <td style="text-align: center;">${statusBadge}</td>
+                <td style="text-align: center; color: #64748b; font-size: 0.78rem;">${d.sent_at || '-'}</td>
+                <td>${openBadge}</td>
+                <td style="text-align: center; font-weight: 700; color: #334155;">${d.open_count > 0 ? `${d.open_count}` : '-'}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    function filterCdmRecipients() {
+        const query = (document.getElementById('cdmSearchInput').value || '').trim().toLowerCase();
+        if (!query) {
+            renderCdmDeliveries(currentCdmDeliveries);
+            return;
+        }
+        const filtered = currentCdmDeliveries.filter(d => d.email.toLowerCase().includes(query));
+        renderCdmDeliveries(filtered);
+    }
 </script>
 {% endblock %}

@@ -1,9 +1,12 @@
-# main.py
 import os
+from datetime import datetime, timezone
+from threading import Thread
 
 import jinja2
 from flask import (
     Blueprint,
+    Response,
+    current_app,
     flash,
     jsonify,
     redirect,
@@ -14,9 +17,13 @@ from flask import (
     url_for,
 )
 from flask_login import current_user, login_required
+from flask_mail import Message
+from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 
-from .email import send_email_confirmation, send_email_to_me
+from . import db
+from .email import send_email_async, send_email_confirmation, send_email_to_me
+from .models import Feedback, NewsletterDelivery
 from .query import (
     get_app_infos,
     get_books_count,
@@ -164,6 +171,104 @@ def contact():
     return render_template("contact.html", user=user)
 
 
+def send_feedback_notification(user, feedback_obj):
+    admin_email = os.getenv("MAIL_USERNAME")
+    if not admin_email:
+        return
+
+    category_labels = {
+        "suggestion": "Suggestion d'amélioration",
+        "bug": "Signalement de bug",
+        "general": "Avis général",
+    }
+    cat_label = category_labels.get(feedback_obj.category, feedback_obj.category)
+
+    subject = f"[Retour - {cat_label}] {feedback_obj.subject}"
+    body = (
+        f"Nouveau retour utilisateur sur LivresEnClasse :\n\n"
+        f"Auteur : {user.name or 'Non renseigné'} ({user.email})\n"
+        f"ID Utilisateur : {user.id}\n"
+        f"Type : {cat_label}\n"
+        f"Sujet : {feedback_obj.subject}\n"
+        f"Page indiquée : {feedback_obj.page_url or 'Non spécifiée'}\n"
+        f"Navigateur : {feedback_obj.user_agent or 'Non spécifié'}\n"
+        f"Date : {feedback_obj.created_at.strftime('%d/%m/%Y à %H:%M')}\n\n"
+        f"Message :\n{feedback_obj.message}\n\n"
+        f"---\n"
+        f"Vous pouvez répondre directement à cet email pour échanger avec l'utilisateur."
+    )
+
+    app = current_app._get_current_object()
+    msg = Message(
+        subject,
+        sender=admin_email,
+        recipients=[admin_email],
+        reply_to=user.email,
+    )
+    msg.body = body
+    thr = Thread(target=send_email_async, args=[app, msg])
+    thr.start()
+
+
+@main.route("/feedback", methods=["GET", "POST"])
+@login_required
+def feedback():
+    if request.method == "POST":
+        category = request.form.get("category", "suggestion").strip()
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+        page_url = request.form.get("page_url", "").strip()
+
+        if not subject or not message:
+            flash(
+                "Veuillez renseigner l'objet et la description de votre retour.",
+                "danger",
+            )
+            return redirect(url_for("main.feedback", type=category))
+
+        valid_categories = {"suggestion", "bug", "general"}
+        if category not in valid_categories:
+            category = "suggestion"
+
+        user_agent_str = request.user_agent.string if request.user_agent else None
+        if user_agent_str and len(user_agent_str) > 255:
+            user_agent_str = user_agent_str[:255]
+
+        new_feedback = Feedback(
+            user_id=current_user.id,
+            category=category,
+            subject=subject[:200],
+            message=message,
+            page_url=page_url[:255] if page_url else None,
+            user_agent=user_agent_str,
+            status="nouveau",
+        )
+        db.session.add(new_feedback)
+        db.session.commit()
+
+        # Envoi de la notification par courriel à l'administrateur
+        try:
+            send_feedback_notification(current_user, new_feedback)
+        except Exception:
+            current_app.logger.exception(
+                "Erreur lors de l'envoi de la notification de feedback"
+            )
+
+        flash(
+            "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !",
+            "success",
+        )
+        return redirect(url_for("main.feedback"))
+
+    initial_type = request.args.get("type", "suggestion")
+    initial_url = request.args.get("url", "")
+    return render_template(
+        "feedback.html",
+        initial_type=initial_type,
+        initial_url=initial_url,
+    )
+
+
 @main.route("/mentions_legales")
 def mentions_legales():
     return render_template("mentions-legales.html")
@@ -255,3 +360,34 @@ def api_student_books_read():
     labels = [r[0] for r in results]
     data = [r[1] for r in results]
     return jsonify({"labels": labels, "data": data})
+
+
+# 1x1 transparent PNG pixel for email open tracking
+TRACKING_PIXEL_PNG = (
+    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+    b"\x08\x06\x00\x00\x00\x1f\x15c4\x00\x00\x00\rIDATx\x9cc`\x00\x00\x00"
+    b"\x02\x00\x01H\xaf\xa4q\x00\x00\x00\x00IEND\xaeB`\x82"
+)
+
+
+@main.route("/email/track/<token>.png", methods=["GET", "HEAD"])
+@main.route("/email/track/<token>", methods=["GET", "HEAD"])
+def email_track(token):
+    delivery = NewsletterDelivery.query.filter_by(tracking_token=token).first()
+    if delivery:
+        now = datetime.now(timezone.utc)
+        if delivery.opened_at is None:
+            delivery.opened_at = now
+            if delivery.campaign:
+                delivery.campaign.open_count = (delivery.campaign.open_count or 0) + 1
+        delivery.open_count = (delivery.open_count or 0) + 1
+        try:
+            db.session.commit()
+        except SQLAlchemyError:
+            db.session.rollback()
+
+    response = Response(TRACKING_PIXEL_PNG, mimetype="image/png")
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response

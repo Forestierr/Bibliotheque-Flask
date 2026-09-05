@@ -5,6 +5,7 @@ import logging
 import os
 from datetime import datetime, timedelta, timezone
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -20,8 +21,10 @@ from .email_error import MailCriticalHandler
 db = SQLAlchemy()
 
 mail = Mail()
+csrf = CSRFProtect()
 
-load_dotenv()
+basedir = Path(__file__).resolve().parent.parent
+load_dotenv(basedir / ".env")
 
 # logging configuration
 # Définir le chemin du fichier de log
@@ -40,11 +43,13 @@ handler.setFormatter(formatter)
 logging.getLogger().addHandler(handler)
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "SQLALCHEMY_DATABASE_URI", "sqlite:///db.sqlite"
+    )
 
     app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
     app.config["MAIL_PORT"] = 465
@@ -58,9 +63,11 @@ def create_app():
     app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=30)
     app.config["REMEMBER_COOKIE_REFRESH_EACH_REQUEST"] = True
 
-    db.init_app(app)
+    if test_config:
+        app.config.update(test_config)
 
-    csrf = CSRFProtect()
+    os.makedirs(app.instance_path, exist_ok=True)
+    db.init_app(app)
     csrf.init_app(app)
     Migrate(app, db)
     mail.init_app(app)
@@ -83,7 +90,15 @@ def create_app():
         locale.setlocale(locale.LC_TIME, "")
 
     # import data base models
-    from .models import Book, Loan, Student, User  # noqa: F401
+    from .models import (  # noqa: F401
+        Book,
+        Feedback,
+        Loan,
+        NewsletterCampaign,
+        NewsletterDelivery,
+        Student,
+        User,
+    )
 
     # create database
     with app.app_context():
@@ -112,7 +127,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         # since the user_id is just the primary key of our user table, use it in the query for the user
-        return User.query.get(int(user_id))
+        return db.session.get(User, int(user_id))
 
     # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint

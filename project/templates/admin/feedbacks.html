@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Retours & Bugs - Administration Livres en Classe{% endblock %}
+
+{% block content %}
+<section class="section pt-4 pb-6">
+    <div class="container" style="max-width: 1200px;">
+        
+        <!-- Navigation supérieure -->
+        <div class="level mb-4">
+            <div class="level-left">
+                <a href="{{ url_for('admin.index') }}" class="button is-small is-light" style="border: 1px solid #e2e8f0;">
+                    <span class="icon is-small"><i class="fas fa-chevron-left"></i></span>
+                    <span>Tableau de bord administration</span>
+                </a>
+            </div>
+            <div class="level-right">
+                <a href="{{ url_for('admin.emails') }}" class="button is-small is-light" style="border: 1px solid #e2e8f0;">
+                    <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
+                    <span>Diffusion Newsletter</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            <h1 class="title is-3 mb-1" style="color: #0f172a; font-weight: 800; letter-spacing: -0.5px;">
+                Retours Utilisateurs & Anomalies
+            </h1>
+            <p class="subtitle is-6 has-text-grey mb-0">
+                Suivi des suggestions d'amélioration et signalements de bugs émis par les enseignants connectés.
+            </p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="notification is-{{ category }} is-light mb-5" style="border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Filtres par statut & catégorie -->
+        <div class="level mb-4">
+            <div class="level-left">
+                <div class="tabs is-toggle is-small mb-0">
+                    <ul>
+                        <li class="{% if current_status == 'all' %}is-active{% endif %}">
+                            <a href="{{ url_for('admin.feedbacks', status='all', category=current_category) }}">
+                                <span>Tous ({{ counts.all }})</span>
+                            </a>
+                        </li>
+                        <li class="{% if current_status == 'nouveau' %}is-active{% endif %}">
+                            <a href="{{ url_for('admin.feedbacks', status='nouveau', category=current_category) }}">
+                                <span>Nouveaux ({{ counts.nouveau }})</span>
+                            </a>
+                        </li>
+                        <li class="{% if current_status == 'en_cours' %}is-active{% endif %}">
+                            <a href="{{ url_for('admin.feedbacks', status='en_cours', category=current_category) }}">
+                                <span>En cours ({{ counts.en_cours }})</span>
+                            </a>
+                        </li>
+                        <li class="{% if current_status == 'traite' %}is-active{% endif %}">
+                            <a href="{{ url_for('admin.feedbacks', status='traite', category=current_category) }}">
+                                <span>Traités ({{ counts.traite }})</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="level-right">
+                <div class="field is-horizontal is-align-items-center">
+                    <label class="label is-size-7 mr-2 mb-0 has-text-grey">Catégorie :</label>
+                    <div class="control">
+                        <div class="select is-small">
+                            <select onchange="window.location.href=this.value">
+                                <option value="{{ url_for('admin.feedbacks', status=current_status, category='all') }}" {% if current_category == 'all' %}selected{% endif %}>
+                                    Toutes les catégories
+                                </option>
+                                <option value="{{ url_for('admin.feedbacks', status=current_status, category='bug') }}" {% if current_category == 'bug' %}selected{% endif %}>
+                                    Anomalies & Bugs
+                                </option>
+                                <option value="{{ url_for('admin.feedbacks', status=current_status, category='suggestion') }}" {% if current_category == 'suggestion' %}selected{% endif %}>
+                                    Suggestions d'amélioration
+                                </option>
+                                <option value="{{ url_for('admin.feedbacks', status=current_status, category='general') }}" {% if current_category == 'general' %}selected{% endif %}>
+                                    Avis généraux
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des retours -->
+        <div class="box p-0" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
+            <div class="table-container mb-0">
+                <table class="table is-fullwidth is-hoverable is-striped mb-0" style="font-size: 0.88rem;">
+                    <thead>
+                        <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                            <th style="width: 120px;">Date</th>
+                            <th style="width: 140px;">Type</th>
+                            <th>Auteur</th>
+                            <th>Objet & Message</th>
+                            <th style="width: 120px;">Statut</th>
+                            <th style="width: 170px; text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if feedbacks %}
+                            {% for fb in feedbacks %}
+                                <tr>
+                                    <td class="has-text-grey is-size-7" style="vertical-align: middle;">
+                                        {{ fb.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        {% if fb.category == 'bug' %}
+                                            <span class="tag is-danger is-light is-rounded" style="font-weight: 700; font-size: 0.72rem;">
+                                                Anomalie / Bug
+                                            </span>
+                                        {% elif fb.category == 'suggestion' %}
+                                            <span class="tag is-info is-light is-rounded" style="font-weight: 700; font-size: 0.72rem;">
+                                                Suggestion
+                                            </span>
+                                        {% else %}
+                                            <span class="tag is-light is-rounded" style="font-weight: 700; font-size: 0.72rem;">
+                                                Avis général
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        {% if fb.user %}
+                                            <div class="has-text-weight-semibold" style="color: #0f172a;">
+                                                {{ fb.user.name or fb.user.email.split('@')[0] }}
+                                            </div>
+                                            <a href="mailto:{{ fb.user.email }}" class="is-size-7 has-text-grey" style="text-decoration: underline;">
+                                                {{ fb.user.email }}
+                                            </a>
+                                        {% else %}
+                                            <span class="has-text-grey-light is-size-7">Utilisateur supprimé</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <div class="has-text-weight-bold" style="color: #0f172a; margin-bottom: 2px;">
+                                            {{ fb.subject }}
+                                        </div>
+                                        <div class="has-text-grey is-size-7" style="max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            {{ fb.message }}
+                                        </div>
+                                        {% if fb.page_url %}
+                                            <div class="is-size-7 has-text-grey-light mt-1">
+                                                Page : <code>{{ fb.page_url }}</code>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        {% if fb.status == 'nouveau' %}
+                                            <span class="tag is-warning is-light is-rounded" style="font-weight: 600; font-size: 0.72rem;">
+                                                Nouveau
+                                            </span>
+                                        {% elif fb.status == 'en_cours' %}
+                                            <span class="tag is-link is-light is-rounded" style="font-weight: 600; font-size: 0.72rem;">
+                                                En cours
+                                            </span>
+                                        {% elif fb.status == 'traite' %}
+                                            <span class="tag is-success is-light is-rounded" style="font-weight: 600; font-size: 0.72rem;">
+                                                Traité
+                                            </span>
+                                        {% else %}
+                                            <span class="tag is-light is-rounded" style="font-weight: 600; font-size: 0.72rem;">
+                                                {{ fb.status }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="vertical-align: middle; text-align: right;">
+                                        <div class="buttons are-small is-right mb-0">
+                                            <!-- Données structurées sécurisées sans risque de syntaxe JS -->
+                                            <script type="application/json" id="fb-data-{{ fb.id }}">
+                                                {{ {
+                                                    "id": fb.id,
+                                                    "category": fb.category,
+                                                    "subject": fb.subject,
+                                                    "message": fb.message,
+                                                    "authorName": fb.user.name if fb.user and fb.user.name else "Utilisateur",
+                                                    "authorEmail": fb.user.email if fb.user else "",
+                                                    "date": fb.created_at.strftime('%d/%m/%Y à %H:%M'),
+                                                    "pageUrl": fb.page_url or "",
+                                                    "userAgent": fb.user_agent or "",
+                                                    "status": fb.status
+                                                }|tojson }}
+                                            </script>
+                                            <button type="button" class="button is-white js-open-feedback" data-target="fb-data-{{ fb.id }}" style="border: 1px solid #e2e8f0;" title="Lire en détail">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+
+                                            <!-- Menu déroulant pour statut -->
+                                            <form action="{{ url_for('admin.update_feedback_status', feedback_id=fb.id) }}" method="POST" style="display: inline;">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <div class="select is-small">
+                                                    <select name="status" onchange="this.form.submit()" style="font-size: 0.75rem;">
+                                                        <option value="nouveau" {% if fb.status == 'nouveau' %}selected{% endif %}>Nouveau</option>
+                                                        <option value="en_cours" {% if fb.status == 'en_cours' %}selected{% endif %}>En cours</option>
+                                                        <option value="traite" {% if fb.status == 'traite' %}selected{% endif %}>Traité</option>
+                                                    </select>
+                                                </div>
+                                            </form>
+
+                                            <!-- Suppression -->
+                                            <form action="{{ url_for('admin.delete_feedback', feedback_id=fb.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Confirmer la suppression de ce retour ?');">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="button is-white has-text-danger" style="border: 1px solid #e2e8f0;" title="Supprimer">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="p-5 text-center has-text-centered has-text-grey">
+                                    Aucun retour utilisateur ne correspond à ces critères.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- MODALE DE LECTURE COMPLÈTE DU RETOUR -->
+<div id="feedbackDetailModal" class="modal">
+    <div class="modal-background" onclick="closeFeedbackModal()"></div>
+    <div class="modal-card" style="border-radius: 8px; overflow: hidden; max-width: 640px;">
+        <header class="modal-card-head" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+            <p class="modal-card-title is-size-6" style="font-weight: 800; color: #0f172a;">
+                Détail du retour utilisateur
+            </p>
+            <button class="delete" aria-label="close" onclick="closeFeedbackModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            <div class="p-3 mb-4" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                <div class="level is-mobile mb-2">
+                    <div class="level-left">
+                        <span id="modalCategoryBadge" class="tag is-rounded is-small"></span>
+                        <span id="modalDate" class="is-size-7 has-text-grey ml-2"></span>
+                    </div>
+                    <div class="level-right">
+                        <span id="modalStatusBadge" class="tag is-rounded is-small"></span>
+                    </div>
+                </div>
+
+                <div class="is-size-7 has-text-grey mb-1">Auteur :</div>
+                <div class="has-text-weight-bold mb-2" id="modalAuthor"></div>
+
+                <div class="is-size-7 has-text-grey mb-1">Sujet :</div>
+                <div class="has-text-weight-bold" id="modalSubject" style="color: #0f172a;"></div>
+            </div>
+
+            <div class="mb-4">
+                <label class="label is-size-7 has-text-grey mb-1">Message :</label>
+                <div id="modalMessage" class="p-3" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; color: #1e293b;"></div>
+            </div>
+
+            <div class="p-3" style="background: #f1f5f9; border-radius: 6px; font-size: 0.78rem; color: #475569;">
+                <div class="mb-1"><strong>Page signalée :</strong> <span id="modalPageUrl">-</span></div>
+                <div><strong>Navigateur :</strong> <span id="modalUserAgent">-</span></div>
+            </div>
+        </section>
+        <footer class="modal-card-foot is-justify-content-space-between" style="border-top: 1px solid #e2e8f0;">
+            <a id="modalReplyBtn" href="#" class="button is-small is-link">
+                <span class="icon is-small"><i class="fas fa-reply"></i></span>
+                <span>Répondre par e-mail</span>
+            </a>
+            <button class="button is-small is-light" onclick="closeFeedbackModal()">Fermer</button>
+        </footer>
+    </div>
+</div>
+
+<script>
+    function openFeedbackModalFromData(data) {
+        document.getElementById('modalSubject').textContent = data.subject || "";
+        document.getElementById('modalMessage').textContent = data.message || "";
+        document.getElementById('modalAuthor').textContent = `${data.authorName} (${data.authorEmail || 'Non renseigné'})`;
+        document.getElementById('modalDate').textContent = data.date || "";
+        document.getElementById('modalPageUrl').textContent = data.pageUrl || "Non spécifiée";
+        document.getElementById('modalUserAgent').textContent = data.userAgent || "Non spécifié";
+
+        const catBadge = document.getElementById('modalCategoryBadge');
+        if (data.category === 'bug') {
+            catBadge.className = 'tag is-danger is-light is-rounded';
+            catBadge.textContent = 'Anomalie / Bug';
+        } else if (data.category === 'suggestion') {
+            catBadge.className = 'tag is-info is-light is-rounded';
+            catBadge.textContent = 'Suggestion';
+        } else {
+            catBadge.className = 'tag is-light is-rounded';
+            catBadge.textContent = 'Avis général';
+        }
+
+        const statBadge = document.getElementById('modalStatusBadge');
+        if (data.status === 'nouveau') {
+            statBadge.className = 'tag is-warning is-light is-rounded';
+            statBadge.textContent = 'Nouveau';
+        } else if (data.status === 'en_cours') {
+            statBadge.className = 'tag is-link is-light is-rounded';
+            statBadge.textContent = 'En cours';
+        } else {
+            statBadge.className = 'tag is-success is-light is-rounded';
+            statBadge.textContent = 'Traité';
+        }
+
+        const replyBtn = document.getElementById('modalReplyBtn');
+        if (data.authorEmail) {
+            replyBtn.href = `mailto:${data.authorEmail}?subject=Re: [Retour Livres en Classe] ${encodeURIComponent(data.subject || '')}`;
+            replyBtn.style.display = 'inline-flex';
+        } else {
+            replyBtn.style.display = 'none';
+        }
+
+        document.getElementById('feedbackDetailModal').classList.add('is-active');
+    }
+
+    function closeFeedbackModal() {
+        document.getElementById('feedbackDetailModal').classList.remove('is-active');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Notification dismissal
+        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+            const $notification = $delete.parentNode;
+            $delete.addEventListener('click', () => {
+                $notification.parentNode.removeChild($notification);
+            });
+        });
+
+        // Gestionnaire d'ouverture de modale sans bug d'échappement
+        document.querySelectorAll('.js-open-feedback').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const scriptEl = document.getElementById(targetId);
+                if (scriptEl) {
+                    try {
+                        const data = JSON.parse(scriptEl.textContent);
+                        openFeedbackModalFromData(data);
+                    } catch (e) {
+                        console.error("Erreur parsing feedback data:", e);
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

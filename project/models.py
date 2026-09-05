@@ -27,6 +27,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
     is_verified = db.Column(db.Boolean, default=False)
+    newsletter_subscribed = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
@@ -39,6 +40,10 @@ class User(UserMixin, db.Model):
     )  # User can have many students
     # One-to-Many relationship with tags
     tags = relationship("Tags", backref="user", lazy=True)  # User can have many tags
+    # One-to-Many relationship with feedbacks
+    feedbacks = relationship(
+        "Feedback", backref="user", lazy=True, cascade="all, delete-orphan"
+    )
 
     def get_verification_token(self):
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
@@ -46,7 +51,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def validate_verification_token(token: str, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return None
@@ -72,7 +77,7 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def validate_reset_password_token(token: str, user_id: int):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
 
         if not user:
             return None
@@ -82,6 +87,28 @@ class User(UserMixin, db.Model):
             email = serializer.loads(
                 token, salt=user.password, max_age=3600
             )  # Token valid for 1 hour
+        except BadSignature:
+            return None
+
+        if email != user.email:
+            return None
+
+        return user
+
+    def get_unsubscribe_token(self):
+        serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
+        return serializer.dumps(self.email, salt="newsletter-unsubscribe")
+
+    @staticmethod
+    def validate_unsubscribe_token(token: str, user_id: int):
+        user = db.session.get(User, user_id)
+
+        if not user:
+            return None
+
+        serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
+        try:
+            email = serializer.loads(token, salt="newsletter-unsubscribe")
         except BadSignature:
             return None
 
@@ -148,3 +175,75 @@ class Tags(db.Model):
     book_tags = relationship(
         "BookTags", backref="tag", lazy=True, cascade="all, delete-orphan"
     )
+
+
+class Feedback(db.Model):
+    __tablename__ = "feedback"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey("user.id"), nullable=False)
+    category = db.Column(
+        db.String(50), nullable=False
+    )  # "suggestion", "bug", "general"
+    subject = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    page_url = db.Column(db.String(255), nullable=True)
+    user_agent = db.Column(db.String(255), nullable=True)
+    status = db.Column(
+        db.String(30), default="nouveau", nullable=False
+    )  # "nouveau", "en_cours", "traite"
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+
+class NewsletterCampaign(db.Model):
+    __tablename__ = "newsletter_campaign"
+    id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String(255), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    template = db.Column(db.String(100), nullable=False)
+    target = db.Column(db.String(50), nullable=False)
+    total_recipients = db.Column(db.Integer, default=0, nullable=False)
+    sent_count = db.Column(db.Integer, default=0, nullable=False)
+    open_count = db.Column(db.Integer, default=0, nullable=False)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+    deliveries = relationship(
+        "NewsletterDelivery",
+        backref="campaign",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
+
+    @property
+    def open_rate(self) -> float:
+        if self.sent_count > 0:
+            return round((self.open_count / self.sent_count) * 100, 1)
+        return 0.0
+
+
+class NewsletterDelivery(db.Model):
+    __tablename__ = "newsletter_delivery"
+    id = db.Column(db.Integer, primary_key=True)
+    campaign_id = db.Column(
+        db.Integer,
+        ForeignKey("newsletter_campaign.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    user_id = db.Column(
+        db.Integer,
+        ForeignKey("user.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    email = db.Column(db.String(255), nullable=False)
+    tracking_token = db.Column(db.String(64), unique=True, index=True, nullable=False)
+    status = db.Column(
+        db.String(30), default="pending", nullable=False
+    )  # "pending", "sent", "failed"
+    sent_at = db.Column(db.DateTime, nullable=True)
+    opened_at = db.Column(db.DateTime, nullable=True)
+    open_count = db.Column(db.Integer, default=0, nullable=False)
+
+    user = relationship("User", backref="newsletter_deliveries", lazy=True)

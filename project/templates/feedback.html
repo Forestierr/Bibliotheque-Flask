@@ -1,0 +1,130 @@
+<!-- templates/feedback.html -->
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Donner votre avis & Signaler un problème - Livres en Classe{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, "Ma Bibliothèque") }}
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container" style="max-width: 760px;">
+
+        <div class="mb-5">
+            <h1 class="title is-3 mb-2" style="color: #0f172a; font-weight: 800;">
+                Donner votre avis & Signaler un problème
+            </h1>
+            <p class="subtitle is-6 has-text-grey">
+                Vos retours d'expérience et signalements d'anomalies permettent d'adapter et de fiabiliser la plateforme pour votre classe.
+            </p>
+        </div>
+
+        {% include 'utils/flash_message.html' %}
+
+        <!-- Carte d'identification -->
+        <div class="box p-3 mb-5 has-background-white-ter" style="border: 1px solid #e2e8f0; border-radius: 6px;">
+            <p class="is-size-7 has-text-grey mb-0">
+                <span class="has-text-weight-semibold" style="color: #0f172a;">Compte émetteur :</span>
+                {{ current_user.name or 'Enseignant' }} ({{ current_user.email }}).
+                Une réponse pourra vous être adressée directement à cette adresse.
+            </p>
+        </div>
+
+        <!-- Formulaire de retour -->
+        <div class="box p-5" style="border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
+            <form action="{{ url_for('main.feedback') }}" method="POST">
+                {% include 'utils/csrf.html' %}
+
+                <!-- 1. Catégorie de retour -->
+                <div class="field mb-5">
+                    <label class="label is-size-6" style="color: #0f172a; font-weight: 700;">
+                        Type de retour
+                    </label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="category" id="categorySelect" onchange="updateCategoryHelp()">
+                                <option value="suggestion" {% if initial_type == 'suggestion' or initial_type == 'idea' %}selected{% endif %}>
+                                    Suggestion d'amélioration (idée, nouvelle fonctionnalité)
+                                </option>
+                                <option value="bug" {% if initial_type == 'bug' %}selected{% endif %}>
+                                    Signalement d'une anomalie technique ou d'un bug
+                                </option>
+                                <option value="general" {% if initial_type == 'general' %}selected{% endif %}>
+                                    Avis général ou remarque sur l'utilisation
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Objet -->
+                <div class="field mb-5">
+                    <label class="label is-size-6" style="color: #0f172a; font-weight: 700;">
+                        Objet du retour
+                    </label>
+                    <div class="control">
+                        <input class="input" type="text" name="subject" id="subjectInput" placeholder="Ex : Amélioration du tri par genre littéraire" required>
+                    </div>
+                </div>
+
+                <!-- 3. Page concernée (optionnelle) -->
+                <div class="field mb-5">
+                    <label class="label is-size-6" style="color: #0f172a; font-weight: 700;">
+                        Page concernée <span class="has-text-grey-light is-size-7">(facultatif)</span>
+                    </label>
+                    <div class="control">
+                        <input class="input" type="text" name="page_url" value="{{ initial_url }}" placeholder="Ex : /dashboard ou /livres">
+                    </div>
+                </div>
+
+                <!-- 4. Description détaillée -->
+                <div class="field mb-5">
+                    <label class="label is-size-6" style="color: #0f172a; font-weight: 700;">
+                        Description détaillée
+                    </label>
+                    <div class="control">
+                        <textarea class="textarea" name="message" id="messageInput" rows="7" placeholder="Décrivez votre idée ou les étapes ayant conduit à l'anomalie..." required></textarea>
+                    </div>
+                    <p class="help has-text-grey" id="categoryHelpText">
+                        Expliquez le besoin dans votre pratique de classe ou ce que vous souhaiteriez voir évoluer.
+                    </p>
+                </div>
+
+                <!-- Bouton de soumission -->
+                <div class="field mt-5">
+                    <div class="control">
+                        <button type="submit" class="button is-link is-fullwidth" style="font-weight: 700;">
+                            Transmettre mon retour
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function updateCategoryHelp() {
+        const cat = document.getElementById('categorySelect').value;
+        const help = document.getElementById('categoryHelpText');
+        const subj = document.getElementById('subjectInput');
+
+        if (cat === 'bug') {
+            help.textContent = "Indiquez ce qui s'est produit, le message d'erreur éventuel et les actions réalisées juste avant le problème.";
+            if (!subj.value) subj.placeholder = "Ex : Erreur lors de l'enregistrement d'un prêt d'élève";
+        } else if (cat === 'suggestion') {
+            help.textContent = "Expliquez le besoin dans votre pratique de classe ou ce que vous souhaiteriez voir évoluer.";
+            if (!subj.value) subj.placeholder = "Ex : Amélioration du tri par genre littéraire";
+        } else {
+            help.textContent = "Partagez votre retour d'expérience global sur la gestion de votre bibliothèque de classe.";
+            if (!subj.value) subj.placeholder = "Ex : Retour sur la prise en main en début d'année";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', updateCategoryHelp);
+</script>
+{% endblock %}

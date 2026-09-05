@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Désabonnement Newsletter - Livres en Classe{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container" style="max-width: 580px; margin: 3rem auto;">
+        <div class="card" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e2e8f0;">
+            <header class="card-header has-background-light py-4 px-5" style="border-bottom: 1px solid #edf2f7;">
+                <div class="is-flex is-align-items-center" style="gap: 12px;">
+                    <div style="width: 42px; height: 42px; border-radius: 10px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-envelope-open-text fa-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="title is-4 mb-0" style="color: #1e293b;">Gestion de la Newsletter</h1>
+                        <p class="subtitle is-7 has-text-grey mb-0">Livres en Classe</p>
+                    </div>
+                </div>
+            </header>
+
+            <div class="card-content p-5">
+                {% if status == 'invalid' %}
+                    <div class="notification is-danger is-light" style="border-radius: 10px;">
+                        <div class="is-flex" style="gap: 10px;">
+                            <span class="icon is-medium has-text-danger"><i class="fas fa-exclamation-triangle fa-lg"></i></span>
+                            <div>
+                                <p class="has-text-weight-bold">Lien invalide ou expiré</p>
+                                <p class="is-size-7">Ce lien de désabonnement n'est pas valide ou l'adresse correspondante est introuvable.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="has-text-centered mt-4">
+                        <a href="{{ url_for('main.index') }}" class="button is-link is-rounded is-outlined">
+                            <span class="icon"><i class="fas fa-home"></i></span>
+                            <span>Retour à l'accueil</span>
+                        </a>
+                    </div>
+
+                {% elif status == 'confirm' %}
+                    <div class="has-text-centered mb-5">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: #fef3c7; color: #d97706; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <i class="fas fa-user-minus fa-2x"></i>
+                        </div>
+                        <h2 class="title is-4 mb-2">Confirmer votre désabonnement</h2>
+                        <p class="has-text-grey is-size-6">
+                            Vous êtes sur le point de désabonner l'adresse :<br>
+                            <strong style="color: #1e293b;">{{ user.email }}</strong>
+                        </p>
+                    </div>
+
+                    <div class="notification is-light mb-5" style="border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;">
+                        <p class="is-size-7 has-text-grey">
+                            <i class="fas fa-info-circle mr-1 has-text-info"></i>
+                            Vous ne recevrez plus nos annonces de nouvelles fonctionnalités, conseils et actualités. Vous continuerez néanmoins à recevoir les e-mails indispensables au fonctionnement de votre compte (réinitialisation de mot de passe, etc.).
+                        </p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('auth.unsubscribe', token=token, user_id=user.id) }}">
+                        <div class="buttons is-centered">
+                            <button type="submit" class="button is-danger is-medium is-rounded is-fullwidth">
+                                <span class="icon"><i class="fas fa-check"></i></span>
+                                <span>Confirmer le désabonnement</span>
+                            </button>
+                            <a href="{{ url_for('main.index') }}" class="button is-light is-rounded is-fullwidth mt-2">
+                                <span>Annuler et garder mon abonnement</span>
+                            </a>
+                        </div>
+                    </form>
+
+                {% elif status == 'unsubscribed' %}
+                    <div class="has-text-centered mb-5">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <i class="fas fa-bell-slash fa-2x"></i>
+                        </div>
+                        <h2 class="title is-4 mb-2">Vous êtes désabonné(e)</h2>
+                        <p class="has-text-grey is-size-6">
+                            L'adresse <strong>{{ user.email }}</strong> a été retirée de nos listes de diffusion.
+                        </p>
+                    </div>
+
+                    <div class="box has-background-white-ter has-text-centered p-4" style="border-radius: 12px;">
+                        <p class="is-size-7 has-text-grey mb-3">Désabonné(e) par erreur ou changé d'avis ?</p>
+                        <form method="POST" action="{{ url_for('auth.resubscribe', token=token, user_id=user.id) }}">
+                            <button type="submit" class="button is-small is-link is-rounded is-outlined">
+                                <span class="icon"><i class="fas fa-undo"></i></span>
+                                <span>Me réabonner à la newsletter</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="has-text-centered mt-5">
+                        <a href="{{ url_for('main.index') }}" class="button is-light is-rounded">
+                            <span class="icon"><i class="fas fa-home"></i></span>
+                            <span>Retour à l'accueil</span>
+                        </a>
+                    </div>
+
+                {% elif status == 'already_unsubscribed' %}
+                    <div class="has-text-centered mb-5">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; color: #64748b; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                        <h2 class="title is-4 mb-2">Déjà désabonné(e)</h2>
+                        <p class="has-text-grey is-size-6">
+                            L'adresse <strong>{{ user.email }}</strong> ne reçoit actuellement aucune newsletter.
+                        </p>
+                    </div>
+
+                    <div class="box has-background-white-ter has-text-centered p-4" style="border-radius: 12px;">
+                        <p class="is-size-7 has-text-grey mb-3">Souhaitez-vous réactiver la réception des nouveautés ?</p>
+                        <form method="POST" action="{{ url_for('auth.resubscribe', token=token, user_id=user.id) }}">
+                            <button type="submit" class="button is-small is-link is-rounded">
+                                <span class="icon"><i class="fas fa-envelope"></i></span>
+                                <span>Réactiver mon abonnement</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="has-text-centered mt-5">
+                        <a href="{{ url_for('main.index') }}" class="button is-light is-rounded">
+                            <span class="icon"><i class="fas fa-home"></i></span>
+                            <span>Retour au site</span>
+                        </a>
+                    </div>
+
+                {% elif status == 'resubscribed' %}
+                    <div class="has-text-centered mb-5">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <i class="fas fa-bell fa-2x"></i>
+                        </div>
+                        <h2 class="title is-4 mb-2">Réabonnement confirmé !</h2>
+                        <p class="has-text-grey is-size-6">
+                            L'adresse <strong>{{ user.email }}</strong> recevra à nouveau les prochaines lettres d'information.
+                        </p>
+                    </div>
+
+                    <div class="has-text-centered mt-5">
+                        <a href="{{ url_for('main.index') }}" class="button is-link is-rounded">
+                            <span class="icon"><i class="fas fa-home"></i></span>
+                            <span>Retour à Livres en Classe</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

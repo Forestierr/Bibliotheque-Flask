@@ -196,6 +196,28 @@
                         </ul>
                     </div>
 
+                    <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
+
+                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">Communications & Newsletter</h3>
+                    <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="field">
+                            <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+                                <label class="checkbox has-text-weight-bold" style="cursor: pointer; display: flex; align-items: center; gap: 0.6rem; color: hsl(210, 40%, 20%);">
+                                    <input type="checkbox" name="newsletter_subscribed" value="1" {% if user.newsletter_subscribed %}checked{% endif %} style="transform: scale(1.2); cursor: pointer;">
+                                    <span>Recevoir la newsletter et les actualités par e-mail</span>
+                                </label>
+                                {% if user.newsletter_subscribed %}
+                                    <span class="tag is-success is-light is-rounded">Abonné</span>
+                                {% else %}
+                                    <span class="tag is-grey is-light is-rounded">Désabonné</span>
+                                {% endif %}
+                            </div>
+                            <p class="has-text-grey is-size-7 ml-5" style="line-height: 1.5;">
+                                Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous désabonner à tout moment.
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="field mt-5">
                         <div class="control">
                             <button class="button is-link is-rounded">

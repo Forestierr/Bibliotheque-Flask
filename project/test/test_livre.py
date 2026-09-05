@@ -9,8 +9,7 @@ from project.livre import get_book_from_api
 
 @pytest.fixture
 def app():
-    app = create_app()
-    app.config.update(
+    app = create_app(
         {
             "TESTING": True,
             "WTF_CSRF_ENABLED": False,

@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 
 def send_email_async(app, msg):
     with app.app_context():
-        mail.send(msg)
+        try:
+            mail.send(msg)
+        except Exception:
+            logger.exception("Erreur lors de l'envoi d'email async")
 
 
 def send_email(subject, sender, recipients, text_body):

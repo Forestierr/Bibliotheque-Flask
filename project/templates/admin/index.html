@@ -28,8 +28,17 @@
             </div>
             <div class="level-right">
                 <div class="level-item">
+                    <a href="{{ url_for('admin.feedbacks') }}" class="button is-light" style="border: 1px solid #cbd5e1;">
+                        <span class="icon"><i class="fas fa-comment-alt"></i></span>
+                        <span>Retours & Bugs</span>
+                        {% if new_feedbacks_count and new_feedbacks_count > 0 %}
+                            <span class="tag is-warning is-rounded ml-2" style="font-weight: 700;">{{ new_feedbacks_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+                <div class="level-item">
                     <a href="{{ url_for('admin.emails') }}" class="button is-link">
-                        <span class="icon"><i class="fas fa-envelope"></i></span>
+                        <span class="icon"><i class="fas fa-paper-plane"></i></span>
                         <span>Envoyer une Newsletter</span>
                     </a>
                 </div>
@@ -54,6 +63,7 @@
                             <th>Email</th>
                             <th>Nom</th>
                             <th>Statut</th>
+                            <th>Newsletter</th>
                             <th>Livres</th>
                             <th>Élèves</th>
                             <th>Actions</th>
@@ -70,6 +80,17 @@
                                     <span class="tag is-success is-light">Vérifié</span>
                                 {% else %}
                                     <span class="tag is-warning is-light">Non vérifié</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if u.newsletter_subscribed %}
+                                    <span class="tag is-success is-light" title="Abonné à la newsletter">
+                                        <i class="fas fa-bell mr-1"></i> Abonné
+                                    </span>
+                                {% else %}
+                                    <span class="tag is-light" title="Désabonné de la newsletter">
+                                        <i class="fas fa-bell-slash mr-1"></i> Non
+                                    </span>
                                 {% endif %}
                             </td>
                             <td>{{ u.books|length }}</td>
