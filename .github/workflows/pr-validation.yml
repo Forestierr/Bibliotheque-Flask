@@ -36,10 +36,11 @@ jobs:
       - name: Verify compiled translations (.mo) are up to date
         run: |
           pybabel compile -d project/translations
-          if [ -n "$(git status --porcelain -uall project/translations/)" ]; then
+          MO_CHANGES=$(git status --porcelain -uall project/translations/ | grep '\.mo$' || true)
+          if [ -n "$MO_CHANGES" ]; then
             echo "::error::Les fichiers de traduction compilés (.mo) sont manquants ou ne sont pas à jour avec les fichiers .po."
             echo "Veuillez exécuter 'pybabel compile -d project/translations' et commiter les fichiers .mo générés."
-            git status --porcelain -uall project/translations/
+            echo "$MO_CHANGES"
             exit 1
           fi
 
