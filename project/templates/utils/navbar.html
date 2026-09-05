@@ -169,39 +169,39 @@
         <div class="navbar-end" style="align-items: center;">
             <a href="{{ url_for('livre.livre_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'livre.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-book"></i></span>
-                <span>Livres</span>
+                <span>{{ _('Livres') }}</span>
             </a>
             <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'eleve.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-users"></i></span>
-                <span>Élèves</span>
+                <span>{{ _('Élèves') }}</span>
             </a>
             <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'emprunt.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-exchange-alt"></i></span>
-                <span>Emprunts</span>
+                <span>{{ _('Emprunts') }}</span>
             </a>
 
             <!-- Liens directs visibles uniquement sur mobile -->
             <a href="{{ url_for('main.aide') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint == 'main.aide' %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-question-circle"></i></span>
-                <span>Aide</span>
+                <span>{{ _('Aide') }}</span>
             </a>
             <a href="{{ url_for('main.feedback') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint == 'main.feedback' %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-comment-alt"></i></span>
-                <span>Avis & Bugs</span>
+                <span>{{ _('Avis & Bugs') }}</span>
             </a>
             <a href="{{ url_for('auth.reglage') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint and 'auth.reglage' == request.endpoint %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-cog"></i></span>
-                <span>Réglages</span>
+                <span>{{ _('Réglages') }}</span>
             </a>
             <a href="{{ url_for('auth.logout') }}" class="navbar-item navbar-item-custom mobile-only-nav style-danger" style="color: hsl(0, 60%, 50%) !important;">
                 <span class="icon mr-2" style="color: hsl(0, 60%, 50%);"><i class="fas fa-sign-out-alt"></i></span>
-                <span>Déconnexion</span>
+                <span>{{ _('Déconnexion') }}</span>
             </a>
 
             <!-- Avatar dropdown (Desktop uniquement) -->
             <div class="navbar-item desktop-only-avatar" style="padding-right: 0.5rem;">
                 <div class="avatar-wrapper" id="avatarWrapper">
-                    <button class="avatar-btn" id="avatarBtn" aria-label="Menu utilisateur" aria-haspopup="true" aria-expanded="false">
+                    <button class="avatar-btn" id="avatarBtn" aria-label="{{ _('Menu utilisateur') }}" aria-haspopup="true" aria-expanded="false">
                         {{ current_user.name[0]|upper if current_user.name else '?' }}
                     </button>
                     <div class="avatar-dropdown" id="avatarDropdown" role="menu">
@@ -210,20 +210,28 @@
                         </div>
                         <a href="{{ url_for('main.aide') }}" class="avatar-dropdown-item" role="menuitem">
                             <span class="icon"><i class="fas fa-question-circle"></i></span>
-                            Aide
+                            {{ _('Aide') }}
                         </a>
                         <a href="{{ url_for('main.feedback') }}" class="avatar-dropdown-item" role="menuitem">
                             <span class="icon"><i class="fas fa-comment-alt"></i></span>
-                            Avis & Bugs
+                            {{ _('Avis & Bugs') }}
                         </a>
                         <a href="{{ url_for('auth.reglage') }}" class="avatar-dropdown-item" role="menuitem">
                             <span class="icon"><i class="fas fa-cog"></i></span>
-                            Réglages
+                            {{ _('Réglages') }}
                         </a>
+                        <div class="avatar-dropdown-divider"></div>
+                        <!-- Sélecteur de langue -->
+                        <div class="avatar-dropdown-item" style="gap: 0.4rem; padding: 0.5rem 1rem;">
+                            <span class="icon"><i class="fas fa-globe"></i></span>
+                            <a href="{{ url_for('main.set_language', lang='fr') }}" title="Français" style="text-decoration: none; font-size: 1.1rem; {% if get_locale() == 'fr' %}opacity:1;{% else %}opacity:0.45;{% endif %}">🇫🇷</a>
+                            <a href="{{ url_for('main.set_language', lang='en') }}" title="English" style="text-decoration: none; font-size: 1.1rem; {% if get_locale() == 'en' %}opacity:1;{% else %}opacity:0.45;{% endif %}">🇬🇧</a>
+                            <a href="{{ url_for('main.set_language', lang='de') }}" title="Deutsch" style="text-decoration: none; font-size: 1.1rem; {% if get_locale() == 'de' %}opacity:1;{% else %}opacity:0.45;{% endif %}">🇩🇪</a>
+                        </div>
                         <div class="avatar-dropdown-divider"></div>
                         <a href="{{ url_for('auth.logout') }}" class="avatar-dropdown-item logout" role="menuitem">
                             <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
-                            Déconnexion
+                            {{ _('Déconnexion') }}
                         </a>
                     </div>
                 </div>
@@ -233,24 +241,30 @@
         <!-- Menu deconnecte (Visiteur / SEO) -->
         <div class="navbar-end">
             <a href="{{ url_for('main.enseignants_index') }}" class="navbar-item navbar-item-custom {% if 'enseignants' in request.path %}is-active-link{% endif %}">
-                Guides
+                {{ _('Guides') }}
             </a>
             <a href="{{ url_for('main.ressources_index') }}" class="navbar-item navbar-item-custom {% if 'ressources' in request.path %}is-active-link{% endif %}">
-                Ressources
+                {{ _('Ressources') }}
             </a>
             <a href="{{ url_for('main.blog_index') }}" class="navbar-item navbar-item-custom {% if 'blog' in request.path %}is-active-link{% endif %}">
                 Blog
             </a>
             <a href="{{ url_for('main.apropos') }}" class="navbar-item navbar-item-custom {% if 'apropos' in request.path %}is-active-link{% endif %}">
-                À propos
+                {{ _('À propos') }}
             </a>
+            <!-- Sélecteur de langue (menu public) -->
+            <div class="navbar-item" style="gap: 0.3rem;">
+                <a href="{{ url_for('main.set_language', lang='fr') }}" title="Français" style="text-decoration: none; font-size: 1.1rem; {% if get_locale() == 'fr' %}opacity:1;{% else %}opacity:0.45;{% endif %}">🇫🇷</a>
+                <a href="{{ url_for('main.set_language', lang='en') }}" title="English" style="text-decoration: none; font-size: 1.1rem; {% if get_locale() == 'en' %}opacity:1;{% else %}opacity:0.45;{% endif %}">🇬🇧</a>
+                <a href="{{ url_for('main.set_language', lang='de') }}" title="Deutsch" style="text-decoration: none; font-size: 1.1rem; {% if get_locale() == 'de' %}opacity:1;{% else %}opacity:0.45;{% endif %}">🇩🇪</a>
+            </div>
             <div class="navbar-item">
                 <div class="buttons">
                     <a href="{{ url_for('auth.login') }}" class="button is-rounded is-light">
-                        <span>Se connecter</span>
+                        <span>{{ _('Se connecter') }}</span>
                     </a>
                     <a href="{{ url_for('auth.signup') }}" class="button is-rounded is-link">
-                        <strong>Essayer gratuitement</strong>
+                        <strong>{{ _('Essayer gratuitement') }}</strong>
                     </a>
                 </div>
             </div>

@@ -5,7 +5,7 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
@@ -13,9 +13,9 @@
 <div class="section">
     <div class="columns login-container" style="align-items: center;">
         <div class="column is-half is-hidden-mobile left-side">
-            <h1 class="title">Bienvenu</h1>
+            <h1 class="title">{{ _("Bienvenu") }}</h1>
             <h3 class="subtitle is-3">
-                Créer un compte pour gérer vos livres en toute simplicité.
+                {{ _("Créer un compte pour gérer vos livres en toute simplicité.") }}
             </h3>
 
             <div class="columns" style="align-items: center;">
@@ -27,41 +27,41 @@
                     </figure>
                 </div>
                 <div class="column">
-                    <p class="subtitle">Gérez vos livres en toute simplicité.</p>
+                    <p class="subtitle">{{ _("Gérez vos livres en toute simplicité.") }}</p>
                 </div>
             </div>
         </div>
         <div class="column is-half right-side">
             <div class="container box" style="width: 80%; max-width: 400px;">
-                <h2 class="title is-4 has-text-centered">Créer un compte</h2>
+                <h2 class="title is-4 has-text-centered">{{ _("Créer un compte") }}</h2>
 
                 {% include "utils/flash_message.html" %}
 
                 <form method="POST" action="/signup">
     {% include 'utils/csrf.html' %}
                     <div class="field">
-                        <label class="label">Email</label>
+                        <label class="label">{{ _("Email") }}</label>
                         <div class="control">
-                            <input class="input" type="email" name="email" placeholder="Votre email" required>
+                            <input class="input" type="email" name="email" placeholder="{{ _('Votre email') }}" required>
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Nom</label>
+                        <label class="label">{{ _("Nom") }}</label>
                         <div class="control">
-                            <input class="input" type="text" name="name" placeholder="Votre nom" required>
+                            <input class="input" type="text" name="name" placeholder="{{ _('Votre nom') }}" required>
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Mot de passe</label>
+                        <label class="label">{{ _("Mot de passe") }}</label>
                         <div class="control">
-                            <input class="input" type="password" name="password" placeholder="Votre mot de passe" required>
+                            <input class="input" type="password" name="password" placeholder="{{ _('Votre mot de passe') }}" required>
                         </div>
                     </div>
                     {% if hcaptcha_site_key %}
                     <div class="field h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
                     {% endif %}
                     <div class="field has-text-centered">
-                        <button class="button is-primary is-fullwidth">S'inscrire</button>
+                        <button class="button is-primary is-fullwidth">{{ _("S'inscrire") }}</button>
                     </div>
                 </form>
             </div>

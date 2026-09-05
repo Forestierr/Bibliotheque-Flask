@@ -5,14 +5,14 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ajouter un élève") }}
+    {{ navbar(current_user, _("Ajouter un élève")) }}
 {% endblock %}
 
 {% block content %}
 <div class="section">
     <div class="columns login-container" style="align-items: center;">
         <div class="column is-half is-hidden-mobile left-side">
-            <h1 class="title">Ajouter un élève</h1>
+            <h1 class="title">{{ _("Ajouter un élève") }}</h1>
 
             <div class="columns" style="align-items: center;">
                 <div class="column is-narrow">
@@ -23,7 +23,7 @@
                     </figure>
                 </div>
                 <div class="column">
-                    <p class="subtitle">Ajoute un nouveau lecteur à ta bibliothèque, c'est le moment !</p>
+                    <p class="subtitle">{{ _("Ajoute un nouveau lecteur à ta bibliothèque, c'est le moment !") }}</p>
                 </div>
 
 
@@ -31,22 +31,22 @@
         </div>
         <div class="column is-half right-side">
             <div class="container box" style="width: 80%; max-width: 400px;">
-                <h2 class="title is-4 has-text-centered">Nouvel·le élève</h2>
+                <h2 class="title is-4 has-text-centered">{{ _("Nouvel·le élève") }}</h2>
 
                 {% include "utils/flash_message.html" %}
 
                 <form method="POST" action="/eleve/ajout">
     {% include 'utils/csrf.html' %}
                     <div class="field">
-                        <label class="label">Nom de l'élève</label>
+                        <label class="label">{{ _("Nom de l'élève") }}</label>
                         <div class="control">
-                            <input class="input" type="text" name="name" placeholder="Nom" autofocus="">
+                            <input class="input" type="text" name="name" placeholder="{{ _('Nom') }}" autofocus="">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Prénom de l'élève</label>
+                        <label class="label">{{ _("Prénom de l'élève") }}</label>
                         <div class="control">
-                            <input class="input" type="text" name="firstname" placeholder="Prénom">
+                            <input class="input" type="text" name="firstname" placeholder="{{ _('Prénom') }}">
                         </div>
                     </div>
 
@@ -55,10 +55,10 @@
                     <div class="field has-text-centered">
                         <div class="columns is-centered">
                             <div class="column is-6">
-                                <a class="button is-light is-fullwidth" href="/eleve">Annuler</a>
+                                <a class="button is-light is-fullwidth" href="/eleve">{{ _("Annuler") }}</a>
                             </div>
                             <div class="column is-6">
-                                <button class="button is-primary is-fullwidth">Ajouter</button>
+                                <button class="button is-primary is-fullwidth">{{ _("Ajouter") }}</button>
                             </div>
                         </div>
                     </div>

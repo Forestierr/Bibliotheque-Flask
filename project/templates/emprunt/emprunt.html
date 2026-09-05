@@ -6,13 +6,13 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Mes emprunts") }}
+    {{ navbar(current_user, _("Mes emprunts")) }}
 {% endblock %}
 
 {% block content %}
 
     <h1 class="title is-1">
-        Emprunts
+        {{ _("Emprunts") }}
     </h1>
 
     {% include "utils/flash_message.html" %}
@@ -23,8 +23,8 @@
                 <article class="media">
                     <div class="media-content has-text-centered is-size-5">
                       <div class="content">
-                        <p>Vous n'avez pas encore prèté de livre. <br>
-                        Pour prèter un livre, rendez-vous sur la page du livre et assignez le a un élève.</p>
+                        <p>{{ _("Vous n'avez pas encore prêté de livre.") }} <br>
+                        {{ _("Pour prêter un livre, rendez-vous sur la page du livre et assignez-le à un élève.") }}</p>
                       </div>
                     </div>
                     <div class="media-right is-hidden-mobile">
@@ -42,7 +42,7 @@
     {% else %}
         <div class="columns is-mobile">
             <div class="column">
-                {{ search_bar("Rechercher un emprunt", True, "/emprunt/search-preview", "/emprunt/search") }}
+                {{ search_bar(_("Rechercher un emprunt"), True, "/emprunt/search-preview", "/emprunt/search") }}
             </div>
             <div class="column is-narrow has-text-right">
                 <div class="select is-rounded">
@@ -51,8 +51,8 @@
                         hx-trigger="change"
                         hx-target="#search_list"
                         hx-include="[name='search'], [name='n_results'], [name='sort']">
-                        <option class="is-hidden-tablet" value="0" selected>Tout</option>
-                        <option class="is-hidden-tablet" value="1">Actifs</option>
+                        <option class="is-hidden-tablet" value="0" selected>{{ _("Tout") }}</option>
+                        <option class="is-hidden-tablet" value="1">{{ _("Actifs") }}</option>
                     </select>
                 </div>
 

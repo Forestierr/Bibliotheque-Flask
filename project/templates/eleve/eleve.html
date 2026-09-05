@@ -6,13 +6,13 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Mes Élèves") }}
+    {{ navbar(current_user, _("Mes Élèves")) }}
 {% endblock %}
 
 {% block content %}
 
 <h1 class="title is-1">
-    Mes élèves
+    {{ _("Mes élèves") }}
 </h1>
 
 <div class="block">
@@ -21,7 +21,7 @@
             <span class="icon">
                 <i class="fas fa-plus"></i>
             </span>
-            <span>Ajouter un élève</span>
+            <span>{{ _("Ajouter un élève") }}</span>
         </div>
     </a>
 </div>
@@ -32,8 +32,8 @@
         <article class="media">
             <div class="media-content has-text-centered is-size-5">
               <div class="content">
-                <p>Vous n'avez pas encore ajouter vos élèves. <br>
-                Pour ajouter un élève, cliquez sur le <strong>bouton</strong> ci-dessus.</p>
+                <p>{{ _("Vous n'avez pas encore ajouté vos élèves.") }} <br>
+                {{ _("Pour ajouter un élève, cliquez sur le") }} <strong>{{ _("bouton") }}</strong> {{ _("ci-dessus.") }}</p>
               </div>
             </div>
             <div class="media-right is-hidden-mobile">
@@ -51,7 +51,7 @@
 {% else %}
 
 <div class="block">
-    {{ search_bar("Rechercher un élève", False, "/eleve/search-preview", "/eleve/search") }}
+    {{ search_bar(_("Rechercher un élève"), False, "/eleve/search-preview", "/eleve/search") }}
 </div>
 
 <div id="search_list">

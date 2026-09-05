@@ -33,6 +33,16 @@ jobs:
       - name: Lint with Ruff
         run: ruff check project/
 
+      - name: Verify compiled translations (.mo) are up to date
+        run: |
+          pybabel compile -d project/translations
+          if [ -n "$(git status --porcelain -uall project/translations/)" ]; then
+            echo "::error::Les fichiers de traduction compilés (.mo) sont manquants ou ne sont pas à jour avec les fichiers .po."
+            echo "Veuillez exécuter 'pybabel compile -d project/translations' et commiter les fichiers .mo générés."
+            git status --porcelain -uall project/translations/
+            exit 1
+          fi
+
       - name: Run tests with pytest
         run: pytest project/test/
         env:

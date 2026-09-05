@@ -5,7 +5,7 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Mes Élèves") }}
+    {{ navbar(current_user, _("Mes Élèves")) }}
 {% endblock %}
 
 {% block content %}
@@ -14,13 +14,13 @@
         {{ student.name }} {{ student.firstname }}
     </h1>
 
-    <h4 class="subtitle is-4">Nombre de livres lus : <strong>{{ books|count + old_books|count }}</strong></h4>
+    <h4 class="subtitle is-4">{{ _("Nombre de livres lus :") }} <strong>{{ books|count + old_books|count }}</strong></h4>
 
     {% if books %}
     {% for book in books %}
         <div class="container block">
         {% if loop.first %}
-            <h3 class="subtitle is-3">Livre{% if books|count > 1 %}s{% endif %} actuellement emprunté{% if books|count > 1 %}s{% endif %} ({{ books|count }})</h3>
+            <h3 class="subtitle is-3">{% if books|count > 1 %}{{ _("Livres actuellement empruntés") }}{% else %}{{ _("Livre actuellement emprunté") }}{% endif %} ({{ books|count }})</h3>
         {% endif %}
             <hr style="margin: 5px 0 5px 0"/>
             <div class="container" style="margin-bottom: 10px">
@@ -35,7 +35,7 @@
                       <div class="modal-content">
                         <div class="modal-card">
                             <header class="modal-card-head">
-                                <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                                <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                             </header>
                             <footer class="modal-card-foot">
                                 <form action="/emprunt/{{ book.Loan.id }}/delete" method="POST" style="display:inline;">
@@ -45,11 +45,11 @@
                                             <span class="icon has-text-info">
                                                 <i class="fa-solid fa-trash has-text-black"></i>
                                             </span>
-                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                            <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'emprunt") }}</span>
                                         </div>
                                     </button>
                                 </form>
-                                <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">Annuler</a>
+                                <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
                             </footer>
                         </div>
                       </div>
@@ -70,7 +70,7 @@
 
                 <div class="columns is-mobile" style="margin-bottom: 0;">
                     <div class="column">
-                        <p>Emprunté le {{ book.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                        <p>{{ _("Emprunté le") }} {{ book.Loan.date_loan.strftime('%d %b %Y') }}</p>
                     </div>
                     <div class="column has-text-right">
                         <button class="button is-danger is-small showModal" href="#delete-moda-l-{{ loop.index }}">
@@ -94,8 +94,8 @@
                 <article class="media">
                     <div class="media-content has-text-centered is-size-5">
                       <div class="content">
-                          <p>{{ student.name }} {{ student.firstname }} ne lit actuellement aucun livre. <br>
-                          Pour lui assigner un livre, rendez-vous sur la page d'un livre.</p>
+                          <p>{{ student.name }} {{ student.firstname }} {{ _("ne lit actuellement aucun livre.") }} <br>
+                          {{ _("Pour lui assigner un livre, rendez-vous sur la page d'un livre.") }}</p>
                       </div>
                     </div>
                     <div class="media-right is-hidden-mobile">
@@ -116,7 +116,7 @@
     {% for book in old_books %}
         <div class="container block">
         {% if loop.first %}
-            <h3 class="subtitle is-3">Livre{% if old_books|count > 1 %}s{% endif %} emprunté{% if old_books|count > 1 %}s{% endif %} précédement ({{ old_books|count }})</h3>
+            <h3 class="subtitle is-3">{% if old_books|count > 1 %}{{ _("Livres empruntés précédemment") }}{% else %}{{ _("Livre emprunté précédemment") }}{% endif %} ({{ old_books|count }})</h3>
         {% endif %}
             <hr style="margin: 5px 0 5px 0"/>
             <div class="container" style="margin-bottom: 10px">
@@ -131,7 +131,7 @@
                       <div class="modal-content">
                         <div class="modal-card">
                             <header class="modal-card-head">
-                                <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                                <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                             </header>
                             <footer class="modal-card-foot">
                                 <form action="/emprunt/{{ book.Loan.id }}/delete" method="POST" style="display:inline;">
@@ -141,11 +141,11 @@
                                             <span class="icon has-text-info">
                                                 <i class="fa-solid fa-trash has-text-black"></i>
                                             </span>
-                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                            <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'emprunt") }}</span>
                                         </div>
                                     </button>
                                 </form>
-                                <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">Annuler</a>
+                                <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
                             </footer>
                         </div>
                       </div>
@@ -161,7 +161,7 @@
                     </div>
                 </div>
 
-                <p>Emprunté le {{ book.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                <p>{{ _("Emprunté le") }} {{ book.Loan.date_loan.strftime('%d %b %Y') }}</p>
             </div>
 
             {# Add hr if last element #}
@@ -178,7 +178,7 @@
           <div class="modal-content">
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Supprimer l'élève ?</p>
+                    <p class="modal-card-title">{{ _("Supprimer l'élève ?") }}</p>
                 </header>
                 <footer class="modal-card-foot">
                     <form action="/eleve/{{ student.id }}/delete" method="POST" style="display:inline;">
@@ -188,11 +188,11 @@
                                 <span class="icon has-text-info">
                                     <i class="fas fa-user-slash has-text-black"></i>
                                 </span>
-                                <span class="has-text-black has-text-weight-semibold">Supprimer l'élève</span>
+                                <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'élève") }}</span>
                             </div>
                         </button>
                     </form>
-                    <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">Annuler</a>
+                    <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
                 </footer>
             </div>
             <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
@@ -204,7 +204,7 @@
                 <span class="icon has-text-info">
                     <i class="fas fa-user-slash has-text-black"></i>
                 </span>
-                <span class="has-text-black has-text-weight-semibold">Supprimer l'élève</span>
+                <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'élève") }}</span>
             </div>
         </button>
     </div>

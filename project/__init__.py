@@ -8,7 +8,8 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, request, session
+from flask_babel import Babel
 from flask_login import LoginManager
 from flask_mail import Mail, Message  # noqa: F401
 from flask_migrate import Migrate
@@ -22,6 +23,9 @@ db = SQLAlchemy()
 
 mail = Mail()
 csrf = CSRFProtect()
+babel = Babel()
+
+LANGUAGES = ["fr", "en", "de"]
 
 basedir = Path(__file__).resolve().parent.parent
 load_dotenv(basedir / ".env")
@@ -71,6 +75,21 @@ def create_app(test_config=None):
     csrf.init_app(app)
     Migrate(app, db)
     mail.init_app(app)
+
+    def get_locale():
+        """Détermine la langue active : session > navigateur > fr par défaut."""
+        if "lang" in session:
+            return session["lang"]
+        return request.accept_languages.best_match(LANGUAGES, default="fr")
+
+    babel.init_app(app, locale_selector=get_locale)
+
+    # Rend get_locale et languages disponibles dans tous les templates Jinja2
+    # (y compris dans les macros qui n'héritent pas du context_processor)
+    from flask_babel import get_locale as babel_get_locale
+
+    app.jinja_env.globals["get_locale"] = babel_get_locale
+    app.jinja_env.globals["languages"] = LANGUAGES
 
     app.logger.addHandler(handler)
     mail_handler = MailCriticalHandler(

@@ -14,8 +14,10 @@ from flask import (
     request,
     send_file,
     send_from_directory,
+    session,
     url_for,
 )
+from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from flask_mail import Message
 from sqlalchemy.exc import SQLAlchemyError
@@ -37,6 +39,16 @@ from .query import (
 )
 
 main = Blueprint("main", __name__)
+
+
+@main.route("/set-lang/<lang>")
+def set_language(lang):
+    """Change la langue de l'interface et redirige vers la page précédente."""
+    from . import LANGUAGES
+
+    if lang in LANGUAGES:
+        session["lang"] = lang
+    return redirect(request.referrer or url_for("main.index"))
 
 
 @main.route("/")
@@ -139,7 +151,7 @@ def contact():
         message = request.form.get("message")
 
         if not name or not firstname or not email or not message:
-            flash("Veuillez remplir tous les champs.", "danger")
+            flash(_("Veuillez remplir tous les champs."), "danger")
             return redirect(url_for("main.contact"))
 
         # envoi d'un email à l'administrateur
@@ -160,7 +172,9 @@ def contact():
         send_email_confirmation(name, firstname, email)
 
         flash(
-            "Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation.",
+            _(
+                "Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation."
+            ),
             "success",
         )
 
@@ -221,7 +235,7 @@ def feedback():
 
         if not subject or not message:
             flash(
-                "Veuillez renseigner l'objet et la description de votre retour.",
+                _("Veuillez renseigner l'objet et la description de votre retour."),
                 "danger",
             )
             return redirect(url_for("main.feedback", type=category))
@@ -255,7 +269,9 @@ def feedback():
             )
 
         flash(
-            "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !",
+            _(
+                "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
+            ),
             "success",
         )
         return redirect(url_for("main.feedback"))

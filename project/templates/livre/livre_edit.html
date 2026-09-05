@@ -5,12 +5,12 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Modifer un livre") }}
+    {{ navbar(current_user, _("Modifier un livre")) }}
 {% endblock %}
 
 {% block content %}
     <h1 class="title is-1">
-      Modifier le livre {{ book.title }}
+      {{ _("Modifier le livre") }} {{ book.title }}
     </h1>
 
     {% include "utils/flash_message.html" %}
@@ -19,49 +19,49 @@
         <form action="/livre/{{ book.id }}/edit" method="post">
     {% include 'utils/csrf.html' %}
             <div class="field">
-                <label class="label" for="title">Titre</label>
+                <label class="label" for="title">{{ _("Titre") }}</label>
                 <div class="control">
                     <input class="input" type="text" name="title" id="title" value="{{ book.title }}" required>
                 </div>
             </div>
 
             <div class="field">
-                <label class="label" for="author">Auteur</label>
+                <label class="label" for="author">{{ _("Auteur") }}</label>
                 <div class="control">
                     <input class="input" type="text" name="author" id="author" {% if book.author %}value="{{ book.author }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
-                <label class="label" for="editor">Editeur</label>
+                <label class="label" for="editor">{{ _("Editeur") }}</label>
                 <div class="control">
                     <input class="input" type="text" name="editor" id="editor" {% if book.editor %}value="{{ book.editor }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
-                <label class="label" for="year">Année</label>
+                <label class="label" for="year">{{ _("Année") }}</label>
                 <div class="control">
                     <input class="input" type="number" name="year" id="year" {% if book.year %}value="{{ book.year }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
-                <label class="label" for="type">Genre</label>
+                <label class="label" for="type">{{ _("Genre") }}</label>
                 <div class="control">
                     <input class="input" type="text" name="type" id="type" {% if book.type %}value="{{ book.type }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
-                <label class="label" for="isbn">ISBN</label>
+                <label class="label" for="isbn">{{ _("ISBN") }}</label>
                 <div class="control">
                     <input class="input" type="number" name="isbn" id="isbn" {% if book.isbn %}value="{{ book.isbn }}"{% endif %}>
                 </div>
             </div>
 
             <div class="field">
-                <label class="label" for="tags">Étiquettes</label>
+                <label class="label" for="tags">{{ _("Étiquettes") }}</label>
                 <div class="control">
                     <div class="tags-input-container">
                         <div id="tags-list" class="tags {% if not book_tags %}is-hidden{% endif %}"></div>
@@ -69,7 +69,7 @@
                                 id="tags-input"
                                 class="input"
                                 type="text"
-                                placeholder="Ajouter une étiquette ou une catégorie"
+                                placeholder="{{ _('Ajouter une étiquette ou une catégorie') }}"
                                 autocomplete="off"
                         />
                     </div>
@@ -83,13 +83,13 @@
             </div>
 
             <div class="field">
-                <label class="label" for="students">Élève possédant le livre</label>
+                <label class="label" for="students">{{ _("Élève possédant le livre") }}</label>
                 <div class="select">
                     <select name="student" id="student-select">
                         {% if student %}
                             <option value="{{ student.id }}" selected>{{ student.name }} {{ student.firstname }}</option>
                         {% endif %}
-                        <option value="">--Le livre se trouve dans le bibliothèque--</option>
+                        <option value="">{{ _("-- Le livre se trouve dans la bibliothèque --") }}</option>
                     {% for student in students %}
                         <option value="{{ student.id }}">{{ student.name }} {{ student.firstname }}</option>
                     {% endfor %}
@@ -99,11 +99,11 @@
 
             <div class="field is-grouped">
               <div class="control">
-                <button class="button is-link">Enregistrer</button>
+                <button class="button is-link">{{ _("Enregistrer") }}</button>
               </div>
               <div class="control">
                 <button class="button is-light">
-                    <a href="/livre" class="">Annuler</a>
+                    <a href="/livre" class="">{{ _("Annuler") }}</a>
                 </button>
               </div>
             </div>
@@ -116,7 +116,7 @@
           <div class="modal-content">
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Supprimer le livre</p>
+                    <p class="modal-card-title">{{ _("Supprimer le livre") }}</p>
                 </header>
                 <footer class="modal-card-foot">
                     <form action="/livre/{{ book.id }}/delete" method="POST" style="display:inline;">
@@ -126,11 +126,11 @@
                                 <span class="icon has-text-info">
                                     <i class="fa-solid fa-trash has-text-black"></i>
                                 </span>
-                                <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
+                                <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer le livre") }}</span>
                             </div>
                         </button>
                     </form>
-                    <a href="/livre/{{ book.id }}/edit" class="button is-normal is-responsive">Annuler</a>
+                    <a href="/livre/{{ book.id }}/edit" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
                 </footer>
             </div>
           </div>
@@ -142,7 +142,7 @@
                 <span class="icon has-text-info">
                     <i class="fa-solid fa-trash has-text-black"></i>
                 </span>
-                <span class="has-text-black has-text-weight-semibold">Supprimer le livre</span>
+                <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer le livre") }}</span>
             </div>
         </button>
     </div>
