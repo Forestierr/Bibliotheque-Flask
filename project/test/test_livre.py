@@ -147,3 +147,33 @@ def test_livre_exist_not_found(mock_get_books, mock_user, client):
     response = client.get("/livre/0000000000/exist")
     assert response.status_code == 404
     assert b"Book not found" in response.data
+
+
+# Test existence d'un livre par code-barre personnalisé (BAC-A-001)
+@patch("project.livre.current_user")
+@patch("project.livre.get_books_by_barcode")
+def test_livre_exist_by_barcode(mock_get_barcode, mock_user, client):
+    mock_user.id = 1
+    mock_get_barcode.return_value = [MagicMock(id=99)]
+    response = client.get("/livre/BAC-A-001/exist")
+    assert response.status_code == 200
+    assert b"99" in response.data
+
+
+# Test existence renvoyant flag is_isbn pour code 978...
+@patch("project.livre.current_user")
+@patch("project.livre.get_books_by_barcode", return_value=[])
+@patch("project.livre.get_books_by_isbn", return_value=[])
+def test_livre_exist_is_isbn_flag(mock_isbn, mock_barcode, mock_user, client):
+    mock_user.id = 1
+    # Pour un ISBN officiel non trouvé
+    resp_isbn = client.get("/livre/9782070612758/exist")
+    assert resp_isbn.status_code == 404
+    data_isbn = resp_isbn.get_json()
+    assert data_isbn["is_isbn"] is True
+
+    # Pour un code custom non trouvé
+    resp_custom = client.get("/livre/BAC-A-001/exist")
+    assert resp_custom.status_code == 404
+    data_custom = resp_custom.get_json()
+    assert data_custom["is_isbn"] is False

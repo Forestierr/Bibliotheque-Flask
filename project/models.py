@@ -130,6 +130,7 @@ class Book(db.Model):
     year = db.Column(db.Integer)
     type = db.Column(db.String(100))
     isbn = db.Column(db.String(100), nullable=True)
+    barcode = db.Column(db.String(100), nullable=True, index=True)
 
     user_id = db.Column(
         db.Integer, ForeignKey("user.id")

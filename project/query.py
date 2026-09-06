@@ -102,6 +102,44 @@ def get_books_by_isbn(current_user_id, isbn) -> list:
 
 
 """
+Get a book by its barcode
+    :param current_user_id: the user id
+    :param barcode: the barcode or custom reference
+    :return: the book or None
+"""
+
+
+def get_book_by_barcode(current_user_id, barcode) -> Book:
+    if not barcode:
+        return None
+    book = (
+        db.session.query(Book)
+        .filter(Book.user_id == current_user_id, Book.barcode == barcode)
+        .first()
+    )
+    return book
+
+
+"""
+Get all books by their barcode
+    :param current_user_id: the user id
+    :param barcode: the barcode or custom reference
+    :return: a list of books
+"""
+
+
+def get_books_by_barcode(current_user_id, barcode) -> list:
+    if not barcode:
+        return []
+    books = (
+        db.session.query(Book)
+        .filter(Book.user_id == current_user_id, Book.barcode == barcode)
+        .all()
+    )
+    return books
+
+
+"""
 Get a book by his title
     :param current_user_id: the user id
     :param title: the book title
@@ -731,6 +769,7 @@ def get_search_5_books(current_user_id, search) -> list:
             or_(
                 Book.title.ilike("%" + search + "%"),
                 Book.isbn.ilike("%" + search + "%"),
+                Book.barcode.ilike("%" + search + "%"),
                 Student.name.ilike("%" + search + "%"),
                 Student.firstname.ilike("%" + search + "%"),
             ),
@@ -845,8 +884,13 @@ def search_books_by_types(
 
     if search_type == "titre":
         query = query.filter(Book.title.ilike("%" + search_value + "%"))
-    elif search_type == "isbn":
-        query = query.filter(Book.isbn.ilike("%" + search_value + "%"))
+    elif search_type in ["isbn", "barcode"]:
+        query = query.filter(
+            or_(
+                Book.isbn.ilike("%" + search_value + "%"),
+                Book.barcode.ilike("%" + search_value + "%"),
+            )
+        )
     elif search_type == "eleve":
         query = query.filter(
             or_(
@@ -865,6 +909,7 @@ def search_books_by_types(
             or_(
                 Book.title.ilike("%" + search_value + "%"),
                 Book.isbn.ilike("%" + search_value + "%"),
+                Book.barcode.ilike("%" + search_value + "%"),
                 Student.name.ilike("%" + search_value + "%"),
                 Student.firstname.ilike("%" + search_value + "%"),
                 Tags.name.ilike("%" + search_value + "%"),
@@ -900,6 +945,7 @@ def get_search_5_loans(current_user_id, search) -> list:
             or_(
                 Book.title.ilike("%" + search + "%"),
                 Book.isbn.ilike("%" + search + "%"),
+                Book.barcode.ilike("%" + search + "%"),
                 Student.name.ilike("%" + search + "%"),
                 Student.firstname.ilike("%" + search + "%"),
             ),
@@ -949,8 +995,13 @@ def search_loans_by_types(
 
     if search_type == "titre":
         query = query.filter(Book.title.ilike("%" + search_value + "%"))
-    elif search_type == "isbn":
-        query = query.filter(Book.isbn.ilike("%" + search_value + "%"))
+    elif search_type in ["isbn", "barcode"]:
+        query = query.filter(
+            or_(
+                Book.isbn.ilike("%" + search_value + "%"),
+                Book.barcode.ilike("%" + search_value + "%"),
+            )
+        )
     elif search_type == "eleve":
         query = query.filter(
             or_(
@@ -969,6 +1020,7 @@ def search_loans_by_types(
             or_(
                 Book.title.ilike("%" + search_value + "%"),
                 Book.isbn.ilike("%" + search_value + "%"),
+                Book.barcode.ilike("%" + search_value + "%"),
                 Student.name.ilike("%" + search_value + "%"),
                 Student.firstname.ilike("%" + search_value + "%"),
                 Tags.name.ilike("%" + search_value + "%"),

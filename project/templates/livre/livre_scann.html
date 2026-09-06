@@ -13,20 +13,150 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
     <style>
+        .scanner-container {
+            position: relative;
+            margin-top: 10px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0f172a;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        video {
+            width: 100%;
+            height: auto;
+            max-height: 72vh;
+            min-height: 280px;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* Overlay viseur / hologramme de visée */
+        .scanner-viewfinder-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 40px; /* Dégager les contrôles */
+        }
+
+        .viewfinder-frame {
+            position: relative;
+            width: min(280px, 75%);
+            height: min(200px, 45vh);
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.38);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+
+        /* 4 coins du viseur */
+        .viewfinder-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #ffffff;
+            border-style: solid;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+        }
+        .viewfinder-corner.tl {
+            top: -2px;
+            left: -2px;
+            border-width: 3px 0 0 3px;
+            border-top-left-radius: 8px;
+        }
+        .viewfinder-corner.tr {
+            top: -2px;
+            right: -2px;
+            border-width: 3px 3px 0 0;
+            border-top-right-radius: 8px;
+        }
+        .viewfinder-corner.bl {
+            bottom: -2px;
+            left: -2px;
+            border-width: 0 0 3px 3px;
+            border-bottom-left-radius: 8px;
+        }
+        .viewfinder-corner.br {
+            bottom: -2px;
+            right: -2px;
+            border-width: 0 3px 3px 0;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* Ligne laser animée */
+        .viewfinder-laser {
+            position: absolute;
+            left: 6%;
+            right: 6%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            border-radius: 2px;
+            animation: scanLaser 2.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes scanLaser {
+            0% { top: 12%; opacity: 0.2; }
+            50% { opacity: 0.9; }
+            100% { top: 88%; opacity: 0.2; }
+        }
+
+        /* Hologramme 1D blanc épuré */
+        .hologram-ghost {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 64px;
+            color: #ffffff;
+            animation: hologramPulse 2.6s ease-in-out infinite alternate;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        @keyframes hologramPulse {
+            0% { opacity: 0.22; transform: translate(-50%, -50%) scale(0.98); }
+            100% { opacity: 0.45; transform: translate(-50%, -50%) scale(1.02); }
+        }
+
+        .viewfinder-caption {
+            position: absolute;
+            bottom: -28px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #f8fafc;
+            font-size: 0.78rem;
+            font-weight: 500;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+            letter-spacing: 0.3px;
+        }
+
         .lens-controls {
             position: absolute;
-            bottom: 10px;
+            bottom: 12px;
             width: 100%;
             text-align: center;
             justify-content: center;
+            z-index: 10;
         }
         .lens-controls button {
-            background-color: rgb(0, 0, 0, 0.5);
+            background-color: rgba(15, 23, 42, 0.65);
             color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
         }
         .lens-controls button:hover,
         .lens-controls button:focus {
-            color: gold;
+            color: #ffffff;
+            border-color: #ffffff;
         }
         #barcode-result {
             text-align: center;
@@ -34,16 +164,47 @@
             margin-top: 10px;
             font-weight: bold;
         }
-        video {
-            width: 100%;
-            height: auto;
-            max-height: 75vh;
-            display: block;
-        }
     </style>
 
-    <div class="container is-max-desktop" style="position: relative; margin-top: 10px;">
+    <div class="container is-max-desktop scanner-container">
         <video id="video" autoplay playsinline></video>
+
+        <!-- Viseur / Hologramme de référence -->
+        <div class="scanner-viewfinder-overlay">
+            <div class="viewfinder-frame">
+                <div class="viewfinder-corner tl"></div>
+                <div class="viewfinder-corner tr"></div>
+                <div class="viewfinder-corner bl"></div>
+                <div class="viewfinder-corner br"></div>
+                <div class="viewfinder-laser"></div>
+                
+                <!-- Hologramme 1D blanc épuré -->
+                <div class="hologram-ghost">
+                    <svg viewBox="0 0 120 60" width="100%" height="100%" fill="currentColor">
+                        <rect x="4" y="6" width="3.5" height="48" rx="1"/>
+                        <rect x="11" y="6" width="2" height="48" rx="1"/>
+                        <rect x="16" y="6" width="5" height="48" rx="1"/>
+                        <rect x="24" y="6" width="2" height="48" rx="1"/>
+                        <rect x="29" y="6" width="4" height="48" rx="1"/>
+                        <rect x="36" y="6" width="2" height="48" rx="1"/>
+                        <rect x="41" y="6" width="6" height="48" rx="1"/>
+                        <rect x="50" y="6" width="3" height="48" rx="1"/>
+                        <rect x="56" y="6" width="2" height="48" rx="1"/>
+                        <rect x="61" y="6" width="5" height="48" rx="1"/>
+                        <rect x="69" y="6" width="2" height="48" rx="1"/>
+                        <rect x="74" y="6" width="4" height="48" rx="1"/>
+                        <rect x="81" y="6" width="6" height="48" rx="1"/>
+                        <rect x="90" y="6" width="2" height="48" rx="1"/>
+                        <rect x="95" y="6" width="4.5" height="48" rx="1"/>
+                        <rect x="102" y="6" width="2" height="48" rx="1"/>
+                        <rect x="107" y="6" width="4" height="48" rx="1"/>
+                        <rect x="114" y="6" width="2.5" height="48" rx="1"/>
+                    </svg>
+                </div>
+                
+                <div class="viewfinder-caption">{{ _("Centrez le code-barres dans ce cadre") }}</div>
+            </div>
+        </div>
 
         <div class="lens-controls">
             <div class="buttons is-centered is-flex">
@@ -95,7 +256,7 @@
             <div id="help-content" style="display:none; margin-top: 0.75rem; border-top: 1px solid hsl(210, 50%, 88%); padding-top: 0.75rem;">
                 <ol style="list-style: decimal; margin-left: 1.25rem; line-height: 2;">
                     <li><strong>{{ _("Retournez le livre") }}</strong> {{ _("pour voir le verso (4ème de couverture)") }}</li>
-                    <li>{{ _("Le") }} <strong>{{ _("code-barres ISBN") }}</strong> {{ _("commence par") }} <code>978</code> {{ _("ou") }} <code>979</code></li>
+                    <li>{{ _("Le") }} <strong>{{ _("code-barres") }}</strong> : {{ _("l'ISBN officiel (978...) ou votre étiquette de classe (ex : BAC-A-001)") }}</li>
                     <li>{{ _("Pointez la caméra à") }} <strong>{{ _("environ 15-20 cm") }}</strong> {{ _("du code-barres") }}</li>
                     <li>{{ _("Maintenez l'appareil") }} <strong>{{ _("stable") }}</strong> {{ _("quelques secondes — le scan est automatique") }}</li>
                     <li>{{ _("Si la lumière est faible, utilisez le bouton") }} <span class="icon is-small"><i class="fas fa-bolt"></i></span> <strong>{{ _("torche") }}</strong></li>
@@ -198,7 +359,7 @@
                 numOfWorkers: 8,
                 frequency: 10,
                 decoder: {
-                    readers: ["ean_reader"] // Scanner les codes-barres EAN-13
+                    readers: ["ean_reader", "code_128_reader"] // Scanner les codes EAN-13 et CODE-128
                 },
                 locate: true
             }, function (err) {
@@ -213,42 +374,60 @@
             Quagga.onDetected(onBarcodeDetected);
         }
 
-        function onBarcodeDetected(result) {
-            let code = result.codeResult.code;
+        function isValidCode(code) {
+            if (!code) return false;
+            code = String(code).trim();
+            // 1. ISBN-13 officiel
+            if (isISBN(code)) return true;
+            // 2. Code alphanumérique classe personnalisé (ex: BAC-A-001, LIV-042)
+            if (/^[A-Za-z0-9_-]{3,50}$/.test(code)) return true;
+            return false;
+        }
 
-            if (!isISBN(code)) {
-                console.log("Code-barres invalide : ", code);
+        function isISBN(code) {
+            let clean = String(code).trim().replace(/-/g, "");
+            return clean.length === 13 && (clean.startsWith("978") || clean.startsWith("979"));
+        }
+
+        function onBarcodeDetected(result) {
+            let code = String(result.codeResult.code).trim();
+
+            if (!isValidCode(code)) {
+                console.log("Code-barres ignoré (format non supporté) : ", code);
                 return;
             }
 
             console.log("Code-barres détecté : ", code);
 
-            // does the book exist in the database?
-            // if yes, redirect to the book edit page
-            // if no, redirect to the book creation page
-            // fetch(`/livre/${code}/exist`)
-            fetch("{{ url_for('livre.livre_exist', isbn='ISBN') }}".replace("ISBN", code))
+            // Suspendre temporairement le scanner pendant la requête pour éviter les doubles déclenchements
+            try { Quagga.stop(); } catch(e) {}
+
+            fetch("{{ url_for('livre.livre_exist', isbn='CODE_PARAM') }}".replace("CODE_PARAM", encodeURIComponent(code)))
                 .then(response => response.json())
                 .then(data => {
-                    // if the book does not exist, redirect to the book creation page
+                    // Livre non trouvé dans la bibliothèque de l'enseignant
                     if (data.error) {
-                        console.info("Erreur de recherche du livre :", data.error);
-                        window.location.href = `/livre/ajout?isbn=${code}`;
-
+                        console.info("Livre non trouvé en base :", code);
+                        if (data.is_isbn || isISBN(code)) {
+                            // C'est un ISBN : on redirige vers l'ajout avec ?isbn= pour interroger Google Books
+                            window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}`;
+                        } else {
+                            // C'est un code de classe custom : on pré-remplit le champ code-barre sans Google Books
+                            window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}`;
+                        }
                         return;
                     }
 
                     if (data.multiple) {
-                        window.location.href = `/livre?search=isbn:${code}`;
+                        window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
                     } else {
                         window.location.href = `/livre/${data.id}/edit`;
                     }
                 })
-                .catch(error => console.error("Erreur de recherche du livre :", error));
-        }
-
-        function isISBN(code) {
-            return code.length === 13 && (code.startsWith("978") || code.startsWith("979"));
+                .catch(error => {
+                    console.error("Erreur de recherche du livre :", error);
+                    try { Quagga.start(); } catch(e) {}
+                });
         }
 
         function toggleHelp() {

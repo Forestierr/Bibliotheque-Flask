@@ -1,0 +1,201 @@
+<!-- templates/ressources/codes_barres.html -->
+
+{% extends "ressources/base_editor.html" %}
+
+{% block studio_title %}{{ _("Générateur de Codes-Barres") }}{% endblock %}
+{% block sheet_orientation %}portrait{% endblock %}
+{% block sheet_extra_class %}multi-page{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+{% endblock %}
+
+{% block editor_sidebar %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-barcode"></i>
+        <span>{{ _("Source des données") }}</span>
+    </div>
+    <div class="field">
+        <div class="control">
+            <label class="radio">
+                <input type="radio" name="barcodeSource" value="manual" checked onchange="switchBarcodeSource('manual')">
+                <span class="is-size-7 has-text-weight-semibold">{{ _("Saisie libre / Manuelle") }}</span>
+            </label>
+        </div>
+        {% if books_list %}
+        <div class="control mt-2">
+            <label class="radio">
+                <input type="radio" name="barcodeSource" value="books" onchange="switchBarcodeSource('books')">
+                <span class="is-size-7 has-text-weight-semibold">{{ _("Livres de ma classe (") }}{{ books_list|count }}{{ _(" livres)") }}</span>
+            </label>
+        </div>
+        {% endif %}
+        {% if students_list %}
+        <div class="control mt-2">
+            <label class="radio">
+                <input type="radio" name="barcodeSource" value="students" onchange="switchBarcodeSource('students')">
+                <span class="is-size-7 has-text-weight-semibold">{{ _("Cartes de prêt élèves (") }}{{ students_list|count }}{{ _(" élèves)") }}</span>
+            </label>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-layer-group"></i>
+        <span>{{ _("Série rapide par bac / position") }}</span>
+    </div>
+    <div class="field is-horizontal" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+        <div class="control" style="flex: 2;">
+            <label class="label is-small">{{ _("Préfixe") }}</label>
+            <input class="input is-small" id="seriesPrefix" type="text" value="BAC-A-" placeholder="BAC-A-">
+        </div>
+        <div class="control" style="flex: 1;">
+            <label class="label is-small">{{ _("Début") }}</label>
+            <input class="input is-small" id="seriesStart" type="number" value="1" min="1">
+        </div>
+        <div class="control" style="flex: 1;">
+            <label class="label is-small">{{ _("Nombre") }}</label>
+            <input class="input is-small" id="seriesCount" type="number" value="24" min="1" max="100">
+        </div>
+    </div>
+    <button class="button is-small is-info is-light is-fullwidth mt-2" type="button" onclick="generateSeriesCodes()">
+        <span class="icon is-small"><i class="fas fa-magic"></i></span>
+        <span>{{ _("Générer la série de bac") }}</span>
+    </button>
+</div>
+
+<div class="studio-section" id="manualInputSection">
+    <div class="studio-section-title">
+        <i class="fas fa-list"></i>
+        <span>{{ _("Codes à générer (1 par ligne)") }}</span>
+    </div>
+    <div class="field">
+        <div class="control">
+            <textarea class="textarea is-small" id="textareaCodes" rows="6" placeholder="BAC-A-001 | Le Petit Prince&#10;BAC-A-002 | Harry Potter&#10;9782070612758" oninput="renderFromManualInput()">BAC-A-001 | Le Petit Prince
+BAC-A-002 | Les Misérables
+BAC-A-003 | Tintin au Tibet
+BAC-A-004 | Astérix le Gaulois
+BAC-B-001 | Harry Potter à l'école des sorciers
+BAC-B-002 | Charlie et la chocolaterie</textarea>
+        </div>
+        <p class="help">{{ _("Format : CODE ou CODE | TITRE (Standard CODE 128)") }}</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block sheet_content %}
+<div class="codes-barres-grid" id="codesBarresGrid">
+    <!-- Généré dynamiquement en JS vectoriel SVG CODE 128 -->
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const myBooks = [
+    {% for b in books_list %}
+    { code: "{{ b.barcode or b.isbn or 'LIV-' ~ b.id }}", title: "{{ b.title|replace('"', '\\"') }}" },
+    {% endfor %}
+];
+
+const myStudents = [
+    {% for s in students_list %}
+    { code: "ELEVE-{{ s.id }}", title: "{{ s.firstname }} {{ s.name }} ({{ _('Carte de Lecteur') }})" },
+    {% endfor %}
+];
+
+function generateSeriesCodes() {
+    const prefix = document.getElementById('seriesPrefix').value || 'BAC-A-';
+    const start = parseInt(document.getElementById('seriesStart').value, 10) || 1;
+    const count = parseInt(document.getElementById('seriesCount').value, 10) || 24;
+
+    const lines = [];
+    for (let i = 0; i < count; i++) {
+        const num = start + i;
+        const padded = String(num).padStart(3, '0');
+        lines.push(`${prefix}${padded} | ${prefix}${padded}`);
+    }
+
+    document.getElementById('textareaCodes').value = lines.join('\n');
+
+    // Basculer sur la saisie manuelle et actualiser l'affichage
+    const radioManual = document.querySelector('input[name="barcodeSource"][value="manual"]');
+    if (radioManual) {
+        radioManual.checked = true;
+    }
+    switchBarcodeSource('manual');
+}
+
+function switchBarcodeSource(source) {
+    const manualSec = document.getElementById('manualInputSection');
+    if (source === 'manual') {
+        manualSec.style.display = 'block';
+        renderFromManualInput();
+    } else if (source === 'books') {
+        manualSec.style.display = 'none';
+        renderItems(myBooks);
+    } else if (source === 'students') {
+        manualSec.style.display = 'none';
+        renderItems(myStudents);
+    }
+}
+
+function renderFromManualInput() {
+    const text = document.getElementById('textareaCodes').value;
+    const lines = text.split('\n').filter(l => l.trim().length > 0);
+    const items = lines.map(line => {
+        const parts = line.split('|');
+        if (parts.length > 1) {
+            return { code: parts[0].trim(), title: parts[1].trim() };
+        }
+        return { code: parts[0].trim(), title: parts[0].trim() };
+    });
+    renderItems(items);
+}
+
+function renderItems(items) {
+    const grid = document.getElementById('codesBarresGrid');
+    grid.innerHTML = '';
+
+    items.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'code-barre-card';
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'code-barre-title editable';
+        titleEl.textContent = item.title || item.code;
+        card.appendChild(titleEl);
+
+        const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svgEl.id = `barcode-${idx}`;
+        card.appendChild(svgEl);
+
+        try {
+            JsBarcode(svgEl, item.code, {
+                format: "CODE128",
+                width: 1.5,
+                height: 42,
+                displayValue: true,
+                fontSize: 11,
+                margin: 4
+            });
+        } catch (err) {
+            svgEl.outerHTML = `<div style="color: red; font-size: 0.75rem;">Code invalide : ${item.code}</div>`;
+        }
+
+        grid.appendChild(card);
+    });
+}
+
+function regenerateAllBarcodes() {
+    const currentSource = document.querySelector('input[name="barcodeSource"]:checked').value;
+    switchBarcodeSource(currentSource);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    renderFromManualInput();
+});
+</script>
+{% endblock %}
