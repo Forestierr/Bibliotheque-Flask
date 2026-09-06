@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flask import Flask, request, session
+from flask import Flask, has_request_context, request, session
 from flask_babel import Babel, format_date, format_datetime
 from flask_babel import get_locale as babel_get_locale
 from flask_login import LoginManager, current_user
@@ -78,7 +78,13 @@ def create_app(test_config=None):
     mail.init_app(app)
 
     def get_locale():
-        """Détermine la langue active : session > utilisateur connecté > navigateur > fr par défaut."""
+        """Détermine la langue active : paramètre d'URL > session > utilisateur connecté > navigateur > fr par défaut."""
+        if not has_request_context():
+            return "fr"
+        lang_arg = request.args.get("lang")
+        if lang_arg in LANGUAGES:
+            session["lang"] = lang_arg
+            return lang_arg
         if "lang" in session:
             return session["lang"]
         if current_user and current_user.is_authenticated:
@@ -91,7 +97,7 @@ def create_app(test_config=None):
 
     # Rend get_locale, languages, format_date et format_datetime disponibles dans tous les templates Jinja2
     # (y compris dans les macros qui n'héritent pas du context_processor)
-    app.jinja_env.globals["get_locale"] = babel_get_locale
+    app.jinja_env.globals["get_locale"] = lambda: str(babel_get_locale() or "fr")
     app.jinja_env.globals["languages"] = LANGUAGES
     app.jinja_env.globals["format_date"] = format_date
     app.jinja_env.globals["format_datetime"] = format_datetime
