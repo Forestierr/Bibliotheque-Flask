@@ -1,0 +1,183 @@
+<!-- templates/ressources/diplome.html -->
+
+{% extends "ressources/base_editor.html" %}
+
+{% block studio_title %}{{ _("Diplôme de Lecture") }}{% endblock %}
+{% block sheet_orientation %}landscape{% endblock %}
+{% block page_orientation %}landscape{% endblock %}
+
+{% block editor_sidebar %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-palette"></i>
+        <span>{{ _("Style & Thème") }}</span>
+    </div>
+    <div class="theme-swatches">
+        <div class="theme-swatch gold is-active" data-theme="gold" title="{{ _('Or Prestige') }}"></div>
+        <div class="theme-swatch blue" data-theme="blue" title="{{ _('Bleu Écolier') }}"></div>
+        <div class="theme-swatch green" data-theme="green" title="{{ _('Vert Aventure') }}"></div>
+        <div class="theme-swatch purple" data-theme="purple" title="{{ _('Violet Magique') }}"></div>
+        <div class="theme-swatch coral" data-theme="coral" title="{{ _('Corail Vif') }}"></div>
+        <div class="theme-swatch monochrome" data-theme="monochrome" title="{{ _('Noir & Blanc (À colorier)') }}"></div>
+    </div>
+</div>
+
+{% if students_list %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-user-graduate"></i>
+        <span>{{ _("Sélectionner un élève") }}</span>
+    </div>
+    <div class="field">
+        <div class="control has-icons-left">
+            <div class="select is-fullwidth is-small">
+                <select id="studentSelector">
+                    <option value="">-- {{ _("Choisir dans ma classe") }} --</option>
+                    {% for s in students_list %}
+                    <option value="{{ s.firstname }} {{ s.name }}" {% if student and student.id == s.id %}selected{% endif %}>
+                        {{ s.firstname }} {{ s.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="icon is-small is-left">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-pen-nib"></i>
+        <span>{{ _("Informations du diplôme") }}</span>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Titre du diplôme") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="diplomeTitle" value="{{ _('DIPLÔME DE LECTURE') }}">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Sous-titre / Mention") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="diplomeSubtitle" value="{{ _('Décerné avec toutes les félicitations à') }}">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Prénom & Nom de l'élève") }}</label>
+        <div class="control">
+            <input class="input is-small has-text-weight-bold" type="text" id="inputRecipient" data-bind="diplomeRecipient" value="{% if student %}{{ student.firstname }} {{ student.name }}{% else %}{{ _('Thomas Dubois') }}{% endif %}">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Motif / Réalisation") }}</label>
+        <div class="control">
+            <textarea class="textarea is-small" rows="2" data-bind="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('pour son engagement, sa curiosité et ses belles découvertes littéraires au sein de la bibliothèque de classe.') }}{% endif %}</textarea>
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("École / Classe") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="diplomeSchool" value="{{ _('Classe de CM1-B') }}">
+        </div>
+    </div>
+
+    <div class="columns is-mobile mb-0">
+        <div class="column is-6">
+            <div class="field">
+                <label class="label is-small">{{ _("Date") }}</label>
+                <div class="control">
+                    <input class="input is-small" type="text" data-bind="diplomeDate" value="Le 06/09/2026">
+                </div>
+            </div>
+        </div>
+        <div class="column is-6">
+            <div class="field">
+                <label class="label is-small">{{ _("Enseignant(e)") }}</label>
+                <div class="control">
+                    <input class="input is-small" type="text" data-bind="diplomeTeacher" value="{% if current_user.is_authenticated and current_user.name %}{{ current_user.name }}{% else %}{{ _('L\'enseignant(e)') }}{% endif %}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sheet_content %}
+<div class="diplome-frame">
+    <!-- En-tête : Sceau classique & Titre -->
+    <div class="diplome-header">
+        <div class="diplome-seal">
+            <i class="fas fa-book-open"></i>
+        </div>
+        <h1 class="diplome-title editable" id="diplomeTitle">{{ _("DIPLÔME DE LECTURE") }}</h1>
+        <p class="diplome-subtitle editable" id="diplomeSubtitle">{{ _("Décerné avec toutes les félicitations de la classe à") }}</p>
+    </div>
+
+    <!-- Nom du lauréat & Motif -->
+    <div class="diplome-body">
+        <div class="diplome-recipient editable" id="diplomeRecipient">
+            {% if student %}{{ student.firstname }} {{ student.name }}{% else %}{{ _("Thomas Dubois") }}{% endif %}
+        </div>
+        <p class="diplome-reason editable" id="diplomeReason">
+            {% if read_count > 0 %}
+                {{ _("pour avoir lu avec succès") }} {{ read_count }} {{ _("livres dans la bibliothèque de classe.") }}
+            {% else %}
+                {{ _("pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.") }}
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Pied de page : Date & Signatures -->
+    <div class="diplome-footer">
+        <div class="diplome-sign-box">
+            <p class="editable" id="diplomeSchool" style="font-weight: 700; color: #1e293b;">{{ _("Classe de CM1-B") }}</p>
+            <p class="editable" id="diplomeDate" style="font-size: 0.85rem; color: #64748b;">Le 06/09/2026</p>
+        </div>
+
+        <div class="diplome-sign-box">
+            <div class="diplome-sign-line">
+                <span class="editable" id="diplomeTeacher">
+                    {% if current_user.is_authenticated and current_user.name %}{{ current_user.name }}{% else %}{{ _("L'enseignant(e)") }}{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const studentSelector = document.getElementById('studentSelector');
+    const recipientInput = document.getElementById('inputRecipient');
+    const recipientEl = document.getElementById('diplomeRecipient');
+
+    if (studentSelector && recipientInput && recipientEl) {
+        studentSelector.addEventListener('change', function () {
+            if (this.value) {
+                recipientInput.value = this.value;
+                recipientEl.textContent = this.value;
+            }
+        });
+    }
+
+    // Régler la date du jour par défaut
+    const dateInput = document.querySelector('[data-bind="diplomeDate"]');
+    const dateEl = document.getElementById('diplomeDate');
+    if (dateInput && dateEl) {
+        const today = new Date();
+        const formatted = today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        dateInput.value = `Le ${formatted}`;
+        dateEl.textContent = `Le ${formatted}`;
+    }
+});
+</script>
+{% endblock %}

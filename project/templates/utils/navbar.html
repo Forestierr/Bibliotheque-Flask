@@ -56,6 +56,23 @@
         }
     }
 
+    /* Strict print hiding for all navbar components */
+    @media print {
+        nav,
+        .navbar,
+        .custom-navbar,
+        .navbar-menu,
+        .navbar-brand,
+        .navbar-burger,
+        .mobile-only-nav,
+        .lang-mobile-bar,
+        .lang-mobile-item,
+        .desktop-only-avatar,
+        .lang-dropdown-wrapper {
+            display: none !important;
+        }
+    }
+
     /* Language Pill Styles (Highlighted active state) */
     .lang-pill {
         display: inline-flex;
@@ -344,6 +361,10 @@
                 <span class="icon mr-2"><i class="fas fa-exchange-alt"></i></span>
                 <span>{{ _('Emprunts') }}</span>
             </a>
+            <a href="{{ url_for('ressource.index') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'ressource.' in request.endpoint %}is-active-link{% endif %}">
+                <span class="icon mr-2"><i class="fas fa-print"></i></span>
+                <span>{{ _('Ressources') }}</span>
+            </a>
 
             <!-- Liens directs visibles uniquement sur mobile -->
             <a href="{{ url_for('main.aide') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint == 'main.aide' %}is-active-link{% endif %}">
@@ -430,7 +451,7 @@
             <a href="{{ url_for('main.enseignants_index') }}" class="navbar-item navbar-item-custom {% if 'enseignants' in request.path %}is-active-link{% endif %}">
                 {{ _('Guides') }}
             </a>
-            <a href="{{ url_for('main.ressources_index') }}" class="navbar-item navbar-item-custom {% if 'ressources' in request.path %}is-active-link{% endif %}">
+            <a href="{{ url_for('ressource.index') }}" class="navbar-item navbar-item-custom {% if 'ressources' in request.path %}is-active-link{% endif %}">
                 {{ _('Ressources') }}
             </a>
             <a href="{{ url_for('main.blog_index') }}" class="navbar-item navbar-item-custom {% if 'blog' in request.path %}is-active-link{% endif %}">

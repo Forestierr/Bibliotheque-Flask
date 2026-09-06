@@ -26,7 +26,7 @@
         <div class="column">
             <h5 class="title is-6 mb-2">{{ _("Ressources") }}</h5>
             <a href="{{ url_for('main.blog_index') }}" class="has-text-grey">Blog</a><br/>
-            <a href="{{ url_for('main.ressources_index') }}" class="has-text-grey">{{ _("Ressources gratuites") }}</a><br/>
+            <a href="{{ url_for('ressource.index') }}" class="has-text-grey">{{ _("Ressources gratuites") }}</a><br/>
             <a href="{{ url_for('main.enseignants_index') }}" class="has-text-grey">{{ _("Guides enseignants") }}</a><br/>
             <a href="{{ url_for('main.contact') }}" class="has-text-grey">{{ _("Contact") }}</a><br/>
             <a href="{{ url_for('main.apropos') }}" class="has-text-grey">{{ _("A propos") }}</a>
@@ -201,6 +201,17 @@
         width: 100%;
         height: 60px;
         background-color: #CED4DA;
+    }
+
+    @media print {
+        footer,
+        .footer,
+        .footer-mobile {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            opacity: 0 !important;
+        }
     }
 </style>
 

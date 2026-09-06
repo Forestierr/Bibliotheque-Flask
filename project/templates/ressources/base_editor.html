@@ -1,0 +1,87 @@
+<!-- templates/ressources/base_editor.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ressources_editor.css') }}">
+<style id="pagePrintOrientation">
+@page {
+    size: A4 {% block page_orientation %}portrait{% endblock %};
+    margin: 8mm;
+}
+</style>
+{% block extra_head %}{% endblock %}
+{% endblock %}
+
+{% block navbar %}
+<div class="no-print">
+    {{ navbar(current_user, _("Studio de Ressources")) }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="studio-wrapper">
+    <!-- Barre d'outils supérieure du studio -->
+    <div class="studio-toolbar no-print">
+        <div class="studio-toolbar-title">
+            <a href="{{ url_for('ressource.index') }}">
+                <i class="fas fa-arrow-left"></i>
+                <span>{{ _("Toutes les ressources") }}</span>
+            </a>
+            <span class="has-text-grey-light">/</span>
+            <span>{% block studio_title %}{{ _("Éditeur de document") }}{% endblock %}</span>
+        </div>
+
+        <div class="studio-actions">
+            <!-- Contrôles de Zoom -->
+            <div class="studio-zoom-controls">
+                <button type="button" class="studio-zoom-btn" id="btnZoomOut" title="{{ _('Zoom arrière') }}">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <span id="zoomLevelLabel" style="font-size: 0.8rem; font-weight: 600; padding: 0 0.4rem; color: #475569;">100%</span>
+                <button type="button" class="studio-zoom-btn" id="btnZoomIn" title="{{ _('Zoom avant') }}">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button type="button" class="studio-zoom-btn" id="btnZoomFit" title="{{ _('Ajuster à l\'écran') }}" style="border-left: 1px solid #e2e8f0;">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </button>
+            </div>
+
+            <!-- Bouton d'impression principal -->
+            <button type="button" class="button is-link is-rounded has-text-weight-bold" onclick="window.print()">
+                <span class="icon"><i class="fas fa-print"></i></span>
+                <span>{{ _("Imprimer / Enregistrer en PDF") }}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Corps de travail : Panneau de personnalisation + Prévisualisation A4 -->
+    <div class="studio-body">
+        <aside class="studio-sidebar no-print">
+            {% block editor_sidebar %}
+            <!-- Formulaire de personnalisation -->
+            {% endblock %}
+
+            <div class="mt-4 pt-4" style="border-top: 1px solid var(--res-border);">
+                <button type="button" class="button is-light is-small is-fullwidth" id="btnResetStudio">
+                    <span class="icon is-small"><i class="fas fa-undo"></i></span>
+                    <span>{{ _("Réinitialiser les valeurs par défaut") }}</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="studio-canvas-container">
+            <div class="a4-sheet {% block sheet_orientation %}portrait{% endblock %} {% block sheet_extra_class %}{% endblock %}" id="printableSheet">
+                {% block sheet_content %}
+                <!-- Contenu rendu de la feuille A4 -->
+                {% endblock %}
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='javascript/ressources_editor.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+{% endblock %}

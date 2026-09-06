@@ -347,18 +347,6 @@ def blog_article(article_slug):
     return render_editorial_template("blog", article_slug, _("Article non trouvé"))
 
 
-@main.route("/ressources")
-def ressources_index():
-    return render_template("ressources/index.html")
-
-
-@main.route("/ressources/<path:ressource_slug>")
-def ressource_article(ressource_slug):
-    return render_editorial_template(
-        "ressources", ressource_slug, _("Ressource non trouvée")
-    )
-
-
 @main.route("/enseignants")
 def enseignants_index():
     return render_template("enseignants/index.html")

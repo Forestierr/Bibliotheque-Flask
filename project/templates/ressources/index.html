@@ -4,8 +4,8 @@
 
 {% extends "base.html" %}
 
-{% block title %}{{ _("Ressources pour enseignants | Livres en Classe") }}{% endblock %}
-{% block meta_description %}{{ _("Ressources gratuites pour gérer une bibliothèque de classe : guides pratiques, liens utiles et outils pour les enseignants du primaire.") }}{% endblock %}
+{% block title %}{{ _("Ressources personnalisables & imprimables | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Outils gratuits et personnalisables pour enseignants : diplômes de lecture, marque-pages, charte de classe, bingo lecture, étiquettes de bacs et codes-barres prêts à imprimer.") }}{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
@@ -14,176 +14,310 @@
 {% block content %}
 
 <style>
-    .ressource-card {
+    .studio-card {
         background: white;
         border-radius: 14px;
-        border: 1px solid hsl(0, 0%, 93%);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        padding: 1.5rem;
+        border: 1px solid hsl(0, 0%, 90%);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        padding: 1.6rem;
         height: 100%;
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        position: relative;
     }
-    .ressource-card:hover {
+    .studio-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        border-color: hsl(217, 71%, 65%);
     }
-    .ressource-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+    .studio-card-badge {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.2rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 6px;
+        background: hsl(0, 0%, 96%);
+        color: hsl(0, 0%, 45%);
+        border: 1px solid hsl(0, 0%, 88%);
+    }
+    .studio-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
         flex-shrink: 0;
     }
-    .ressource-title {
+    .studio-title {
+        font-size: 1.1rem;
         font-weight: 700;
-        font-size: 1rem;
         color: hsl(0, 0%, 15%);
-        margin: 0;
+        margin-bottom: 0.4rem;
+        line-height: 1.3;
     }
-    .ressource-desc {
-        font-size: 0.875rem;
+    .studio-desc {
+        font-size: 0.86rem;
         color: hsl(0, 0%, 45%);
         line-height: 1.5;
         flex: 1;
+        margin-bottom: 1.6rem;
     }
-    .ressource-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-size: 0.82rem;
-        font-weight: 600;
-        text-decoration: none;
-        color: hsl(217, 71%, 53%);
+    .studio-btn {
         margin-top: auto;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-radius: 8px;
+        padding: 0.65rem 1rem;
+        width: 100%;
+        justify-content: center;
     }
-    .ressource-link:hover { color: hsl(217, 71%, 40%); }
-    .coming-soon-banner {
-        background: linear-gradient(135deg, hsl(38, 70%, 96%), hsl(38, 60%, 93%));
-        border: 1px solid hsl(38, 60%, 85%);
-        border-radius: 16px;
-        padding: 2rem 2.5rem;
+
+    .filter-btn {
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.45rem 1.1rem;
+        border: 1px solid hsl(0, 0%, 86%);
+        background: white;
+        color: hsl(0, 0%, 40%);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .filter-btn:hover, .filter-btn.is-active {
+        background: hsl(217, 71%, 53%);
+        color: white;
+        border-color: hsl(217, 71%, 53%);
+    }
+
+    .ressource-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid hsl(0, 0%, 92%);
+        padding: 1.25rem;
+        height: 100%;
         display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 3rem;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 </style>
 
 <section class="section">
-    <div class="container" style="max-width: 960px; margin: 0 auto;">
+    <div class="container" style="max-width: 1080px; margin: 0 auto;">
 
-        <!-- En-tête -->
-        <div class="has-text-centered mb-6">
-            <h1 class="title is-2" style="font-weight: 800;">Centre de Ressources</h1>
-            <p class="subtitle is-5 has-text-grey">Outils et liens utiles pour votre bibliothèque de classe</p>
+        <!-- En-tête sobre et pro -->
+        <div class="has-text-centered mb-5">
+            <h1 class="title is-2" style="font-weight: 800; color: hsl(0, 0%, 15%);">
+                {{ _("Outils et Ressources pour la Classe") }}
+            </h1>
+            <p class="subtitle is-5 has-text-grey" style="max-width: 680px; margin: 0 auto;">
+                {{ _("Personnalisez vos affiches, diplômes, marque-pages et étiquettes en ligne, puis imprimez-les directement au format A4.") }}
+            </p>
         </div>
 
-        <!-- Bannière ressources téléchargeables en construction -->
-        <div class="coming-soon-banner">
-            <div style="width: 48px; height: 48px; border-radius: 12px; background: hsl(38, 70%, 90%); color: hsl(38, 60%, 40%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <i class="fas fa-tools fa-lg"></i>
-            </div>
-            <div>
-                <p class="has-text-weight-bold is-size-5 mb-1" style="color: hsl(38, 40%, 30%);">Ressources téléchargeables en préparation</p>
-                <p class="is-size-6" style="color: hsl(38, 30%, 45%);">Étiquettes, affiches, diplômes, fiches de lecture et passeports lecture arrivent bientôt. En attendant, retrouvez ci-dessous une sélection de ressources en ligne de qualité.</p>
-            </div>
+        <!-- Filtres par catégorie avec espacement soigné -->
+        <div class="is-flex is-justify-content-center" style="gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; margin-bottom: 2.5rem;">
+            <button class="filter-btn is-active" onclick="filterResources('all', this)">{{ _("Toutes les ressources") }}</button>
+            <button class="filter-btn" onclick="filterResources('motivation', this)">{{ _("Motivation & Diplômes") }}</button>
+            <button class="filter-btn" onclick="filterResources('organisation', this)">{{ _("Organisation & Bacs") }}</button>
+            <button class="filter-btn" onclick="filterResources('rituels', this)">{{ _("Rituels & Prêts") }}</button>
         </div>
 
-        <!-- Section : Ressources en ligne -->
-        <h2 class="title is-4 mb-4"><i class="fas fa-globe mr-2 style-blue" style="color: hsl(217, 71%, 53%);"></i>Ressources en ligne recommandées</h2>
-        <p class="has-text-grey mb-5">Une sélection de sites et outils gratuits, vérifiés et utilisés par des enseignants.</p>
+        <!-- Grille des 8 outils personnalisables -->
+        <div class="columns is-multiline mb-6" id="resourcesGrid">
+
+            <!-- 1. Diplôme de Lecture -->
+            <div class="column is-4 res-item" data-category="motivation">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("A4 Paysage") }}</span>
+                    <div class="studio-icon" style="background: #fef3c7; color: #b45309;">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Diplômes de Lecture") }}</h2>
+                    <p class="studio-desc">{{ _("Valorisez les progrès et paliers franchis (5, 10, 20 livres). Remplissage libre ou connecté aux statistiques de vos élèves.") }}</p>
+                    <a href="{{ url_for('ressource.diplome') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Marque-pages Emprunt & Avis -->
+            <div class="column is-4 res-item" data-category="rituels">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("4 par page") }}</span>
+                    <div class="studio-icon" style="background: #eff6ff; color: #1d4ed8;">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Marque-pages d'emprunt") }}</h2>
+                    <p class="studio-desc">{{ _("Suivi des dates de prêt au recto et fiche d'avis avec étoiles à colorier au verso. Formats pliables ou prêts à massicoter.") }}</p>
+                    <a href="{{ url_for('ressource.marque_pages') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. Charte du Coin Lecture -->
+            <div class="column is-4 res-item" data-category="organisation">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("Affiche A4 / A3") }}</span>
+                    <div class="studio-icon" style="background: #ecfdf5; color: #047857;">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Charte du Coin Lecture") }}</h2>
+                    <p class="studio-desc">{{ _("Les règles essentielles pour préserver les livres et le calme. Versions couleur ou noir & blanc avec contrat de signatures.") }}</p>
+                    <a href="{{ url_for('ressource.charte') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4. Défi / Bingo Lecture -->
+            <div class="column is-4 res-item" data-category="motivation">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("Grille A4") }}</span>
+                    <div class="studio-icon" style="background: #f5f3ff; color: #6d28d9;">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Défi Lecture") }}</h2>
+                    <p class="studio-desc">{{ _("Une grille de 16 situations de lecture variées pour stimuler la régularité pendant les vacances scolaires ou un rallye.") }}</p>
+                    <a href="{{ url_for('ressource.bingo') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- 5. Étiquettes de Genres & Bacs -->
+            <div class="column is-4 res-item" data-category="organisation">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("Bacs & Cotes") }}</span>
+                    <div class="studio-icon" style="background: #ecfeff; color: #0e7490;">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Étiquettes de Genres & Bacs") }}</h2>
+                    <p class="studio-desc">{{ _("Grandes étiquettes visuelles pour bacs ou bandes de cotes pour tranches. Compatible avec les tags personnalisés de votre compte.") }}</p>
+                    <a href="{{ url_for('ressource.etiquettes') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- 6. Fiches Coup de Cœur -->
+            <div class="column is-4 res-item" data-category="rituels">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("Fanions") }}</span>
+                    <div class="studio-icon" style="background: #fff1f2; color: #be123c;">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Fiches « Coup de cœur »") }}</h2>
+                    <p class="studio-desc">{{ _("Fanions cartonnés à glisser dans les livres pour encourager les conseils et recommandations spontanées entre élèves.") }}</p>
+                    <a href="{{ url_for('ressource.fiches_avis') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- 7. Codes-barres Custom -->
+            <div class="column is-4 res-item" data-category="organisation">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("Vectoriel") }}</span>
+                    <div class="studio-icon" style="background: #f1f5f9; color: #334155;">
+                        <i class="fas fa-barcode"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Planches de Codes-Barres") }}</h2>
+                    <p class="studio-desc">{{ _("Génération vectorielle de codes-barres Code 128 pour étiqueter vos livres sans ISBN ou créer des cartes de prêt pour vos élèves.") }}</p>
+                    <a href="{{ url_for('ressource.codes_barres') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- 8. Passeport de Lecture -->
+            <div class="column is-4 res-item" data-category="motivation">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("Livret A5") }}</span>
+                    <div class="studio-icon" style="background: #eff6ff; color: #1e40af;">
+                        <i class="fas fa-passport"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Passeport de Lecture") }}</h2>
+                    <p class="studio-desc">{{ _("Livret pliable A5 : page de profil, suivi des genres littéraires découverts et fiches synthétiques des lectures de l'année.") }}</p>
+                    <a href="{{ url_for('ressource.passeport') }}" class="button is-link is-light studio-btn">
+                        {{ _("Personnaliser et imprimer") }}
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="my-6">
+
+        <!-- Section : Ressources en ligne recommandées -->
+        <h2 class="title is-4 mb-4" style="color: hsl(0, 0%, 20%);">{{ _("Ressources documentaires recommandées") }}</h2>
+        <p class="has-text-grey mb-5">{{ _("Une sélection de portails institutionnels et d'outils gratuits pour approfondir la gestion de votre bibliothèque de classe.") }}</p>
 
         <div class="columns is-multiline mb-6">
-
             <div class="column is-6">
                 <div class="ressource-card">
-                    <div class="ressource-icon" style="background: hsl(210, 60%, 95%); color: hsl(210, 50%, 45%);"><i class="fas fa-school"></i></div>
-                    <p class="ressource-title">Eduscol — Lire et écrire au cycle 2</p>
-                    <p class="ressource-desc">La ressource officielle de l'Éducation nationale sur l'enseignement de la lecture au CP et CE1, avec des pistes pédagogiques détaillées.</p>
-                    <a href="https://eduscol.education.fr/721/lire-et-ecrire-au-cycle-2" target="_blank" rel="noopener" class="ressource-link">
-                        Visiter Eduscol <i class="fas fa-external-link-alt fa-xs"></i>
+                    <h3 class="has-text-weight-bold">Eduscol — Lire et écrire au cycle 2</h3>
+                    <p class="is-size-7 has-text-grey">La ressource officielle de l'Éducation nationale sur l'apprentissage de la lecture au CP et CE1.</p>
+                    <a href="https://eduscol.education.fr/721/lire-et-ecrire-au-cycle-2" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                        Consulter Eduscol
                     </a>
                 </div>
             </div>
 
             <div class="column is-6">
                 <div class="ressource-card">
-                    <div class="ressource-icon" style="background: hsl(145, 50%, 94%); color: hsl(145, 40%, 40%);"><i class="fas fa-book-open"></i></div>
-                    <p class="ressource-title">BNF — Littérature jeunesse</p>
-                    <p class="ressource-desc">Le portail de la Bibliothèque nationale de France dédié à la littérature jeunesse : bibliographies, conseils et sélections par âge et par thème.</p>
-                    <a href="https://www.bnf.fr/fr/la-litterature-de-jeunesse" target="_blank" rel="noopener" class="ressource-link">
-                        Visiter la BNF <i class="fas fa-external-link-alt fa-xs"></i>
+                    <h3 class="has-text-weight-bold">BNF — Littérature jeunesse</h3>
+                    <p class="is-size-7 has-text-grey">Le portail de la Bibliothèque nationale de France : sélections et bibliographies par tranche d'âge.</p>
+                    <a href="https://www.bnf.fr/fr/la-litterature-de-jeunesse" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                        Consulter la BNF
                     </a>
                 </div>
             </div>
 
             <div class="column is-6">
                 <div class="ressource-card">
-                    <div class="ressource-icon" style="background: hsl(38, 70%, 94%); color: hsl(38, 50%, 40%);"><i class="fas fa-palette"></i></div>
-                    <p class="ressource-title">Canopé — Bibliothèque de classe</p>
-                    <p class="ressource-desc">Le réseau Canopé propose des fiches pratiques, des outils et des formations pour organiser et animer le coin lecture de votre classe.</p>
-                    <a href="https://www.reseau-canope.fr" target="_blank" rel="noopener" class="ressource-link">
-                        Visiter Canopé <i class="fas fa-external-link-alt fa-xs"></i>
+                    <h3 class="has-text-weight-bold">Réseau Canopé — Bibliothèque de classe</h3>
+                    <p class="is-size-7 has-text-grey">Fiches conseils et repères méthodologiques pour aménager un coin lecture en école primaire.</p>
+                    <a href="https://www.reseau-canope.fr" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                        Consulter Canopé
                     </a>
                 </div>
             </div>
 
             <div class="column is-6">
                 <div class="ressource-card">
-                    <div class="ressource-icon" style="background: hsl(270, 50%, 95%); color: hsl(270, 40%, 50%);"><i class="fas fa-search"></i></div>
-                    <p class="ressource-title">Ricochet — Littérature jeunesse</p>
-                    <p class="ressource-desc">Base de données collaborative sur la littérature de jeunesse internationale. Idéal pour trouver des livres adaptés à un thème, un niveau ou une occasion particulière.</p>
-                    <a href="https://www.ricochet-jeunes.org" target="_blank" rel="noopener" class="ressource-link">
-                        Visiter Ricochet <i class="fas fa-external-link-alt fa-xs"></i>
+                    <h3 class="has-text-weight-bold">Ricochet — Base de données jeunesse</h3>
+                    <p class="is-size-7 has-text-grey">Base de recherche collaborative pour trouver des ouvrages jeunesse par niveau, thème ou genre.</p>
+                    <a href="https://www.ricochet-jeunes.org" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                        Consulter Ricochet
                     </a>
                 </div>
             </div>
-
-            <div class="column is-6">
-                <div class="ressource-card">
-                    <div class="ressource-icon" style="background: hsl(0, 60%, 96%); color: hsl(0, 50%, 50%);"><i class="fas fa-mobile-alt"></i></div>
-                    <p class="ressource-title">Livres en Classe — Scanner ISBN</p>
-                    <p class="ressource-desc">Notre propre application : scannez les codes-barres ISBN de vos livres pour les ajouter en quelques secondes à votre catalogue et gérer les prêts d'élèves.</p>
-                    <a href="{{ url_for('main.index') }}" class="ressource-link">
-                        Essayer gratuitement <i class="fas fa-arrow-right fa-xs"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="column is-6">
-                <div class="ressource-card">
-                    <div class="ressource-icon" style="background: hsl(180, 50%, 94%); color: hsl(180, 40%, 38%);"><i class="fas fa-newspaper"></i></div>
-                    <p class="ressource-title">Nos articles — Blog enseignants</p>
-                    <p class="ressource-desc">Des guides écrits par notre équipe : comment classer vos livres, créer un système de prêt, donner envie de lire, et sélectionner les meilleurs albums pour le CP.</p>
-                    <a href="{{ url_for('main.blog_index') }}" class="ressource-link">
-                        Lire le blog <i class="fas fa-arrow-right fa-xs"></i>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- CTA inscription -->
-        <div class="box has-text-centered" style="border-radius: 16px; background: hsl(210, 60%, 97%); border: 1px solid hsl(210, 50%, 88%);">
-            <p class="is-size-5 has-text-weight-semibold mb-2" style="color: hsl(210, 40%, 30%);">Être prévenu quand les ressources téléchargeables arrivent</p>
-            <p class="has-text-grey mb-4">Créez un compte gratuit et nous vous informerons dès que les étiquettes, affiches et diplômes seront disponibles.</p>
-            {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('auth.signup') }}" class="button is-link is-rounded">
-                <span class="icon"><i class="fas fa-bell"></i></span>
-                <span>Créer mon compte gratuit</span>
-            </a>
-            {% else %}
-            <p class="has-text-grey is-size-6"><i class="fas fa-check-circle has-text-success"></i> Vous êtes déjà inscrit — nous vous avertirons !</p>
-            {% endif %}
         </div>
 
     </div>
 </section>
+
+<script>
+function filterResources(category, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+
+    const items = document.querySelectorAll('.res-item');
+    items.forEach(item => {
+        if (category === 'all' || item.getAttribute('data-category') === category) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+</script>
 
 {% endblock %}

@@ -1,0 +1,147 @@
+<!-- templates/ressources/passeport.html -->
+
+{% extends "ressources/base_editor.html" %}
+
+{% block studio_title %}{{ _("Passeport de Lecture") }}{% endblock %}
+{% block sheet_orientation %}landscape{% endblock %}
+{% block page_orientation %}landscape{% endblock %}
+
+{% block editor_sidebar %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-palette"></i>
+        <span>{{ _("Style & Thème") }}</span>
+    </div>
+    <div class="theme-swatches">
+        <div class="theme-swatch blue is-active" data-theme="blue" title="{{ _('Bleu Marine') }}"></div>
+        <div class="theme-swatch green" data-theme="green" title="{{ _('Vert Sauge') }}"></div>
+        <div class="theme-swatch gold" data-theme="gold" title="{{ _('Ocre Doux') }}"></div>
+        <div class="theme-swatch purple" data-theme="purple" title="{{ _('Bordeaux') }}"></div>
+        <div class="theme-swatch monochrome" data-theme="monochrome" title="{{ _('Noir & Blanc (Éco)') }}"></div>
+    </div>
+</div>
+
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-pen"></i>
+        <span>{{ _("Informations de la classe") }}</span>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("École / Classe") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="passportSchool" value="{{ _('École élémentaire • Classe de CM1') }}">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Année scolaire") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="passportYear" value="2026 - 2027">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Objectif de lecture par défaut") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="passportGoal" value="{{ _('Découvrir au moins 1 livre de chaque genre !') }}">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sheet_content %}
+<div class="passeport-container">
+    <!-- Volet Gauche : Page d'Identité du Lecteur -->
+    <div class="passeport-panel">
+        <div style="text-align: center; border-bottom: 1.5px solid var(--res-primary); padding-bottom: 0.5rem;">
+            <p style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: var(--res-primary-dark); text-transform: uppercase;">
+                {{ _("Livret individuel de lecture") }}
+            </p>
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0.2rem 0;">{{ _("PASSEPORT DE LECTEUR") }}</h2>
+            <p class="editable" id="passportSchool" style="font-size: 0.75rem; color: #475569;">{{ _("École élémentaire • Classe de CM1") }}</p>
+        </div>
+
+        <div style="display: flex; gap: 5mm; margin: 0.8rem 0; flex: 1;">
+            <!-- Cadre Photo / Autoportrait -->
+            <div style="width: 85px; height: 110px; border: 1px dashed #94a3b8; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 0.65rem; color: #64748b; flex-shrink: 0; background: #f8fafc; padding: 4px;">
+                <i class="fas fa-camera" style="font-size: 1.2rem; margin-bottom: 4px; color: #94a3b8;"></i>
+                <span>{{ _("Photo ou autoportrait") }}</span>
+            </div>
+
+            <!-- Champs d'identité -->
+            <div style="flex: 1; font-size: 0.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("NOM :") }}</span>
+                    <div style="border-bottom: 1px dotted #94a3b8; height: 18px;"></div>
+                </div>
+                <div>
+                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("PRÉNOM :") }}</span>
+                    <div style="border-bottom: 1px dotted #94a3b8; height: 18px;"></div>
+                </div>
+                <div>
+                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("ANNÉE SCOLAIRE :") }}</span>
+                    <div class="editable" id="passportYear" style="font-weight: 700; color: #1e293b;">2026 - 2027</div>
+                </div>
+                <div>
+                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("MON OBJECTIF :") }}</span>
+                    <div class="editable" id="passportGoal" style="font-size: 0.7rem; font-weight: 600; color: var(--res-primary-dark);">
+                        {{ _("Découvrir au moins 1 livre de chaque genre !") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zone de signature officielle -->
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 0.5rem; display: flex; justify-content: space-between; font-size: 0.7rem;">
+            <div>
+                <span style="color: #64748b; font-weight: 600;">{{ _("Signature de l'élève :") }}</span>
+                <div style="border-bottom: 1px dotted #94a3b8; width: 120px; height: 18px;"></div>
+            </div>
+            <div style="text-align: right;">
+                <span style="color: #64748b; font-weight: 600;">{{ _("Signature de l'enseignant(e) :") }}</span>
+                <div style="border-bottom: 1px dotted #94a3b8; width: 120px; height: 18px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Volet Droit : Suivi des Genres Littéraires -->
+    <div class="passeport-panel">
+        <div style="text-align: center; border-bottom: 1.5px solid var(--res-primary); padding-bottom: 0.5rem;">
+            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--res-primary-dark); text-transform: uppercase;">
+                {{ _("PARCOURS DES GENRES LITTÉRAIRES") }}
+            </h3>
+            <p style="font-size: 0.7rem; color: #64748b;">{{ _("Coche ou tamponne chaque genre exploré au cours de l'année") }}</p>
+        </div>
+
+        <!-- Grille de 8 genres -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 3.5mm; margin: 0.6rem 0; flex: 1;">
+            {% for code, label in [
+                ('ROM', 'Roman'),
+                ('BD', 'Bande Dessinée'),
+                ('ALB', 'Album'),
+                ('DOC', 'Documentaire'),
+                ('MNG', 'Manga'),
+                ('CNT', 'Conte'),
+                ('POE', 'Poésie / Théâtre'),
+                ('REV', 'Revue / Presse')
+            ] %}
+            <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; height: 100%; box-sizing: border-box; background: #f8fafc;">
+                <span style="font-size: 0.68rem; font-weight: 700; color: #1e293b;">{{ label }}</span>
+                <div style="width: 24px; height: 24px; border: 1px dashed var(--res-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; background: white;">
+                    <span style="font-size: 0.6rem; color: #94a3b8;">{{ code }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Mes lectures préférées -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px 8px; font-size: 0.68rem; color: #334155;">
+            <p style="font-weight: 700; margin-bottom: 2px;">{{ _("Mes 3 lectures préférées cette année :") }}</p>
+            <div style="border-bottom: 1px dotted #cbd5e1; height: 16px;"></div>
+            <div style="border-bottom: 1px dotted #cbd5e1; height: 16px;"></div>
+            <div style="border-bottom: 1px dotted #cbd5e1; height: 16px;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
