@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-06 17:49+0200\n"
+"POT-Creation-Date: 2026-09-06 23:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,6 +15,18 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: project/admin.py:167
+msgid "Pour vous désabonner :"
+msgstr "Pour vous désabonner :"
+
+#: project/admin.py:168
+msgid "Donner votre avis :"
+msgstr "Donner votre avis :"
+
+#: project/admin.py:169
+msgid "Signaler un problème :"
+msgstr "Signaler un problème :"
 
 #: project/auth.py:64 project/auth.py:122
 msgid "Veuillez compléter le CAPTCHA."
@@ -110,7 +122,7 @@ msgstr "Vous devez indiquer votre mot de passe actuel."
 msgid "Vos informations ont été mises à jour."
 msgstr "Vos informations ont été mises à jour."
 
-#: project/eleve.py:36 project/main.py:161
+#: project/eleve.py:36 project/main.py:173
 msgid "Veuillez remplir tous les champs."
 msgstr "Veuillez remplir tous les champs."
 
@@ -126,75 +138,75 @@ msgstr "Accès non autorisé."
 msgid "Emprunt introuvable."
 msgstr "Emprunt introuvable."
 
-#: project/livre.py:141
+#: project/livre.py:142
 msgid "Le livre que vous souhaitiez voir n'existe pas."
 msgstr "Le livre que vous souhaitiez voir n'existe pas."
 
-#: project/livre.py:180
+#: project/livre.py:186
 msgid "Veuillez ajouter un titre."
 msgstr "Veuillez ajouter un titre."
 
-#: project/livre.py:224
+#: project/livre.py:231
 msgid "Le livre : "
 msgstr "Le livre : "
 
-#: project/livre.py:224
+#: project/livre.py:231
 msgid " a été ajouté à votre bibliothèque."
 msgstr " a été ajouté à votre bibliothèque."
 
-#: project/livre.py:278
+#: project/livre.py:291
 msgid "Le livre que vous souhaitiez éditer n'existe pas."
 msgstr "Le livre que vous souhaitiez éditer n'existe pas."
 
-#: project/livre.py:307
+#: project/livre.py:325
 msgid "Veuillez ajouter un titre au livre."
 msgstr "Veuillez ajouter un titre au livre."
 
-#: project/livre.py:394
+#: project/livre.py:413
 msgid "Le livre que vous souhaitiez dupliquer n'existe pas."
 msgstr "Le livre que vous souhaitiez dupliquer n'existe pas."
 
-#: project/livre.py:429
+#: project/livre.py:448
 msgid "Le livre reste dans la bibliothèque."
 msgstr "Le livre reste dans la bibliothèque."
 
-#: project/livre.py:435
+#: project/livre.py:454
 msgid "L'élève n'existe pas."
 msgstr "L'élève n'existe pas."
 
-#: project/livre.py:459
+#: project/livre.py:478
 msgid "Le livre a été supprimé."
 msgstr "Le livre a été supprimé."
 
-#: project/livre.py:489
+#: project/livre.py:518
 msgid "Tous les livres ont été supprimés."
 msgstr "Tous les livres ont été supprimés."
 
-#: project/main.py:183
+#: project/main.py:195
 msgid ""
 "Votre message a été envoyé avec succès. Vous avez reçu un email de "
 "confirmation."
 msgstr "Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation."
 
-#: project/main.py:245
+#: project/main.py:257
 msgid "Veuillez renseigner l'objet et la description de votre retour."
 msgstr "Veuillez renseigner l'objet et la description de votre retour."
 
-#: project/main.py:280
+#: project/main.py:292
 msgid "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 msgstr "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 
-#: project/main.py:335
+#: project/main.py:347
 msgid "Article non trouvé"
 msgstr "Article non trouvé"
 
-#: project/main.py:345
-msgid "Ressource non trouvée"
-msgstr "Ressource non trouvée"
-
-#: project/main.py:355
+#: project/main.py:357
 msgid "Guide non trouvé"
 msgstr "Guide non trouvé"
+
+#: project/ressource.py:135
+msgid "Ressource non trouvée"
+msgstr "Ressource non trouvée"
 
 #: project/templates/aide.html:7
 msgid "Centre d'aide | Livres en Classe"
@@ -246,7 +258,7 @@ msgstr "Scanner"
 
 #: project/templates/aide.html:134 project/templates/emprunt/emprunt.html:15
 #: project/templates/user/dashboard.html:91
-#: project/templates/utils/navbar.html:345
+#: project/templates/utils/navbar.html:362
 msgid "Emprunts"
 msgstr "Emprunts"
 
@@ -324,7 +336,7 @@ msgstr "Le scanner utilise votre caméra pour lire le code-barres ISBN et récup
 msgid "Comment scanner un livre"
 msgstr "Comment scanner un livre"
 
-#: project/templates/aide.html:211 project/templates/livre/livre_scann.html:97
+#: project/templates/aide.html:211 project/templates/livre/livre_scann.html:258
 msgid "Retournez le livre"
 msgstr "Retournez le livre"
 
@@ -839,7 +851,7 @@ msgid ""
 " développez la lecture dans votre classe."
 msgstr "Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves et développez la lecture dans votre classe."
 
-#: project/templates/index.html:93 project/templates/utils/navbar.html:487
+#: project/templates/index.html:93 project/templates/utils/navbar.html:508
 msgid "Essayer gratuitement"
 msgstr "Essayer gratuitement"
 
@@ -1217,7 +1229,7 @@ msgstr "Votre mot de passe"
 msgid "Se souvenir de moi"
 msgstr "Se souvenir de moi"
 
-#: project/templates/auth/login.html:63 project/templates/utils/navbar.html:484
+#: project/templates/auth/login.html:63 project/templates/utils/navbar.html:505
 msgid "Se connecter"
 msgstr "Se connecter"
 
@@ -1556,13 +1568,13 @@ msgid "Professeures"
 msgstr "Professeures"
 
 #: project/templates/components/stats_counter.html:13
-#: project/templates/utils/navbar.html:337
+#: project/templates/utils/navbar.html:354
 msgid "Livres"
 msgstr "Livres"
 
 #: project/templates/components/stats_counter.html:19
 #: project/templates/user/dashboard.html:382
-#: project/templates/utils/navbar.html:341
+#: project/templates/utils/navbar.html:358
 msgid "Élèves"
 msgstr "Élèves"
 
@@ -1628,14 +1640,14 @@ msgid "Prénom de l'élève"
 msgstr "Prénom de l'élève"
 
 #: project/templates/eleve/eleve_add.html:58
-#: project/templates/eleve/eleve_info.html:52
-#: project/templates/eleve/eleve_info.html:148
-#: project/templates/eleve/eleve_info.html:195
-#: project/templates/livre/livre_ajout.html:96
-#: project/templates/livre/livre_edit.html:106
-#: project/templates/livre/livre_edit.html:133
-#: project/templates/livre/livre_info.html:93
-#: project/templates/livre/livre_info.html:173
+#: project/templates/eleve/eleve_info.html:63
+#: project/templates/eleve/eleve_info.html:159
+#: project/templates/eleve/eleve_info.html:206
+#: project/templates/livre/livre_ajout.html:117
+#: project/templates/livre/livre_edit.html:127
+#: project/templates/livre/livre_edit.html:154
+#: project/templates/livre/livre_info.html:95
+#: project/templates/livre/livre_info.html:175
 #: project/templates/user/reglage.html:409
 #: project/templates/user/reglage.html:430
 #: project/templates/user/reglage.html:451
@@ -1652,57 +1664,65 @@ msgstr "Ajouter"
 msgid "Nombre de livres lus :"
 msgstr "Nombre de livres lus :"
 
-#: project/templates/eleve/eleve_info.html:23
+#: project/templates/eleve/eleve_info.html:22
+msgid "Imprimer un diplôme de lecture"
+msgstr "Imprimer un diplôme de lecture"
+
+#: project/templates/eleve/eleve_info.html:26
+msgid "Carte de lecteur"
+msgstr "Carte de lecteur"
+
+#: project/templates/eleve/eleve_info.html:34
 msgid "Livres actuellement empruntés"
 msgstr "Livres actuellement empruntés"
 
-#: project/templates/eleve/eleve_info.html:23
+#: project/templates/eleve/eleve_info.html:34
 msgid "Livre actuellement emprunté"
 msgstr "Livre actuellement emprunté"
 
-#: project/templates/eleve/eleve_info.html:38
-#: project/templates/eleve/eleve_info.html:134
-#: project/templates/livre/livre_info.html:79
-#: project/templates/livre/livre_info.html:159
+#: project/templates/eleve/eleve_info.html:49
+#: project/templates/eleve/eleve_info.html:145
+#: project/templates/livre/livre_info.html:81
+#: project/templates/livre/livre_info.html:161
 msgid "Supprimer l'emprunt ?"
 msgstr "Supprimer l'emprunt ?"
 
-#: project/templates/eleve/eleve_info.html:48
-#: project/templates/eleve/eleve_info.html:144
-#: project/templates/livre/livre_info.html:89
-#: project/templates/livre/livre_info.html:169
+#: project/templates/eleve/eleve_info.html:59
+#: project/templates/eleve/eleve_info.html:155
+#: project/templates/livre/livre_info.html:91
+#: project/templates/livre/livre_info.html:171
 msgid "Supprimer l'emprunt"
 msgstr "Supprimer l'emprunt"
 
-#: project/templates/eleve/eleve_info.html:73
-#: project/templates/eleve/eleve_info.html:164
+#: project/templates/eleve/eleve_info.html:84
+#: project/templates/eleve/eleve_info.html:175
 #: project/templates/emprunt/emprunt_list.html:19
-#: project/templates/livre/livre_info.html:102
+#: project/templates/livre/livre_info.html:104
 msgid "Emprunté le"
 msgstr "Emprunté le"
 
-#: project/templates/eleve/eleve_info.html:97
+#: project/templates/eleve/eleve_info.html:108
 msgid "ne lit actuellement aucun livre."
 msgstr "ne lit actuellement aucun livre."
 
-#: project/templates/eleve/eleve_info.html:98
+#: project/templates/eleve/eleve_info.html:109
 msgid "Pour lui assigner un livre, rendez-vous sur la page d'un livre."
 msgstr "Pour lui assigner un livre, rendez-vous sur la page d'un livre."
 
-#: project/templates/eleve/eleve_info.html:119
+#: project/templates/eleve/eleve_info.html:130
 msgid "Livres empruntés précédemment"
 msgstr "Livres empruntés précédemment"
 
-#: project/templates/eleve/eleve_info.html:119
+#: project/templates/eleve/eleve_info.html:130
 msgid "Livre emprunté précédemment"
 msgstr "Livre emprunté précédemment"
 
-#: project/templates/eleve/eleve_info.html:181
+#: project/templates/eleve/eleve_info.html:192
 msgid "Supprimer l'élève ?"
 msgstr "Supprimer l'élève ?"
 
-#: project/templates/eleve/eleve_info.html:191
-#: project/templates/eleve/eleve_info.html:207
+#: project/templates/eleve/eleve_info.html:202
+#: project/templates/eleve/eleve_info.html:218
 msgid "Supprimer l'élève"
 msgstr "Supprimer l'élève"
 
@@ -1729,6 +1749,112 @@ msgstr "N'a jamais emprunté de livre"
 #: project/templates/eleve/search_preview.html:2
 msgid "Aucun élèves trouvés"
 msgstr "Aucun élèves trouvés"
+
+#: project/templates/email/newsletter.html:22
+msgid "Plateforme de gestion de bibliothèque scolaire"
+msgstr "Plateforme de gestion de bibliothèque scolaire"
+
+#: project/templates/email/newsletter.html:53
+msgid "L'équipe Livres en Classe"
+msgstr "L'équipe Livres en Classe"
+
+#: project/templates/email/newsletter.html:65
+msgid "Votre avis nous intéresse"
+msgstr "Votre avis nous intéresse"
+
+#: project/templates/email/newsletter.html:68
+msgid "Une suggestion pour votre classe ou un problème technique rencontré ?"
+msgstr "Une suggestion pour votre classe ou un problème technique rencontré ?"
+
+#: project/templates/email/newsletter.html:72
+#: project/templates/email/newsletter_promo.html:68
+msgid "Proposer une idée"
+msgstr "Proposer une idée"
+
+#: project/templates/email/newsletter.html:75
+#: project/templates/email/newsletter_promo.html:72
+msgid "Signaler un problème"
+msgstr "Signaler un problème"
+
+#: project/templates/email/newsletter.html:95
+msgid ""
+"Vous recevez cette lettre d'information en tant qu'utilisateur enregistré"
+" sur"
+msgstr "Vous recevez cette lettre d'information en tant qu'utilisateur enregistré sur"
+
+#: project/templates/email/newsletter.html:99
+msgid "Gérer mes préférences"
+msgstr "Gérer mes préférences"
+
+#: project/templates/email/newsletter.html:101
+#: project/templates/email/newsletter_promo.html:97
+#: project/templates/email/newsletter_update.html:108
+msgid "Se désabonner"
+msgstr "Se désabonner"
+
+#: project/templates/email/newsletter_promo.html:25
+msgid "Service de gestion"
+msgstr "Service de gestion"
+
+#: project/templates/email/newsletter_promo.html:25
+msgid "Communication officielle"
+msgstr "Communication officielle"
+
+#: project/templates/email/newsletter_promo.html:30
+msgid "Circulaire"
+msgstr "Circulaire"
+
+#: project/templates/email/newsletter_promo.html:61
+msgid "Canal de retour utilisateur"
+msgstr "Canal de retour utilisateur"
+
+#: project/templates/email/newsletter_promo.html:64
+msgid ""
+"Partagez vos suggestions d'évolution ou signalez tout dysfonctionnement "
+"directement à l'équipe."
+msgstr "Partagez vos suggestions d'évolution ou signalez tout dysfonctionnement directement à l'équipe."
+
+#: project/templates/email/newsletter_promo.html:92
+msgid "Communication administrative émise par l'équipe de"
+msgstr "Communication administrative émise par l'équipe de"
+
+#: project/templates/email/newsletter_promo.html:95
+msgid "Préférences"
+msgstr "Préférences"
+
+#: project/templates/email/newsletter_update.html:27
+msgid "Note de version"
+msgstr "Note de version"
+
+#: project/templates/email/newsletter_update.html:58
+msgid "Accéder à la plateforme"
+msgstr "Accéder à la plateforme"
+
+#: project/templates/email/newsletter_update.html:73
+msgid "Retours d'expérience & Anomalies"
+msgstr "Retours d'expérience & Anomalies"
+
+#: project/templates/email/newsletter_update.html:76
+msgid ""
+"Aidez-nous à faire évoluer Livres en Classe selon les besoins de vos "
+"élèves."
+msgstr "Aidez-nous à faire évoluer Livres en Classe selon les besoins de vos élèves."
+
+#: project/templates/email/newsletter_update.html:80
+msgid "Suggérer une amélioration"
+msgstr "Suggérer une amélioration"
+
+#: project/templates/email/newsletter_update.html:83
+msgid "Signaler un bug"
+msgstr "Signaler un bug"
+
+#: project/templates/email/newsletter_update.html:103
+msgid "Notification produit transmise aux utilisateurs de"
+msgstr "Notification produit transmise aux utilisateurs de"
+
+#: project/templates/email/newsletter_update.html:106
+msgid "Préférences de notification"
+msgstr "Préférences de notification"
 
 #: project/templates/emprunt/emprunt.html:9
 msgid "Mes emprunts"
@@ -1757,12 +1883,12 @@ msgid "Actifs"
 msgstr "Actifs"
 
 #: project/templates/emprunt/emprunt_list.html:21
-#: project/templates/livre/livre_info.html:150
+#: project/templates/livre/livre_info.html:152
 msgid "Emprunté du"
 msgstr "Emprunté du"
 
 #: project/templates/emprunt/emprunt_list.html:21
-#: project/templates/livre/livre_info.html:150
+#: project/templates/livre/livre_info.html:152
 #: project/templates/user/dashboard.html:222
 msgid "au"
 msgstr "au"
@@ -1801,7 +1927,6 @@ msgid "Pour ajouter un livre, cliquez sur le bouton"
 msgstr "Pour ajouter un livre, cliquez sur le bouton"
 
 #: project/templates/livre/livre.html:44
-#: project/templates/livre/livre_scann.html:98
 #: project/templates/utils/app_install.html:29
 msgid "ou"
 msgstr "ou"
@@ -1839,24 +1964,63 @@ msgstr "Année"
 msgid "Genre"
 msgstr "Genre"
 
-#: project/templates/livre/livre_ajout.html:62
-#: project/templates/livre/livre_edit.html:57
-msgid "ISBN"
-msgstr "ISBN"
+#: project/templates/livre/livre_ajout.html:63
+#: project/templates/livre/livre_edit.html:58
+msgid "ISBN officiel"
+msgstr "ISBN officiel"
 
-#: project/templates/livre/livre_ajout.html:69
-#: project/templates/livre/livre_edit.html:64
-msgid "Étiquettes"
-msgstr "Étiquettes"
+#: project/templates/livre/livre_ajout.html:64
+#: project/templates/livre/livre_edit.html:59
+msgid "Code éditeur / Google Books"
+msgstr "Code éditeur / Google Books"
+
+#: project/templates/livre/livre_ajout.html:67
+#: project/templates/livre/livre_edit.html:62
+msgid "ex: 9782070612758"
+msgstr "ex: 9782070612758"
+
+#: project/templates/livre/livre_ajout.html:72
+#: project/templates/livre/livre_edit.html:67
+msgid ""
+"Identifiant commercial du livre, utilisé pour récupérer automatiquement "
+"la couverture et les métadonnées."
+msgstr "Identifiant commercial du livre, utilisé pour récupérer automatiquement la couverture et les métadonnées."
 
 #: project/templates/livre/livre_ajout.html:77
 #: project/templates/livre/livre_edit.html:72
+msgid "Référence classe"
+msgstr "Référence classe"
+
+#: project/templates/livre/livre_ajout.html:78
+#: project/templates/livre/livre_edit.html:73
+msgid "Code-barres exemplaire / Rangement bac"
+msgstr "Code-barres exemplaire / Rangement bac"
+
+#: project/templates/livre/livre_ajout.html:81
+#: project/templates/livre/livre_edit.html:76
+msgid "ex: BAC-A-001 ou LIV-042"
+msgstr "ex: BAC-A-001 ou LIV-042"
+
+#: project/templates/livre/livre_ajout.html:86
+#: project/templates/livre/livre_edit.html:81
+msgid ""
+"Votre étiquette interne collée sur le livre pour distinguer chaque "
+"exemplaire physique et faciliter le rangement."
+msgstr "Votre étiquette interne collée sur le livre pour distinguer chaque exemplaire physique et faciliter le rangement."
+
+#: project/templates/livre/livre_ajout.html:90
+#: project/templates/livre/livre_edit.html:85
+msgid "Étiquettes"
+msgstr "Étiquettes"
+
+#: project/templates/livre/livre_ajout.html:98
+#: project/templates/livre/livre_edit.html:93
 msgid "Ajouter une étiquette ou une catégorie"
 msgstr "Ajouter une étiquette ou une catégorie"
 
-#: project/templates/livre/livre_ajout.html:92
-#: project/templates/livre/livre_edit.html:102
-#: project/templates/livre/livre_info.html:134
+#: project/templates/livre/livre_ajout.html:113
+#: project/templates/livre/livre_edit.html:123
+#: project/templates/livre/livre_info.html:136
 msgid "Enregistrer"
 msgstr "Enregistrer"
 
@@ -1865,22 +2029,22 @@ msgid "Modifier un livre"
 msgstr "Modifier un livre"
 
 #: project/templates/livre/livre_edit.html:13
-#: project/templates/livre/livre_info.html:197
+#: project/templates/livre/livre_info.html:199
 msgid "Modifier le livre"
 msgstr "Modifier le livre"
 
-#: project/templates/livre/livre_edit.html:86
+#: project/templates/livre/livre_edit.html:107
 msgid "Élève possédant le livre"
 msgstr "Élève possédant le livre"
 
-#: project/templates/livre/livre_edit.html:92
-#: project/templates/livre/livre_info.html:126
+#: project/templates/livre/livre_edit.html:113
+#: project/templates/livre/livre_info.html:128
 msgid "-- Le livre se trouve dans la bibliothèque --"
 msgstr "-- Le livre se trouve dans la bibliothèque --"
 
-#: project/templates/livre/livre_edit.html:119
-#: project/templates/livre/livre_edit.html:129
-#: project/templates/livre/livre_edit.html:145
+#: project/templates/livre/livre_edit.html:140
+#: project/templates/livre/livre_edit.html:150
+#: project/templates/livre/livre_edit.html:166
 msgid "Supprimer le livre"
 msgstr "Supprimer le livre"
 
@@ -1893,6 +2057,7 @@ msgid "Titre :"
 msgstr "Titre :"
 
 #: project/templates/livre/livre_info.html:35
+#: project/templates/ressources/fiches_avis.html:59
 msgid "Auteur :"
 msgstr "Auteur :"
 
@@ -1905,26 +2070,30 @@ msgid "Année :"
 msgstr "Année :"
 
 #: project/templates/livre/livre_info.html:38
-msgid "ISBN :"
-msgstr "ISBN :"
+msgid "ISBN officiel :"
+msgstr "ISBN officiel :"
 
-#: project/templates/livre/livre_info.html:53
+#: project/templates/livre/livre_info.html:39
+msgid "Référence classe :"
+msgstr "Référence classe :"
+
+#: project/templates/livre/livre_info.html:55
 msgid "Actuellement prêté à :"
 msgstr "Actuellement prêté à :"
 
-#: project/templates/livre/livre_info.html:116
+#: project/templates/livre/livre_info.html:118
 msgid "Ce livre n'est pas actuellement prêté."
 msgstr "Ce livre n'est pas actuellement prêté."
 
-#: project/templates/livre/livre_info.html:120
+#: project/templates/livre/livre_info.html:122
 msgid "Prêter le livre à un élève"
 msgstr "Prêter le livre à un élève"
 
-#: project/templates/livre/livre_info.html:141
+#: project/templates/livre/livre_info.html:143
 msgid "Anciens emprunts :"
 msgstr "Anciens emprunts :"
 
-#: project/templates/livre/livre_info.html:198
+#: project/templates/livre/livre_info.html:200
 msgid "Dupliquer le livre"
 msgstr "Dupliquer le livre"
 
@@ -1947,90 +2116,94 @@ msgstr "Emprunté par :"
 msgid "Disponible"
 msgstr "Disponible"
 
-#: project/templates/livre/livre_scann.html:75
+#: project/templates/livre/livre_scann.html:205
+msgid "Centrez le code-barres dans ce cadre"
+msgstr "Centrez le code-barres dans ce cadre"
+
+#: project/templates/livre/livre_scann.html:236
 msgid "Impossible d'accéder à la caméra."
 msgstr "Impossible d'accéder à la caméra."
 
-#: project/templates/livre/livre_scann.html:76
+#: project/templates/livre/livre_scann.html:237
 msgid ""
 "Vérifiez que vous avez autorisé l'accès à la caméra dans votre "
 "navigateur, puis rechargez la page."
 msgstr "Vérifiez que vous avez autorisé l'accès à la caméra dans votre navigateur, puis rechargez la page."
 
-#: project/templates/livre/livre_scann.html:80
+#: project/templates/livre/livre_scann.html:241
 msgid "Voir le guide de dépannage"
 msgstr "Voir le guide de dépannage"
 
-#: project/templates/livre/livre_scann.html:89
+#: project/templates/livre/livre_scann.html:250
 msgid "Comment scanner un livre ?"
 msgstr "Comment scanner un livre ?"
 
-#: project/templates/livre/livre_scann.html:97
+#: project/templates/livre/livre_scann.html:258
 msgid "pour voir le verso (4ème de couverture)"
 msgstr "pour voir le verso (4ème de couverture)"
 
-#: project/templates/livre/livre_scann.html:98
+#: project/templates/livre/livre_scann.html:259
 #: project/templates/user/dashboard.html:284
 msgid "Le"
 msgstr "Le"
 
-#: project/templates/livre/livre_scann.html:98
-msgid "code-barres ISBN"
-msgstr "code-barres ISBN"
+#: project/templates/livre/livre_scann.html:259
+msgid "code-barres"
+msgstr "code-barres"
 
-#: project/templates/livre/livre_scann.html:98
-msgid "commence par"
-msgstr "commence par"
+#: project/templates/livre/livre_scann.html:259
+msgid "l'ISBN officiel (978...) ou votre étiquette de classe (ex : BAC-A-001)"
+msgstr "l'ISBN officiel (978...) ou votre étiquette de classe (ex : BAC-A-001)"
 
-#: project/templates/livre/livre_scann.html:99
+#: project/templates/livre/livre_scann.html:260
 msgid "Pointez la caméra à"
 msgstr "Pointez la caméra à"
 
-#: project/templates/livre/livre_scann.html:99
+#: project/templates/livre/livre_scann.html:260
 msgid "environ 15-20 cm"
 msgstr "environ 15-20 cm"
 
-#: project/templates/livre/livre_scann.html:99
+#: project/templates/livre/livre_scann.html:260
 msgid "du code-barres"
 msgstr "du code-barres"
 
-#: project/templates/livre/livre_scann.html:100
+#: project/templates/livre/livre_scann.html:261
 msgid "Maintenez l'appareil"
 msgstr "Maintenez l'appareil"
 
-#: project/templates/livre/livre_scann.html:100
+#: project/templates/livre/livre_scann.html:261
 msgid "stable"
 msgstr "stable"
 
-#: project/templates/livre/livre_scann.html:100
+#: project/templates/livre/livre_scann.html:261
 msgid "quelques secondes — le scan est automatique"
 msgstr "quelques secondes — le scan est automatique"
 
-#: project/templates/livre/livre_scann.html:101
+#: project/templates/livre/livre_scann.html:262
 msgid "Si la lumière est faible, utilisez le bouton"
 msgstr "Si la lumière est faible, utilisez le bouton"
 
-#: project/templates/livre/livre_scann.html:101
+#: project/templates/livre/livre_scann.html:262
 msgid "torche"
 msgstr "torche"
 
-#: project/templates/livre/livre_scann.html:105
+#: project/templates/livre/livre_scann.html:266
 msgid "Astuce :"
 msgstr "Astuce :"
 
-#: project/templates/livre/livre_scann.html:105
+#: project/templates/livre/livre_scann.html:266
 msgid "Utilisez la mise au point du bouton"
 msgstr "Utilisez la mise au point du bouton"
 
-#: project/templates/livre/livre_scann.html:105
+#: project/templates/livre/livre_scann.html:266
 msgid "si le scan ne fonctionne pas — l'ultra-large"
 msgstr "si le scan ne fonctionne pas — l'ultra-large"
 
-#: project/templates/livre/livre_scann.html:105
+#: project/templates/livre/livre_scann.html:266
 msgid "peut mal détecter à courte distance."
 msgstr "peut mal détecter à courte distance."
 
-#: project/templates/livre/livre_scann.html:110
+#: project/templates/livre/livre_scann.html:271
 msgid "Guide complet du scanner"
 msgstr "Guide complet du scanner"
 
@@ -2038,15 +2211,986 @@ msgstr "Guide complet du scanner"
 msgid "Scanner des livres"
 msgstr "Scanner des livres"
 
+#: project/templates/ressources/base_editor.html:20
+msgid "Studio de Ressources"
+msgstr "Studio de Ressources"
+
+#: project/templates/ressources/base_editor.html:31
+#: project/templates/ressources/index.html:125
+msgid "Toutes les ressources"
+msgstr "Toutes les ressources"
+
+#: project/templates/ressources/base_editor.html:34
+msgid "Éditeur de document"
+msgstr "Éditeur de document"
+
+#: project/templates/ressources/base_editor.html:40
+msgid "Zoom arrière"
+msgstr "Zoom arrière"
+
+#: project/templates/ressources/base_editor.html:44
+msgid "Zoom avant"
+msgstr "Zoom avant"
+
+#: project/templates/ressources/base_editor.html:47
+msgid "Ajuster à l'écran"
+msgstr "Ajuster à l'écran"
+
+#: project/templates/ressources/base_editor.html:55
+msgid "Imprimer / Enregistrer en PDF"
+msgstr "Imprimer / Enregistrer en PDF"
+
+#: project/templates/ressources/base_editor.html:70
+msgid "Réinitialiser les valeurs par défaut"
+msgstr "Réinitialiser les valeurs par défaut"
+
+#: project/templates/ressources/bingo.html:5
+msgid "Défi / Bingo Lecture"
+msgstr "Défi / Bingo Lecture"
+
+#: project/templates/ressources/bingo.html:12
+#: project/templates/ressources/charte.html:12
+#: project/templates/ressources/diplome.html:13
+#: project/templates/ressources/fiches_avis.html:12
+#: project/templates/ressources/marque_pages.html:12
+#: project/templates/ressources/passeport.html:13
+msgid "Style & Thème"
+msgstr "Style & Thème"
+
+#: project/templates/ressources/bingo.html:15
+msgid "Violet Mystère"
+msgstr "Violet Mystère"
+
+#: project/templates/ressources/bingo.html:16
+#: project/templates/ressources/charte.html:15
+#: project/templates/ressources/diplome.html:17
+#: project/templates/ressources/fiches_avis.html:17
+#: project/templates/ressources/marque_pages.html:15
+msgid "Bleu Écolier"
+msgstr "Bleu Écolier"
+
+#: project/templates/ressources/bingo.html:17
+#: project/templates/ressources/marque_pages.html:16
+msgid "Vert Nature"
+msgstr "Vert Nature"
+
+#: project/templates/ressources/bingo.html:18
+msgid "Jaune Énergie"
+msgstr "Jaune Énergie"
+
+#: project/templates/ressources/bingo.html:19
+msgid "Corail Aventure"
+msgstr "Corail Aventure"
+
+#: project/templates/ressources/bingo.html:20
+#: project/templates/ressources/fiches_avis.html:20
+#: project/templates/ressources/marque_pages.html:20
+#: project/templates/ressources/passeport.html:20
+msgid "Noir & Blanc (Éco)"
+msgstr "Noir & Blanc (Éco)"
+
+#: project/templates/ressources/bingo.html:27
+msgid "En-tête & Informations"
+msgstr "En-tête & Informations"
+
+#: project/templates/ressources/bingo.html:30
+msgid "Titre du Bingo"
+msgstr "Titre du Bingo"
+
+#: project/templates/ressources/bingo.html:32
+msgid "MON BINGO LECTURE DES VACANCES"
+msgstr "MON BINGO LECTURE DES VACANCES"
+
+#: project/templates/ressources/bingo.html:36
+msgid "Consigne / Règle du jeu"
+msgstr "Consigne / Règle du jeu"
+
+#: project/templates/ressources/bingo.html:38
+msgid ""
+"Coche chaque défi réalisé ! Réalise une ligne, une colonne ou tente la "
+"grille complète !"
+msgstr "Coche chaque défi réalisé ! Réalise une ligne, une colonne ou tente la grille complète !"
+
+#: project/templates/ressources/bingo.html:42
+msgid "Objectif / Récompense promise"
+msgstr "Objectif / Récompense promise"
+
+#: project/templates/ressources/bingo.html:44
+#: project/templates/ressources/bingo.html:141
+msgid ""
+"🎯 Défi relevé : 1 ligne = 1 marque-page offert • Grille pleine = Diplôme "
+"du Super Lecteur !"
+msgstr "🎯 Défi relevé : 1 ligne = 1 marque-page offert • Grille pleine = Diplôme du Super Lecteur !"
+
+#: project/templates/ressources/bingo.html:55
+msgid "DÉFI LECTURE DES VACANCES"
+msgstr "DÉFI LECTURE DES VACANCES"
+
+#: project/templates/ressources/bingo.html:58
+msgid ""
+"Coche chaque défi accompli pour compléter ta grille et progresser dans "
+"tes lectures."
+msgstr "Coche chaque défi accompli pour compléter ta grille et progresser dans tes lectures."
+
+#: project/templates/ressources/bingo.html:62
+msgid "Prénom et nom de l'élève :"
+msgstr "Prénom et nom de l'élève :"
+
+#: project/templates/ressources/bingo.html:63
+msgid "Classe :"
+msgstr "Classe :"
+
+#: project/templates/ressources/bingo.html:70
+msgid "Lire 15 minutes dans un endroit calme"
+msgstr "Lire 15 minutes dans un endroit calme"
+
+#: project/templates/ressources/bingo.html:74
+msgid "Lire un chapitre à voix haute à quelqu'un"
+msgstr "Lire un chapitre à voix haute à quelqu'un"
+
+#: project/templates/ressources/bingo.html:78
+msgid "Découvrir une bande dessinée ou un album"
+msgstr "Découvrir une bande dessinée ou un album"
+
+#: project/templates/ressources/bingo.html:82
+msgid "Lire un livre dont la couverture est bleue"
+msgstr "Lire un livre dont la couverture est bleue"
+
+#: project/templates/ressources/bingo.html:87
+msgid "Lire un livre documentaire sur la nature ou les sciences"
+msgstr "Lire un livre documentaire sur la nature ou les sciences"
+
+#: project/templates/ressources/bingo.html:91
+msgid "Lire une recette de cuisine et aider à la préparer"
+msgstr "Lire une recette de cuisine et aider à la préparer"
+
+#: project/templates/ressources/bingo.html:95
+msgid "DÉFI MAJEUR :"
+msgstr "DÉFI MAJEUR :"
+
+#: project/templates/ressources/bingo.html:95
+msgid "Terminer un livre du début à la fin"
+msgstr "Terminer un livre du début à la fin"
+
+#: project/templates/ressources/bingo.html:99
+msgid "Lire 15 minutes le matin au réveil"
+msgstr "Lire 15 minutes le matin au réveil"
+
+#: project/templates/ressources/bingo.html:104
+msgid "Lire un livre conseillé par un ami ou l'enseignant"
+msgstr "Lire un livre conseillé par un ami ou l'enseignant"
+
+#: project/templates/ressources/bingo.html:108
+msgid "Découvrir un poème ou un conte traditionnel"
+msgstr "Découvrir un poème ou un conte traditionnel"
+
+#: project/templates/ressources/bingo.html:112
+msgid "Lire un livre qui raconte une enquête ou une aventure"
+msgstr "Lire un livre qui raconte une enquête ou une aventure"
+
+#: project/templates/ressources/bingo.html:116
+msgid "Lire un livre qui fait rire ou sourire"
+msgstr "Lire un livre qui fait rire ou sourire"
+
+#: project/templates/ressources/bingo.html:121
+msgid "Lire 20 minutes d'affilée sans interruption"
+msgstr "Lire 20 minutes d'affilée sans interruption"
+
+#: project/templates/ressources/bingo.html:125
+msgid "Noter sur une feuille son personnage préféré"
+msgstr "Noter sur une feuille son personnage préféré"
+
+#: project/templates/ressources/bingo.html:129
+msgid "Relire son passage favori d'une histoire"
+msgstr "Relire son passage favori d'une histoire"
+
+#: project/templates/ressources/bingo.html:133
+msgid "Illustrer par un dessin une scène de sa lecture"
+msgstr "Illustrer par un dessin une scène de sa lecture"
+
+#: project/templates/ressources/bingo.html:144
+msgid "Date de validation :"
+msgstr "Date de validation :"
+
+#: project/templates/ressources/bingo.html:145
+msgid "Signature du maître / de la maîtresse :"
+msgstr "Signature du maître / de la maîtresse :"
+
+#: project/templates/ressources/charte.html:5
+#: project/templates/ressources/index.html:171
+msgid "Charte du Coin Lecture"
+msgstr "Charte du Coin Lecture"
+
+#: project/templates/ressources/charte.html:16
+msgid "Vert Sérénité"
+msgstr "Vert Sérénité"
+
+#: project/templates/ressources/charte.html:17
+msgid "Jaune Chaleureux"
+msgstr "Jaune Chaleureux"
+
+#: project/templates/ressources/charte.html:18
+msgid "Violet Douceur"
+msgstr "Violet Douceur"
+
+#: project/templates/ressources/charte.html:19
+msgid "Corail Tonique"
+msgstr "Corail Tonique"
+
+#: project/templates/ressources/charte.html:20
+msgid "Noir & Blanc (À colorier en classe)"
+msgstr "Noir & Blanc (À colorier en classe)"
+
+#: project/templates/ressources/charte.html:27
+msgid "En-tête de l'affiche"
+msgstr "En-tête de l'affiche"
+
+#: project/templates/ressources/charte.html:30
+msgid "Titre principal"
+msgstr "Titre principal"
+
+#: project/templates/ressources/charte.html:32
+#: project/templates/ressources/charte.html:93
+msgid "LA CHARTE DU COIN LECTURE"
+msgstr "LA CHARTE DU COIN LECTURE"
+
+#: project/templates/ressources/charte.html:36
+msgid "Sous-titre / Nom de classe"
+msgstr "Sous-titre / Nom de classe"
+
+#: project/templates/ressources/charte.html:38
+#: project/templates/ressources/charte.html:94
+msgid "Les 5 règles d'or de la classe de CE2-CM1"
+msgstr "Les 5 règles d'or de la classe de CE2-CM1"
+
+#: project/templates/ressources/charte.html:46
+msgid "Les 5 règles d'or"
+msgstr "Les 5 règles d'or"
+
+#: project/templates/ressources/charte.html:50
+msgid "Mains propres & soin"
+msgstr "Mains propres & soin"
+
+#: project/templates/ressources/charte.html:52
+msgid ""
+"Je manipule les livres avec des mains propres et je tourne les pages avec"
+" délicatesse."
+msgstr "Je manipule les livres avec des mains propres et je tourne les pages avec délicatesse."
+
+#: project/templates/ressources/charte.html:57
+msgid "Silence & chuchotement"
+msgstr "Silence & chuchotement"
+
+#: project/templates/ressources/charte.html:59
+msgid "Je chuchote et je respecte le calme pour permettre à chacun de s'évader."
+msgstr "Je chuchote et je respecte le calme pour permettre à chacun de s'évader."
+
+#: project/templates/ressources/charte.html:64
+msgid "Rangement & bacs"
+msgstr "Rangement & bacs"
+
+#: project/templates/ressources/charte.html:66
+msgid ""
+"Je range chaque livre dans son bac d'origine en regardant la couleur de "
+"son étiquette."
+msgstr "Je range chaque livre dans son bac d'origine en regardant la couleur de son étiquette."
+
+#: project/templates/ressources/charte.html:71
+msgid "Livre abîmé / hôpital"
+msgstr "Livre abîmé / hôpital"
+
+#: project/templates/ressources/charte.html:73
+msgid ""
+"Si une page est déchirée ou un livre blessé, je préviens l'enseignant(e) "
+"sans attendre."
+msgstr "Si une page est déchirée ou un livre blessé, je préviens l'enseignant(e) sans attendre."
+
+#: project/templates/ressources/charte.html:78
+msgid "Marque-page & autonomie"
+msgstr "Marque-page & autonomie"
+
+#: project/templates/ressources/charte.html:80
+msgid ""
+"J'utilise un marque-page pour retrouver ma lecture sans plier les coins "
+"des pages (pas de corne !)."
+msgstr "J'utilise un marque-page pour retrouver ma lecture sans plier les coins des pages (pas de corne !)."
+
+#: project/templates/ressources/charte.html:102
+msgid ""
+"Je prends soin des livres : je tourne les pages avec délicatesse et des "
+"mains propres."
+msgstr "Je prends soin des livres : je tourne les pages avec délicatesse et des mains propres."
+
+#: project/templates/ressources/charte.html:109
+msgid ""
+"Je respecte le calme du lieu : je lis silencieusement ou je chuchote pour"
+" ne pas déranger mes camarades."
+msgstr "Je respecte le calme du lieu : je lis silencieusement ou je chuchote pour ne pas déranger mes camarades."
+
+#: project/templates/ressources/charte.html:116
+msgid ""
+"Je range chaque livre à sa place en respectant son bac et sa couleur de "
+"classement."
+msgstr "Je range chaque livre à sa place en respectant son bac et sa couleur de classement."
+
+#: project/templates/ressources/charte.html:123
+msgid ""
+"Si un livre est abîmé ou une page détachée, je le signale immédiatement "
+"pour qu'il soit réparé."
+msgstr "Si un livre est abîmé ou une page détachée, je le signale immédiatement pour qu'il soit réparé."
+
+#: project/templates/ressources/charte.html:130
+msgid ""
+"J'utilise un marque-page pour retrouver ma lecture sans corner les pages "
+"des livres."
+msgstr "J'utilise un marque-page pour retrouver ma lecture sans corner les pages des livres."
+
+#: project/templates/ressources/charte.html:138
+msgid "Signature des élèves de la classe :"
+msgstr "Signature des élèves de la classe :"
+
+#: project/templates/ressources/charte.html:142
+#: project/templates/ressources/passeport.html:102
+msgid "Signature de l'enseignant(e) :"
+msgstr "Signature de l'enseignant(e) :"
+
+#: project/templates/ressources/codes_barres.html:5
+msgid "Générateur de Codes-Barres"
+msgstr "Générateur de Codes-Barres"
+
+#: project/templates/ressources/codes_barres.html:17
+msgid "Source des données"
+msgstr "Source des données"
+
+#: project/templates/ressources/codes_barres.html:23
+msgid "Saisie libre / Manuelle"
+msgstr "Saisie libre / Manuelle"
+
+#: project/templates/ressources/codes_barres.html:30
+msgid "Livres de ma classe ("
+msgstr "Livres de ma classe ("
+
+#: project/templates/ressources/codes_barres.html:30
+msgid " livres)"
+msgstr " livres)"
+
+#: project/templates/ressources/codes_barres.html:38
+msgid "Cartes de prêt élèves ("
+msgstr "Cartes de prêt élèves ("
+
+#: project/templates/ressources/codes_barres.html:38
+msgid " élèves)"
+msgstr " élèves)"
+
+#: project/templates/ressources/codes_barres.html:48
+msgid "Série rapide par bac / position"
+msgstr "Série rapide par bac / position"
+
+#: project/templates/ressources/codes_barres.html:52
+msgid "Préfixe"
+msgstr "Préfixe"
+
+#: project/templates/ressources/codes_barres.html:56
+msgid "Début"
+msgstr "Début"
+
+#: project/templates/ressources/codes_barres.html:60
+msgid "Nombre"
+msgstr "Nombre"
+
+#: project/templates/ressources/codes_barres.html:66
+msgid "Générer la série de bac"
+msgstr "Générer la série de bac"
+
+#: project/templates/ressources/codes_barres.html:73
+msgid "Codes à générer (1 par ligne)"
+msgstr "Codes à générer (1 par ligne)"
+
+#: project/templates/ressources/codes_barres.html:84
+msgid "Format : CODE ou CODE | TITRE (Standard CODE 128)"
+msgstr "Format : CODE ou CODE | TITRE (Standard CODE 128)"
+
+#: project/templates/ressources/codes_barres.html:105
+msgid "Carte de Lecteur"
+msgstr "Carte de Lecteur"
+
+#: project/templates/ressources/diplome.html:5
+msgid "Diplôme de Lecture"
+msgstr "Diplôme de Lecture"
+
+#: project/templates/ressources/diplome.html:16
+#: project/templates/ressources/fiches_avis.html:16
+msgid "Or Prestige"
+msgstr "Or Prestige"
+
+#: project/templates/ressources/diplome.html:18
+msgid "Vert Aventure"
+msgstr "Vert Aventure"
+
+#: project/templates/ressources/diplome.html:19
+msgid "Violet Magique"
+msgstr "Violet Magique"
+
+#: project/templates/ressources/diplome.html:20
+#: project/templates/ressources/marque_pages.html:19
+msgid "Corail Vif"
+msgstr "Corail Vif"
+
+#: project/templates/ressources/diplome.html:21
+msgid "Noir & Blanc (À colorier)"
+msgstr "Noir & Blanc (À colorier)"
+
+#: project/templates/ressources/diplome.html:29
+msgid "Sélectionner un élève"
+msgstr "Sélectionner un élève"
+
+#: project/templates/ressources/diplome.html:35
+msgid "Choisir dans ma classe"
+msgstr "Choisir dans ma classe"
+
+#: project/templates/ressources/diplome.html:54
+msgid "Informations du diplôme"
+msgstr "Informations du diplôme"
+
+#: project/templates/ressources/diplome.html:58
+msgid "Titre du diplôme"
+msgstr "Titre du diplôme"
+
+#: project/templates/ressources/diplome.html:60
+#: project/templates/ressources/diplome.html:120
+msgid "DIPLÔME DE LECTURE"
+msgstr "DIPLÔME DE LECTURE"
+
+#: project/templates/ressources/diplome.html:65
+msgid "Sous-titre / Mention"
+msgstr "Sous-titre / Mention"
+
+#: project/templates/ressources/diplome.html:67
+msgid "Décerné avec toutes les félicitations à"
+msgstr "Décerné avec toutes les félicitations à"
+
+#: project/templates/ressources/diplome.html:72
+msgid "Prénom & Nom de l'élève"
+msgstr "Prénom & Nom de l'élève"
+
+#: project/templates/ressources/diplome.html:74
+#: project/templates/ressources/diplome.html:127
+msgid "Thomas Dubois"
+msgstr "Thomas Dubois"
+
+#: project/templates/ressources/diplome.html:79
+msgid "Motif / Réalisation"
+msgstr "Motif / Réalisation"
+
+#: project/templates/ressources/diplome.html:81
+msgid "pour avoir franchi avec brio le palier de"
+msgstr "pour avoir franchi avec brio le palier de"
+
+#: project/templates/ressources/diplome.html:81
+msgid "livres lus dans la bibliothèque de classe !"
+msgstr "livres lus dans la bibliothèque de classe !"
+
+#: project/templates/ressources/diplome.html:81
+msgid ""
+"pour son engagement, sa curiosité et ses belles découvertes littéraires "
+"au sein de la bibliothèque de classe."
+msgstr "pour son engagement, sa curiosité et ses belles découvertes littéraires au sein de la bibliothèque de classe."
+
+#: project/templates/ressources/diplome.html:86
+#: project/templates/ressources/passeport.html:31
+msgid "École / Classe"
+msgstr "École / Classe"
+
+#: project/templates/ressources/diplome.html:88
+#: project/templates/ressources/diplome.html:141
+msgid "Classe de CM1-B"
+msgstr "Classe de CM1-B"
+
+#: project/templates/ressources/diplome.html:95
+msgid "Date"
+msgstr "Date"
+
+#: project/templates/ressources/diplome.html:103
+msgid "Enseignant(e)"
+msgstr "Enseignant(e)"
+
+#: project/templates/ressources/diplome.html:105
+#: project/templates/ressources/diplome.html:148
+msgid "L'enseignant(e)"
+msgstr "L'enseignant(e)"
+
+#: project/templates/ressources/diplome.html:121
+msgid "Décerné avec toutes les félicitations de la classe à"
+msgstr "Décerné avec toutes les félicitations de la classe à"
+
+#: project/templates/ressources/diplome.html:131
+msgid "pour avoir lu avec succès"
+msgstr "pour avoir lu avec succès"
+
+#: project/templates/ressources/diplome.html:131
+msgid "livres dans la bibliothèque de classe."
+msgstr "livres dans la bibliothèque de classe."
+
+#: project/templates/ressources/diplome.html:133
+msgid ""
+"pour sa curiosité, son autonomie et son engagement dans ses lectures de "
+"classe."
+msgstr "pour sa curiosité, son autonomie et son engagement dans ses lectures de classe."
+
+#: project/templates/ressources/etiquettes.html:5
+#: project/templates/ressources/index.html:201
+msgid "Étiquettes de Genres & Bacs"
+msgstr "Étiquettes de Genres & Bacs"
+
+#: project/templates/ressources/etiquettes.html:12
+msgid "Format d'étiquettes"
+msgstr "Format d'étiquettes"
+
+#: project/templates/ressources/etiquettes.html:18
+msgid "Grandes étiquettes pour bacs (6 par page)"
+msgstr "Grandes étiquettes pour bacs (6 par page)"
+
+#: project/templates/ressources/etiquettes.html:24
+msgid "Petites étiquettes de tranches / cotes (24 par page)"
+msgstr "Petites étiquettes de tranches / cotes (24 par page)"
+
+#: project/templates/ressources/etiquettes.html:34
+msgid "Mes tags de bibliothèque"
+msgstr "Mes tags de bibliothèque"
+
+#: project/templates/ressources/etiquettes.html:36
+msgid "Cliquez sur un de vos tags pour l'injecter dans la première étiquette :"
+msgstr "Cliquez sur un de vos tags pour l'injecter dans la première étiquette :"
+
+#: project/templates/ressources/etiquettes.html:50
+msgid "Personnalisation directe"
+msgstr "Personnalisation directe"
+
+#: project/templates/ressources/etiquettes.html:53
+msgid ""
+"💡 Vous pouvez cliquer directement sur n'importe quel texte ou titre sur "
+"la feuille A4 pour le modifier avant impression."
+msgstr "💡 Vous pouvez cliquer directement sur n'importe quel texte ou titre sur la feuille A4 pour le modifier avant impression."
+
+#: project/templates/ressources/fiches_avis.html:5
+msgid "Fiches Coup de Cœur & Fanions"
+msgstr "Fiches Coup de Cœur & Fanions"
+
+#: project/templates/ressources/fiches_avis.html:15
+msgid "Corail Coup de Cœur"
+msgstr "Corail Coup de Cœur"
+
+#: project/templates/ressources/fiches_avis.html:18
+msgid "Vert Forêt"
+msgstr "Vert Forêt"
+
+#: project/templates/ressources/fiches_avis.html:19
+msgid "Violet Passion"
+msgstr "Violet Passion"
+
+#: project/templates/ressources/fiches_avis.html:27
+msgid "En-tête des fiches"
+msgstr "En-tête des fiches"
+
+#: project/templates/ressources/fiches_avis.html:30
+msgid "Titre du fanion"
+msgstr "Titre du fanion"
+
+#: project/templates/ressources/fiches_avis.html:32
+msgid "COUP DE CŒUR DE LA CLASSE !"
+msgstr "COUP DE CŒUR DE LA CLASSE !"
+
+#: project/templates/ressources/fiches_avis.html:44
+msgid "COUP DE CŒUR DE LECTEUR"
+msgstr "COUP DE CŒUR DE LECTEUR"
+
+#: project/templates/ressources/fiches_avis.html:46
+msgid "Conseil et partage entre camarades"
+msgstr "Conseil et partage entre camarades"
+
+#: project/templates/ressources/fiches_avis.html:51
+msgid "Conseillé par :"
+msgstr "Conseillé par :"
+
+#: project/templates/ressources/fiches_avis.html:55
+msgid "Titre du livre :"
+msgstr "Titre du livre :"
+
+#: project/templates/ressources/fiches_avis.html:65
+msgid "Note :"
+msgstr "Note :"
+
+#: project/templates/ressources/fiches_avis.html:71
+msgid "Ce qui m'a plu dans cette histoire :"
+msgstr "Ce qui m'a plu dans cette histoire :"
+
+#: project/templates/ressources/fiches_avis.html:80
+msgid "À insérer dans le livre pour laisser dépasser l'onglet en rayon."
+msgstr "À insérer dans le livre pour laisser dépasser l'onglet en rayon."
+
 #: project/templates/ressources/index.html:7
-msgid "Ressources pour enseignants | Livres en Classe"
-msgstr "Ressources pour enseignants | Livres en Classe"
+msgid "Ressources personnalisables & imprimables | Livres en Classe"
+msgstr "Ressources personnalisables & imprimables | Livres en Classe"
 
 #: project/templates/ressources/index.html:8
 msgid ""
-"Ressources gratuites pour gérer une bibliothèque de classe : guides "
-"pratiques, liens utiles et outils pour les enseignants du primaire."
-msgstr "Ressources gratuites pour gérer une bibliothèque de classe : guides pratiques, liens utiles et outils pour les enseignants du primaire."
+"Outils gratuits et personnalisables pour enseignants : diplômes de "
+"lecture, marque-pages, charte de classe, bingo lecture, étiquettes de "
+"bacs et codes-barres prêts à imprimer."
+msgstr "Outils gratuits et personnalisables pour enseignants : diplômes de lecture, marque-pages, charte de classe, bingo lecture, étiquettes de bacs et codes-barres prêts à imprimer."
+
+#: project/templates/ressources/index.html:116
+msgid "Outils et Ressources pour la Classe"
+msgstr "Outils et Ressources pour la Classe"
+
+#: project/templates/ressources/index.html:119
+msgid ""
+"Personnalisez vos affiches, diplômes, marque-pages et étiquettes en "
+"ligne, puis imprimez-les directement au format A4."
+msgstr "Personnalisez vos affiches, diplômes, marque-pages et étiquettes en ligne, puis imprimez-les directement au format A4."
+
+#: project/templates/ressources/index.html:126
+msgid "Motivation & Diplômes"
+msgstr "Motivation & Diplômes"
+
+#: project/templates/ressources/index.html:127
+msgid "Organisation & Bacs"
+msgstr "Organisation & Bacs"
+
+#: project/templates/ressources/index.html:128
+msgid "Rituels & Prêts"
+msgstr "Rituels & Prêts"
+
+#: project/templates/ressources/index.html:137
+msgid "A4 Paysage"
+msgstr "A4 Paysage"
+
+#: project/templates/ressources/index.html:141
+msgid "Diplômes de Lecture"
+msgstr "Diplômes de Lecture"
+
+#: project/templates/ressources/index.html:142
+msgid ""
+"Valorisez les progrès et paliers franchis (5, 10, 20 livres). Remplissage"
+" libre ou connecté aux statistiques de vos élèves."
+msgstr "Valorisez les progrès et paliers franchis (5, 10, 20 livres). Remplissage libre ou connecté aux statistiques de vos élèves."
+
+#: project/templates/ressources/index.html:144
+#: project/templates/ressources/index.html:159
+#: project/templates/ressources/index.html:174
+#: project/templates/ressources/index.html:189
+#: project/templates/ressources/index.html:204
+#: project/templates/ressources/index.html:219
+#: project/templates/ressources/index.html:234
+#: project/templates/ressources/index.html:249
+msgid "Personnaliser et imprimer"
+msgstr "Personnaliser et imprimer"
+
+#: project/templates/ressources/index.html:152
+msgid "4 par page"
+msgstr "4 par page"
+
+#: project/templates/ressources/index.html:156
+msgid "Marque-pages d'emprunt"
+msgstr "Marque-pages d'emprunt"
+
+#: project/templates/ressources/index.html:157
+msgid ""
+"Suivi des dates de prêt au recto et fiche d'avis avec étoiles à colorier "
+"au verso. Formats pliables ou prêts à massicoter."
+msgstr "Suivi des dates de prêt au recto et fiche d'avis avec étoiles à colorier au verso. Formats pliables ou prêts à massicoter."
+
+#: project/templates/ressources/index.html:167
+msgid "Affiche A4 / A3"
+msgstr "Affiche A4 / A3"
+
+#: project/templates/ressources/index.html:172
+msgid ""
+"Les règles essentielles pour préserver les livres et le calme. Versions "
+"couleur ou noir & blanc avec contrat de signatures."
+msgstr "Les règles essentielles pour préserver les livres et le calme. Versions couleur ou noir & blanc avec contrat de signatures."
+
+#: project/templates/ressources/index.html:182
+msgid "Grille A4"
+msgstr "Grille A4"
+
+#: project/templates/ressources/index.html:186
+msgid "Défi Lecture"
+msgstr "Défi Lecture"
+
+#: project/templates/ressources/index.html:187
+msgid ""
+"Une grille de 16 situations de lecture variées pour stimuler la "
+"régularité pendant les vacances scolaires ou un rallye."
+msgstr "Une grille de 16 situations de lecture variées pour stimuler la régularité pendant les vacances scolaires ou un rallye."
+
+#: project/templates/ressources/index.html:197
+msgid "Bacs & Cotes"
+msgstr "Bacs & Cotes"
+
+#: project/templates/ressources/index.html:202
+msgid ""
+"Grandes étiquettes visuelles pour bacs ou bandes de cotes pour tranches. "
+"Compatible avec les tags personnalisés de votre compte."
+msgstr "Grandes étiquettes visuelles pour bacs ou bandes de cotes pour tranches. Compatible avec les tags personnalisés de votre compte."
+
+#: project/templates/ressources/index.html:212
+msgid "Fanions"
+msgstr "Fanions"
+
+#: project/templates/ressources/index.html:216
+msgid "Fiches « Coup de cœur »"
+msgstr "Fiches « Coup de cœur »"
+
+#: project/templates/ressources/index.html:217
+msgid ""
+"Fanions cartonnés à glisser dans les livres pour encourager les conseils "
+"et recommandations spontanées entre élèves."
+msgstr "Fanions cartonnés à glisser dans les livres pour encourager les conseils et recommandations spontanées entre élèves."
+
+#: project/templates/ressources/index.html:227
+msgid "Vectoriel"
+msgstr "Vectoriel"
+
+#: project/templates/ressources/index.html:231
+msgid "Planches de Codes-Barres"
+msgstr "Planches de Codes-Barres"
+
+#: project/templates/ressources/index.html:232
+msgid ""
+"Génération vectorielle de codes-barres Code 128 pour étiqueter vos livres"
+" sans ISBN ou créer des cartes de prêt pour vos élèves."
+msgstr "Génération vectorielle de codes-barres Code 128 pour étiqueter vos livres sans ISBN ou créer des cartes de prêt pour vos élèves."
+
+#: project/templates/ressources/index.html:242
+msgid "Livret A5"
+msgstr "Livret A5"
+
+#: project/templates/ressources/index.html:246
+#: project/templates/ressources/passeport.html:5
+msgid "Passeport de Lecture"
+msgstr "Passeport de Lecture"
+
+#: project/templates/ressources/index.html:247
+msgid ""
+"Livret pliable A5 : page de profil, suivi des genres littéraires "
+"découverts et fiches synthétiques des lectures de l'année."
+msgstr "Livret pliable A5 : page de profil, suivi des genres littéraires découverts et fiches synthétiques des lectures de l'année."
+
+#: project/templates/ressources/index.html:259
+msgid "Ressources documentaires recommandées"
+msgstr "Ressources documentaires recommandées"
+
+#: project/templates/ressources/index.html:260
+msgid ""
+"Une sélection de portails institutionnels et d'outils gratuits pour "
+"approfondir la gestion de votre bibliothèque de classe."
+msgstr "Une sélection de portails institutionnels et d'outils gratuits pour approfondir la gestion de votre bibliothèque de classe."
+
+#: project/templates/ressources/marque_pages.html:5
+msgid "Marque-pages Emprunt & Avis"
+msgstr "Marque-pages Emprunt & Avis"
+
+#: project/templates/ressources/marque_pages.html:17
+msgid "Jaune Soleil"
+msgstr "Jaune Soleil"
+
+#: project/templates/ressources/marque_pages.html:18
+msgid "Violet Poétique"
+msgstr "Violet Poétique"
+
+#: project/templates/ressources/marque_pages.html:27
+msgid "Mode d'impression"
+msgstr "Mode d'impression"
+
+#: project/templates/ressources/marque_pages.html:33
+msgid "Pliable (Recto & Verso côte à côte)"
+msgstr "Pliable (Recto & Verso côte à côte)"
+
+#: project/templates/ressources/marque_pages.html:35
+msgid "Imprime sur 1 seule face : pliez en deux et collez."
+msgstr "Imprime sur 1 seule face : pliez en deux et collez."
+
+#: project/templates/ressources/marque_pages.html:40
+msgid "Planche 4 Rectos (Suivi des prêts)"
+msgstr "Planche 4 Rectos (Suivi des prêts)"
+
+#: project/templates/ressources/marque_pages.html:46
+msgid "Planche 4 Versos (Avis & Étoiles)"
+msgstr "Planche 4 Versos (Avis & Étoiles)"
+
+#: project/templates/ressources/marque_pages.html:55
+msgid "Personnalisation"
+msgstr "Personnalisation"
+
+#: project/templates/ressources/marque_pages.html:59
+msgid "Appartient à la classe de"
+msgstr "Appartient à la classe de"
+
+#: project/templates/ressources/marque_pages.html:61
+#: project/templates/ressources/marque_pages.html:87
+#: project/templates/ressources/marque_pages.html:155
+msgid "la classe de CM1-B"
+msgstr "la classe de CM1-B"
+
+#: project/templates/ressources/marque_pages.html:66
+msgid "Amorce de l'avis critique"
+msgstr "Amorce de l'avis critique"
+
+#: project/templates/ressources/marque_pages.html:68
+#: project/templates/ressources/marque_pages.html:136
+#: project/templates/ressources/marque_pages.html:204
+msgid "J'ai aimé ce livre parce que :"
+msgstr "J'ai aimé ce livre parce que :"
+
+#: project/templates/ressources/marque_pages.html:73
+msgid "Message d'encouragement"
+msgstr "Message d'encouragement"
+
+#: project/templates/ressources/marque_pages.html:75
+msgid "Prends soin de moi et rapporte-moi à l'école !"
+msgstr "Prends soin de moi et rapporte-moi à l'école !"
+
+#: project/templates/ressources/marque_pages.html:86
+#: project/templates/ressources/marque_pages.html:154
+msgid "FICHE D'EMPRUNT"
+msgstr "FICHE D'EMPRUNT"
+
+#: project/templates/ressources/marque_pages.html:87
+#: project/templates/ressources/marque_pages.html:155
+msgid "Bibliothèque de"
+msgstr "Bibliothèque de"
+
+#: project/templates/ressources/marque_pages.html:91
+#: project/templates/ressources/marque_pages.html:159
+msgid "Nom de l'emprunteur :"
+msgstr "Nom de l'emprunteur :"
+
+#: project/templates/ressources/marque_pages.html:96
+#: project/templates/ressources/marque_pages.html:164
+msgid "Dates de circulation :"
+msgstr "Dates de circulation :"
+
+#: project/templates/ressources/marque_pages.html:100
+#: project/templates/ressources/marque_pages.html:168
+msgid "Date prêt"
+msgstr "Date prêt"
+
+#: project/templates/ressources/marque_pages.html:101
+#: project/templates/ressources/marque_pages.html:169
+msgid "Date retour"
+msgstr "Date retour"
+
+#: project/templates/ressources/marque_pages.html:118
+#: project/templates/ressources/marque_pages.html:186
+msgid "Merci de prendre soin de ce livre et de le rapporter après lecture."
+msgstr "Merci de prendre soin de ce livre et de le rapporter après lecture."
+
+#: project/templates/ressources/marque_pages.html:125
+#: project/templates/ressources/marque_pages.html:193
+msgid "AVIS DE LECTURE"
+msgstr "AVIS DE LECTURE"
+
+#: project/templates/ressources/marque_pages.html:126
+#: project/templates/ressources/marque_pages.html:194
+msgid "Partage ton impression"
+msgstr "Partage ton impression"
+
+#: project/templates/ressources/marque_pages.html:130
+#: project/templates/ressources/marque_pages.html:198
+msgid "Note du livre :"
+msgstr "Note du livre :"
+
+#: project/templates/ressources/marque_pages.html:146
+#: project/templates/ressources/marque_pages.html:214
+msgid "Recommandé à :"
+msgstr "Recommandé à :"
+
+#: project/templates/ressources/marque_pages.html:225
+msgid "Ce livre appartient à"
+msgstr "Ce livre appartient à"
+
+#: project/templates/ressources/passeport.html:16
+msgid "Bleu Marine"
+msgstr "Bleu Marine"
+
+#: project/templates/ressources/passeport.html:17
+msgid "Vert Sauge"
+msgstr "Vert Sauge"
+
+#: project/templates/ressources/passeport.html:18
+msgid "Ocre Doux"
+msgstr "Ocre Doux"
+
+#: project/templates/ressources/passeport.html:19
+msgid "Bordeaux"
+msgstr "Bordeaux"
+
+#: project/templates/ressources/passeport.html:27
+msgid "Informations de la classe"
+msgstr "Informations de la classe"
+
+#: project/templates/ressources/passeport.html:33
+#: project/templates/ressources/passeport.html:62
+msgid "École élémentaire • Classe de CM1"
+msgstr "École élémentaire • Classe de CM1"
+
+#: project/templates/ressources/passeport.html:38
+msgid "Année scolaire"
+msgstr "Année scolaire"
+
+#: project/templates/ressources/passeport.html:45
+msgid "Objectif de lecture par défaut"
+msgstr "Objectif de lecture par défaut"
+
+#: project/templates/ressources/passeport.html:47
+#: project/templates/ressources/passeport.html:89
+msgid "Découvrir au moins 1 livre de chaque genre !"
+msgstr "Découvrir au moins 1 livre de chaque genre !"
+
+#: project/templates/ressources/passeport.html:59
+msgid "Livret individuel de lecture"
+msgstr "Livret individuel de lecture"
+
+#: project/templates/ressources/passeport.html:61
+msgid "PASSEPORT DE LECTEUR"
+msgstr "PASSEPORT DE LECTEUR"
+
+#: project/templates/ressources/passeport.html:69
+msgid "Photo ou autoportrait"
+msgstr "Photo ou autoportrait"
+
+#: project/templates/ressources/passeport.html:75
+msgid "NOM :"
+msgstr "NOM :"
+
+#: project/templates/ressources/passeport.html:79
+msgid "PRÉNOM :"
+msgstr "PRÉNOM :"
+
+#: project/templates/ressources/passeport.html:83
+msgid "ANNÉE SCOLAIRE :"
+msgstr "ANNÉE SCOLAIRE :"
+
+#: project/templates/ressources/passeport.html:87
+msgid "MON OBJECTIF :"
+msgstr "MON OBJECTIF :"
+
+#: project/templates/ressources/passeport.html:98
+msgid "Signature de l'élève :"
+msgstr "Signature de l'élève :"
+
+#: project/templates/ressources/passeport.html:112
+msgid "PARCOURS DES GENRES LITTÉRAIRES"
+msgstr "PARCOURS DES GENRES LITTÉRAIRES"
+
+#: project/templates/ressources/passeport.html:114
+msgid "Coche ou tamponne chaque genre exploré au cours de l'année"
+msgstr "Coche ou tamponne chaque genre exploré au cours de l'année"
+
+#: project/templates/ressources/passeport.html:140
+msgid "Mes 3 lectures préférées cette année :"
+msgstr "Mes 3 lectures préférées cette année :"
 
 #: project/templates/user/dashboard.html:25
 msgid "Bienvenue dans votre bibliothèque !"
@@ -2568,7 +3712,8 @@ msgid "Comparatif Excel"
 msgstr "Comparatif Excel"
 
 #: project/templates/utils/footer.html:27
-#: project/templates/utils/navbar.html:434
+#: project/templates/utils/navbar.html:366
+#: project/templates/utils/navbar.html:455
 msgid "Ressources"
 msgstr "Ressources"
 
@@ -2596,39 +3741,39 @@ msgstr "Mentions légales"
 msgid "Plan du site"
 msgstr "Plan du site"
 
-#: project/templates/utils/navbar.html:351
-#: project/templates/utils/navbar.html:392
+#: project/templates/utils/navbar.html:372
+#: project/templates/utils/navbar.html:413
 msgid "Aide"
 msgstr "Aide"
 
-#: project/templates/utils/navbar.html:355
-#: project/templates/utils/navbar.html:396
+#: project/templates/utils/navbar.html:376
+#: project/templates/utils/navbar.html:417
 msgid "Avis & Bugs"
 msgstr "Avis & Bugs"
 
-#: project/templates/utils/navbar.html:359
-#: project/templates/utils/navbar.html:400
+#: project/templates/utils/navbar.html:380
+#: project/templates/utils/navbar.html:421
 msgid "Réglages"
 msgstr "Réglages"
 
-#: project/templates/utils/navbar.html:377
-#: project/templates/utils/navbar.html:421
+#: project/templates/utils/navbar.html:398
+#: project/templates/utils/navbar.html:442
 msgid "Déconnexion"
 msgstr "Déconnexion"
 
-#: project/templates/utils/navbar.html:383
+#: project/templates/utils/navbar.html:404
 msgid "Menu utilisateur"
 msgstr "Menu utilisateur"
 
-#: project/templates/utils/navbar.html:431
+#: project/templates/utils/navbar.html:452
 msgid "Guides"
 msgstr "Guides"
 
-#: project/templates/utils/navbar.html:440
+#: project/templates/utils/navbar.html:461
 msgid "À propos"
 msgstr "À propos"
 
-#: project/templates/utils/navbar.html:444
+#: project/templates/utils/navbar.html:465
 msgid "Changer de langue"
 msgstr "Changer de langue"
 
