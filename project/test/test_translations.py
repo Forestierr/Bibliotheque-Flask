@@ -243,7 +243,10 @@ def test_title_and_meta_tags_localized():
         # French default
         res_fr = client.get("/aide?lang=fr")
         html_fr = res_fr.data.decode("utf-8")
-        assert "<title>Centre d&#39;aide | Livres en Classe</title>" in html_fr or "<title>Centre d'aide | Livres en Classe</title>" in html_fr
+        assert (
+            "<title>Centre d&#39;aide | Livres en Classe</title>" in html_fr
+            or "<title>Centre d'aide | Livres en Classe</title>" in html_fr
+        )
 
         # English
         res_en = client.get("/aide?lang=en")
@@ -335,6 +338,7 @@ def test_navbar_language_dropdown_and_highlight():
 def test_dashboard_heatmap_localization():
     """Verify that heatmap day names, months, and tooltips are localized on /dashboard."""
     from datetime import datetime, timezone
+
     from flask import render_template
     from flask_babel import refresh
 
@@ -388,8 +392,9 @@ def test_dashboard_heatmap_localization():
 
             for day_html in expected["days"]:
                 assert day_html in rendered, f"Expected {day_html} in {lang}"
-            assert f">{expected['month']}</td>" in rendered, f"Expected >{expected['month']}</td> in {lang}"
-            assert expected["tooltip"] in rendered, f"Expected tooltip '{expected['tooltip']}' in {lang}"
-
-
-
+            assert f">{expected['month']}</td>" in rendered, (
+                f"Expected >{expected['month']}</td> in {lang}"
+            )
+            assert expected["tooltip"] in rendered, (
+                f"Expected tooltip '{expected['tooltip']}' in {lang}"
+            )

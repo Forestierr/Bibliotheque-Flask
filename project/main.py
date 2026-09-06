@@ -122,7 +122,11 @@ def dashboard():
 @main.route("/sitemap.xml")
 @main.route("/sitemap")
 def sitemap():
-    return render_template("utils/sitemap.xml"), 200, {"Content-Type": "application/xml; charset=utf-8"}
+    return (
+        render_template("utils/sitemap.xml"),
+        200,
+        {"Content-Type": "application/xml; charset=utf-8"},
+    )
 
 
 @main.route("/robots.txt")
@@ -130,13 +134,21 @@ def sitemap():
 @main.route("/robots")
 @main.route("/robot")
 def robots():
-    return render_template("utils/robots.txt"), 200, {"Content-Type": "text/plain; charset=utf-8"}
+    return (
+        render_template("utils/robots.txt"),
+        200,
+        {"Content-Type": "text/plain; charset=utf-8"},
+    )
 
 
 @main.route("/llms.txt")
 @main.route("/llms")
 def llms():
-    return render_template("utils/llms.txt"), 200, {"Content-Type": "text/plain; charset=utf-8"}
+    return (
+        render_template("utils/llms.txt"),
+        200,
+        {"Content-Type": "text/plain; charset=utf-8"},
+    )
 
 
 @main.route("/favicon.ico")
@@ -342,7 +354,9 @@ def ressources_index():
 
 @main.route("/ressources/<path:ressource_slug>")
 def ressource_article(ressource_slug):
-    return render_editorial_template("ressources", ressource_slug, _("Ressource non trouvée"))
+    return render_editorial_template(
+        "ressources", ressource_slug, _("Ressource non trouvée")
+    )
 
 
 @main.route("/enseignants")
