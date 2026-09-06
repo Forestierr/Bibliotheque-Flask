@@ -4,10 +4,10 @@
 
 {% extends "base.html" %}
 
-{% block title %}Réglages de votre compte | Livres en Classe{% endblock %}
+{% block title %}{{ _("Réglages de votre compte") }} | Livres en Classe{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
@@ -123,15 +123,15 @@
         <div class="settings-tabs">
             <button class="settings-tab-btn is-active" onclick="switchSettingsTab('compte')" id="tabBtnCompte">
                 <span class="icon"><i class="fas fa-user-cog"></i></span>
-                <span>Mon Compte</span>
+                <span>{{ _("Mon Compte") }}</span>
             </button>
             <button class="settings-tab-btn" onclick="switchSettingsTab('export')" id="tabBtnExport">
                 <span class="icon"><i class="fas fa-file-export"></i></span>
-                <span>Exporter mes données</span>
+                <span>{{ _("Exporter mes données") }}</span>
             </button>
             <button class="settings-tab-btn" onclick="switchSettingsTab('danger')" id="tabBtnDanger">
                 <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-                <span>Zone de danger</span>
+                <span>{{ _("Zone de danger") }}</span>
             </button>
         </div>
 
@@ -141,13 +141,13 @@
         <!-- TAB 1 : Mon Compte -->
         <div id="tabContentCompte" class="settings-tab-content">
             <div class="settings-card">
-                <h2 class="title is-4 mb-4">Informations personnelles & Sécurité</h2>
+                <h2 class="title is-4 mb-4">{{ _("Informations personnelles & Sécurité") }}</h2>
 
                 <form method="POST" action="{{ url_for('auth.reglage') }}">
                     {% include 'utils/csrf.html' %}
 
                     <div class="field">
-                        <label class="label">Nom d'affichage</label>
+                        <label class="label">{{ _("Nom d'affichage") }}</label>
                         <div class="control has-icons-left">
                             <input class="input" type="text" name="name" value="{{ user.name }}" required>
                             <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
@@ -155,31 +155,45 @@
                     </div>
 
                     <div class="field">
-                        <label class="label">Adresse e-mail</label>
+                        <label class="label">{{ _("Adresse e-mail") }}</label>
                         <div class="control has-icons-left">
                             <input class="input" type="email" name="email" value="{{ user.email }}" required>
                             <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
                         </div>
-                        <p class="help has-text-grey">Changer votre e-mail nécessitera une nouvelle vérification.</p>
+                        <p class="help has-text-grey">{{ _("Changer votre e-mail nécessitera une nouvelle vérification.") }}</p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">{{ _("Langue de l'interface") }}</label>
+                        <div class="control has-icons-left">
+                            <div class="select is-fullwidth">
+                                <select name="preferred_language">
+                                    <option value="fr" {% if (user.preferred_language or get_locale()) == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
+                                    <option value="en" {% if (user.preferred_language or get_locale()) == 'en' %}selected{% endif %}>🇬🇧 English</option>
+                                    <option value="de" {% if (user.preferred_language or get_locale()) == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                                </select>
+                            </div>
+                            <span class="icon is-small is-left"><i class="fas fa-globe"></i></span>
+                        </div>
                     </div>
 
                     <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
 
-                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">Changer de mot de passe</h3>
-                    <p class="has-text-grey is-size-7 mb-4">Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot de passe.</p>
+                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Changer de mot de passe") }}</h3>
+                    <p class="has-text-grey is-size-7 mb-4">{{ _("Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot de passe.") }}</p>
 
                     <div class="field">
-                        <label class="label">Mot de passe actuel</label>
+                        <label class="label">{{ _("Mot de passe actuel") }}</label>
                         <div class="control has-icons-left">
-                            <input class="input" type="password" name="password" placeholder="Mot de passe actuel">
+                            <input class="input" type="password" name="password" placeholder="{{ _('Mot de passe actuel') }}">
                             <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
                         </div>
                     </div>
 
                     <div class="field">
-                        <label class="label">Nouveau mot de passe</label>
+                        <label class="label">{{ _("Nouveau mot de passe") }}</label>
                         <div class="control has-icons-left">
-                            <input class="input" type="password" name="new_password" placeholder="Nouveau mot de passe">
+                            <input class="input" type="password" name="new_password" placeholder="{{ _('Nouveau mot de passe') }}">
                             <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
                         </div>
                     </div>
@@ -187,33 +201,33 @@
                     <!-- Exigences de sécurité -->
                     <div style="background: hsl(210, 60%, 97%); border: 1px solid hsl(210, 50%, 88%); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; margin-bottom: 1.5rem;">
                         <p class="has-text-weight-semibold is-size-7 mb-1" style="color: hsl(210, 40%, 30%);">
-                            <i class="fas fa-shield-alt mr-1"></i> Conseils pour un mot de passe sécurisé :
+                            <i class="fas fa-shield-alt mr-1"></i> {{ _("Conseils pour un mot de passe sécurisé :") }}
                         </p>
                         <ul class="is-size-7 has-text-grey" style="list-style: disc; margin-left: 1.25rem; line-height: 1.8;">
-                            <li>Au moins 8 caractères</li>
-                            <li>Mélange de majuscules et minuscules (ex. : A, a)</li>
-                            <li>Au moins un chiffre (ex. : 1, 9) et un caractère spécial (ex. : @, #, $, %)</li>
+                            <li>{{ _("Au moins 8 caractères") }}</li>
+                            <li>{{ _("Mélange de majuscules et minuscules (ex. : A, a)") }}</li>
+                            <li>{{ _("Au moins un chiffre (ex. : 1, 9) et un caractère spécial (ex. : @, #, $, %%)")|replace("%%", "%") }}</li>
                         </ul>
                     </div>
 
                     <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
 
-                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">Communications & Newsletter</h3>
+                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Communications & Newsletter") }}</h3>
                     <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
                         <div class="field">
                             <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
                                 <label class="checkbox has-text-weight-bold" style="cursor: pointer; display: flex; align-items: center; gap: 0.6rem; color: hsl(210, 40%, 20%);">
                                     <input type="checkbox" name="newsletter_subscribed" value="1" {% if user.newsletter_subscribed %}checked{% endif %} style="transform: scale(1.2); cursor: pointer;">
-                                    <span>Recevoir la newsletter et les actualités par e-mail</span>
+                                    <span>{{ _("Recevoir la newsletter et les actualités par e-mail") }}</span>
                                 </label>
                                 {% if user.newsletter_subscribed %}
-                                    <span class="tag is-success is-light is-rounded">Abonné</span>
+                                    <span class="tag is-success is-light is-rounded">{{ _("Abonné") }}</span>
                                 {% else %}
-                                    <span class="tag is-grey is-light is-rounded">Désabonné</span>
+                                    <span class="tag is-grey is-light is-rounded">{{ _("Désabonné") }}</span>
                                 {% endif %}
                             </div>
                             <p class="has-text-grey is-size-7 ml-5" style="line-height: 1.5;">
-                                Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous désabonner à tout moment.
+                                {{ _("Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous désabonner à tout moment.") }}
                             </p>
                         </div>
                     </div>
@@ -222,7 +236,7 @@
                         <div class="control">
                             <button class="button is-link is-rounded">
                                 <span class="icon"><i class="fas fa-check"></i></span>
-                                <span>Enregistrer les modifications</span>
+                                <span>{{ _("Enregistrer les modifications") }}</span>
                             </button>
                         </div>
                     </div>
@@ -233,8 +247,8 @@
         <!-- TAB 2 : Export de données -->
         <div id="tabContentExport" class="settings-tab-content" style="display: none;">
             <div class="settings-card mb-5">
-                <h2 class="title is-4 mb-2">Télécharger vos données</h2>
-                <p class="has-text-grey mb-5">Générez et téléchargez facilement vos fichiers au format Excel pour les sauvegarder ou les analyser.</p>
+                <h2 class="title is-4 mb-2">{{ _("Télécharger vos données") }}</h2>
+                <p class="has-text-grey mb-5">{{ _("Générez et téléchargez facilement vos fichiers au format Excel pour les sauvegarder ou les analyser.") }}</p>
 
                 <div class="columns is-multiline">
                     <div class="column is-6">
@@ -243,12 +257,12 @@
                                 <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
                                     <i class="fas fa-book fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">Tous les livres</h4>
+                                <h4 class="title is-5 mb-0">{{ _("Tous les livres") }}</h4>
                             </div>
-                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">La liste complète de tous les livres enregistrés dans votre bibliothèque.</p>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste complète de tous les livres enregistrés dans votre bibliothèque.") }}</p>
                             <a href="{{ url_for('export.export_books') }}" class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
-                                <span>Télécharger (Excel)</span>
+                                <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                         </div>
                     </div>
@@ -259,12 +273,12 @@
                                 <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
                                     <i class="fas fa-user-graduate fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">Lectures par élève</h4>
+                                <h4 class="title is-5 mb-0">{{ _("Lectures par élève") }}</h4>
                             </div>
-                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">Historique des livres lus et empruntés classé par élève.</p>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("Historique des livres lus et empruntés classé par élève.") }}</p>
                             <a href="{{ url_for('export.export_students_reads') }}" class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
-                                <span>Télécharger (Excel)</span>
+                                <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                         </div>
                     </div>
@@ -275,12 +289,12 @@
                                 <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
                                     <i class="fas fa-exchange-alt fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">Prêts en cours</h4>
+                                <h4 class="title is-5 mb-0">{{ _("Prêts en cours") }}</h4>
                             </div>
-                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">La liste des emprunts actifs non encore retournés.</p>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste des emprunts actifs non encore retournés.") }}</p>
                             <a href="{{ url_for('export.export_active_loans') }}" class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
-                                <span>Télécharger (Excel)</span>
+                                <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                         </div>
                     </div>
@@ -291,12 +305,12 @@
                                 <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
                                     <i class="fas fa-history fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">Historique des prêts</h4>
+                                <h4 class="title is-5 mb-0">{{ _("Historique des prêts") }}</h4>
                             </div>
-                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">L'ensemble de tous les prêts réalisés depuis la création de la bibliothèque.</p>
+                            <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("L'ensemble de tous les prêts réalisés depuis la création de la bibliothèque.") }}</p>
                             <a href="{{ url_for('export.export_all_loans') }}" class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
-                                <span>Télécharger (Excel)</span>
+                                <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                         </div>
                     </div>
@@ -311,49 +325,49 @@
                     <span class="mr-3">
                         <i class="fas fa-exclamation-triangle"></i>
                     </span>
-                    Zone de danger
+                    {{ _("Zone de danger") }}
                 </h2>
                 
                 <!-- Message d'avertissement bien espacé -->
                 <div class="notification is-danger is-light mb-6" style="border-radius: 12px; margin-top: 1rem;">
                     <span class="icon"><i class="fas fa-exclamation-circle"></i></span>
-                    <strong>Attention :</strong> Les actions ci-dessous sont irréversibles et entraînent la suppression définitive de vos données.
+                    <strong>{{ _("Attention :") }}</strong> {{ _("Les actions ci-dessous sont irréversibles et entraînent la suppression définitive de vos données.") }}
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     <!-- Supprimer les élèves -->
                     <div class="danger-zone-box">
                         <div>
-                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">Supprimer tous les élèves</p>
-                            <p class="is-size-7 has-text-grey mb-0">Efface l'ensemble de vos élèves ainsi que l'historique de leurs prêts.</p>
+                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">{{ _("Supprimer tous les élèves") }}</p>
+                            <p class="is-size-7 has-text-grey mb-0">{{ _("Efface l'ensemble de vos élèves ainsi que l'historique de leurs prêts.") }}</p>
                         </div>
                         <button class="button is-danger is-outlined is-rounded ml-3" onclick="openModal('modalDeleteStudents')">
                             <span class="icon"><i class="fas fa-trash-alt"></i></span>
-                            <span>Supprimer tous les élèves</span>
+                            <span>{{ _("Supprimer tous les élèves") }}</span>
                         </button>
                     </div>
 
                     <!-- Supprimer les prêts -->
                     <div class="danger-zone-box">
                         <div>
-                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">Supprimer tous les prêts</p>
-                            <p class="is-size-7 has-text-grey mb-0">Efface tous les enregistrements de prêts (en cours et retournés).</p>
+                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">{{ _("Supprimer tous les prêts") }}</p>
+                            <p class="is-size-7 has-text-grey mb-0">{{ _("Efface tous les enregistrements de prêts (en cours et retournés).") }}</p>
                         </div>
                         <button class="button is-danger is-outlined is-rounded ml-3" onclick="openModal('modalDeleteLoans')">
                             <span class="icon"><i class="fas fa-trash-alt"></i></span>
-                            <span>Supprimer tous les prêts</span>
+                            <span>{{ _("Supprimer tous les prêts") }}</span>
                         </button>
                     </div>
 
                     <!-- Supprimer les livres -->
                     <div class="danger-zone-box">
                         <div>
-                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">Supprimer tous les livres</p>
-                            <p class="is-size-7 has-text-grey mb-0">Vide totalement votre catalogue de livres.</p>
+                            <p class="has-text-weight-bold mb-1" style="color: hsl(0, 0%, 20%);">{{ _("Supprimer tous les livres") }}</p>
+                            <p class="is-size-7 has-text-grey mb-0">{{ _("Vide totalement votre catalogue de livres.") }}</p>
                         </div>
                         <button class="button is-danger is-outlined is-rounded ml-3" onclick="openModal('modalDeleteBooks')">
                             <span class="icon"><i class="fas fa-trash-alt"></i></span>
-                            <span>Supprimer tous les livres</span>
+                            <span>{{ _("Supprimer tous les livres") }}</span>
                         </button>
                     </div>
 
@@ -363,12 +377,12 @@
                     <!-- Supprimer le compte -->
                     <div class="danger-zone-box" style="background: hsl(0, 60%, 96%); border-color: hsl(0, 60%, 85%);">
                         <div>
-                            <p class="has-text-weight-bold mb-1 has-text-danger">Supprimer mon compte</p>
-                            <p class="is-size-7 has-text-grey mb-0">Supprime définitivement votre compte et l'intégralité de vos données.</p>
+                            <p class="has-text-weight-bold mb-1 has-text-danger">{{ _("Supprimer mon compte") }}</p>
+                            <p class="is-size-7 has-text-grey mb-0">{{ _("Supprime définitivement votre compte et l'intégralité de vos données.") }}</p>
                         </div>
                         <button class="button is-danger is-rounded ml-3" onclick="openModal('modalDeleteAccount')">
                             <span class="icon"><i class="fas fa-user-slash"></i></span>
-                            <span>Supprimer mon compte</span>
+                            <span>{{ _("Supprimer mon compte") }}</span>
                         </button>
                     </div>
                 </div>
@@ -385,17 +399,17 @@
     <div class="modal-background" onclick="closeModal('modalDeleteStudents')"></div>
     <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
         <header class="modal-card-head">
-            <p class="modal-card-title has-text-danger">Supprimer tous les élèves ?</p>
+            <p class="modal-card-title has-text-danger">{{ _("Supprimer tous les élèves ?") }}</p>
             <button class="delete" aria-label="close" onclick="closeModal('modalDeleteStudents')"></button>
         </header>
         <section class="modal-card-body">
-            <p>Êtes-vous sûr de vouloir supprimer tous les élèves ? Cette action est <strong>irréversible</strong>.</p>
+            <p>{{ _("Êtes-vous sûr de vouloir supprimer tous les élèves ? Cette action est") }} <strong>{{ _("irréversible") }}</strong>.</p>
         </section>
         <footer class="modal-card-foot" style="justify-content: flex-end;">
-            <button class="button is-light" onclick="closeModal('modalDeleteStudents')">Annuler</button>
+            <button class="button is-light" onclick="closeModal('modalDeleteStudents')">{{ _("Annuler") }}</button>
             <form method="POST" action="{{ url_for('eleve.eleve_delete_all') }}">
                 {% include 'utils/csrf.html' %}
-                <button type="submit" class="button is-danger ml-2">Oui, supprimer</button>
+                <button type="submit" class="button is-danger ml-2">{{ _("Oui, supprimer") }}</button>
             </form>
         </footer>
     </div>
@@ -406,17 +420,17 @@
     <div class="modal-background" onclick="closeModal('modalDeleteLoans')"></div>
     <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
         <header class="modal-card-head">
-            <p class="modal-card-title has-text-danger">Supprimer tous les prêts ?</p>
+            <p class="modal-card-title has-text-danger">{{ _("Supprimer tous les prêts ?") }}</p>
             <button class="delete" aria-label="close" onclick="closeModal('modalDeleteLoans')"></button>
         </header>
         <section class="modal-card-body">
-            <p>Êtes-vous sûr de vouloir réinitialiser l'historique des prêts ? Cette action est <strong>irréversible</strong>.</p>
+            <p>{{ _("Êtes-vous sûr de vouloir réinitialiser l'historique des prêts ? Cette action est") }} <strong>{{ _("irréversible") }}</strong>.</p>
         </section>
         <footer class="modal-card-foot" style="justify-content: flex-end;">
-            <button class="button is-light" onclick="closeModal('modalDeleteLoans')">Annuler</button>
+            <button class="button is-light" onclick="closeModal('modalDeleteLoans')">{{ _("Annuler") }}</button>
             <form method="POST" action="{{ url_for('emprunt.delete_all_loans') }}">
                 {% include 'utils/csrf.html' %}
-                <button type="submit" class="button is-danger ml-2">Oui, supprimer</button>
+                <button type="submit" class="button is-danger ml-2">{{ _("Oui, supprimer") }}</button>
             </form>
         </footer>
     </div>
@@ -427,17 +441,17 @@
     <div class="modal-background" onclick="closeModal('modalDeleteBooks')"></div>
     <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
         <header class="modal-card-head">
-            <p class="modal-card-title has-text-danger">Supprimer tous les livres ?</p>
+            <p class="modal-card-title has-text-danger">{{ _("Supprimer tous les livres ?") }}</p>
             <button class="delete" aria-label="close" onclick="closeModal('modalDeleteBooks')"></button>
         </header>
         <section class="modal-card-body">
-            <p>Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? Cette action est <strong>irréversible</strong>.</p>
+            <p>{{ _("Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? Cette action est") }} <strong>{{ _("irréversible") }}</strong>.</p>
         </section>
         <footer class="modal-card-foot" style="justify-content: flex-end;">
-            <button class="button is-light" onclick="closeModal('modalDeleteBooks')">Annuler</button>
+            <button class="button is-light" onclick="closeModal('modalDeleteBooks')">{{ _("Annuler") }}</button>
             <form method="POST" action="{{ url_for('livre.livre_delete_all') }}">
                 {% include 'utils/csrf.html' %}
-                <button type="submit" class="button is-danger ml-2">Oui, supprimer</button>
+                <button type="submit" class="button is-danger ml-2">{{ _("Oui, supprimer") }}</button>
             </form>
         </footer>
     </div>
@@ -448,17 +462,17 @@
     <div class="modal-background" onclick="closeModal('modalDeleteAccount')"></div>
     <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
         <header class="modal-card-head">
-            <p class="modal-card-title has-text-danger">Supprimer définitivement mon compte ?</p>
+            <p class="modal-card-title has-text-danger">{{ _("Supprimer définitivement mon compte ?") }}</p>
             <button class="delete" aria-label="close" onclick="closeModal('modalDeleteAccount')"></button>
         </header>
         <section class="modal-card-body">
-            <p>Attention : Cette action supprimera <strong>définitivement</strong> votre compte et l'ensemble des données associées (livres, élèves, prêts).</p>
+            <p>{{ _("Attention : Cette action supprimera") }} <strong>{{ _("définitivement") }}</strong> {{ _("votre compte et l'ensemble des données associées (livres, élèves, prêts).") }}</p>
         </section>
         <footer class="modal-card-foot" style="justify-content: flex-end;">
-            <button class="button is-light" onclick="closeModal('modalDeleteAccount')">Annuler</button>
+            <button class="button is-light" onclick="closeModal('modalDeleteAccount')">{{ _("Annuler") }}</button>
             <form method="POST" action="{{ url_for('auth.delete_account') }}">
                 {% include 'utils/csrf.html' %}
-                <button type="submit" class="button is-danger ml-2">Supprimer mon compte</button>
+                <button type="submit" class="button is-danger ml-2">{{ _("Supprimer mon compte") }}</button>
             </form>
         </footer>
     </div>

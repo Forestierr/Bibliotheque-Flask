@@ -3,20 +3,23 @@
 {% from "utils/navbar.html" import navbar %}
 
 {% extends "base.html" %}
+ 
+{% block title %}{{ _("Mentions Légales | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Mentions légales et politique de confidentialité de Livres en Classe.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
 
     <section class="section">
-      <h1 class="title is-1">Mentions Légales</h1>
+      <h1 class="title is-1">{{ _("Mentions Légales") }}</h1>
 
         <br>
 
         <div class="block">
-          <h3 class="title is-3">Nos données</h3>
+          <h3 class="title is-3">{{ _("Nos données") }}</h3>
           <div class="container">
             <ul>
                 <li>Robin Forestier</li>
@@ -30,7 +33,7 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">1. CONDITIONS D'UTILISATION </h3>
+          <h3 class="title is-3">{{ _("1. CONDITIONS D'UTILISATION") }}</h3>
           <div class="container">
             <p>
                 Ce site Internet est proposé sous réserve de votre acceptation inconditionnelle des conditions
@@ -45,7 +48,7 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">2. UTILISATION EXCLUSIVEMENT PRIVÉE</h3>
+          <h3 class="title is-3">{{ _("2. UTILISATION EXCLUSIVEMENT PRIVÉE") }}</h3>
           <div class="container">
             <p>
                 L'utilisation de ce site internet est exclusivement destinées au fin privées et commerciales.
@@ -78,7 +81,7 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">3. SITE DE TIERS, LIENS</h3>
+            <h3 class="title is-3">{{ _("3. SITE DE TIERS, LIENS") }}</h3>
           <div class="container">
             <p>
                 Nous déclinons toute responsabilité quant au contenu des sites tiers ou les liens repris sur notre site.
@@ -93,7 +96,7 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">4. UTILISATION ILLICITE OU INTERDITE</h3>
+            <h3 class="title is-3">{{ _("4. UTILISATION ILLICITE OU INTERDITE") }}</h3>
           <div class="container">
             <p>
                 Vous n'êtes autorisé(e) à utiliser ce site qu'à des conditions de garantir que vous ne l'utiliserez pas
@@ -106,7 +109,7 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">5. FORUMS, MESSAGERIE, COMMUNAUTÉS...</h3>
+            <h3 class="title is-3">{{ _("5. FORUMS, MESSAGERIE, COMMUNAUTÉS...") }}</h3>
           <div class="container">
             <p>
                 Dans le cas où notre site devrait accueillir des groupes de discussion, des forums et
@@ -194,7 +197,7 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">6. LIMITATION DE LA RESPONSABILITÉ</h3>
+            <h3 class="title is-3">{{ _("6. LIMITATION DE LA RESPONSABILITÉ") }}</h3>
           <div class="container">
             <p>
                 Les informations, produits et services contenus sur ce site Internet peuvent comporter
@@ -210,7 +213,7 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">7. RESTRICTION DE L'ACCÈS</h3>
+            <h3 class="title is-3">{{ _("7. RESTRICTION DE L'ACCÈS") }}</h3>
           <div class="container">
             <p>
                 Nous nous réservons le droit de refuser l'accès de tout ou partie de ce site Internet à tout
@@ -222,7 +225,7 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">9. ACCÈS AUX DONNÉES PERSONNELLES</h3>
+            <h3 class="title is-3">{{ _("8. ACCÈS AUX DONNÉES PERSONNELLES") }}</h3>
           <div class="container">
             <p>
                 En vertu de la Règlementation applicable en matière de protection des Données à caractère
@@ -236,7 +239,7 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">9. MODIFICATION DES PRÉSENTES CONDITIONS ET DISPOSITIONS</h3>
+            <h3 class="title is-3">{{ _("9. MODIFICATION DES PRÉSENTES CONDITIONS ET DISPOSITIONS") }}</h3>
           <div class="container">
             <p>
                 Les présentes conditions sont applicables à partir du 20/11/2024 et peuvent être

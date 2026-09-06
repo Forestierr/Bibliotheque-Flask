@@ -8,8 +8,10 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from dotenv import load_dotenv
-from flask import Flask
-from flask_login import LoginManager
+from flask import Flask, has_request_context, request, session
+from flask_babel import Babel, format_date, format_datetime
+from flask_babel import get_locale as babel_get_locale
+from flask_login import LoginManager, current_user
 from flask_mail import Mail, Message  # noqa: F401
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -22,6 +24,9 @@ db = SQLAlchemy()
 
 mail = Mail()
 csrf = CSRFProtect()
+babel = Babel()
+
+LANGUAGES = ["fr", "en", "de"]
 
 basedir = Path(__file__).resolve().parent.parent
 load_dotenv(basedir / ".env")
@@ -71,6 +76,33 @@ def create_app(test_config=None):
     csrf.init_app(app)
     Migrate(app, db)
     mail.init_app(app)
+
+    def get_locale():
+        """Détermine la langue active : paramètre d'URL > session > utilisateur connecté > navigateur > fr par défaut."""
+        if not has_request_context():
+            return "fr"
+        lang_arg = request.args.get("lang")
+        if lang_arg in LANGUAGES:
+            session["lang"] = lang_arg
+            return lang_arg
+        if "lang" in session:
+            return session["lang"]
+        if current_user and current_user.is_authenticated:
+            pref = getattr(current_user, "preferred_language", None)
+            if pref in LANGUAGES:
+                return pref
+        return request.accept_languages.best_match(LANGUAGES, default="fr")
+
+    babel.init_app(app, locale_selector=get_locale)
+
+    # Rend get_locale, languages, format_date et format_datetime disponibles dans tous les templates Jinja2
+    # (y compris dans les macros qui n'héritent pas du context_processor)
+    app.jinja_env.globals["get_locale"] = lambda: str(babel_get_locale() or "fr")
+    app.jinja_env.globals["languages"] = LANGUAGES
+    app.jinja_env.globals["format_date"] = format_date
+    app.jinja_env.globals["format_datetime"] = format_datetime
+    app.jinja_env.filters["format_date"] = format_date
+    app.jinja_env.filters["format_datetime"] = format_datetime
 
     app.logger.addHandler(handler)
     mail_handler = MailCriticalHandler(

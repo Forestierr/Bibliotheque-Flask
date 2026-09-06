@@ -6,7 +6,7 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
@@ -22,8 +22,8 @@
         </span>
       </figure>
       <div class="media-content">
-        <h2 class="title is-4 mb-1">Bienvenue dans votre bibliothèque !</h2>
-        <p class="subtitle is-6 mb-0">Suivez ces 3 étapes pour commencer en moins de 5 minutes</p>
+        <h2 class="title is-4 mb-1">{{ _("Bienvenue dans votre bibliothèque !") }}</h2>
+        <p class="subtitle is-6 mb-0">{{ _("Suivez ces 3 étapes pour commencer en moins de 5 minutes") }}</p>
       </div>
     </article>
     <div class="block">
@@ -36,18 +36,18 @@
             </span>
           </div>
           <div class="column">
-            <p class="has-text-weight-semibold mb-0">Étape 1 — Ajoutez vos livres</p>
-            <p class="is-size-7 has-text-grey mb-0">Scannez le code-barres ISBN ou saisissez manuellement le titre</p>
+            <p class="has-text-weight-semibold mb-0">{{ _("Étape 1 — Ajoutez vos livres") }}</p>
+            <p class="is-size-7 has-text-grey mb-0">{{ _("Scannez le code-barres ISBN ou saisissez manuellement le titre") }}</p>
           </div>
           <div class="column is-narrow">
             <div class="buttons mb-0">
               <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded">
                 <span class="icon"><i class="fas fa-barcode"></i></span>
-                <span>Scanner</span>
+                <span>{{ _("Scanner") }}</span>
               </a>
               <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-small is-rounded">
                 <span class="icon"><i class="fas fa-plus"></i></span>
-                <span>Manuel</span>
+                <span>{{ _("Manuel") }}</span>
               </a>
             </div>
           </div>
@@ -62,13 +62,13 @@
             </span>
           </div>
           <div class="column">
-            <p class="has-text-weight-semibold mb-0">Étape 2 — Ajoutez vos élèves</p>
-            <p class="is-size-7 has-text-grey mb-0">Ajoutez la liste de vos élèves pour pouvoir leur prêter des livres</p>
+            <p class="has-text-weight-semibold mb-0">{{ _("Étape 2 — Ajoutez vos élèves") }}</p>
+            <p class="is-size-7 has-text-grey mb-0">{{ _("Ajoutez la liste de vos élèves pour pouvoir leur prêter des livres") }}</p>
           </div>
           <div class="column is-narrow">
             <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-light is-small is-rounded">
               <span class="icon"><i class="fas fa-plus"></i></span>
-              <span>Ajouter</span>
+              <span>{{ _("Ajouter") }}</span>
             </a>
           </div>
         </div>
@@ -82,13 +82,13 @@
             </span>
           </div>
           <div class="column">
-            <p class="has-text-weight-semibold mb-0">Étape 3 — Faites votre premier prêt</p>
-            <p class="is-size-7 has-text-grey mb-0">Sélectionnez un livre → choisissez un élève → c'est fait !</p>
+            <p class="has-text-weight-semibold mb-0">{{ _("Étape 3 — Faites votre premier prêt") }}</p>
+            <p class="is-size-7 has-text-grey mb-0">{{ _("Sélectionnez un livre → choisissez un élève → c'est fait !") }}</p>
           </div>
           <div class="column is-narrow">
             <a href="{{ url_for('emprunt.emprunt_db') }}" class="button is-light is-small is-rounded">
               <span class="icon"><i class="fas fa-exchange-alt"></i></span>
-              <span>Emprunts</span>
+              <span>{{ _("Emprunts") }}</span>
             </a>
           </div>
         </div>
@@ -97,7 +97,7 @@
     <div class="mt-4 has-text-centered">
       <a href="/aide" class="is-size-7 has-text-link">
         <span class="icon is-small"><i class="fas fa-question-circle"></i></span>
-        <span>Besoin d'aide ? Consulter le guide complet</span>
+        <span>{{ _("Besoin d'aide ? Consulter le guide complet") }}</span>
       </a>
     </div>
   </div>
@@ -107,10 +107,10 @@
 <div class="block">
   <div class="notification is-link is-light">
     <span class="icon"><i class="fas fa-info-circle"></i></span>
-    <strong>Ajoutez vos premiers livres</strong> pour pouvoir faire des prêts.
+    <strong>{{ _("Ajoutez vos premiers livres") }}</strong> {{ _("pour pouvoir faire des prêts.") }}
     <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded ml-3">
       <span class="icon"><i class="fas fa-barcode"></i></span>
-      <span>Scanner un livre</span>
+      <span>{{ _("Scanner un livre") }}</span>
     </a>
   </div>
 </div>
@@ -119,26 +119,26 @@
 <div class="block">
   <div class="notification is-info is-light">
     <span class="icon"><i class="fas fa-users"></i></span>
-    <strong>Ajoutez vos élèves</strong> pour pouvoir effectuer des prêts.
+    <strong>{{ _("Ajoutez vos élèves") }}</strong> {{ _("pour pouvoir effectuer des prêts.") }}
     <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-info is-small is-rounded ml-3">
       <span class="icon"><i class="fas fa-plus"></i></span>
-      <span>Ajouter un élève</span>
+      <span>{{ _("Ajouter un élève") }}</span>
     </a>
   </div>
 </div>
 {% endif %}
 
 <div class="block">
-  <h4 class="title is-4 block">Infos</h4>
+  <h4 class="title is-4 block">{{ _("Infos") }}</h4>
   <div class="box">
-    <p>Nombre de livres : <strong>{{ n_books }}</strong></p>
-    <p>Nombre d'élèves  : <strong>{{ n_students }}</strong></p>
+    <p>{{ _("Nombre de livres :") }} <strong>{{ n_books }}</strong></p>
+    <p>{{ _("Nombre d'élèves  :") }} <strong>{{ n_students }}</strong></p>
   </div>
 </div>
 
 {% if books %}
 <div class="block">
-  <h4 class="title is-4 block">Meilleurs livres</h4>
+  <h4 class="title is-4 block">{{ _("Meilleurs livres") }}</h4>
       <div class="box">
         {% for book in books %}
             <div class="columns is-mobile">
@@ -148,7 +148,7 @@
                     </a>
                 </div>
                 <div class="column has-text-right">
-                    Prêté <strong>{{ book.loan_count }}</strong> fois
+                    {{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}
                 </div>
             </div>
         {% endfor %}
@@ -156,20 +156,20 @@
 </div>
 {% else %}
 <div class="block">
-  <h4 class="title is-4 block">Meilleurs livres</h4>
+  <h4 class="title is-4 block">{{ _("Meilleurs livres") }}</h4>
   <div class="box">
-    <p class="block">Vous n'avez pas encore de livres dans votre bibliothèque.</p>
+    <p class="block">{{ _("Vous n'avez pas encore de livres dans votre bibliothèque.") }}</p>
     <a class="button is-dark" href="{{ url_for('livre.livre_ajout') }}">
         <span class="icon">
           <i class="fab fa-plus"></i>
         </span>
-        <span>Ajouter un livre a votre bibliothèque</span>
+        <span>{{ _("Ajouter un livre à votre bibliothèque") }}</span>
     </a>
     <a class="button is-dark" href="{{ url_for('livre.livre_scann') }}">
         <span class="icon">
           <i class="fas fa-barcode"></i>
         </span>
-        <span>Scanner un livre</span>
+        <span>{{ _("Scanner un livre") }}</span>
     </a>
   </div>
 </div>
@@ -177,7 +177,7 @@
 
 {% if students %}
 <div class="block">
-  <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
+  <h4 class="title is-4 block">{{ _("Élèves qui ont le plus lu") }}</h4>
   <div class="box">
     {% for student in students %}
         <div class="columns is-mobile">
@@ -187,7 +187,7 @@
                 </a>
             </div>
             <div class="column has-text-right">
-                <strong>{{ student.loan_count }}</strong> livres lus
+                <strong>{{ student.loan_count }}</strong> {{ _("livres lus") }}
             </div>
         </div>
     {% endfor %}
@@ -195,14 +195,14 @@
 </div>
 {% else %}
 <div class="block">
-  <h4 class="title is-4 block">Elèves qui ont le plus lu</h4>
+  <h4 class="title is-4 block">{{ _("Élèves qui ont le plus lu") }}</h4>
   <div class="box">
-    <p class="block">Vous n'avez pas encore d'élèves dans votre bibliothèque.</p>
+    <p class="block">{{ _("Vous n'avez pas encore d'élèves dans votre bibliothèque.") }}</p>
     <a class="button is-dark" href="{{ url_for('eleve.ajouter_eleve') }}">
         <span class="icon">
           <i class="fab fa-plus"></i>
         </span>
-        <span>Ajouter un élève</span>
+        <span>{{ _("Ajouter un élève") }}</span>
     </a>
   </div>
 </div>
@@ -210,18 +210,18 @@
 
 {% if books_loaned %}
 <div class="block">
-  <h4 class="title is-4 block">Derniers prêts</h4>
+  <h4 class="title is-4 block">{{ _("Derniers prêts") }}</h4>
   <div class="box">
     {% for book in books_loaned %}
         <div class="columns is-mobile">
             <div class="column">
-                <a href="/livre/{{ book.Book.id }}">{{ book.Book.title }}</a> emprunté par <a href="/eleve/{{ book.Student.id }}">{{ book.Student.name }} {{ book.Student.firstname }}</a>
+                <a href="/livre/{{ book.Book.id }}">{{ book.Book.title }}</a> {{ _("emprunté par") }} <a href="/eleve/{{ book.Student.id }}">{{ book.Student.name }} {{ book.Student.firstname }}</a>
             </div>
             <div class="column narrow has-text-right">
                 {% if book.Loan.date_return != None %}
-                Du {{ book.Loan.date_loan.strftime('%d %b %Y') }} au {{ book.Loan.date_return.strftime('%d %b %Y') }}
+                {{ _("Du") }} {{ format_date(book.Loan.date_loan, format='medium') }} {{ _("au") }} {{ format_date(book.Loan.date_return, format='medium') }}
                 {% else %}
-                Prêté le {{ book.Loan.date_loan.strftime('%d %b %Y') }}
+                {{ _("Prêté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}
                 {% endif %}
             </div>
         </div>
@@ -230,15 +230,15 @@
 </div>
 {% else %}
 <div class="block">
-  <h4 class="title is-4 block">Derniers prèts</h4>
+  <h4 class="title is-4 block">{{ _("Derniers prêts") }}</h4>
   <div class="box">
-    <p>Vous n'avez pas encore effectué de prêts.</p>
-    <p class="block">Sélectionnez un livre pour le prêter à un élève.</p>
+    <p>{{ _("Vous n'avez pas encore effectué de prêts.") }}</p>
+    <p class="block">{{ _("Sélectionnez un livre pour le prêter à un élève.") }}</p>
     <a class="button is-dark" href="{{ url_for('livre.livre_db') }}">
         <span class="icon">
           <i class="fas fa-book"></i>
         </span>
-        <span>Voir mes livres</span>
+        <span>{{ _("Voir mes livres") }}</span>
     </a>
   </div>
 </div>
@@ -247,7 +247,7 @@
 {% macro level(l) %}{% if l < 1 %}0{% elif l < 3 %}1{% elif l < 5 %}2{% elif l < 7 %}3{% else %}4{% endif %}{% endmacro %}
 
 <div class="block">
-  <h4 class="title is-4 block">Prêts sur l'année</h4>
+  <h4 class="title is-4 block">{{ _("Prêts sur l'année") }}</h4>
   <div class="box">
     <!-- table formating error on mobile : -->
     <!-- https://github.com/jgthms/bulma/issues/2572#issuecomment-523173866 -->
@@ -258,7 +258,7 @@
                     <tr>
                         <td></td>
                         {% for month in months %}
-                            <td colspan="{{ month[1] }}">{{ month[0] }}</td>
+                            <td colspan="{{ month[1] }}">{{ format_date(month[0], format='MMM')|capitalize }}</td>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -266,13 +266,13 @@
                     {% for i in range(7) %}
                         <tr class="heatmap">
                             {% if i == 0 %}
-                                <td>Lun</td>
+                                <td>{{ _("Lun") }}</td>
                             {% elif i == 2 %}
-                                <td>Mer</td>
+                                <td>{{ _("Mer") }}</td>
                             {% elif i == 4 %}
-                                <td>Ven</td>
+                                <td>{{ _("Ven") }}</td>
                             {% elif i == 6 %}
-                                <td>Dim</td>
+                                <td>{{ _("Dim") }}</td>
                             {% else %}
                                 <td></td>
                             {% endif %}
@@ -281,7 +281,7 @@
                                 {% if loans[j * 7 + i] %}
                                     <td>
                                         <div class="level-{{ level(loans[j * 7 + i][1] + loans[j * 7 + i][2]) }} {% if i > 4 %}weekend{% endif %} tooltip">
-                                            <span class="tooltiptext">Le {{ loans[j * 7 + i][0].strftime('%d %b %Y') }}<br>{{ loans[j * 7 + i][1] }} prèts, {{ loans[j * 7 + i][2] }} retours</span>
+                                            <span class="tooltiptext">{{ _("Le") }} {{ format_date(loans[j * 7 + i][0], format='medium') }}<br>{{ loans[j * 7 + i][1] }} {{ _("prêts,") }} {{ loans[j * 7 + i][2] }} {{ _("retours") }}</span>
                                         </div>
                                     </td>
                                 {% else %}
@@ -296,36 +296,36 @@
     </div>
 
     <div class="legend is-size-7">
-        <span>Nombres de prêts : </span>
+        <span>{{ _("Nombres de prêts :") }} </span>
         <div class="level-0"></div>
         <div class="level-1"></div>
         <div class="level-2"></div>
         <div class="level-3"></div>
         <div class="level-4"></div>
-        <span>moins → plus</span>
+        <span>{{ _("moins → plus") }}</span>
     </div>
   </div>
 </div>
 
 <div class="block">
-  <h4 class="title is-4 block">Livres lus par élève</h4>
+  <h4 class="title is-4 block">{{ _("Livres lus par élève") }}</h4>
   <div class="box">
     <form id="student-books-form" class="mb-4 block">
       <div class="field is-grouped is-grouped-multiline is-vcentered">
         <div class="control">
-          <label for="date_from" class="label is-size-7 mb-0">De :</label>
+          <label for="date_from" class="label is-size-7 mb-0">{{ _("De :") }}</label>
         </div>
         <div class="control">
           <input type="date" id="date_from" name="date_from" class="input is-small">
         </div>
         <div class="control">
-          <label for="date_to" class="label is-size-7 mb-0">À :</label>
+          <label for="date_to" class="label is-size-7 mb-0">{{ _("À :") }}</label>
         </div>
         <div class="control">
           <input type="date" id="date_to" name="date_to" class="input is-small">
         </div>
         <div class="control">
-          <button type="submit" class="button is-dark is-small">Afficher</button>
+          <button type="submit" class="button is-dark is-small">{{ _("Afficher") }}</button>
         </div>
       </div>
     </form>
@@ -350,7 +350,7 @@
       data: {
         labels: labels,
         datasets: [{
-          label: 'Livres lus',
+          label: '{{ _("Livres lus") }}',
           data: data,
           backgroundColor: 'rgba(54, 162, 235, 0.35)',
           borderColor: 'rgba(54, 162, 235, 1)',
@@ -373,13 +373,13 @@
                   maxRotation: 90,
                   minRotation: 90
               },
-              barThickness: 'flex',  // number (pixels) or 'flex'
+              barThickness: 'flex',
               maxBarThickness: 8,
               grid: { display: false },
               type: 'category',
               title: {
               display: true,
-              text: 'Élèves'
+              text: '{{ _("Élèves") }}'
             }
           },
           y: {
@@ -391,7 +391,7 @@
             },
             title: {
               display: true,
-              text: 'Nombre de livres lus'
+              text: '{{ _("Nombre de livres lus") }}'
             }
           }
         }

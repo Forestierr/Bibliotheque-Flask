@@ -1,6 +1,7 @@
 # eleve.py
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from sqlalchemy import and_, or_
 
@@ -32,7 +33,7 @@ def ajouter_eleve():
 
         # verify if the fields are not empty
         if not name or not firstname:
-            flash("Veuillez remplir tous les champs.")
+            flash(_("Veuillez remplir tous les champs."))
             return redirect(url_for("eleve.ajouter_eleve"))
 
         # verify if the student already exists
@@ -40,7 +41,7 @@ def ajouter_eleve():
             user_id=current_user.id, name=name, firstname=firstname
         ).first()
         if student:
-            flash("L'élève existe déjà.")
+            flash(_("L'élève existe déjà."))
             return redirect(url_for("eleve.ajouter_eleve"))
 
         new_student = Student(user_id=current_user.id, name=name, firstname=firstname)

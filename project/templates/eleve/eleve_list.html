@@ -11,16 +11,16 @@
                     <a href="/eleve/{{ student.Student.id }}" class="has-text-weight-bold	">{{ student.Student.name }} {{ student.Student.firstname }}</a>
                 </div>
                 <div class="column is-hidden-mobile has-text-right">
-                    <p>A lu <strong>{{ student.loan_count }}</strong> livres</p>
+                    <p>{{ _("A lu") }} <strong>{{ student.loan_count }}</strong> {{ _("livres") }}</p>
                 </div>
             </div>
 
             {% if student.Book != None %}
-                <p>Lit actuellement : <a href="/livre/{{ student.Book.id }}">{{ student.Book.title }}</a></p>
+                <p>{{ _("Lit actuellement :") }} <a href="/livre/{{ student.Book.id }}">{{ student.Book.title }}</a></p>
             {% elif student.last_loan != None %}
-                <p>Dernier emprunt : {{ student.last_loan.strftime('%d %b %Y') }}</p>
+                <p>{{ _("Dernier emprunt :") }} {{ format_date(student.last_loan, format='medium') }}</p>
             {% else %}
-                <p>N'a jamais emprunté de livre</p>
+                <p>{{ _("N'a jamais emprunté de livre") }}</p>
             {% endif %}
         </div>
 

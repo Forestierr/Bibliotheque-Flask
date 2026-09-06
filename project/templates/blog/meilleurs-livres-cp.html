@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques{% endblock %}
-{% block meta_description %}Quels livres proposer à un élève de CP ? Découvrez notre sélection de plus de 1300 mots classée par niveau de décodage et collections de premières lectures.{% endblock %}
+{% block title %}{{ _("Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques") }}{% endblock %}
+{% block meta_description %}{{ _("Quels livres proposer à un élève de CP ? Découvrez notre sélection de plus de 1300 mots classée par niveau de décodage et collections de premières lectures.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}

@@ -10,43 +10,42 @@
 
 {% block content %}
     <div>
-        <h1 class="title is-1 is-spaced">Installer l'application <strong>Ma Biblio</strong></h1>
-        <h3 class="subtitle is-3">Installer l'application sur votre appareil pour un accès plus rapide et une meilleure expérience utilisateur.</h3>
+        <h1 class="title is-1 is-spaced">{{ _("Installer l'application") }} <strong>Ma Biblio</strong></h1>
+        <h3 class="subtitle is-3">{{ _("Installer l'application sur votre appareil pour un accès plus rapide et une meilleure expérience utilisateur.") }}</h3>
 
         <button class="button is-large is-link is-rounded is-outlined" id="installApp" style="display: none;">
             <span class="icon">
                 <i class="fa-solid fa-download"></i>
             </span>
-            <span>Installer l'application</span>
+            <span>{{ _("Installer l'application") }}</span>
         </button>
 
         <div class="box has-background-warning-light" id="unsupportedMessage" style="display: none;">
             <p>
-                <strong>Information :</strong> Votre navigateur actuel ne semble pas proposer l'installation directe via un bouton, ou l'application est peut-être déjà installée sur votre appareil.
+                <strong>{{ _("Information :") }}</strong> {{ _("Votre navigateur actuel ne semble pas proposer l'installation directe via un bouton, ou l'application est peut-être déjà installée sur votre appareil.") }}
             </p>
             <br>
             <p>
-                Pour installer facilement l'application sur ordinateur (Windows/Mac/Linux), nous vous recommandons d'utiliser <strong>Google Chrome</strong> ou <strong>Microsoft Edge</strong>. 
-                Une icône d'installation apparaîtra généralement à droite dans la barre d'adresse de votre navigateur.
+                {{ _("Pour installer facilement l'application sur ordinateur (Windows/Mac/Linux), nous vous recommandons d'utiliser") }} <strong>Google Chrome</strong> {{ _("ou") }} <strong>Microsoft Edge</strong>.
+                {{ _("Une icône d'installation apparaîtra généralement à droite dans la barre d'adresse de votre navigateur.") }}
             </p>
         </div>
 
         <div class="box" id="iosMessage" style="display: none;">
             <p>
-                Il est possible que le bouton d'installation ne soit pas disponible sur votre appareil.
-                Pour installer l'application, veuillez ajouter cette page à votre écran d'accueil.
+                {{ _("Il est possible que le bouton d'installation ne soit pas disponible sur votre appareil.") }}
+                {{ _("Pour installer l'application, veuillez ajouter cette page à votre écran d'accueil.") }}
             </p>
             <p>
-                Pour cela suivre les étapes suivantes :
+                {{ _("Pour cela suivre les étapes suivantes :") }}
             </p>
             <figure class="image">
-              <img src="/static/image/screenshots/install.webp" alt="Tutoriel d'installation iOS"/>
+              <img src="/static/image/screenshots/install.webp" alt="{{ _('Tutoriel installation iOS') }}"/>
             </figure>
             <hr>
             <p>
-                Si vous avez des questions, n'hésitez pas à nous contacter.
-                Si votre navigateur ne supporte pas cette fonctionnalité, essayez avec un autre navigateur ou
-                utilisez la version web de l'application.
+                {{ _("Si vous avez des questions, n'hésitez pas à nous contacter.") }}
+                {{ _("Si votre navigateur ne supporte pas cette fonctionnalité, essayez avec un autre navigateur ou utilisez la version web de l'application.") }}
             </p>
         </div>
     </div>

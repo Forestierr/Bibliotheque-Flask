@@ -5,7 +5,7 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Mes Livres") }}
+    {{ navbar(current_user, _("Mes Livres")) }}
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
         {{ book.title }}
     </h1>
     <h3 class="subtitle is-3 block">
-        Nombre de fois prêtés : {{ (old_loans|count if old_loans else 0) + (actual_loans|count if actual_loans else 0) }}
+        {{ _("Nombre de fois prêtés :") }} {{ (old_loans|count if old_loans else 0) + (actual_loans|count if actual_loans else 0) }}
     </h3>
 
     {% include "utils/flash_message.html" %}
@@ -31,11 +31,11 @@
         <div class="box">
             <div class="columns is-mobile">
                 <div class="column is-narrow">
-                    <p>Titre: </p>
-                    {% if book.author %}<p>Auteur : </p>{% endif %}
-                    {% if book.editor %}<p>Editeur : </p>{% endif %}
-                    {% if book.year %}<p>Année : </p>{% endif %}
-                    {% if book.isbn %}<p>ISBN : </p>{% endif %}
+                    <p>{{ _("Titre :") }} </p>
+                    {% if book.author %}<p>{{ _("Auteur :") }} </p>{% endif %}
+                    {% if book.editor %}<p>{{ _("Editeur :") }} </p>{% endif %}
+                    {% if book.year %}<p>{{ _("Année :") }} </p>{% endif %}
+                    {% if book.isbn %}<p>{{ _("ISBN :") }} </p>{% endif %}
                 </div>
                 <div class="column">
                     <p><strong>{{ book.title }}</strong></p>
@@ -50,7 +50,7 @@
 
     <div class="container block">
         {% if actual_loans %}
-            <h3 class="subtitle is-3">Actuellement prêté à :</h3>
+            <h3 class="subtitle is-3">{{ _("Actuellement prêté à :") }}</h3>
             <hr>
             <div class="columns" style="margin-bottom: 0;">
                 <div class="column">
@@ -76,7 +76,7 @@
               <div class="modal-content">
                 <div class="modal-card">
                     <header class="modal-card-head">
-                        <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                        <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                     </header>
                     <footer class="modal-card-foot">
                         <form action="/emprunt/{{ actual_loans.Loan.id }}/delete" method="POST" style="display:inline;">
@@ -86,11 +86,11 @@
                                     <span class="icon has-text-info">
                                         <i class="fa-solid fa-trash has-text-black"></i>
                                     </span>
-                                    <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                    <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'emprunt") }}</span>
                                 </div>
                             </button>
                         </form>
-                        <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">Annuler</a>
+                        <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
                     </footer>
                 </div>
               </div>
@@ -99,7 +99,7 @@
 
             <div class="columns" style="margin-bottom: 0;">
                 <div class="column">
-                    <p>Emprunté le {{ actual_loans.Loan.date_loan.strftime('%d %b %Y') }}</p>
+                    <p>{{ _("Emprunté le") }} {{ format_date(actual_loans.Loan.date_loan, format='medium') }}</p>
                 </div>
 
                 <div class="column has-text-right">
@@ -113,17 +113,17 @@
             <hr>
         {% else %}
             <div class="container block">
-                <h3 class="subtitle is-3">Ce livre n'est pas actuellement prêté.</h3>
+                <h3 class="subtitle is-3">{{ _("Ce livre n'est pas actuellement prêté.") }}</h3>
                 <form action="/livre/{{ book.id }}/edit-student" method="post">
     {% include 'utils/csrf.html' %}
                     <div class="field">
-                        <label class="label" for="students">Prêter le livre a un élève</label>
+                        <label class="label" for="students">{{ _("Prêter le livre à un élève") }}</label>
                         <div class="select">
                             <select name="student_id" id="student-select">
                                 {% if student %}
                                     <option value="{{ student.id }}" selected>{{ student.name }} {{ student.firstname }}</option>
                                 {% endif %}
-                                <option value="">--Le livre se trouve dans le bibliothèque--</option>
+                                <option value="">{{ _("-- Le livre se trouve dans la bibliothèque --") }}</option>
                                 {% for student in students %}
                                     <option value="{{ student.id }}">{{ student.name }} {{ student.firstname }}</option>
                                 {% endfor %}
@@ -131,14 +131,14 @@
                         </div>
                     </div>
                     <div class="field">
-                        <button class="button is-link">Enregistrer</button>
+                        <button class="button is-link">{{ _("Enregistrer") }}</button>
                     </div>
                 </form>
             </div>
         {% endif %}
 
         {% if old_loans %}
-            <h3 class="subtitle is-3">Anciens emprunts :</h3>
+            <h3 class="subtitle is-3">{{ _("Anciens emprunts :") }}</h3>
             {% for loan in old_loans %}
                 <hr>
                 <a href="/eleve/{{ loan.Student.id }}">
@@ -147,7 +147,7 @@
 
                 <div class="columns is-mobile">
                     <div class="column">
-                        <p>Emprunté du {{ loan.Loan.date_loan.strftime('%d %b %Y') }} au {{ loan.Loan.date_return.strftime('%d %b %Y') }}</p>
+                        <p>{{ _("Emprunté du") }} {{ format_date(loan.Loan.date_loan, format='medium') }} {{ _("au") }} {{ format_date(loan.Loan.date_return, format='medium') }}</p>
                     </div>
 
                     <!-- Delete modal -->
@@ -156,7 +156,7 @@
                         <div class="modal-content">
                         <div class="modal-card">
                             <header class="modal-card-head">
-                                <p class="modal-card-title">Supprimer l'emprunt ?</p>
+                                <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                             </header>
                             <footer class="modal-card-foot">
                                 <form action="/emprunt/{{ loan.Loan.id }}/delete" method="POST" style="display:inline;">
@@ -166,11 +166,11 @@
                                             <span class="icon has-text-info">
                                                 <i class="fa-solid fa-trash has-text-black"></i>
                                             </span>
-                                            <span class="has-text-black has-text-weight-semibold">Supprimer l'emprunt</span>
+                                            <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'emprunt") }}</span>
                                         </div>
                                     </button>
                                 </form>
-                                <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">Annuler</a>
+                                <a href="/livre/{{ book.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
                             </footer>
                         </div>
                       </div>
@@ -194,8 +194,8 @@
     </div>
 
     <div class="buttons">
-        <a href="/livre/{{ book.id }}/edit" class="button is-grey">Modifier le livre</a>
-        <a href="/livre/{{ book.id }}/duplique" class="button is-grey">Dupliquer le livre</a>
+        <a href="/livre/{{ book.id }}/edit" class="button is-grey">{{ _("Modifier le livre") }}</a>
+        <a href="/livre/{{ book.id }}/duplique" class="button is-grey">{{ _("Dupliquer le livre") }}</a>
     </div>
 
     <script>

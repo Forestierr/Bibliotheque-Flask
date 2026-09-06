@@ -13,14 +13,14 @@
                     <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold	">{{ book.Book.title }}</a>
                 </div>
                 <div class="column is-hidden-mobile has-text-right">
-                    <p>Prêté <strong>{{ book.loan_count }}</strong> fois</p>
+                    <p>{{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}</p>
                 </div>
             </div>
 
             {% if book.Student != None %}
-                <p>Emprunté par : <a href="/eleve/{{ book.Student.id }}" class="has-text-dark">{{ book.Student.name }} {{ book.Student.firstname }}</a></p>
+                <p>{{ _("Emprunté par :") }} <a href="/eleve/{{ book.Student.id }}" class="has-text-dark">{{ book.Student.name }} {{ book.Student.firstname }}</a></p>
             {% else %}
-                <p>Disponible</p>
+                <p>{{ _("Disponible") }}</p>
             {% endif %}
         </div>
 

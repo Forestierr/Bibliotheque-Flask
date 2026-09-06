@@ -14,6 +14,7 @@ from flask import (
     request,
     url_for,
 )
+from flask_babel import gettext as _
 from flask_login import current_user, login_required
 
 from . import db
@@ -137,7 +138,7 @@ def livre_infos(id):
     book = get_book_by_id(current_user.id, id)
 
     if not book:
-        flash("Le livre que vous souhaitiez voir n'existe pas.", "error")
+        flash(_("Le livre que vous souhaitiez voir n'existe pas."), "error")
 
         return redirect(url_for("livre.livre_db"))
 
@@ -176,7 +177,7 @@ def livre_ajout():
         tags = request.form.get("tags") if request.form.get("tags") else None
 
         if not title:
-            flash("Veuillez ajouter un titre.", "error")
+            flash(_("Veuillez ajouter un titre."), "error")
             return redirect(url_for("livre.livre_ajout"))
 
         tags_in_db = Tags.query.filter_by(user_id=current_user.id).all()
@@ -219,7 +220,10 @@ def livre_ajout():
 
         db.session.commit()
 
-        flash("Le livre : " + title + " a été ajouté à votre bibliothèque.", "success")
+        flash(
+            _("Le livre : ") + title + _(" a été ajouté à votre bibliothèque."),
+            "success",
+        )
 
         return redirect(url_for("livre.livre_db"))
 
@@ -271,7 +275,7 @@ def livre_edit(id):
     book = get_book_by_id(current_user.id, id)
 
     if not book:
-        flash("Le livre que vous souhaitiez éditer n'existe pas.", "error")
+        flash(_("Le livre que vous souhaitiez éditer n'existe pas."), "error")
         return redirect(url_for("livre.livre_db"))
 
     # Get all students from the current user
@@ -300,7 +304,7 @@ def livre_edit(id):
         tags = request.form.get("tags")
 
         if not title:
-            flash("Veuillez ajouter un titre au livre.", "info")
+            flash(_("Veuillez ajouter un titre au livre."), "info")
             return redirect(url_for("livre.livre_edit", id=id))
 
         # Update the book
@@ -387,7 +391,7 @@ def livre_duplique(id):
     book = get_book_by_id(current_user.id, id)
 
     if not book:
-        flash("Le livre que vous souhaitiez dupliquer n'existe pas.", "error")
+        flash(_("Le livre que vous souhaitiez dupliquer n'existe pas."), "error")
         return redirect(url_for("livre.livre_db"))
 
     new_title = book.title
@@ -422,13 +426,13 @@ def livre_edit_student(id):
     student_id = request.form.get("student_id")
 
     if not student_id:
-        flash("Le livre reste dans la bibliothèque.", "info")
+        flash(_("Le livre reste dans la bibliothèque."), "info")
         return redirect(url_for("livre.livre_infos", id=id))
 
     student = get_student_by_id(current_user.id, student_id)
 
     if not student:
-        flash("L'élève n'existe pas.", "error")
+        flash(_("L'élève n'existe pas."), "error")
         return redirect(url_for("livre.livre_infos", id=id))
 
     # Create a new loan
@@ -452,7 +456,7 @@ def livre_delete(id):
     db.session.delete(book)
     db.session.commit()
 
-    flash("Le livre a été supprimé.", "info")
+    flash(_("Le livre a été supprimé."), "info")
 
     return redirect(url_for("livre.livre_db"))
 
@@ -482,7 +486,7 @@ def livre_delete_all():
 
     db.session.commit()
 
-    flash("Tous les livres ont été supprimés.", "success")
+    flash(_("Tous les livres ont été supprimés."), "success")
 
     return redirect(url_for("auth.reglage"))
 

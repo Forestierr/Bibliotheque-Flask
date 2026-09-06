@@ -6,13 +6,13 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Mes Livres") }}
+    {{ navbar(current_user, _("Mes Livres")) }}
 {% endblock %}
 
 {% block content %}
 
     <h1 class="title is-1 is-hidden-touch">
-        Mes livres
+        {{ _("Mes livres") }}
     </h1>
 
     <div class="block buttons">
@@ -21,7 +21,7 @@
                 <span class="icon">
                     <i class="fas fa-plus"></i>
                 </span>
-                <span>Ajouter un livre</span>
+                <span>{{ _("Ajouter un livre") }}</span>
             </div>
         </a>
         <a href="/livre/scann" class="button is-dark">
@@ -29,7 +29,7 @@
                 <span class="icon">
                     <i class="fas fa-barcode"></i>
                 </span>
-                <span>Scanner un livre</span>
+                <span>{{ _("Scanner un livre") }}</span>
             </div>
         </a>
     </div>
@@ -40,8 +40,8 @@
                 <article class="media">
                     <div class="media-content has-text-centered is-size-5">
                       <div class="content">
-                        <p>Vous n'avez pas encore ajouté de livre à votre bibliothèque. <br>
-                        Pour ajouter un livre, cliquez sur le bouton <strong>Ajouter un livre</strong> ou <strong>Scanner un livre</strong>.</p>
+                        <p>{{ _("Vous n'avez pas encore ajouté de livre à votre bibliothèque.") }} <br>
+                        {{ _("Pour ajouter un livre, cliquez sur le bouton") }} <strong>{{ _("Ajouter un livre") }}</strong> {{ _("ou") }} <strong>{{ _("Scanner un livre") }}</strong>.</p>
                       </div>
                     </div>
                     <div class="media-right is-hidden-mobile">
@@ -59,7 +59,7 @@
     {% else %}
 
     <div class="block">
-        {{ search_bar("Rechercher un livre", True, "/livre/search-preview", "/livre/search", search) }}
+        {{ search_bar(_("Rechercher un livre"), True, "/livre/search-preview", "/livre/search", search) }}
     </div>
 
     {% with n_emprunt=true, url="/livre/search" %}

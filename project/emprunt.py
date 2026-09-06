@@ -11,6 +11,7 @@ from flask import (
     request,
     url_for,
 )
+from flask_babel import gettext as _
 from flask_login import current_user, login_required
 
 from . import db
@@ -63,7 +64,7 @@ def return_loan(id):
             loan.date_return = datetime.now(tz=timezone.utc).date()
             db.session.commit()
         else:
-            flash("Accès non autorisé.", "error")
+            flash(_("Accès non autorisé."), "error")
 
     return redirect(from_url)
 
@@ -78,13 +79,13 @@ def delete_loan(id):
     loan = db.session.query(Loan).filter(Loan.id == id).first()
 
     if not loan:
-        flash("Emprunt introuvable.", "error")
+        flash(_("Emprunt introuvable."), "error")
         return redirect(from_url)
 
     book = db.session.query(Book).filter(Book.id == loan.book_id).first()
 
     if book.user_id != current_user.id:
-        flash("Accès non autorisé.", "error")
+        flash(_("Accès non autorisé."), "error")
         return redirect(from_url)
 
     if loan:

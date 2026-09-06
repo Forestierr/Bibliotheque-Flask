@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels{% endblock %}
-{% block meta_description %}Comment susciter le plaisir de lire en classe ? Découvrez notre guide de plus de 1300 mots : quart d'heure lecture, rallye lecture, et rituels pédagogiques.{% endblock %}
+{% block title %}{{ _("Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels") }}{% endblock %}
+{% block meta_description %}{{ _("Comment susciter le plaisir de lire en classe ? Découvrez notre guide de plus de 1300 mots : quart d'heure lecture, rallye lecture, et rituels pédagogiques.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}

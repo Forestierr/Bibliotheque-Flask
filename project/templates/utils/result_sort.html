@@ -6,16 +6,16 @@
             hx-trigger="change"
             hx-target="#search_list"
             hx-include="[name='search'], [name='n_results'], [name='active_loan']">
-            <option value="pertinent">Pertinent</option>
+            <option value="pertinent">{{ _("Pertinent") }}</option>
             <option value="az">A -> Z</option>
             <option value="za">Z -> A</option>
             {% if n_emprunt %}
-            <option value="p_emprunte">Plus emprunté</option>
-            <option value="m_emprunte">Moins emprunté</option>
+            <option value="p_emprunte">{{ _("Plus emprunté") }}</option>
+            <option value="m_emprunte">{{ _("Moins emprunté") }}</option>
             {% endif %}
             {% if date %}
-            <option value="recent">Les plus récents</option>
-            <option value="ancien">Les plus anciens</option>
+            <option value="recent">{{ _("Les plus récents") }}</option>
+            <option value="ancien">{{ _("Les plus anciens") }}</option>
             {% endif %}
           </select>
         </div>
@@ -27,9 +27,9 @@
             hx-trigger="change"
             hx-target="#search_list"
             hx-include="[name='search'], [name='sort'], [name='active_loan']">
-            <option value="20">20 résultats</option>
-            <option value="50">50 résultats</option>
-            <option value="100">100 résultats</option>
+            <option value="20">{{ _("20 résultats") }}</option>
+            <option value="50">{{ _("50 résultats") }}</option>
+            <option value="100">{{ _("100 résultats") }}</option>
           </select>
         </div>
     </div>

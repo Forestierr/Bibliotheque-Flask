@@ -3,16 +3,27 @@
 {% from "utils/footer.html" import footer, footer_mobile %}
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="description" content="{% block meta_description %}Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.{% endblock %}"/>
-    <meta name="keywords" content="gestion bibliothèque scolaire, logiciel bibliothèque école, prêt de livres en classe, bibliothèque de classe, gestion livres enseignants, bibliothèque enseignants, logiciel CDI primaire"/>
-    <meta property="og:title" content="{% block og_title %}Logiciel de gestion de bibliothèque scolaire | Livres en Classe{% endblock %}"/>
-    <meta property="og:description" content="{% block og_description %}Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.{% endblock %}"/>
-    <title>{% block title %}Logiciel de gestion de bibliothèque scolaire | Livres en Classe{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{{ _("Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.") }}{% endblock %}"/>
+    <meta name="keywords" content="{% block meta_keywords %}{{ _("gestion bibliothèque scolaire, logiciel bibliothèque école, prêt de livres en classe, bibliothèque de classe, gestion livres enseignants, bibliothèque enseignants, logiciel CDI primaire") }}{% endblock %}"/>
+    <meta property="og:title" content="{% block og_title %}{{ _("Logiciel de gestion de bibliothèque scolaire | Livres en Classe") }}{% endblock %}"/>
+    <meta property="og:description" content="{% block og_description %}{{ _("Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.") }}{% endblock %}"/>
+    <title>{% block title %}{{ _("Logiciel de gestion de bibliothèque scolaire | Livres en Classe") }}{% endblock %}</title>
+
+    <!-- SEO & Multilingual Alternates -->
+    {% block canonical %}
+    <link rel="canonical" href="{{ request.base_url }}{% if get_locale() in ['en', 'de'] %}?lang={{ get_locale() }}{% endif %}" />
+    {% endblock %}
+    {% block hreflang %}
+    <link rel="alternate" hreflang="fr" href="{{ request.base_url }}?lang=fr" />
+    <link rel="alternate" hreflang="en" href="{{ request.base_url }}?lang=en" />
+    <link rel="alternate" hreflang="de" href="{{ request.base_url }}?lang=de" />
+    <link rel="alternate" hreflang="x-default" href="{{ request.base_url }}" />
+    {% endblock %}
 
     {% block head_extra %}{% endblock %}
 

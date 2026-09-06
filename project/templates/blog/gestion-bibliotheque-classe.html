@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Le Guide Ultime pour Créer une Bibliothèque de Classe Efficace{% endblock %}
-{% block meta_description %}Comment créer une bibliothèque de classe ? Découvrez notre guide complet de plus de 1500 mots : budget, sélection de livres, rangement, rangement et gestion automatisée.{% endblock %}
+{% block title %}{{ _("Le Guide Ultime pour Créer une Bibliothèque de Classe Efficace") }}{% endblock %}
+{% block meta_description %}{{ _("Comment créer une bibliothèque de classe ? Découvrez notre guide complet de plus de 1500 mots : budget, sélection de livres, rangement et gestion automatisée.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}

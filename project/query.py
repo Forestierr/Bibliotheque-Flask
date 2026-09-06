@@ -996,7 +996,7 @@ Get infos about the app
 
 def get_app_infos():
     infos = {
-        "n_users": db.session.query(User).filter(User.is_verified == True).count(),
+        "n_users": db.session.query(User).filter(User.is_verified.is_(True)).count(),
         "n_books": db.session.query(Book).count(),
         "n_students": db.session.query(Student).count(),
         "n_loans": db.session.query(Loan).count(),
@@ -1016,7 +1016,7 @@ def delete_unverified_users():
 
     unverified_users = (
         db.session.query(User)
-        .filter(User.is_verified == False, User.created_at < cutoff)
+        .filter(User.is_verified.is_(False), User.created_at < cutoff)
         .all()
     )
 
