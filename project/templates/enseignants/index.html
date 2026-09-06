@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Espace Enseignants : Guides et Outils de Bibliothèque{% endblock %}
-{% block meta_description %}Accédez à notre sélection de guides pratiques, de fiches d'organisation de bibliothèque et d'outils numériques pour les enseignants du primaire et du collège.{% endblock %}
+{% block title %}{{ _("Espace Enseignants : Guides et Outils de Bibliothèque | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Accédez à notre sélection de guides pratiques, de fiches d'organisation de bibliothèque et d'outils numériques pour les enseignants du primaire et du collège.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}

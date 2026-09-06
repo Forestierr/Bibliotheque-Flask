@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Centre d'aide | Livres en Classe{% endblock %}
-{% block meta_description %}Guides, tutoriels et FAQ pour utiliser Livres en Classe : scanner vos livres, gérer vos élèves et effectuer vos premiers prêts.{% endblock %}
+{% block title %}{{ _("Centre d'aide | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Guides, tutoriels et FAQ pour utiliser Livres en Classe : scanner vos livres, gérer vos élèves et effectuer vos premiers prêts.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
@@ -124,15 +124,15 @@
 <section class="section">
     <div class="container" style="max-width: 860px; margin: 0 auto;">
 
-        <!-- En-tete -->
+        <!-- En-tête -->
         <div class="has-text-centered mb-6">
-            <h1 class="title is-2" style="font-weight: 800;">Centre d'aide</h1>
-            <p class="subtitle is-5 has-text-grey">Trouvez rapidement les reponses a vos questions</p>
+            <h1 class="title is-2" style="font-weight: 800;">{{ _("Centre d'aide") }}</h1>
+            <p class="subtitle is-5 has-text-grey">{{ _("Trouvez rapidement les réponses à vos questions") }}</p>
             <div class="mt-4">
-                <a href="#premiers-pas" class="aide-nav-pill">Premiers pas</a>
-                <a href="#scanner" class="aide-nav-pill">Scanner</a>
-                <a href="#emprunts" class="aide-nav-pill">Emprunts</a>
-                <a href="#faq" class="aide-nav-pill">FAQ</a>
+                <a href="#premiers-pas" class="aide-nav-pill">{{ _("Premiers pas") }}</a>
+                <a href="#scanner" class="aide-nav-pill">{{ _("Scanner") }}</a>
+                <a href="#emprunts" class="aide-nav-pill">{{ _("Emprunts") }}</a>
+                <a href="#faq" class="aide-nav-pill">{{ _("FAQ") }}</a>
             </div>
         </div>
 
@@ -142,25 +142,23 @@
                 <div class="section-icon" style="background: hsl(210, 60%, 96%);">
                     <span class="icon is-medium" style="color: hsl(210, 50%, 50%);"><i class="fas fa-lg fa-rocket"></i></span>
                 </div>
-                <h2 class="title is-4 mb-4">Premiers pas &mdash; Debuter en 3 etapes</h2>
+                <h2 class="title is-4 mb-4">{{ _("Premiers pas — Débuter en 3 étapes") }}</h2>
 
                 <div class="step-card" style="border-left-color: hsl(210, 50%, 60%);">
                     <div class="step-num">1</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Ajoutez vos livres</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Ajoutez vos livres") }}</p>
                         <p class="is-size-6 has-text-grey mb-2">
-                            La methode la plus rapide est de <strong>scanner le code-barres ISBN</strong> a l'aide de votre smartphone.
-                            L'application recupere automatiquement le titre, l'auteur et l'editeur.
-                            Vous pouvez aussi cliquer sur <strong>"Ajouter un livre"</strong> pour saisir manuellement les informations.
+                            {{ _("La méthode la plus rapide est de scanner le code-barres ISBN à l'aide de votre smartphone. L'application récupère automatiquement le titre, l'auteur et l'éditeur. Vous pouvez aussi cliquer sur Ajouter un livre pour saisir manuellement les informations.") }}
                         </p>
                         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
                             <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-small is-rounded">
                                 <span class="icon"><i class="fas fa-barcode"></i></span>
-                                <span>Scanner un livre</span>
+                                <span>{{ _("Scanner un livre") }}</span>
                             </a>
                             <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-small is-rounded">
                                 <span class="icon"><i class="fas fa-plus"></i></span>
-                                <span>Saisie manuelle</span>
+                                <span>{{ _("Saisie manuelle") }}</span>
                             </a>
                         </div>
                     </div>
@@ -169,13 +167,13 @@
                 <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
                     <div class="step-num" style="background: hsl(145, 40%, 55%);">2</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Ajoutez vos eleves</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Ajoutez vos élèves") }}</p>
                         <p class="is-size-6 has-text-grey mb-2">
-                            Rendez-vous dans l'onglet <strong>"Élèves"</strong> et ajoutez vos élèves un par un avec leur nom et prénom.
+                            {{ _("Rendez-vous dans l'onglet Élèves et ajoutez vos élèves un par un avec leur nom et prénom.") }}
                         </p>
                         <a href="{{ url_for('eleve.eleve_db') }}" class="button is-light is-small is-rounded">
                             <span class="icon"><i class="fas fa-users"></i></span>
-                            <span>Gerer mes eleves</span>
+                            <span>{{ _("Gérer mes élèves") }}</span>
                         </a>
                     </div>
                 </div>
@@ -183,14 +181,13 @@
                 <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
                     <div class="step-num" style="background: hsl(38, 60%, 55%);">3</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Effectuez votre premier pret</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Effectuez votre premier prêt") }}</p>
                         <p class="is-size-6 has-text-grey mb-2">
-                            Sur la fiche d'un livre, cliquez sur <strong>"Preter ce livre"</strong>,
-                            selectionnez l'eleve et confirmez. La date de retour est optionnelle.
+                            {{ _("Sur la fiche d'un livre, cliquez sur Prêter ce livre, sélectionnez l'élève et confirmez. La date de retour est optionnelle.") }}
                         </p>
                         <a href="{{ url_for('emprunt.emprunt_db') }}" class="button is-light is-small is-rounded">
                             <span class="icon"><i class="fas fa-exchange-alt"></i></span>
-                            <span>Voir les emprunts</span>
+                            <span>{{ _("Voir les emprunts") }}</span>
                         </a>
                     </div>
                 </div>
@@ -203,61 +200,61 @@
                 <div class="section-icon" style="background: hsl(145, 50%, 95%);">
                     <span class="icon is-medium" style="color: hsl(145, 40%, 42%);"><i class="fas fa-lg fa-camera"></i></span>
                 </div>
-                <h2 class="title is-4 mb-2">Guide du scanner</h2>
-                <p class="has-text-grey mb-4">Le scanner utilise votre camera pour lire le code-barres ISBN et recuperer les informations du livre automatiquement.</p>
+                <h2 class="title is-4 mb-2">{{ _("Guide du scanner") }}</h2>
+                <p class="has-text-grey mb-4">{{ _("Le scanner utilise votre caméra pour lire le code-barres ISBN et récupérer les informations du livre automatiquement.") }}</p>
 
-                <h3 class="title is-6 mb-3" style="color: hsl(0, 0%, 30%);">Comment scanner un livre</h3>
+                <h3 class="title is-6 mb-3" style="color: hsl(0, 0%, 30%);">{{ _("Comment scanner un livre") }}</h3>
 
                 <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
                     <div class="step-num" style="background: hsl(145, 40%, 55%);">1</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Retournez le livre</p>
-                        <p class="is-size-6 has-text-grey">Le code-barres ISBN se trouve au <strong>verso</strong> (4eme de couverture), generalement en bas a droite.</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Retournez le livre") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("Le code-barres ISBN se trouve au verso (4ème de couverture), généralement en bas à droite.") }}</p>
                     </div>
                 </div>
 
                 <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
                     <div class="step-num" style="background: hsl(145, 40%, 55%);">2</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Verifiez que c'est bien un ISBN</p>
-                        <p class="is-size-6 has-text-grey">Le code doit commencer par <code>978</code> ou <code>979</code> et faire 13 chiffres. Les autres codes-barres (prix, editeur) ne fonctionnent pas.</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Vérifiez que c'est bien un ISBN") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("Le code doit commencer par 978 ou 979 et faire 13 chiffres. Les autres codes-barres (prix, éditeur) ne fonctionnent pas.") }}</p>
                     </div>
                 </div>
 
                 <div class="step-card" style="border-left-color: hsl(145, 40%, 55%);">
                     <div class="step-num" style="background: hsl(145, 40%, 55%);">3</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Positionnez votre camera</p>
-                        <p class="is-size-6 has-text-grey">Maintenez l'appareil a <strong>15-20 cm</strong> du code, de face, bien aligne. Le scan se declenche automatiquement en quelques secondes.</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Positionnez votre caméra") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("Maintenez l'appareil à 15-20 cm du code, de face, bien aligné. Le scan se déclenche automatiquement en quelques secondes.") }}</p>
                     </div>
                 </div>
 
                 <div class="tip-box">
                     <span class="icon is-small"><i class="fas fa-lightbulb"></i></span>
-                    <strong>Astuces pour un meilleur scan :</strong>
+                    <strong>{{ _("Astuces pour un meilleur scan :") }}</strong>
                     <ul style="list-style: disc; margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.9;">
-                        <li>Essayez le <strong>zoom 1x</strong> si le scan ne fonctionne pas en ultra-large (.5x)</li>
-                        <li>Activez la <strong>torche</strong> si la piece est sombre</li>
-                        <li>Evitez les reflets : posez le livre a plat et filmez de dessus</li>
+                        <li>{{ _("Essayez le zoom 1x si le scan ne fonctionne pas en ultra-large (.5x)") }}</li>
+                        <li>{{ _("Activez la torche si la pièce est sombre") }}</li>
+                        <li>{{ _("Évitez les reflets : posez le livre à plat et filmez de dessus") }}</li>
                     </ul>
                 </div>
 
-                <h3 class="title is-6 mt-5 mb-3" style="color: hsl(0, 0%, 30%);">Depannage &mdash; La camera ne s'ouvre pas</h3>
+                <h3 class="title is-6 mt-5 mb-3" style="color: hsl(0, 0%, 30%);">{{ _("Dépannage — La caméra ne s'ouvre pas") }}</h3>
 
                 <div class="warning-box">
-                    <p class="mb-2"><strong>Erreur : "Impossible d'acceder a la camera"</strong></p>
+                    <p class="mb-2"><strong>{{ _('Erreur : "Impossible d\'accéder à la caméra"') }}</strong></p>
                     <ol style="list-style: decimal; margin-left: 1.25rem; line-height: 2;">
-                        <li><strong>Autorisez la camera</strong> dans les parametres de votre navigateur (icone cadenas dans la barre d'adresse)</li>
-                        <li>Verifiez qu'<strong>aucune autre application</strong> n'utilise la camera en meme temps</li>
-                        <li><strong>Rechargez la page</strong> et autorisez lorsque le navigateur le demande</li>
-                        <li>Sur <strong>iOS</strong> : utilisez Safari &mdash; Chrome sur iOS ne supporte pas toujours l'acces camera</li>
+                        <li>{{ _("Autorisez la caméra dans les paramètres de votre navigateur (icône cadenas dans la barre d'adresse)") }}</li>
+                        <li>{{ _("Vérifiez qu'aucune autre application n'utilise la caméra en même temps") }}</li>
+                        <li>{{ _("Rechargez la page et autorisez lorsque le navigateur le demande") }}</li>
+                        <li>{{ _("Sur iOS : utilisez Safari — Chrome sur iOS ne supporte pas toujours l'accès caméra") }}</li>
                     </ol>
                 </div>
 
                 <div class="mt-4 has-text-centered">
                     <a href="{{ url_for('livre.livre_scann') }}" class="button is-link is-rounded">
                         <span class="icon"><i class="fas fa-camera"></i></span>
-                        <span>Ouvrir le scanner</span>
+                        <span>{{ _("Ouvrir le scanner") }}</span>
                     </a>
                 </div>
             </div>
@@ -269,29 +266,29 @@
                 <div class="section-icon" style="background: hsl(38, 70%, 95%);">
                     <span class="icon is-medium" style="color: hsl(38, 60%, 45%);"><i class="fas fa-lg fa-exchange-alt"></i></span>
                 </div>
-                <h2 class="title is-4 mb-4">Gerer les emprunts</h2>
+                <h2 class="title is-4 mb-4">{{ _("Gérer les emprunts") }}</h2>
 
                 <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
                     <div class="step-num" style="background: hsl(38, 60%, 55%); font-size:0.85rem;">1</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Prêter un livre</p>
-                        <p class="is-size-6 has-text-grey">Ouvrez la fiche du livre (onglet Livres), cliquez <strong>"Prêter ce livre"</strong>, sélectionnez l'élève et validez. L'emprunt apparaît immédiatement dans l'onglet Emprunts.</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Prêter un livre") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("Ouvrez la fiche du livre (onglet Livres), cliquez Prêter ce livre, sélectionnez l'élève et validez. L'emprunt apparaît immédiatement dans l'onglet Emprunts.") }}</p>
                     </div>
                 </div>
 
                 <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
                     <div class="step-num" style="background: hsl(38, 60%, 55%); font-size:0.85rem;">2</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Marquer un retour</p>
-                        <p class="is-size-6 has-text-grey">Dans l'onglet <strong>Emprunts</strong>, trouvez le prêt en cours et cliquez sur <strong>"Retourné"</strong>. La date de retour est enregistrée automatiquement.</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Marquer un retour") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("Dans l'onglet Emprunts, trouvez le prêt en cours et cliquez sur Retourné. La date de retour est enregistrée automatiquement.") }}</p>
                     </div>
                 </div>
 
                 <div class="step-card" style="border-left-color: hsl(38, 60%, 55%);">
                     <div class="step-num" style="background: hsl(38, 60%, 55%); font-size:0.85rem;">3</div>
                     <div>
-                        <p class="has-text-weight-semibold mb-1">Suivre les statistiques</p>
-                        <p class="is-size-6 has-text-grey">Le <strong>Dashboard</strong> affiche les livres les plus empruntés, les élèves les plus lecteurs, et un graphique de l'activité sur l'année.</p>
+                        <p class="has-text-weight-semibold mb-1">{{ _("Suivre les statistiques") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("Le Dashboard affiche les livres les plus empruntés, les élèves les plus lecteurs, et un graphique de l'activité sur l'année.") }}</p>
                     </div>
                 </div>
             </div>
@@ -303,99 +300,91 @@
                 <div class="section-icon" style="background: hsl(270, 50%, 96%);">
                     <span class="icon is-medium" style="color: hsl(270, 40%, 55%);"><i class="fas fa-lg fa-question-circle"></i></span>
                 </div>
-                <h2 class="title is-4 mb-4">Questions frequentes</h2>
+                <h2 class="title is-4 mb-4">{{ _("Questions fréquentes") }}</h2>
 
                 <div id="faq-list">
 
                     <div class="faq-item" onclick="toggleFaq(this)">
                         <div class="faq-question">
-                            <span>Le scanner ne detecte pas le code-barres, pourquoi ?</span>
+                            <span>{{ _("Le scanner ne détecte pas le code-barres, pourquoi ?") }}</span>
                             <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <div class="faq-answer">
-                            Plusieurs raisons possibles :
+                            {{ _("Plusieurs raisons possibles :") }}
                             <ul style="list-style: disc; margin-left: 1.25rem; margin-top: 0.5rem; line-height: 2;">
-                                <li>Le code ne commence pas par <strong>978</strong> ou <strong>979</strong> &mdash; ce n'est pas un ISBN</li>
-                                <li>La distance est trop courte ou trop longue &mdash; essayez entre 15 et 25 cm</li>
-                                <li>Trop peu de lumiere &mdash; activez la torche</li>
-                                <li>Essayez le zoom <strong>1x</strong> au lieu du .5x</li>
-                                <li>Evitez les reflets : posez le livre a plat et filmez de dessus</li>
+                                <li>{{ _("Le code ne commence pas par 978 ou 979 — ce n'est pas un ISBN") }}</li>
+                                <li>{{ _("La distance est trop courte ou trop longue — essayez entre 15 et 25 cm") }}</li>
+                                <li>{{ _("Trop peu de lumière — activez la torche") }}</li>
+                                <li>{{ _("Essayez le zoom 1x au lieu du .5x") }}</li>
+                                <li>{{ _("Évitez les reflets : posez le livre à plat et filmez de dessus") }}</li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="faq-item" onclick="toggleFaq(this)">
                         <div class="faq-question">
-                            <span>Le livre scanne n'est pas trouve dans la base de donnees ?</span>
+                            <span>{{ _("Le livre scanné n'est pas trouvé dans la base de données ?") }}</span>
                             <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <div class="faq-answer">
-                            Certains livres anciens, autoedites ou tres locaux ne sont pas dans la base Google Books.
-                            Dans ce cas, l'application vous redirige vers le formulaire de <strong>saisie manuelle</strong>
-                            avec l'ISBN pre-rempli &mdash; il vous suffit de completer le titre et l'auteur.
+                            {{ _("Certains livres anciens, autoédités ou très locaux ne sont pas dans la base Google Books. Dans ce cas, l'application vous redirige vers le formulaire de saisie manuelle avec l'ISBN pré-rempli — il vous suffit de compléter le titre et l'auteur.") }}
                         </div>
                     </div>
 
                     <div class="faq-item" onclick="toggleFaq(this)">
                         <div class="faq-question">
-                            <span>Puis-je utiliser l'application sur ordinateur ?</span>
+                            <span>{{ _("Puis-je utiliser l'application sur ordinateur ?") }}</span>
                             <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <div class="faq-answer">
-                            Oui ! Toutes les fonctionnalites (sauf le scanner) fonctionnent parfaitement sur ordinateur.
-                            Pour scanner des livres, utilisez votre <strong>smartphone ou tablette</strong>.
-                            L'application est progressive (PWA) : vous pouvez l'installer sur l'ecran d'accueil de votre telephone.
+                            {{ _("Oui ! Toutes les fonctionnalités (sauf le scanner) fonctionnent parfaitement sur ordinateur. Pour scanner des livres, utilisez votre smartphone ou tablette. L'application est progressive (PWA) : vous pouvez l'installer sur l'écran d'accueil de votre téléphone.") }}
                         </div>
                     </div>
 
                     <div class="faq-item" onclick="toggleFaq(this)">
                         <div class="faq-question">
-                            <span>Comment installer l'application sur mon telephone ?</span>
+                            <span>{{ _("Comment installer l'application sur mon téléphone ?") }}</span>
                             <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <div class="faq-answer">
-                            L'application est une PWA (Progressive Web App) : vous pouvez l'installer directement
-                            sur votre ecran d'accueil, sans passer par un store.<br><br>
-                            <strong>Sur iPhone / iPad (Safari) :</strong>
+                            {{ _("L'application est une PWA (Progressive Web App) : vous pouvez l'installer directement sur votre écran d'accueil, sans passer par un store.") }}<br><br>
+                            <strong>{{ _("Sur iPhone / iPad (Safari) :") }}</strong>
                             <ol style="list-style: decimal; margin-left: 1.25rem; margin-top: 0.4rem; line-height: 2;">
-                                <li>Ouvrez le site dans <strong>Safari</strong></li>
-                                <li>Appuyez sur l'icone de partage <span style="font-style:normal;">&#x2BAD;</span> en bas de l'ecran</li>
-                                <li>Faites defiler et appuyez sur <strong>"Sur l'ecran d'accueil"</strong></li>
-                                <li>Confirmez avec <strong>"Ajouter"</strong></li>
+                                <li>{{ _("Ouvrez le site dans Safari") }}</li>
+                                <li>{{ _("Appuyez sur l'icône de partage en bas de l'écran") }}</li>
+                                <li>{{ _("Faites défiler et appuyez sur Sur l'écran d'accueil") }}</li>
+                                <li>{{ _("Confirmez avec Ajouter") }}</li>
                             </ol>
-                            <strong>Sur Android (Chrome) :</strong>
+                            <strong>{{ _("Sur Android (Chrome) :") }}</strong>
                             <ol style="list-style: decimal; margin-left: 1.25rem; margin-top: 0.4rem; line-height: 2;">
-                                <li>Ouvrez le site dans <strong>Chrome</strong></li>
-                                <li>Appuyez sur le menu <strong>&#8942;</strong> (trois points) en haut a droite</li>
-                                <li>Appuyez sur <strong>"Installer l'application"</strong> ou <strong>"Ajouter a l'ecran d'accueil"</strong></li>
-                                <li>Confirmez avec <strong>"Installer"</strong></li>
+                                <li>{{ _("Ouvrez le site dans Chrome") }}</li>
+                                <li>{{ _("Appuyez sur le menu (trois points) en haut à droite") }}</li>
+                                <li>{{ _("Appuyez sur Installer l'application ou Ajouter à l'écran d'accueil") }}</li>
+                                <li>{{ _("Confirmez avec Installer") }}</li>
                             </ol>
                             <div style="margin-top: 0.75rem; padding: 0.6rem 0.9rem; background: hsl(38, 70%, 96%); border-radius: 8px; font-size: 0.85rem; color: hsl(38, 40%, 35%);">
-                                Une fois installee, l'application s'ouvre comme une vraie app, sans barre de navigateur.
+                                {{ _("Une fois installée, l'application s'ouvre comme une vraie app, sans barre de navigateur.") }}
                             </div>
                         </div>
                     </div>
 
                     <div class="faq-item" onclick="toggleFaq(this)">
                         <div class="faq-question">
-                            <span>Comment exporter mes donnees ?</span>
+                            <span>{{ _("Comment exporter mes données ?") }}</span>
                             <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <div class="faq-answer">
-                            Vous pouvez exporter vos livres et emprunts au format Excel depuis les
-                            <strong>Reglages</strong> de votre compte.
+                            {{ _("Vous pouvez exporter vos livres et emprunts au format Excel depuis les Réglages de votre compte.") }}
                         </div>
                     </div>
 
                     <div class="faq-item" onclick="toggleFaq(this)">
                         <div class="faq-question">
-                            <span>Comment supprimer un livre ou un eleve ?</span>
+                            <span>{{ _("Comment supprimer un livre ou un élève ?") }}</span>
                             <span class="icon faq-chevron"><i class="fas fa-chevron-down"></i></span>
                         </div>
                         <div class="faq-answer">
-                            Ouvrez la fiche du livre ou de l'eleve, puis utilisez le bouton
-                            <strong>"Supprimer"</strong> en bas de la page. Attention : supprimer un eleve
-                            supprime aussi l'historique de ses emprunts.
+                            {{ _("Ouvrez la fiche du livre ou de l'élève, puis utilisez le bouton Supprimer en bas de la page. Attention : supprimer un élève supprime aussi l'historique de ses emprunts.") }}
                         </div>
                     </div>
 
@@ -406,12 +395,12 @@
         <!-- Contact -->
         <div class="box has-text-centered" style="border-radius: 14px; background: hsl(210, 60%, 97%); border: 1px solid hsl(210, 50%, 88%);">
             <p class="is-size-5 has-text-weight-semibold mb-2" style="color: hsl(210, 40%, 30%);">
-                Vous n'avez pas trouve votre reponse ?
+                {{ _("Vous n'avez pas trouvé votre réponse ?") }}
             </p>
-            <p class="has-text-grey mb-4">Notre equipe repond au plus vite !</p>
+            <p class="has-text-grey mb-4">{{ _("Notre équipe répond au plus vite !") }}</p>
             <a href="{{ url_for('main.contact') }}" class="button is-link is-rounded">
                 <span class="icon"><i class="fas fa-envelope"></i></span>
-                <span>Contacter le support</span>
+                <span>{{ _("Contacter le support") }}</span>
             </a>
         </div>
 

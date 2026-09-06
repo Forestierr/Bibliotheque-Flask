@@ -3,38 +3,38 @@
     <div class="columns">
         <div class="column is-two-thirds">
             <h4 class="bd-footer-title has-text-weight-medium has-text-left">
-                <strong>Ma Bibliotheque</strong> par
+                <strong>Ma Bibliotheque</strong> {{ _("par") }}
                 <a href="https://github.com/Forestierr" class="has-text-grey">Forestierr</a>.
             </h4>
             <p class="bd-footer-link has-text-left">
-                Le code source est sous licence
+                {{ _("Le code source est sous licence") }}
                 <a href="https://opensource.org/license/mit" class="has-text-grey">
                     MIT
                 </a>
-                . Le contenu du site est sous licence
+                . {{ _("Le contenu du site est sous licence") }}
                 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="has-text-grey">
                     CC BY NC SA 4.0
                 </a>.
             </p>
         </div>
         <div class="column">
-            <h5 class="title is-6 mb-2">Produit</h5>
-            <a href="/#fonctionnalites" class="has-text-grey">Fonctionnalités</a><br/>
-            <a href="/#comparatif" class="has-text-grey">Comparatif Excel</a><br/>
+            <h5 class="title is-6 mb-2">{{ _("Produit") }}</h5>
+            <a href="/#fonctionnalites" class="has-text-grey">{{ _("Fonctionnalités") }}</a><br/>
+            <a href="/#comparatif" class="has-text-grey">{{ _("Comparatif Excel") }}</a><br/>
             <a href="/#faq" class="has-text-grey">FAQ</a><br/>
         </div>
         <div class="column">
-            <h5 class="title is-6 mb-2">Ressources</h5>
+            <h5 class="title is-6 mb-2">{{ _("Ressources") }}</h5>
             <a href="{{ url_for('main.blog_index') }}" class="has-text-grey">Blog</a><br/>
-            <a href="{{ url_for('main.ressources_index') }}" class="has-text-grey">Ressources gratuites</a><br/>
-            <a href="{{ url_for('main.enseignants_index') }}" class="has-text-grey">Guides enseignants</a><br/>
-            <a href="{{ url_for('main.contact') }}" class="has-text-grey">Contact</a><br/>
-            <a href="{{ url_for('main.apropos') }}" class="has-text-grey">A propos</a>
+            <a href="{{ url_for('main.ressources_index') }}" class="has-text-grey">{{ _("Ressources gratuites") }}</a><br/>
+            <a href="{{ url_for('main.enseignants_index') }}" class="has-text-grey">{{ _("Guides enseignants") }}</a><br/>
+            <a href="{{ url_for('main.contact') }}" class="has-text-grey">{{ _("Contact") }}</a><br/>
+            <a href="{{ url_for('main.apropos') }}" class="has-text-grey">{{ _("A propos") }}</a>
         </div>
         <div class="column">
-            <h5 class="title is-6 mb-2">Légal</h5>
-            <a href="{{ url_for('main.mentions_legales') }}" class="has-text-grey">Mentions légales</a><br/>
-            <a href="{{ url_for('main.sitemap') }}" class="has-text-grey">Plan du site</a>
+            <h5 class="title is-6 mb-2">{{ _("Légal") }}</h5>
+            <a href="{{ url_for('main.mentions_legales') }}" class="has-text-grey">{{ _("Mentions légales") }}</a><br/>
+            <a href="{{ url_for('main.sitemap') }}" class="has-text-grey">{{ _("Plan du site") }}</a>
         </div>
     </div>
 </footer>

@@ -17,6 +17,7 @@ from flask import (
     session,
     url_for,
 )
+from flask_babel import get_locale
 from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from flask_mail import Message
@@ -86,22 +87,25 @@ def dashboard():
     # A contribution graph has columns representing weeks.
     months = []
     if loans:
-        current_month_str = ""
+        current_month_key = None
+        current_date = None
         current_span = 0
         for w in range(0, len(loans), 7):
             # We take the first day of the week to determine the month of this column
-            month_str = loans[w][0].strftime("%b")
+            week_date = loans[w][0]
+            month_key = (week_date.year, week_date.month)
 
-            if month_str == current_month_str:
+            if month_key == current_month_key:
                 current_span += 1
             else:
-                if current_month_str != "":
-                    months.append((current_month_str, current_span))
-                current_month_str = month_str
+                if current_date is not None:
+                    months.append((current_date, current_span))
+                current_month_key = month_key
+                current_date = week_date
                 current_span = 1
 
-        if current_month_str != "":
-            months.append((current_month_str, current_span))
+        if current_date is not None:
+            months.append((current_date, current_span))
 
     return render_template(
         "user/dashboard.html",
@@ -118,7 +122,7 @@ def dashboard():
 @main.route("/sitemap.xml")
 @main.route("/sitemap")
 def sitemap():
-    return render_template("utils/sitemap.xml")
+    return render_template("utils/sitemap.xml"), 200, {"Content-Type": "application/xml; charset=utf-8"}
 
 
 @main.route("/robots.txt")
@@ -126,13 +130,13 @@ def sitemap():
 @main.route("/robots")
 @main.route("/robot")
 def robots():
-    return render_template("utils/robots.txt")
+    return render_template("utils/robots.txt"), 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 
 @main.route("/llms.txt")
 @main.route("/llms")
 def llms():
-    return render_template("utils/llms.txt")
+    return render_template("utils/llms.txt"), 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 
 @main.route("/favicon.ico")
@@ -301,12 +305,26 @@ def apropos():
 
 @main.route("/aide")
 @main.route("/help")
-@login_required
 def aide():
     return render_template("aide.html")
 
 
 # SEO Dynamic Routes
+def render_editorial_template(folder, slug, error_msg):
+    lang = str(get_locale())
+    templates_to_try = [
+        f"{folder}/{lang}/{slug}.html",
+        f"{folder}/fr/{slug}.html",
+        f"{folder}/{slug}.html",
+    ]
+    for tmpl in templates_to_try:
+        try:
+            return render_template(tmpl)
+        except jinja2.TemplateNotFound:
+            continue
+    return render_template("error.html", error=error_msg), 404
+
+
 @main.route("/blog")
 def blog_index():
     return render_template("blog/index.html")
@@ -314,10 +332,7 @@ def blog_index():
 
 @main.route("/blog/<path:article_slug>")
 def blog_article(article_slug):
-    try:
-        return render_template(f"blog/{article_slug}.html")
-    except jinja2.TemplateNotFound:
-        return render_template("error.html", error="Article non trouvé"), 404
+    return render_editorial_template("blog", article_slug, _("Article non trouvé"))
 
 
 @main.route("/ressources")
@@ -327,10 +342,7 @@ def ressources_index():
 
 @main.route("/ressources/<path:ressource_slug>")
 def ressource_article(ressource_slug):
-    try:
-        return render_template(f"ressources/{ressource_slug}.html")
-    except jinja2.TemplateNotFound:
-        return render_template("error.html", error="Ressource non trouvée"), 404
+    return render_editorial_template("ressources", ressource_slug, _("Ressource non trouvée"))
 
 
 @main.route("/enseignants")
@@ -340,10 +352,7 @@ def enseignants_index():
 
 @main.route("/enseignants/<path:guide_slug>")
 def enseignants_guide(guide_slug):
-    try:
-        return render_template(f"enseignants/{guide_slug}.html")
-    except jinja2.TemplateNotFound:
-        return render_template("error.html", error="Guide non trouvé"), 404
+    return render_editorial_template("enseignants", guide_slug, _("Guide non trouvé"))
 
 
 @main.route("/install")

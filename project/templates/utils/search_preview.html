@@ -1,12 +1,12 @@
 {% if books|length == 0 %}
-    <p>Aucun livre trouvé</p>
+    <p>{{ _("Aucun livre trouvé") }}</p>
 {% endif %}
 
 {% for book in books %}
     <p>
         <a href="/livre/{{ book.Book.id }}"><strong>{{ book.Book.title }}</strong></a>
         {% if book.Student != None %}
-            <span class="is-size-7">Emprunté par : {{ book.Student.name }} {{ book.Student.firstname }}</span>
+            <span class="is-size-7">{{ _("Emprunté par :") }} {{ book.Student.name }} {{ book.Student.firstname }}</span>
         {% endif %}
     </p>
 {% endfor %}

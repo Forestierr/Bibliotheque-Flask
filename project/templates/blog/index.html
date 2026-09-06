@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Le Blog des Enseignants | Livres en Classe{% endblock %}
-{% block meta_description %}Conseils pratiques, sélections littéraires et stratégies pédagogiques pour les enseignants qui gèrent une bibliothèque de classe.{% endblock %}
+{% block title %}{{ _("Le Blog des Enseignants | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Conseils pratiques, sélections littéraires et stratégies pédagogiques pour les enseignants qui gèrent une bibliothèque de classe.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
@@ -106,8 +106,8 @@
 
         <!-- En-tête -->
         <div class="has-text-centered mb-6">
-            <h1 class="title is-2" style="font-weight: 800;">Le Blog des Enseignants</h1>
-            <p class="subtitle is-5 has-text-grey">Conseils, astuces et sélections littéraires pour votre classe</p>
+            <h1 class="title is-2" style="font-weight: 800;">{{ _("Le Blog des Enseignants") }}</h1>
+            <p class="subtitle is-5 has-text-grey">{{ _("Conseils, astuces et sélections littéraires pour votre classe") }}</p>
         </div>
 
         <!-- Article à la une -->
@@ -116,17 +116,17 @@
                 <i class="fas fa-book-open fa-lg"></i>
             </div>
             <div>
-                <span class="blog-tag tag-gestion">Gestion de Bibliothèque</span>
-                <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="blog-title-link" style="font-size: 1.4rem; margin-bottom: 0.75rem; display:block;">Comment créer une bibliothèque de classe ?</a>
+                <span class="blog-tag tag-gestion">{{ _("Gestion de Bibliothèque") }}</span>
+                <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="blog-title-link" style="font-size: 1.4rem; margin-bottom: 0.75rem; display:block;">{{ _("Comment créer une bibliothèque de classe ?") }}</a>
                 <p class="blog-excerpt">
-                    Découvrez les étapes clés pour mettre en place une bibliothèque efficace dans votre classe : choisir les premiers livres, organiser les étagères, définir les règles de prêt et impliquer les élèves dans la gestion.
+                    {{ _("Découvrez les étapes clés pour mettre en place une bibliothèque efficace dans votre classe : choisir les premiers livres, organiser les étagères, définir les règles de prêt et impliquer les élèves dans la gestion.") }}
                 </p>
                 <div class="blog-meta" style="border: none; padding: 0; margin-top: 0.75rem;">
-                    <span><i class="fas fa-clock"></i> 5 min de lecture</span>
-                    <span><i class="fas fa-folder"></i> Guide pratique</span>
+                    <span><i class="fas fa-clock"></i> {{ _("5 min de lecture") }}</span>
+                    <span><i class="fas fa-folder"></i> {{ _("Guide pratique") }}</span>
                 </div>
                 <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="blog-read-link">
-                    Lire l'article <i class="fas fa-arrow-right"></i>
+                    {{ _("Lire l'article") }} <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -137,14 +137,14 @@
             <div class="column is-6">
                 <div class="blog-card">
                     <div class="blog-card-body">
-                        <span class="blog-tag tag-selection">Sélection Littéraire</span>
-                        <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-title-link">Les meilleurs livres pour le CP</a>
-                        <p class="blog-excerpt">Notre sélection de romans et d'albums parfaitement adaptés pour les lecteurs débutants en cycle 2. Des titres choisis pour leur accessibilité et leur pouvoir d'accroche.</p>
+                        <span class="blog-tag tag-selection">{{ _("Sélection Littéraire") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-title-link">{{ _("Les meilleurs livres pour le CP") }}</a>
+                        <p class="blog-excerpt">{{ _("Notre sélection de romans et d'albums parfaitement adaptés pour les lecteurs débutants en cycle 2. Des titres choisis pour leur accessibilité et leur pouvoir d'accroche.") }}</p>
                         <div class="blog-meta">
-                            <span><i class="fas fa-clock"></i> 4 min</span>
-                            <span><i class="fas fa-folder"></i> Cycle 2</span>
+                            <span><i class="fas fa-clock"></i> {{ _("4 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Cycle 2") }}</span>
                         </div>
-                        <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-read-link">Lire <i class="fas fa-arrow-right"></i></a>
+                        <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -152,14 +152,14 @@
             <div class="column is-6">
                 <div class="blog-card">
                     <div class="blog-card-body">
-                        <span class="blog-tag tag-organisation">Organisation</span>
-                        <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="blog-title-link">Comment classer les livres de sa classe ?</a>
-                        <p class="blog-excerpt">Code couleur, par auteur, par niveau ou par genre littéraire ? Découvrez les différentes méthodes de classement et leurs avantages selon l'âge de vos élèves.</p>
+                        <span class="blog-tag tag-organisation">{{ _("Organisation") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="blog-title-link">{{ _("Comment classer les livres de sa classe ?") }}</a>
+                        <p class="blog-excerpt">{{ _("Code couleur, par auteur, par niveau ou par genre littéraire ? Découvrez les différentes méthodes de classement et leurs avantages selon l'âge de vos élèves.") }}</p>
                         <div class="blog-meta">
-                            <span><i class="fas fa-clock"></i> 3 min</span>
-                            <span><i class="fas fa-folder"></i> Méthodologie</span>
+                            <span><i class="fas fa-clock"></i> {{ _("3 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Méthodologie") }}</span>
                         </div>
-                        <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="blog-read-link">Lire <i class="fas fa-arrow-right"></i></a>
+                        <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -167,14 +167,14 @@
             <div class="column is-6">
                 <div class="blog-card">
                     <div class="blog-card-body">
-                        <span class="blog-tag tag-pedagogie">Pédagogie</span>
-                        <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="blog-title-link">Comment donner envie de lire à ses élèves ?</a>
-                        <p class="blog-excerpt">Rituels quotidiens, rallye lecture, présentations de livres entre élèves... Des stratégies concrètes pour ancrer le plaisir de lire dans le quotidien de votre classe.</p>
+                        <span class="blog-tag tag-pedagogie">{{ _("Pédagogie") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="blog-title-link">{{ _("Comment donner envie de lire à ses élèves ?") }}</a>
+                        <p class="blog-excerpt">{{ _("Rituels quotidiens, rallye lecture, présentations de livres entre élèves... Des stratégies concrètes pour ancrer le plaisir de lire dans le quotidien de votre classe.") }}</p>
                         <div class="blog-meta">
-                            <span><i class="fas fa-clock"></i> 6 min</span>
-                            <span><i class="fas fa-folder"></i> Motivation</span>
+                            <span><i class="fas fa-clock"></i> {{ _("6 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Motivation") }}</span>
                         </div>
-                        <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="blog-read-link">Lire <i class="fas fa-arrow-right"></i></a>
+                        <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -185,8 +185,8 @@
                         <div style="width: 44px; height: 44px; border-radius: 50%; background: hsl(0, 0%, 93%); color: hsl(0, 0%, 50%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
                             <i class="fas fa-pen"></i>
                         </div>
-                        <p class="has-text-weight-semibold" style="color: hsl(0, 0%, 40%);">Prochain article</p>
-                        <p class="is-size-7 has-text-grey mt-2">Nous préparons de nouveaux guides pratiques et sélections de livres.</p>
+                        <p class="has-text-weight-semibold" style="color: hsl(0, 0%, 40%);">{{ _("Prochain article") }}</p>
+                        <p class="is-size-7 has-text-grey mt-2">{{ _("Nous préparons de nouveaux guides pratiques et sélections de livres.") }}</p>
                     </div>
                 </div>
             </div>

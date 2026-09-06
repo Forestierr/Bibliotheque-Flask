@@ -3,6 +3,9 @@
 {% from "utils/navbar.html" import navbar %}
 
 {% extends "base.html" %}
+ 
+{% block title %}{{ _("Inscription | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Créez votre compte gratuit sur Livres en Classe pour gérer votre bibliothèque scolaire.") }}{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}

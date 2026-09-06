@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Ressources pour enseignants | Livres en Classe{% endblock %}
-{% block meta_description %}Ressources gratuites pour gérer une bibliothèque de classe : guides pratiques, liens utiles et outils pour les enseignants du primaire.{% endblock %}
+{% block title %}{{ _("Ressources pour enseignants | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Ressources gratuites pour gérer une bibliothèque de classe : guides pratiques, liens utiles et outils pour les enseignants du primaire.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}

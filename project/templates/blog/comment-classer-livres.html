@@ -4,11 +4,11 @@
 
 {% extends "base.html" %}
 
-{% block title %}Comment classer les livres de sa bibliothèque de classe ?{% endblock %}
-{% block meta_description %}Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD. {% endblock %}
+{% block title %}{{ _("Comment classer les livres de sa bibliothèque de classe ?") }}{% endblock %}
+{% block meta_description %}{{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}

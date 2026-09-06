@@ -258,7 +258,7 @@
                     <tr>
                         <td></td>
                         {% for month in months %}
-                            <td colspan="{{ month[1] }}">{{ month[0] }}</td>
+                            <td colspan="{{ month[1] }}">{{ format_date(month[0], format='MMM')|capitalize }}</td>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -281,7 +281,7 @@
                                 {% if loans[j * 7 + i] %}
                                     <td>
                                         <div class="level-{{ level(loans[j * 7 + i][1] + loans[j * 7 + i][2]) }} {% if i > 4 %}weekend{% endif %} tooltip">
-                                            <span class="tooltiptext">{{ _("Le") }} {{ loans[j * 7 + i][0].strftime('%d %b %Y') }}<br>{{ loans[j * 7 + i][1] }} {{ _("prêts,") }} {{ loans[j * 7 + i][2] }} {{ _("retours") }}</span>
+                                            <span class="tooltiptext">{{ _("Le") }} {{ format_date(loans[j * 7 + i][0], format='medium') }}<br>{{ loans[j * 7 + i][1] }} {{ _("prêts,") }} {{ loans[j * 7 + i][2] }} {{ _("retours") }}</span>
                                         </div>
                                     </td>
                                 {% else %}

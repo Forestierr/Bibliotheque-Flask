@@ -5,7 +5,7 @@
 {% extends "base.html" %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Scanner un livre") }}
+    {{ navbar(current_user, _("Scanner un livre")) }}
 {% endblock %}
 
 {% block content %}
@@ -72,12 +72,12 @@
         <!-- Message d'erreur caméra (caché par défaut) -->
         <div id="camera-error" class="notification is-danger is-light" style="display:none; border-radius: 12px;">
             <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-            <strong>Impossible d'accéder à la caméra.</strong>
-            Vérifiez que vous avez autorisé l'accès à la caméra dans votre navigateur, puis rechargez la page.
+            <strong>{{ _("Impossible d'accéder à la caméra.") }}</strong>
+            {{ _("Vérifiez que vous avez autorisé l'accès à la caméra dans votre navigateur, puis rechargez la page.") }}
             <br><br>
             <a href="/aide#scanner" class="button is-danger is-light is-small is-rounded mt-2">
                 <span class="icon"><i class="fas fa-question-circle"></i></span>
-                <span>Voir le guide de dépannage</span>
+                <span>{{ _("Voir le guide de dépannage") }}</span>
             </a>
         </div>
 
@@ -86,7 +86,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleHelp()">
                 <span style="color: hsl(210, 50%, 45%); font-weight: 600;">
                     <span class="icon"><i class="fas fa-info-circle"></i></span>
-                    Comment scanner un livre ?
+                    {{ _("Comment scanner un livre ?") }}
                 </span>
                 <span id="help-chevron" class="icon" style="color: hsl(210, 50%, 45%); transition: transform 0.2s;">
                     <i class="fas fa-chevron-down"></i>
@@ -94,20 +94,20 @@
             </div>
             <div id="help-content" style="display:none; margin-top: 0.75rem; border-top: 1px solid hsl(210, 50%, 88%); padding-top: 0.75rem;">
                 <ol style="list-style: decimal; margin-left: 1.25rem; line-height: 2;">
-                    <li><strong>Retournez le livre</strong> pour voir le verso (4ème de couverture)</li>
-                    <li>Le <strong>code-barres ISBN</strong> commence par <code>978</code> ou <code>979</code></li>
-                    <li>Pointez la caméra à <strong>environ 15–20 cm</strong> du code-barres</li>
-                    <li>Maintenez l'appareil <strong>stable</strong> quelques secondes — le scan est automatique</li>
-                    <li>Si la lumière est faible, utilisez le bouton <span class="icon is-small"><i class="fas fa-bolt"></i></span> <strong>torche</strong></li>
+                    <li><strong>{{ _("Retournez le livre") }}</strong> {{ _("pour voir le verso (4ème de couverture)") }}</li>
+                    <li>{{ _("Le") }} <strong>{{ _("code-barres ISBN") }}</strong> {{ _("commence par") }} <code>978</code> {{ _("ou") }} <code>979</code></li>
+                    <li>{{ _("Pointez la caméra à") }} <strong>{{ _("environ 15-20 cm") }}</strong> {{ _("du code-barres") }}</li>
+                    <li>{{ _("Maintenez l'appareil") }} <strong>{{ _("stable") }}</strong> {{ _("quelques secondes — le scan est automatique") }}</li>
+                    <li>{{ _("Si la lumière est faible, utilisez le bouton") }} <span class="icon is-small"><i class="fas fa-bolt"></i></span> <strong>{{ _("torche") }}</strong></li>
                 </ol>
                 <div class="mt-3" style="background: white; border-radius: 8px; padding: 0.75rem; font-size: 0.85rem; color: hsl(0, 0%, 45%);">
                     <span class="icon is-small has-text-warning"><i class="fas fa-lightbulb"></i></span>
-                    <strong>Astuce :</strong> Utilisez la mise au point du bouton <strong>1×</strong> si le scan ne fonctionne pas — l'ultra-large <strong>.5×</strong> peut mal détecter à courte distance.
+                    <strong>{{ _("Astuce :") }}</strong> {{ _("Utilisez la mise au point du bouton") }} <strong>1×</strong> {{ _("si le scan ne fonctionne pas — l'ultra-large") }} <strong>.5×</strong> {{ _("peut mal détecter à courte distance.") }}
                 </div>
                 <div class="mt-2 has-text-centered">
                     <a href="/aide#scanner" class="is-size-7" style="color: hsl(210, 50%, 45%);">
                         <span class="icon is-small"><i class="fas fa-external-link-alt"></i></span>
-                        Guide complet du scanner →
+                        {{ _("Guide complet du scanner") }} →
                     </a>
                 </div>
             </div>

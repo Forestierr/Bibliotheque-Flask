@@ -3,15 +3,18 @@
 {% from "utils/navbar.html" import navbar %}
 
 {% extends "base.html" %}
+ 
+{% block title %}{{ _("Contact | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Contactez l'équipe de Livres en Classe pour toute question, suggestion ou demande d'assistance.") }}{% endblock %}
 
 {% block navbar %}
-    {{ navbar(current_user, "Ma Bibliothèque") }}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
 
     <h1 class="title is-1">
-        Contact
+        {{ _("Contact") }}
     </h1>
 
     {% include 'utils/flash_message.html' %}
@@ -20,32 +23,32 @@
         <form action="{{ url_for('main.contact') }}" method="post">
     {% include 'utils/csrf.html' %}
             <div class="field">
-                <label class="label">Nom</label>
+                <label class="label">{{ _("Nom") }}</label>
                 <div class="control">
                     <input class="input" type="text" name="name" value="{{ user.name if user }}" required>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Prénom</label>
+                <label class="label">{{ _("Prénom") }}</label>
                 <div class="control">
                     <input class="input" type="text" name="firstname" required>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Email</label>
+                <label class="label">{{ _("Email") }}</label>
                 <div class="control">
                     <input class="input" type="email" name="email" value="{{ user.email if user }}" required>
                 </div>
             </div>
             <div class="field">
-                <label class="label">Message</label>
+                <label class="label">{{ _("Message") }}</label>
                 <div class="control">
                     <textarea class="textarea" name="message" required></textarea>
                 </div>
             </div>
             <div class="field">
                 <div class="control">
-                    <button class="button is-link">Envoyer</button>
+                    <button class="button is-link">{{ _("Envoyer") }}</button>
                 </div>
             </div>
         </form>

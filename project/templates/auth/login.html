@@ -3,6 +3,9 @@
 {% from "utils/navbar.html" import navbar %}
 
 {% extends "base.html" %}
+ 
+{% block title %}{{ _("Connexion | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Connectez-vous à votre espace enseignant Livres en Classe.") }}{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
