@@ -347,30 +347,78 @@
                     <form id="newsletterForm" action="{{ url_for('admin.emails') }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-                        <!-- 1. Cible -->
+                        <!-- 1. Cible & Langue -->
                         <div class="field mb-5">
-                            <label class="label is-size-6" style="color: var(--color-slate-900); font-weight: 700;">
-                                1. Destinataires ciblés
+                            <label class="label is-size-6 mb-3" style="color: var(--color-slate-900); font-weight: 700;">
+                                1. Destinataires et Langue cible
                             </label>
-                            <div class="control">
-                                <div class="select is-fullwidth">
-                                    <select name="target" id="targetSelect" onchange="updateRecipientCount()">
-                                        <option value="verified_subscribed" selected data-count="{{ stats.verified_subscribed }}">
-                                            Comptes vérifiés et abonnés à la lettre d'information ({{ stats.verified_subscribed }} destinataires) — Recommandé
-                                        </option>
-                                        <option value="all_subscribed" data-count="{{ stats.subscribed }}">
-                                            Tous les comptes abonnés, vérifiés ou en attente ({{ stats.subscribed }} destinataires)
-                                        </option>
-                                        <option value="system_all" data-count="{{ stats.total }}">
-                                            Communication technique ou légale prioritaire ({{ stats.total }} comptes inscrits)
-                                        </option>
-                                    </select>
+                            
+                            <div class="columns is-variable is-3 mb-2">
+                                <div class="column is-7">
+                                    <label class="label is-size-7 mb-1" style="color: var(--color-slate-700); font-weight: 600;">
+                                        Audience ciblée
+                                    </label>
+                                    <div class="select is-fullwidth">
+                                        <select name="target" id="targetSelect" onchange="updateRecipientCount()">
+                                            <option value="verified_subscribed" {% if not duplicate_campaign or duplicate_campaign.target == 'verified_subscribed' %}selected{% endif %}>
+                                                Comptes vérifiés et consentants — Recommandé
+                                            </option>
+                                            <option value="all_subscribed" {% if duplicate_campaign and duplicate_campaign.target == 'all_subscribed' %}selected{% endif %}>
+                                                Tous les comptes abonnés (vérifiés ou en attente)
+                                            </option>
+                                            <option value="system_all" {% if duplicate_campaign and duplicate_campaign.target == 'system_all' %}selected{% endif %}>
+                                                Communication technique ou légale (tous les inscrits)
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="column is-5">
+                                    <label class="label is-size-7 mb-1" style="color: var(--color-slate-700); font-weight: 600;">
+                                        Langue des destinataires
+                                    </label>
+                                    <div class="select is-fullwidth">
+                                        <select name="target_lang" id="targetLangSelect" onchange="updateRecipientCount()">
+                                            <option value="all" {% if (target_lang_prefill == 'all') and (not duplicate_campaign or duplicate_campaign.target_lang == 'all') %}selected{% endif %}>
+                                                🌐 Toutes les langues
+                                            </option>
+                                            <option value="fr" {% if (target_lang_prefill == 'fr') or (duplicate_campaign and duplicate_campaign.target_lang == 'fr') %}selected{% endif %}>
+                                                🇫🇷 Français (fr)
+                                            </option>
+                                            <option value="en" {% if (target_lang_prefill == 'en') or (duplicate_campaign and duplicate_campaign.target_lang == 'en') %}selected{% endif %}>
+                                                🇬🇧 English (en)
+                                            </option>
+                                            <option value="de" {% if (target_lang_prefill == 'de') or (duplicate_campaign and duplicate_campaign.target_lang == 'de') %}selected{% endif %}>
+                                                🇩🇪 Deutsch (de)
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <p class="help has-text-grey mt-2">
-                                <i class="fas fa-shield-alt mr-1"></i>
-                                Les demandes de désabonnement sont automatiquement appliquées à chaque envoi conformément aux directives de délivrabilité.
-                            </p>
+
+                            <!-- Live volume counter & quick copy toggle -->
+                            <div class="p-3 is-flex is-align-items-center is-justify-content-space-between" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 6px;">
+                                <div class="is-flex is-align-items-center">
+                                    <span class="icon has-text-info mr-2"><i class="fas fa-users"></i></span>
+                                    <span class="is-size-7" style="color: var(--color-slate-800);">
+                                        Volume estimé : <strong id="recipientCountDisplay" style="color: var(--color-slate-900);">Calcul...</strong>
+                                    </span>
+                                </div>
+                                <div class="is-flex is-align-items-center" style="gap: 6px;">
+                                    <span class="is-size-7 has-text-grey">Changer de langue :</span>
+                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('all')" title="Tous les abonnés">
+                                        🌐 Tous
+                                    </button>
+                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('fr')" title="Abonnés francophones">
+                                        🇫🇷 FR
+                                    </button>
+                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('en')" title="Abonnés anglophones">
+                                        🇬🇧 EN
+                                    </button>
+                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('de')" title="Abonnés germanophones">
+                                        🇩🇪 DE
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <hr style="background-color: var(--color-slate-100); margin: 1.5rem 0;">
@@ -380,12 +428,12 @@
                             <label class="label is-size-6 mb-3" style="color: var(--color-slate-900); font-weight: 700;">
                                 2. Gabarit de mise en page
                             </label>
-                            <input type="hidden" name="template_choice" id="templateChoiceInput" value="newsletter.html">
+                            <input type="hidden" name="template_choice" id="templateChoiceInput" value="{{ duplicate_campaign.template if duplicate_campaign else 'newsletter.html' }}">
 
                             <div class="columns is-multiline">
                                 <!-- Modèle 1 : Gazette Éditoriale -->
                                 <div class="column is-4">
-                                    <div class="template-selector-card is-selected" id="card-newsletter" onclick="selectTemplate('newsletter.html', 'card-newsletter')">
+                                    <div class="template-selector-card {% if not duplicate_campaign or duplicate_campaign.template == 'newsletter.html' %}is-selected{% endif %}" id="card-newsletter" onclick="selectTemplate('newsletter.html', 'card-newsletter')">
                                         <div class="template-preview-thumbnail">
                                             <div style="font-size: 8px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; text-align: center; border-bottom: 1px solid #0f172a; padding-bottom: 2px;">
                                                 LIVRES EN CLASSE
@@ -395,7 +443,7 @@
                                         </div>
                                         <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
                                             <h4 class="title is-7 mb-0" style="font-weight: 700; color: #0f172a;">Gazette Éditoriale</h4>
-                                            <span class="icon is-small check-icon"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
+                                            <span class="icon is-small check-icon {% if duplicate_campaign and duplicate_campaign.template != 'newsletter.html' %}is-hidden{% endif %}"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
                                         </div>
                                         <p class="is-size-7 has-text-grey" style="line-height: 1.3;">
                                             Typographie classique, aérée et sobre. Recommandé pour les bilans et articles.
@@ -405,7 +453,7 @@
 
                                 <!-- Modèle 2 : Note de Version -->
                                 <div class="column is-4">
-                                    <div class="template-selector-card" id="card-update" onclick="selectTemplate('newsletter_update.html', 'card-update')">
+                                    <div class="template-selector-card {% if duplicate_campaign and duplicate_campaign.template == 'newsletter_update.html' %}is-selected{% endif %}" id="card-update" onclick="selectTemplate('newsletter_update.html', 'card-update')">
                                         <div class="template-preview-thumbnail">
                                             <div class="is-flex is-justify-content-space-between is-align-items-center" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">
                                                 <span style="font-size: 8px; font-weight: 800; color: #0f172a;">LIVRES EN CLASSE</span>
@@ -416,7 +464,7 @@
                                         </div>
                                         <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
                                             <h4 class="title is-7 mb-0" style="font-weight: 700; color: #0f172a;">Note de Version</h4>
-                                            <span class="icon is-small check-icon is-hidden"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
+                                            <span class="icon is-small check-icon {% if not duplicate_campaign or duplicate_campaign.template != 'newsletter_update.html' %}is-hidden{% endif %}"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
                                         </div>
                                         <p class="is-size-7 has-text-grey" style="line-height: 1.3;">
                                             Style produit épuré avec bloc récapitulatif et bouton d'action neutre.
@@ -426,7 +474,7 @@
 
                                 <!-- Modèle 3 : Circulaire Officielle -->
                                 <div class="column is-4">
-                                    <div class="template-selector-card" id="card-promo" onclick="selectTemplate('newsletter_promo.html', 'card-promo')">
+                                    <div class="template-selector-card {% if duplicate_campaign and duplicate_campaign.template == 'newsletter_promo.html' %}is-selected{% endif %}" id="card-promo" onclick="selectTemplate('newsletter_promo.html', 'card-promo')">
                                         <div class="template-preview-thumbnail" style="border-top: 2px solid #0f172a;">
                                             <div class="is-flex is-justify-content-space-between is-align-items-center" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">
                                                 <span style="font-size: 7px; font-weight: 700; color: #0f172a;">DIFFUSION OFFICIELLE</span>
@@ -437,7 +485,7 @@
                                         </div>
                                         <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
                                             <h4 class="title is-7 mb-0" style="font-weight: 700; color: #0f172a;">Circulaire Officielle</h4>
-                                            <span class="icon is-small check-icon is-hidden"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
+                                            <span class="icon is-small check-icon {% if not duplicate_campaign or duplicate_campaign.template != 'newsletter_promo.html' %}is-hidden{% endif %}"><i class="fas fa-check-circle" style="color: #0f172a;"></i></span>
                                         </div>
                                         <p class="is-size-7 has-text-grey" style="line-height: 1.3;">
                                             Cadre formel et administratif pour informations prioritaires et consignes.
@@ -455,8 +503,11 @@
                                 3. Objet du message
                             </label>
                             <div class="control">
-                                <input class="input" type="text" name="subject" id="subjectInput" placeholder="Ex : Nouveautés de rentrée et organisation de la bibliothèque" required oninput="updateLivePreview()">
+                                <input class="input" type="text" name="subject" id="subjectInput" value="{% if duplicate_campaign %}{{ duplicate_campaign.subject }}{% endif %}" placeholder="Ex : Bonjour [pseudo], nouveautés et organisation de la bibliothèque" required oninput="updateLivePreview()">
                             </div>
+                            <p class="help has-text-grey mt-1">
+                                <i class="fas fa-magic mr-1 has-text-info"></i> Vous pouvez utiliser la variable <code>[pseudo]</code> dans l'objet : elle sera personnalisée pour chaque destinataire.
+                            </p>
                         </div>
 
                         <!-- 4. Contenu avec Rédacteur & Barre d'outils -->
@@ -488,6 +539,9 @@
                             <!-- Barre d'outils pro -->
                             <div id="formattingToolbar" class="p-2 mb-2" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 6px;">
                                 <div class="buttons are-small mb-0">
+                                    <button type="button" class="button is-small" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 700;" onclick="insertPseudoTag()" title="Insérer [pseudo] à l'emplacement du curseur (remplacé par le pseudo ou prénom de l'enseignant)">
+                                        <i class="fas fa-user-tag mr-1"></i> [pseudo]
+                                    </button>
                                     <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<strong>', '</strong>')" title="Gras">
                                         <i class="fas fa-bold"></i>
                                     </button>
@@ -521,10 +575,11 @@
                             <!-- Zone Textarea -->
                             <div id="editorContainer">
                                 <div class="control">
-                                    <textarea class="textarea" name="message" id="messageInput" rows="13" style="font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 13.5px; line-height: 1.55; color: var(--color-slate-800);" placeholder="<p>Bonjour,</p>&#10;<p>Nous vous informons de la mise à disposition de nouvelles options de gestion pour votre classe...</p>" required oninput="updateLivePreview()"></textarea>
+                                    <textarea class="textarea" name="message" id="messageInput" rows="13" style="font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 13.5px; line-height: 1.55; color: var(--color-slate-800);" placeholder="<p>Bonjour [pseudo],</p>&#10;<p>Nous vous informons de la mise à disposition de nouvelles options de gestion pour votre classe...</p>" required oninput="updateLivePreview()">{% if duplicate_campaign %}{{ duplicate_campaign.content }}{% endif %}</textarea>
                                 </div>
                                 <p class="help has-text-grey mt-2">
-                                    Le pied de page réglementaire avec le <strong>lien de désabonnement individuel</strong> sera joint automatiquement en bas du message.
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Insérez <code>[pseudo]</code> n'importe où dans votre texte pour personnaliser automatiquement chaque courriel. Le pied de page avec <strong>lien de désabonnement et préférences</strong> est joint automatiquement.
                                 </p>
                             </div>
 
@@ -584,6 +639,36 @@
                     <div class="metric-row">
                         <span class="has-text-grey">Conformité RFC 8058</span>
                         <span class="has-text-weight-bold" style="color: #0f172a;">Actif (1-Click)</span>
+                    </div>
+                </div>
+
+                <!-- Panneau 1 bis : Répartition Linguistique -->
+                <div class="dashboard-panel-box">
+                    <div class="dashboard-panel-title">
+                        <span>Répartition Linguistique</span>
+                        <span class="tag is-small is-light" style="background: #e2e8f0; color: #334155; font-weight: 700;">Audience</span>
+                    </div>
+
+                    <div class="metric-row">
+                        <span><span class="mr-1">🇫🇷</span> Français</span>
+                        <span class="has-text-weight-bold" style="color: #0f172a;">
+                            {{ stats.lang_distribution.fr.count }}
+                            <span class="is-size-7 has-text-grey font-weight-normal">({{ stats.lang_distribution.fr.pct }}%)</span>
+                        </span>
+                    </div>
+                    <div class="metric-row">
+                        <span><span class="mr-1">🇬🇧</span> English</span>
+                        <span class="has-text-weight-bold" style="color: #0f172a;">
+                            {{ stats.lang_distribution.en.count }}
+                            <span class="is-size-7 has-text-grey font-weight-normal">({{ stats.lang_distribution.en.pct }}%)</span>
+                        </span>
+                    </div>
+                    <div class="metric-row">
+                        <span><span class="mr-1">🇩🇪</span> Deutsch</span>
+                        <span class="has-text-weight-bold" style="color: #0f172a;">
+                            {{ stats.lang_distribution.de.count }}
+                            <span class="is-size-7 has-text-grey font-weight-normal">({{ stats.lang_distribution.de.pct }}%)</span>
+                        </span>
                     </div>
                 </div>
 
@@ -678,7 +763,7 @@
                                 <tr style="background: #f8fafc; color: #475569; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;">
                                     <th style="padding: 10px 14px;">Date d'envoi</th>
                                     <th style="padding: 10px 14px;">Objet & Gabarit</th>
-                                    <th style="padding: 10px 14px;">Cible</th>
+                                    <th style="padding: 10px 14px;">Cible & Langue</th>
                                     <th style="padding: 10px 14px; text-align: center;">Délivrés</th>
                                     <th style="padding: 10px 14px; text-align: center;">Ouvertures uniques</th>
                                     <th style="padding: 10px 14px; text-align: center;">Taux d'ouverture</th>
@@ -709,13 +794,26 @@
                                             </div>
                                         </td>
                                         <td style="padding: 12px 14px; white-space: nowrap;">
-                                            {% if c.target in ('verified_subscribed', 'verified') %}
-                                                <span class="tag is-small is-success is-light" style="font-size: 0.72rem;">Vérifiés abonnés</span>
-                                            {% elif c.target in ('all_subscribed', 'all') %}
-                                                <span class="tag is-small is-info is-light" style="font-size: 0.72rem;">Tous abonnés</span>
-                                            {% else %}
-                                                <span class="tag is-small is-warning is-light" style="font-size: 0.72rem;">Général</span>
-                                            {% endif %}
+                                            <div>
+                                                {% if c.target in ('verified_subscribed', 'verified') %}
+                                                    <span class="tag is-small is-success is-light" style="font-size: 0.72rem;">Vérifiés abonnés</span>
+                                                {% elif c.target in ('all_subscribed', 'all') %}
+                                                    <span class="tag is-small is-info is-light" style="font-size: 0.72rem;">Tous abonnés</span>
+                                                {% else %}
+                                                    <span class="tag is-small is-warning is-light" style="font-size: 0.72rem;">Général</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="mt-1">
+                                                {% if c.target_lang == 'fr' %}
+                                                    <span class="tag is-small is-light" style="font-size: 0.68rem; font-weight: 600; color: #1e3a8a; background: #dbeafe;">🇫🇷 Français</span>
+                                                {% elif c.target_lang == 'en' %}
+                                                    <span class="tag is-small is-light" style="font-size: 0.68rem; font-weight: 600; color: #831843; background: #fce7f3;">🇬🇧 English</span>
+                                                {% elif c.target_lang == 'de' %}
+                                                    <span class="tag is-small is-light" style="font-size: 0.68rem; font-weight: 600; color: #78350f; background: #fef3c7;">🇩🇪 Deutsch</span>
+                                                {% else %}
+                                                    <span class="tag is-small is-light" style="font-size: 0.68rem; font-weight: 600; color: #334155; background: #f1f5f9;">🌐 Toutes</span>
+                                                {% endif %}
+                                            </div>
                                         </td>
                                         <td style="padding: 12px 14px; text-align: center; font-weight: 600; color: #0f172a; white-space: nowrap;">
                                             {{ c.sent_count }} / {{ c.total_recipients }}
@@ -739,10 +837,36 @@
                                                 <span class="icon is-small"><i class="fas fa-envelope-open-text"></i></span>
                                                 <span>Aperçu</span>
                                             </button>
-                                            <button class="button is-small is-light" onclick="openCampaignModal({{ c.id }}, 'recipients')" title="Consulter le rapport détaillé et les destinataires" style="border: 1px solid #cbd5e1;">
+                                            <button class="button is-small is-light mr-1" onclick="openCampaignModal({{ c.id }}, 'recipients')" title="Consulter le rapport détaillé et les destinataires" style="border: 1px solid #cbd5e1;">
                                                 <span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
                                                 <span>Rapport</span>
                                             </button>
+                                            <div class="dropdown is-hoverable is-right mr-1" style="display: inline-block;">
+                                                <div class="dropdown-trigger">
+                                                    <button type="button" class="button is-small is-light" style="border: 1px solid #cbd5e1;" title="Dupliquer ou préparer une copie par langue">
+                                                        <span class="icon is-small"><i class="fas fa-copy"></i></span>
+                                                        <span>Dupliquer</span>
+                                                        <span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>
+                                                    </button>
+                                                </div>
+                                                <div class="dropdown-menu" role="menu" style="min-width: 175px;">
+                                                    <div class="dropdown-content has-text-left" style="padding: 4px 0;">
+                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, tab='compose') }}" class="dropdown-item is-size-7">
+                                                            <i class="fas fa-clone mr-2 has-text-grey"></i> Dupliquer à l'identique
+                                                        </a>
+                                                        <hr class="dropdown-divider" style="margin: 4px 0;">
+                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='fr', tab='compose') }}" class="dropdown-item is-size-7">
+                                                            <span class="mr-2">🇫🇷</span> Copie pour Français
+                                                        </a>
+                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='en', tab='compose') }}" class="dropdown-item is-size-7">
+                                                            <span class="mr-2">🇬🇧</span> Copie pour Anglais
+                                                        </a>
+                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='de', tab='compose') }}" class="dropdown-item is-size-7">
+                                                            <span class="mr-2">🇩🇪</span> Copie pour Allemand
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <form action="{{ url_for('admin.delete_campaign', campaign_id=c.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Supprimer définitivement cette campagne et ses statistiques ?');">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                                 <button type="submit" class="button is-small is-light is-danger" title="Supprimer l'archive">
@@ -798,6 +922,9 @@
                 
                 <div class="is-size-7 has-text-grey mb-1">Audience & Volume :</div>
                 <div class="has-text-weight-bold mb-3" id="modalRecipients" style="color: #0f172a;"></div>
+
+                <div class="is-size-7 has-text-grey mb-1">Langue des destinataires :</div>
+                <div class="has-text-weight-semibold mb-3" id="modalLang" style="color: var(--color-slate-700);"></div>
 
                 <div class="is-size-7 has-text-grey mb-1">Gabarit sélectionné :</div>
                 <div class="has-text-weight-semibold mb-3" id="modalTemplate" style="color: var(--color-slate-700);"></div>
@@ -923,6 +1050,10 @@
             </div>
         </section>
         <footer class="modal-card-foot is-justify-content-flex-end" style="border-top: 1px solid var(--color-slate-200); padding: 12px 20px;">
+            <a id="cdmDuplicateLink" href="#" class="button is-small mr-2" style="background: var(--color-slate-900); color: #ffffff; font-weight: 600;">
+                <span class="icon is-small"><i class="fas fa-copy"></i></span>
+                <span>Dupliquer ce message</span>
+            </a>
             <button class="button is-small is-light" onclick="closeCampaignModal()">Fermer</button>
         </footer>
     </div>
@@ -932,6 +1063,8 @@
 
 {% block scripts %}
 <script>
+    const COUNTS_MATRIX = {{ stats.counts_matrix | tojson | safe }};
+
     document.addEventListener('DOMContentLoaded', () => {
         // Notification dismissal
         (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
@@ -947,9 +1080,23 @@
             switchTab('history');
         }
 
-        // Initialize Live Preview
+        // Initialize recipient counter & live preview
+        updateRecipientCount();
         updateLivePreview();
     });
+
+    function setTargetLanguage(lang) {
+        const select = document.getElementById('targetLangSelect');
+        if (select) {
+            select.value = lang;
+            updateRecipientCount();
+            updateLivePreview();
+        }
+    }
+
+    function insertPseudoTag() {
+        insertTag('[pseudo]', '');
+    }
 
     function selectTemplate(templateFile, cardId) {
         document.getElementById('templateChoiceInput').value = templateFile;
@@ -1014,7 +1161,7 @@
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
         const selectedText = textarea.value.substring(start, end);
-        const replacement = startTag + (selectedText || 'Texte') + endTag;
+        const replacement = startTag + (selectedText || (startTag === '[pseudo]' ? '' : 'Texte')) + endTag;
         textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
         textarea.focus();
         textarea.setSelectionRange(start + startTag.length, start + replacement.length - endTag.length);
@@ -1085,10 +1232,17 @@
     }
 
     function updateLivePreview() {
-        const subject = document.getElementById('subjectInput').value || "Objet de la communication";
-        const message = document.getElementById('messageInput').value || "<p>Rédigez le contenu de votre message pour observer le rendu en direct ici...</p>";
+        let subject = document.getElementById('subjectInput').value || "Objet de la communication";
+        let message = document.getElementById('messageInput').value || "<p>Rédigez le contenu de votre message pour observer le rendu en direct ici...</p>";
         const templateChoice = document.getElementById('templateChoiceInput').value;
         const iframe = document.getElementById('livePreviewIframe');
+
+        // Dynamic pseudo simulation for live preview
+        const pseudoBadge = '<span style="background-color: #e0f2fe; color: #0284c7; padding: 1px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #bae6fd;">Alexandre</span>';
+        const regexPseudo = /\[pseudo\]|\{pseudo\}|\[nom\]|\{nom\}|\[name\]|\{name\}/gi;
+
+        subject = subject.replace(regexPseudo, "Alexandre");
+        message = message.replace(regexPseudo, pseudoBadge);
 
         let renderedHtml = "";
 
@@ -1211,8 +1365,28 @@
     }
 
     function updateRecipientCount() {
-        const select = document.getElementById('targetSelect');
-        const count = select.options[select.selectedIndex].getAttribute('data-count');
+        const targetSelect = document.getElementById('targetSelect');
+        const targetLangSelect = document.getElementById('targetLangSelect');
+        if (!targetSelect || !targetLangSelect) return 0;
+
+        const targetVal = targetSelect.value;
+        const langVal = targetLangSelect.value;
+
+        let count = 0;
+        if (COUNTS_MATRIX && COUNTS_MATRIX[targetVal] && COUNTS_MATRIX[targetVal][langVal] !== undefined) {
+            count = COUNTS_MATRIX[targetVal][langVal];
+        }
+
+        const displayEl = document.getElementById('recipientCountDisplay');
+        if (displayEl) {
+            let langName = "toutes langues confondues";
+            if (langVal === 'fr') langName = "abonnés francophones";
+            else if (langVal === 'en') langName = "abonnés anglophones";
+            else if (langVal === 'de') langName = "abonnés germanophones";
+
+            displayEl.textContent = `${count} destinataire(s) (${langName})`;
+        }
+        return count;
     }
 
     function openConfirmModal() {
@@ -1230,9 +1404,11 @@
             return;
         }
 
-        const select = document.getElementById('targetSelect');
-        const targetText = select.options[select.selectedIndex].text;
-        const targetCount = parseInt(select.options[select.selectedIndex].getAttribute('data-count')) || 0;
+        const targetSelect = document.getElementById('targetSelect');
+        const targetText = targetSelect.options[targetSelect.selectedIndex].text.trim();
+        const targetLangSelect = document.getElementById('targetLangSelect');
+        const langText = targetLangSelect.options[targetLangSelect.selectedIndex].text.trim();
+        const targetCount = updateRecipientCount();
 
         const templateVal = document.getElementById('templateChoiceInput').value;
         let templateLabel = "Gazette Éditoriale (Classique)";
@@ -1240,7 +1416,8 @@
         if (templateVal === 'newsletter_promo.html') templateLabel = "Circulaire Officielle (Administrative)";
 
         document.getElementById('modalSubject').textContent = subject;
-        document.getElementById('modalRecipients').textContent = `${targetCount} destinataire(s) [${targetText.split('(')[0].trim()}]`;
+        document.getElementById('modalRecipients').textContent = `${targetCount} destinataire(s) [${targetText}]`;
+        document.getElementById('modalLang').textContent = langText;
         document.getElementById('modalTemplate').textContent = templateLabel;
         document.getElementById('modalEstimatedTime').textContent = targetCount > 0 ? `~${targetCount} secondes (1 email/seconde)` : "Instantané (0 destinataire)";
 
@@ -1289,12 +1466,21 @@
             })
             .then(data => {
                 document.getElementById('cdmSubject').textContent = data.subject;
-                document.getElementById('cdmMeta').textContent = `${data.created_at} • Gabarit : ${data.template} • Cible : ${data.target}`;
+                let langLabel = "Toutes les langues";
+                if (data.target_lang === 'fr') langLabel = "Français 🇫🇷";
+                else if (data.target_lang === 'en') langLabel = "English 🇬🇧";
+                else if (data.target_lang === 'de') langLabel = "Deutsch 🇩🇪";
+                document.getElementById('cdmMeta').textContent = `${data.created_at} • Gabarit : ${data.template} • Cible : ${data.target} • Langue : ${langLabel}`;
                 document.getElementById('cdmTotal').textContent = data.total_recipients;
                 document.getElementById('cdmSent').textContent = data.sent_count;
                 document.getElementById('cdmOpened').textContent = data.open_count;
                 document.getElementById('cdmRate').textContent = `${data.open_rate}%`;
                 document.getElementById('cdmRecipientsCount').textContent = data.deliveries ? data.deliveries.length : 0;
+
+                const dupBtn = document.getElementById('cdmDuplicateLink');
+                if (dupBtn) {
+                    dupBtn.href = `/admin/emails?duplicate_id=${data.id}&tab=compose`;
+                }
 
                 const iframe = document.getElementById('cdmMessageIframe');
                 if (iframe && data.rendered_email) {

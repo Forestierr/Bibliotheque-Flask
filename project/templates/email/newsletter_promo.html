@@ -22,12 +22,12 @@
                                             Livres en Classe
                                         </p>
                                         <p style="margin: 2px 0 0 0; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Service de gestion &bull; Communication officielle
+                                            {{ _("Service de gestion") }} &bull; {{ _("Communication officielle") }}
                                         </p>
                                     </td>
                                     <td align="right" style="vertical-align: top;">
                                         <span style="display: inline-block; padding: 3px 8px; font-size: 11px; font-weight: 700; color: #0f172a; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 3px; letter-spacing: 0.5px; text-transform: uppercase;">
-                                            Circulaire
+                                            {{ _("Circulaire") }}
                                         </span>
                                     </td>
                                 </tr>
@@ -58,18 +58,18 @@
                                 <tr>
                                     <td style="padding: 14px 18px;">
                                         <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0f172a;">
-                                            Canal de retour utilisateur
+                                            {{ _("Canal de retour utilisateur") }}
                                         </p>
                                         <p style="margin: 0 0 8px 0; font-size: 13px; color: #334155; line-height: 1.5;">
-                                            Partagez vos suggestions d'évolution ou signalez tout dysfonctionnement directement à l'équipe.
+                                            {{ _("Partagez vos suggestions d'évolution ou signalez tout dysfonctionnement directement à l'équipe.") }}
                                         </p>
                                         <p style="margin: 0; font-size: 13px;">
                                             <a href="{{ feedback_idea_url }}" style="color: #0f172a; font-weight: 600; text-decoration: underline; margin-right: 14px;">
-                                                Proposer une idée
+                                                {{ _("Proposer une idée") }}
                                             </a>
                                             &bull;&nbsp;
                                             <a href="{{ feedback_bug_url }}" style="color: #475569; text-decoration: underline;">
-                                                Signaler un problème
+                                                {{ _("Signaler un problème") }}
                                             </a>
                                         </p>
                                     </td>
@@ -89,12 +89,12 @@
                     <tr>
                         <td style="padding: 24px 36px; background-color: #f8fafc; font-size: 12px; color: #64748b; line-height: 1.6;">
                             <p style="margin: 0 0 6px 0;">
-                                Communication administrative émise par l'équipe de <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>.
+                                {{ _("Communication administrative émise par l'équipe de") }} <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>.
                             </p>
                             <p style="margin: 0;">
-                                <a href="{{ reglage_url }}" style="color: #475569; text-decoration: underline;">Préférences</a>
+                                <a href="{{ reglage_url }}" style="color: #475569; text-decoration: underline;">{{ _("Préférences") }}</a>
                                 &nbsp;&bull;&nbsp;
-                                <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">Se désabonner</a>
+                                <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">{{ _("Se désabonner") }}</a>
                             </p>
                         </td>
                     </tr>

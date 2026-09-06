@@ -19,7 +19,7 @@
                                 <tr>
                                     <td align="center">
                                         <p style="margin: 0 0 6px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">
-                                            Plateforme de gestion de bibliothèque scolaire
+                                            {{ _("Plateforme de gestion de bibliothèque scolaire") }}
                                         </p>
                                         <h1 style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: 1.5px; text-transform: uppercase;">
                                             LIVRES EN CLASSE
@@ -50,7 +50,7 @@
                     <tr>
                         <td style="padding: 0 40px 32px 40px; font-size: 14px; color: #64748b;">
                             <p style="margin: 0; font-style: italic;">
-                                L'équipe Livres en Classe
+                                {{ _("L'équipe Livres en Classe") }}
                             </p>
                         </td>
                     </tr>
@@ -62,17 +62,17 @@
                                 <tr>
                                     <td style="padding: 16px 20px;">
                                         <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0f172a;">
-                                            Votre avis nous intéresse
+                                            {{ _("Votre avis nous intéresse") }}
                                         </p>
                                         <p style="margin: 0 0 10px 0; font-size: 13px; color: #475569; line-height: 1.5;">
-                                            Une suggestion pour votre classe ou un problème technique rencontré ?
+                                            {{ _("Une suggestion pour votre classe ou un problème technique rencontré ?") }}
                                         </p>
                                         <p style="margin: 0; font-size: 13px;">
                                             <a href="{{ feedback_idea_url }}" style="color: #0f172a; font-weight: 600; text-decoration: underline; margin-right: 16px;">
-                                                Proposer une idée &rarr;
+                                                {{ _("Proposer une idée") }} &rarr;
                                             </a>
                                             <a href="{{ feedback_bug_url }}" style="color: #64748b; font-weight: 500; text-decoration: underline;">
-                                                Signaler un problème
+                                                {{ _("Signaler un problème") }}
                                             </a>
                                         </p>
                                     </td>
@@ -92,13 +92,13 @@
                     <tr>
                         <td style="padding: 24px 40px; background-color: #f8fafc; font-size: 12px; color: #64748b; line-height: 1.6;">
                             <p style="margin: 0 0 8px 0;">
-                                Vous recevez cette lettre d'information en tant qu'utilisateur enregistré sur 
+                                {{ _("Vous recevez cette lettre d'information en tant qu'utilisateur enregistré sur") }} 
                                 <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>.
                             </p>
                             <p style="margin: 0;">
-                                <a href="{{ reglage_url }}" style="color: #475569; text-decoration: underline;">Gérer mes préférences</a>
+                                <a href="{{ reglage_url }}" style="color: #475569; text-decoration: underline;">{{ _("Gérer mes préférences") }}</a>
                                 &nbsp;&bull;&nbsp;
-                                <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">Se désabonner</a>
+                                <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">{{ _("Se désabonner") }}</a>
                             </p>
                         </td>
                     </tr>

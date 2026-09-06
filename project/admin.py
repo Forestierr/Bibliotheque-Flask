@@ -7,6 +7,7 @@ import time
 from datetime import datetime, timezone
 from threading import Thread
 
+import markupsafe
 from flask import (
     Blueprint,
     current_app,
@@ -17,6 +18,8 @@ from flask import (
     request,
     url_for,
 )
+from flask_babel import force_locale
+from flask_babel import gettext as _
 from flask_mail import Message
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
@@ -81,6 +84,33 @@ def delete_user(user_id):
     return redirect(url_for("admin.index"))
 
 
+PSEUDO_PATTERN = re.compile(
+    r"\[pseudo\]|\{pseudo\}|\[nom\]|\{nom\}|\[name\]|\{name\}", re.IGNORECASE
+)
+
+
+def get_user_pseudo(user_or_dict, fallback: str = "Enseignant") -> str:
+    if isinstance(user_or_dict, dict):
+        name = user_or_dict.get("name")
+        email = user_or_dict.get("email", "")
+    else:
+        name = getattr(user_or_dict, "name", None)
+        email = getattr(user_or_dict, "email", "")
+
+    if name and str(name).strip():
+        return str(name).strip()
+    if email and "@" in email:
+        return email.split("@")[0]
+    return fallback
+
+
+def replace_pseudo(text: str, pseudo: str, is_html: bool = False) -> str:
+    if not text:
+        return text
+    val = str(markupsafe.escape(pseudo) if is_html else pseudo)
+    return PSEUDO_PATTERN.sub(lambda _: val, text)
+
+
 def send_newsletter_async(
     app,
     campaign_id,
@@ -103,44 +133,59 @@ def send_newsletter_async(
             unsubscribe_url = r["unsubscribe_url"]
             tracking_pixel_url = r.get("tracking_pixel_url")
             delivery_id = r.get("delivery_id")
+            recipient_lang = r.get("lang") or "fr"
             delivery = (
                 db.session.get(NewsletterDelivery, delivery_id) if delivery_id else None
             )
 
+            pseudo = get_user_pseudo(r)
+            personalized_subject = replace_pseudo(subject, pseudo, is_html=False)
+            personalized_html_content = replace_pseudo(
+                message_content, pseudo, is_html=True
+            )
+
             try:
-                html_body = render_template(
-                    template_path,
-                    content=message_content,
-                    subject=subject,
-                    unsubscribe_url=unsubscribe_url,
-                    feedback_idea_url=feedback_idea_url,
-                    feedback_bug_url=feedback_bug_url,
-                    reglage_url=reglage_url,
-                    tracking_pixel_url=tracking_pixel_url,
-                    user_name=r.get("name") or "",
-                )
-                msg = Message(
-                    subject, sender=sender, recipients=[email], reply_to=sender
-                )
-                msg.html = html_body
+                with force_locale(recipient_lang):
+                    html_body = render_template(
+                        template_path,
+                        content=personalized_html_content,
+                        subject=personalized_subject,
+                        unsubscribe_url=unsubscribe_url,
+                        feedback_idea_url=feedback_idea_url,
+                        feedback_bug_url=feedback_bug_url,
+                        reglage_url=reglage_url,
+                        tracking_pixel_url=tracking_pixel_url,
+                        user_name=pseudo,
+                    )
+                    msg = Message(
+                        personalized_subject,
+                        sender=sender,
+                        recipients=[email],
+                        reply_to=sender,
+                    )
+                    msg.html = html_body
 
-                # Text body fallback
-                text_body = re.sub(r"<[^>]+>", " ", message_content)
-                text_body = re.sub(r"\s+", " ", text_body).strip()
-                msg.body = (
-                    f"{subject}\n\n{text_body}\n\n"
-                    f"Pour vous désabonner : {unsubscribe_url}\n"
-                    f"Donner votre avis : {feedback_idea_url}\n"
-                    f"Signaler un problème : {feedback_bug_url}"
-                )
+                    # Text body fallback
+                    text_body = re.sub(r"<[^>]+>", " ", personalized_html_content)
+                    text_body = re.sub(r"\s+", " ", text_body).strip()
+                    unsub_label = _("Pour vous désabonner :")
+                    feedback_label = _("Donner votre avis :")
+                    bug_label = _("Signaler un problème :")
 
-                # RFC 8058 standard headers for 1-click unsubscribe
-                msg.extra_headers = {
-                    "List-Unsubscribe": f"<{unsubscribe_url}>",
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                }
+                    msg.body = (
+                        f"{personalized_subject}\n\n{text_body}\n\n"
+                        f"{unsub_label} {unsubscribe_url}\n"
+                        f"{feedback_label} {feedback_idea_url}\n"
+                        f"{bug_label} {feedback_bug_url}"
+                    )
 
-                mail.send(msg)
+                    # RFC 8058 standard headers for 1-click unsubscribe
+                    msg.extra_headers = {
+                        "List-Unsubscribe": f"<{unsubscribe_url}>",
+                        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                    }
+
+                    mail.send(msg)
 
                 if delivery:
                     delivery.status = "sent"
@@ -180,6 +225,79 @@ def emails():
         round((verified_users / total_users * 100), 1) if total_users > 0 else 100.0
     )
 
+    # Counts by language for interactive selector matrix
+    subscribed_fr = User.query.filter_by(
+        newsletter_subscribed=True, preferred_language="fr"
+    ).count()
+    subscribed_en = User.query.filter_by(
+        newsletter_subscribed=True, preferred_language="en"
+    ).count()
+    subscribed_de = User.query.filter_by(
+        newsletter_subscribed=True, preferred_language="de"
+    ).count()
+
+    verified_sub_fr = User.query.filter_by(
+        is_verified=True, newsletter_subscribed=True, preferred_language="fr"
+    ).count()
+    verified_sub_en = User.query.filter_by(
+        is_verified=True, newsletter_subscribed=True, preferred_language="en"
+    ).count()
+    verified_sub_de = User.query.filter_by(
+        is_verified=True, newsletter_subscribed=True, preferred_language="de"
+    ).count()
+
+    all_fr = User.query.filter_by(preferred_language="fr").count()
+    all_en = User.query.filter_by(preferred_language="en").count()
+    all_de = User.query.filter_by(preferred_language="de").count()
+
+    counts_matrix = {
+        "verified_subscribed": {
+            "all": verified_subscribed_users,
+            "fr": verified_sub_fr,
+            "en": verified_sub_en,
+            "de": verified_sub_de,
+        },
+        "all_subscribed": {
+            "all": subscribed_users,
+            "fr": subscribed_fr,
+            "en": subscribed_en,
+            "de": subscribed_de,
+        },
+        "system_all": {
+            "all": total_users,
+            "fr": all_fr,
+            "en": all_en,
+            "de": all_de,
+        },
+    }
+
+    lang_distribution = {
+        "fr": {
+            "count": subscribed_fr,
+            "pct": (
+                round(subscribed_fr / subscribed_users * 100, 1)
+                if subscribed_users
+                else 0
+            ),
+        },
+        "en": {
+            "count": subscribed_en,
+            "pct": (
+                round(subscribed_en / subscribed_users * 100, 1)
+                if subscribed_users
+                else 0
+            ),
+        },
+        "de": {
+            "count": subscribed_de,
+            "pct": (
+                round(subscribed_de / subscribed_users * 100, 1)
+                if subscribed_users
+                else 0
+            ),
+        },
+    }
+
     stats = {
         "total": total_users,
         "verified": verified_users,
@@ -188,7 +306,19 @@ def emails():
         "verified_subscribed": verified_subscribed_users,
         "active_rate": active_rate,
         "quality_rate": quality_rate,
+        "counts_matrix": counts_matrix,
+        "lang_distribution": lang_distribution,
     }
+
+    # Handle campaign duplication via query params
+    duplicate_campaign = None
+    duplicate_id = request.args.get("duplicate_id")
+    target_lang_prefill = request.args.get("target_lang", "all")
+    if duplicate_id:
+        try:
+            duplicate_campaign = db.session.get(NewsletterCampaign, int(duplicate_id))
+        except (ValueError, TypeError):
+            pass
 
     recent_users = User.query.order_by(User.id.desc()).limit(8).all()
     campaigns = NewsletterCampaign.query.order_by(
@@ -199,6 +329,7 @@ def emails():
     if request.method == "POST":
         subject = request.form.get("subject")
         target = request.form.get("target", "verified_subscribed")
+        target_lang = request.form.get("target_lang", "all")
         message_content = request.form.get("message")
         template_choice = request.form.get("template_choice", "newsletter.html")
 
@@ -206,19 +337,21 @@ def emails():
             flash("Veuillez remplir le sujet et le message.", "error")
             return redirect(url_for("admin.emails"))
 
-        # Build recipient list based on target selection
+        # Build recipient query based on target selection
+        query = User.query
         if target in ("verified_subscribed", "verified"):
-            users = User.query.filter_by(
-                is_verified=True, newsletter_subscribed=True
-            ).all()
+            query = query.filter_by(is_verified=True, newsletter_subscribed=True)
         elif target in ("all_subscribed", "all"):
-            users = User.query.filter_by(newsletter_subscribed=True).all()
+            query = query.filter_by(newsletter_subscribed=True)
         elif target == "system_all":
-            users = User.query.all()
+            pass
         else:
-            users = User.query.filter_by(
-                is_verified=True, newsletter_subscribed=True
-            ).all()
+            query = query.filter_by(is_verified=True, newsletter_subscribed=True)
+
+        if target_lang in ("fr", "en", "de"):
+            query = query.filter_by(preferred_language=target_lang)
+
+        users = query.all()
 
         base_url = (os.getenv("BASE_URL") or os.getenv("APP_URL") or "").rstrip("/")
         if base_url:
@@ -240,17 +373,22 @@ def emails():
                 user_id=0,
                 _external=True,
             )
-            html_body = render_template(
-                template_path,
-                content=message_content,
-                subject=subject,
-                unsubscribe_url=preview_unsubscribe_url,
-                feedback_idea_url=feedback_idea_url,
-                feedback_bug_url=feedback_bug_url,
-                reglage_url=reglage_url,
-                tracking_pixel_url=None,
-                user_name="Enseignant Démo",
-            )
+            demo_pseudo = "Alexandre"
+            prev_sub = replace_pseudo(subject, demo_pseudo, is_html=False)
+            prev_msg = replace_pseudo(message_content, demo_pseudo, is_html=True)
+            prev_lang = target_lang if target_lang in ("fr", "en", "de") else "fr"
+            with force_locale(prev_lang):
+                html_body = render_template(
+                    template_path,
+                    content=prev_msg,
+                    subject=prev_sub,
+                    unsubscribe_url=preview_unsubscribe_url,
+                    feedback_idea_url=feedback_idea_url,
+                    feedback_bug_url=feedback_bug_url,
+                    reglage_url=reglage_url,
+                    tracking_pixel_url=None,
+                    user_name=demo_pseudo,
+                )
             return html_body
 
         valid_users = [u for u in users if u.email]
@@ -264,6 +402,7 @@ def emails():
             content=message_content,
             template=template_choice,
             target=target,
+            target_lang=target_lang,
             total_recipients=len(valid_users),
             sent_count=0,
             open_count=0,
@@ -307,6 +446,7 @@ def emails():
                     "delivery_id": delivery.id,
                     "email": u.email,
                     "name": u.name,
+                    "lang": getattr(u, "preferred_language", "fr") or "fr",
                     "unsubscribe_url": unsubscribe_url,
                     "tracking_pixel_url": tracking_pixel_url,
                 }
@@ -347,6 +487,8 @@ def emails():
         recent_users=recent_users,
         campaigns=campaigns,
         active_tab=active_tab,
+        duplicate_campaign=duplicate_campaign,
+        target_lang_prefill=target_lang_prefill,
     )
 
 
@@ -376,23 +518,34 @@ def campaign_details(campaign_id):
             user_id=0,
             _external=True,
         )
-    rendered_email = render_template(
-        f"email/{campaign.template}",
-        content=campaign.content,
-        subject=campaign.subject,
-        unsubscribe_url=unsubscribe_url,
-        feedback_idea_url=feedback_idea_url,
-        feedback_bug_url=feedback_bug_url,
-        reglage_url=reglage_url,
-        tracking_pixel_url=None,
-        user_name="Enseignant",
+
+    demo_lang = (
+        campaign.target_lang
+        if getattr(campaign, "target_lang", None) in ("fr", "en", "de")
+        else "fr"
     )
+    demo_pseudo = "Alexandre"
+    prev_sub = replace_pseudo(campaign.subject, demo_pseudo, is_html=False)
+    prev_msg = replace_pseudo(campaign.content, demo_pseudo, is_html=True)
+    with force_locale(demo_lang):
+        rendered_email = render_template(
+            f"email/{campaign.template}",
+            content=prev_msg,
+            subject=prev_sub,
+            unsubscribe_url=unsubscribe_url,
+            feedback_idea_url=feedback_idea_url,
+            feedback_bug_url=feedback_bug_url,
+            reglage_url=reglage_url,
+            tracking_pixel_url=None,
+            user_name=demo_pseudo,
+        )
     return jsonify(
         {
             "id": campaign.id,
             "subject": campaign.subject,
             "template": campaign.template,
             "target": campaign.target,
+            "target_lang": getattr(campaign, "target_lang", "all"),
             "total_recipients": campaign.total_recipients,
             "sent_count": campaign.sent_count,
             "open_count": campaign.open_count,

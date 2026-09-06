@@ -206,6 +206,9 @@ class NewsletterCampaign(db.Model):
     content = db.Column(db.Text, nullable=False)
     template = db.Column(db.String(100), nullable=False)
     target = db.Column(db.String(50), nullable=False)
+    target_lang = db.Column(
+        db.String(10), default="all", nullable=False, server_default="all"
+    )
     total_recipients = db.Column(db.Integer, default=0, nullable=False)
     sent_count = db.Column(db.Integer, default=0, nullable=False)
     open_count = db.Column(db.Integer, default=0, nullable=False)
