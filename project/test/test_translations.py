@@ -398,3 +398,53 @@ def test_dashboard_heatmap_localization():
             assert expected["tooltip"] in rendered, (
                 f"Expected tooltip '{expected['tooltip']}' in {lang}"
             )
+
+
+def test_ressources_page_translations():
+    """Verify that /ressources and resource editors are properly translated in fr, en, and de."""
+    from project import create_app
+
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-translations",
+            "WTF_CSRF_ENABLED": False,
+        }
+    )
+
+    client = app.test_client()
+
+    checks = {
+        "fr": [
+            "Outils et Ressources pour la Classe",
+            "Diplômes de Lecture",
+            "Toutes les ressources",
+            "Personnaliser et imprimer",
+            "Eduscol — Lire et écrire au cycle 2",
+        ],
+        "en": [
+            "Classroom Tools and Resources",
+            "Reading Diplomas",
+            "All resources",
+            "Customize and print",
+            "Eduscol — Reading and Writing in Primary Education",
+        ],
+        "de": [
+            "Werkzeuge und Ressourcen für das Klassenzimmer",
+            "Lese-Diplome",
+            "Alle Ressourcen",
+            "Anpassen und drucken",
+            "Eduscol — Lesen und Schreiben in der Grundschule",
+        ],
+    }
+
+    for lang, expected_strings in checks.items():
+        client.get(f"/set-lang/{lang}", follow_redirects=True)
+        response = client.get("/ressources")
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        for expected in expected_strings:
+            assert expected in html, (
+                f"Missing '{expected}' in /ressources for language {lang}"
+            )

@@ -195,4 +195,9 @@ def create_app(test_config=None):
 
     app.register_blueprint(admin_blueprint)
 
+    # blueprint for ressources
+    from .ressource import ressource as ressource_blueprint
+
+    app.register_blueprint(ressource_blueprint)
+
     return app

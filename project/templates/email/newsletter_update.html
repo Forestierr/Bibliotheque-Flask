@@ -24,7 +24,7 @@
                                     </td>
                                     <td align="right" style="vertical-align: middle;">
                                         <span style="display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #475569; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                            Note de version
+                                            {{ _("Note de version") }}
                                         </span>
                                     </td>
                                 </tr>
@@ -55,7 +55,7 @@
                                 <tr>
                                     <td style="border-radius: 6px; background-color: #0f172a;">
                                         <a href="https://livresenclasse.com" style="display: inline-block; padding: 12px 24px; font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 6px;">
-                                            Accéder à la plateforme &rarr;
+                                            {{ _("Accéder à la plateforme") }} &rarr;
                                         </a>
                                     </td>
                                 </tr>
@@ -70,17 +70,17 @@
                                 <tr>
                                     <td style="padding: 16px 20px;">
                                         <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0f172a;">
-                                            Retours d'expérience & Anomalies
+                                            {{ _("Retours d'expérience & Anomalies") }}
                                         </p>
                                         <p style="margin: 0 0 10px 0; font-size: 13px; color: #475569; line-height: 1.5;">
-                                            Aidez-nous à faire évoluer Livres en Classe selon les besoins de vos élèves.
+                                            {{ _("Aidez-nous à faire évoluer Livres en Classe selon les besoins de vos élèves.") }}
                                         </p>
                                         <p style="margin: 0; font-size: 13px;">
                                             <a href="{{ feedback_idea_url }}" style="color: #0f172a; font-weight: 600; text-decoration: underline; margin-right: 16px;">
-                                                Suggérer une amélioration &rarr;
+                                                {{ _("Suggérer une amélioration") }} &rarr;
                                             </a>
                                             <a href="{{ feedback_bug_url }}" style="color: #64748b; font-weight: 500; text-decoration: underline;">
-                                                Signaler un bug
+                                                {{ _("Signaler un bug") }}
                                             </a>
                                         </p>
                                     </td>
@@ -100,12 +100,12 @@
                     <tr>
                         <td style="padding: 24px 36px; background-color: #f8fafc; font-size: 12px; color: #64748b; line-height: 1.6;">
                             <p style="margin: 0 0 6px 0;">
-                                Notification produit transmise aux utilisateurs de <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>.
+                                {{ _("Notification produit transmise aux utilisateurs de") }} <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>.
                             </p>
                             <p style="margin: 0;">
-                                <a href="{{ reglage_url }}" style="color: #475569; text-decoration: underline;">Préférences de notification</a>
+                                <a href="{{ reglage_url }}" style="color: #475569; text-decoration: underline;">{{ _("Préférences de notification") }}</a>
                                 &nbsp;&bull;&nbsp;
-                                <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">Se désabonner</a>
+                                <a href="{{ unsubscribe_url }}" style="color: #475569; text-decoration: underline;">{{ _("Se désabonner") }}</a>
                             </p>
                         </td>
                     </tr>

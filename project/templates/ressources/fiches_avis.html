@@ -1,0 +1,95 @@
+<!-- templates/ressources/fiches_avis.html -->
+
+{% extends "ressources/base_editor.html" %}
+
+{% block studio_title %}{{ _("Fiches Coup de Cœur & Fanions") }}{% endblock %}
+{% block sheet_orientation %}portrait{% endblock %}
+
+{% block editor_sidebar %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-palette"></i>
+        <span>{{ _("Style & Thème") }}</span>
+    </div>
+    <div class="theme-swatches">
+        <div class="theme-swatch coral is-active" data-theme="coral" title="{{ _('Corail Coup de Cœur') }}"></div>
+        <div class="theme-swatch gold" data-theme="gold" title="{{ _('Or Prestige') }}"></div>
+        <div class="theme-swatch blue" data-theme="blue" title="{{ _('Bleu Écolier') }}"></div>
+        <div class="theme-swatch green" data-theme="green" title="{{ _('Vert Forêt') }}"></div>
+        <div class="theme-swatch purple" data-theme="purple" title="{{ _('Violet Passion') }}"></div>
+        <div class="theme-swatch monochrome" data-theme="monochrome" title="{{ _('Noir & Blanc (Éco)') }}"></div>
+    </div>
+</div>
+
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-pen"></i>
+        <span>{{ _("En-tête des fiches") }}</span>
+    </div>
+    <div class="field">
+        <label class="label is-small">{{ _("Titre du fanion") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" id="inputFicheTitle" value="{{ _('COUP DE CŒUR DE LECTEUR') }}" oninput="updateFicheTitles(this.value)">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sheet_content %}
+<div class="fiches-avis-grid">
+    {% for i in range(4) %}
+    <div class="fiche-avis-card">
+        <div style="text-align: center; border-bottom: 2px solid var(--res-primary, #e11d48); padding-bottom: 0.4rem; margin-bottom: 0.5rem;">
+            <h2 class="fiche-title-text editable" style="font-size: 0.88rem; font-weight: 800; color: var(--res-primary-dark, #9f1239); text-transform: uppercase; letter-spacing: 0.5px;">
+                {{ _("COUP DE CŒUR DE LECTEUR") }}
+            </h2>
+            <p class="editable" style="font-size: 0.68rem; color: #64748b;">{{ _("Conseil et partage entre camarades") }}</p>
+        </div>
+
+        <div style="font-size: 0.75rem; color: #1e293b; display: flex; flex-direction: column; gap: 0.35rem;">
+            <div>
+                <span style="font-weight: 700; font-size: 0.7rem; color: #475569;">{{ _("Conseillé par :") }}</span>
+                <span style="border-bottom: 1px dotted #94a3b8; display: inline-block; width: 140px;">&nbsp;</span>
+            </div>
+            <div>
+                <span style="font-weight: 700; font-size: 0.7rem; color: #475569;">{{ _("Titre du livre :") }}</span>
+                <span style="border-bottom: 1px dotted #94a3b8; display: inline-block; width: 135px;">&nbsp;</span>
+            </div>
+            <div>
+                <span style="font-weight: 700; font-size: 0.7rem; color: #475569;">{{ _("Auteur :") }}</span>
+                <span style="border-bottom: 1px dotted #94a3b8; display: inline-block; width: 170px;">&nbsp;</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 0.3rem 0;">
+            <span style="font-size: 0.68rem; font-weight: 600; color: #64748b;">{{ _("Note :") }}</span>
+            <span style="font-size: 0.9rem; color: #cbd5e1; letter-spacing: 2px;">★ ★ ★ ★ ★</span>
+        </div>
+
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-around; margin: 0.4rem 0;">
+            <p class="editable" style="font-size: 0.75rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
+                {{ _("Ce qui m'a plu dans cette histoire :") }}
+            </p>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
+        </div>
+
+        <div class="editable" style="margin-top: auto; padding-top: 0.35rem; border-top: 1px solid #f1f5f9; font-size: 0.65rem; color: #64748b; text-align: center;">
+            {{ _("À insérer dans le livre pour laisser dépasser l'onglet en rayon.") }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function updateFicheTitles(val) {
+    document.querySelectorAll('.fiche-title-text').forEach(el => {
+        el.textContent = val;
+    });
+}
+</script>
+{% endblock %}

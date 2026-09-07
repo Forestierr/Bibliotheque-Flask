@@ -16,6 +16,17 @@
 
     <h4 class="subtitle is-4">{{ _("Nombre de livres lus :") }} <strong>{{ books|count + old_books|count }}</strong></h4>
 
+    <div class="buttons mb-5">
+        <a href="{{ url_for('ressource.diplome', student_id=student.id) }}" class="button is-warning is-light has-text-weight-bold">
+            <span class="icon"><i class="fas fa-award"></i></span>
+            <span>{{ _("Imprimer un diplôme de lecture") }}</span>
+        </a>
+        <a href="{{ url_for('ressource.codes_barres') }}" class="button is-light">
+            <span class="icon"><i class="fas fa-id-card"></i></span>
+            <span>{{ _("Carte de lecteur") }}</span>
+        </a>
+    </div>
+
     {% if books %}
     {% for book in books %}
         <div class="container block">

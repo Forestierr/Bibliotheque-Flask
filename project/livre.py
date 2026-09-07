@@ -26,6 +26,7 @@ from .query import (
     get_book_loan_by_student,
     get_book_tags,
     get_books,
+    get_books_by_barcode,
     get_books_by_isbn,
     get_books_count,
     get_books_sorted,
@@ -174,6 +175,11 @@ def livre_ajout():
         year = request.form.get("year") if request.form.get("year") else None
         type = request.form.get("type") if request.form.get("type") else None
         isbn = request.form.get("isbn") if request.form.get("isbn") else None
+        barcode = (
+            request.form.get("barcode").strip()
+            if request.form.get("barcode") and request.form.get("barcode").strip()
+            else None
+        )
         tags = request.form.get("tags") if request.form.get("tags") else None
 
         if not title:
@@ -203,6 +209,7 @@ def livre_ajout():
             year=year,
             type=type,
             isbn=isbn,
+            barcode=barcode,
             user_id=current_user.id,
         )
         db.session.add(new_book)
@@ -227,8 +234,9 @@ def livre_ajout():
 
         return redirect(url_for("livre.livre_db"))
 
-    # get ISBN from the URL
+    # get ISBN and/or barcode from the URL
     isbn = request.args.get("isbn")
+    barcode = request.args.get("barcode")
 
     book = None
 
@@ -239,6 +247,11 @@ def livre_ajout():
         # The user can complete the book information
         if not book:
             book = {"isbn": isbn}
+    elif barcode:
+        book = {"barcode": barcode}
+
+    if book is not None and barcode:
+        book["barcode"] = barcode
 
     # Get all tags (only the name) from the current user
     tags = Tags.query.filter_by(user_id=current_user.id).all()
@@ -300,6 +313,11 @@ def livre_edit(id):
         year = request.form.get("year")
         type = request.form.get("type")
         isbn = request.form.get("isbn")
+        barcode = (
+            request.form.get("barcode").strip()
+            if request.form.get("barcode") and request.form.get("barcode").strip()
+            else None
+        )
         student = request.form.get("student")
         tags = request.form.get("tags")
 
@@ -314,6 +332,7 @@ def livre_edit(id):
         book.year = year
         book.type = type
         book.isbn = isbn
+        book.barcode = barcode
 
         # take the student in the database
         if student:
@@ -464,7 +483,11 @@ def livre_delete(id):
 @livre.route("/livre/<isbn>/exist")
 @login_required
 def livre_exist(isbn):
-    books = get_books_by_isbn(current_user.id, isbn)
+    # 1. Search by custom barcode first
+    books = get_books_by_barcode(current_user.id, isbn)
+    if not books:
+        # 2. Search by ISBN
+        books = get_books_by_isbn(current_user.id, isbn)
 
     if books:
         if len(books) == 1:
@@ -473,7 +496,11 @@ def livre_exist(isbn):
             data = {"ids": [b.id for b in books], "multiple": True}
         return make_response(jsonify(data), 200)
 
-    return make_response(jsonify({"error": "Book not found"}), 404)
+    clean_code = str(isbn).strip().replace("-", "")
+    is_isbn = len(clean_code) == 13 and clean_code.startswith(("978", "979"))
+    return make_response(
+        jsonify({"error": "Book not found", "is_isbn": is_isbn, "code": isbn}), 404
+    )
 
 
 @livre.route("/livre/delete_all", methods=["POST"])

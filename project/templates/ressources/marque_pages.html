@@ -1,0 +1,263 @@
+<!-- templates/ressources/marque_pages.html -->
+
+{% extends "ressources/base_editor.html" %}
+
+{% block studio_title %}{{ _("Marque-pages Emprunt & Avis") }}{% endblock %}
+{% block sheet_orientation %}portrait{% endblock %}
+
+{% block editor_sidebar %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-palette"></i>
+        <span>{{ _("Style & Thème") }}</span>
+    </div>
+    <div class="theme-swatches">
+        <div class="theme-swatch blue is-active" data-theme="blue" title="{{ _('Bleu Écolier') }}"></div>
+        <div class="theme-swatch green" data-theme="green" title="{{ _('Vert Nature') }}"></div>
+        <div class="theme-swatch gold" data-theme="gold" title="{{ _('Jaune Soleil') }}"></div>
+        <div class="theme-swatch purple" data-theme="purple" title="{{ _('Violet Poétique') }}"></div>
+        <div class="theme-swatch coral" data-theme="coral" title="{{ _('Corail Vif') }}"></div>
+        <div class="theme-swatch monochrome" data-theme="monochrome" title="{{ _('Noir & Blanc (Éco)') }}"></div>
+    </div>
+</div>
+
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-sliders-h"></i>
+        <span>{{ _("Mode d'impression") }}</span>
+    </div>
+    <div class="field">
+        <div class="control">
+            <label class="radio">
+                <input type="radio" name="layoutMode" value="foldable" checked onchange="switchLayoutMode('foldable')">
+                <span class="is-size-7 has-text-weight-semibold">{{ _("Pliable (Recto & Verso côte à côte)") }}</span>
+            </label>
+            <p class="help mt-1">{{ _("Imprime sur 1 seule face : pliez en deux et collez.") }}</p>
+        </div>
+        <div class="control mt-2">
+            <label class="radio">
+                <input type="radio" name="layoutMode" value="full-recto" onchange="switchLayoutMode('full-recto')">
+                <span class="is-size-7 has-text-weight-semibold">{{ _("Planche 4 Rectos (Suivi des prêts)") }}</span>
+            </label>
+        </div>
+        <div class="control mt-2">
+            <label class="radio">
+                <input type="radio" name="layoutMode" value="full-verso" onchange="switchLayoutMode('full-verso')">
+                <span class="is-size-7 has-text-weight-semibold">{{ _("Planche 4 Versos (Avis & Étoiles)") }}</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-pen"></i>
+        <span>{{ _("Personnalisation") }}</span>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Appartient à la classe de") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" id="inputClassOwner" value="{{ _('la classe de CM1-B') }}" oninput="updateClassOwner(this.value)">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Amorce de l'avis critique") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" id="inputPromptReview" value="{{ _('J\'ai aimé ce livre parce que :') }}" oninput="updateReviewPrompt(this.value)">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Message d'encouragement") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" id="inputEncouragement" value="{{ _('Prends soin de moi et rapporte-moi à l\'école !') }}" oninput="updateEncouragement(this.value)">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block sheet_content %}
+<div class="marque-pages-grid" id="marquePagesGrid">
+    <!-- Marque-page 1 : Recto -->
+    <div class="marque-page-card mp-col-1">
+        <div class="mp-header">
+            <div class="mp-title editable">{{ _("FICHE D'EMPRUNT") }}</div>
+            <div class="mp-school mp-owner-text editable">{{ _("Bibliothèque de") }} <strong>{{ _("la classe de CM1-B") }}</strong></div>
+        </div>
+
+        <div style="margin: 0.4rem 0;">
+            <p style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">{{ _("Nom de l'emprunteur :") }}</p>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 18px;"></div>
+        </div>
+
+        <div style="flex: 1; margin: 0.4rem 0;">
+            <p style="font-size: 0.68rem; font-weight: 700; color: #475569; margin-bottom: 3px;">{{ _("Dates de circulation :") }}</p>
+            <table class="mp-dates-table">
+                <thead>
+                    <tr>
+                        <th>{{ _("Date prêt") }}</th>
+                        <th>{{ _("Date retour") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mp-notes-box has-text-centered mp-footer-msg editable" style="font-size: 0.65rem;">
+            {{ _("Prends soin de moi et rapporte-moi à l'école !") }}
+        </div>
+    </div>
+
+    <!-- Marque-page 2 : Verso (ou 2e Recto selon mode) -->
+    <div class="marque-page-card mp-col-2">
+        <div class="mp-header">
+            <div class="mp-title editable">{{ _("AVIS DE LECTURE") }}</div>
+            <div class="mp-school editable">{{ _("Partage ton impression") }}</div>
+        </div>
+
+        <div class="mp-rating">
+            <p style="font-size: 0.7rem; font-weight: 600; color: #475569; margin-bottom: 2px;">{{ _("Note du livre :") }}</p>
+            <div class="mp-stars">★ ★ ★ ★ ★</div>
+        </div>
+
+        <div style="margin: 0.5rem 0; flex: 1; display: flex; flex-direction: column;">
+            <p class="mp-review-prompt editable" style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
+                {{ _("J'ai aimé ce livre parce que :") }}
+            </p>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+        </div>
+
+        <div style="margin-top: auto; font-size: 0.7rem; color: #475569;">
+            <span style="font-weight: 700;">{{ _("Recommandé à :") }}</span>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+        </div>
+    </div>
+
+    <!-- Marque-page 3 : Recto (Copie 2) -->
+    <div class="marque-page-card mp-col-3">
+        <div class="mp-header">
+            <div class="mp-title editable">{{ _("FICHE D'EMPRUNT") }}</div>
+            <div class="mp-school mp-owner-text editable">{{ _("Bibliothèque de") }} <strong>{{ _("la classe de CM1-B") }}</strong></div>
+        </div>
+
+        <div style="margin: 0.4rem 0;">
+            <p style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">{{ _("Nom de l'emprunteur :") }}</p>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 18px;"></div>
+        </div>
+
+        <div style="flex: 1; margin: 0.4rem 0;">
+            <p style="font-size: 0.68rem; font-weight: 700; color: #475569; margin-bottom: 3px;">{{ _("Dates de circulation :") }}</p>
+            <table class="mp-dates-table">
+                <thead>
+                    <tr>
+                        <th>{{ _("Date prêt") }}</th>
+                        <th>{{ _("Date retour") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mp-notes-box has-text-centered mp-footer-msg editable" style="font-size: 0.65rem;">
+            {{ _("Prends soin de moi et rapporte-moi à l'école !") }}
+        </div>
+    </div>
+
+    <!-- Marque-page 4 : Verso (Copie 2) -->
+    <div class="marque-page-card mp-col-4">
+        <div class="mp-header">
+            <div class="mp-title editable">{{ _("AVIS DE LECTURE") }}</div>
+            <div class="mp-school editable">{{ _("Partage ton impression") }}</div>
+        </div>
+
+        <div class="mp-rating">
+            <p style="font-size: 0.7rem; font-weight: 600; color: #475569; margin-bottom: 2px;">{{ _("Note du livre :") }}</p>
+            <div class="mp-stars">★ ★ ★ ★ ★</div>
+        </div>
+
+        <div style="margin: 0.5rem 0; flex: 1; display: flex; flex-direction: column;">
+            <p class="mp-review-prompt editable" style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
+                {{ _("J'ai aimé ce livre parce que :") }}
+            </p>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
+        </div>
+
+        <div style="margin-top: auto; font-size: 0.7rem; color: #475569;">
+            <span style="font-weight: 700;">{{ _("Recommandé à :") }}</span>
+            <div style="border-bottom: 1px dotted #94a3b8; height: 16px;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function updateClassOwner(val) {
+    document.querySelectorAll('.mp-owner-text').forEach(el => {
+        el.innerHTML = `{{ _("Bibliothèque de") }} <strong>${val}</strong>`;
+    });
+}
+
+function updateReviewPrompt(val) {
+    document.querySelectorAll('.mp-review-prompt').forEach(el => {
+        el.textContent = val;
+    });
+}
+
+function updateEncouragement(val) {
+    document.querySelectorAll('.mp-footer-msg').forEach(el => {
+        el.textContent = val;
+    });
+}
+
+function switchLayoutMode(mode) {
+    const col2 = document.querySelector('.mp-col-2');
+    const col3 = document.querySelector('.mp-col-3');
+    const col4 = document.querySelector('.mp-col-4');
+
+    if (mode === 'full-recto') {
+        // Rendre toutes les colonnes en Recto
+        document.querySelectorAll('.marque-page-card').forEach((card, idx) => {
+            card.innerHTML = document.querySelector('.mp-col-1').innerHTML;
+        });
+    } else if (mode === 'full-verso') {
+        // Rendre toutes les colonnes en Verso
+        const versoContent = document.querySelector('.mp-col-2').innerHTML;
+        document.querySelectorAll('.marque-page-card').forEach((card) => {
+            card.innerHTML = versoContent;
+        });
+    } else {
+        // Mode foldable : reload pour disposition alternée
+        window.location.reload();
+    }
+}
+</script>
+{% endblock %}

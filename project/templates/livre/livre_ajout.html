@@ -59,10 +59,31 @@
             </div>
 
             <div class="field">
-                <label class="label" for="isbn">{{ _("ISBN") }}</label>
-                <div class="control">
-                    <input class="input" type="number" name="isbn" id="isbn" {% if book.isbn %}value="{{ book.isbn }}"{% endif %}>
+                <label class="label" for="isbn">
+                    <span>{{ _("ISBN officiel") }}</span>
+                    <span class="has-text-grey is-size-7 has-text-weight-normal">({{ _("Code éditeur / Google Books") }})</span>
+                </label>
+                <div class="control has-icons-left">
+                    <input class="input" type="text" name="isbn" id="isbn" placeholder="{{ _('ex: 9782070612758') }}" {% if book and book.isbn %}value="{{ book.isbn }}"{% endif %}>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-book"></i>
+                    </span>
                 </div>
+                <p class="help">{{ _("Identifiant commercial du livre, utilisé pour récupérer automatiquement la couverture et les métadonnées.") }}</p>
+            </div>
+
+            <div class="field">
+                <label class="label" for="barcode">
+                    <span>{{ _("Référence classe") }}</span>
+                    <span class="has-text-grey is-size-7 has-text-weight-normal">({{ _("Code-barres exemplaire / Rangement bac") }})</span>
+                </label>
+                <div class="control has-icons-left">
+                    <input class="input" type="text" name="barcode" id="barcode" placeholder="{{ _('ex: BAC-A-001 ou LIV-042') }}" {% if book and book.barcode %}value="{{ book.barcode }}"{% endif %}>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-barcode"></i>
+                    </span>
+                </div>
+                <p class="help">{{ _("Votre étiquette interne collée sur le livre pour distinguer chaque exemplaire physique et faciliter le rangement.") }}</p>
             </div>
 
             <div class="field">

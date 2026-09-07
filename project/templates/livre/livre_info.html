@@ -35,7 +35,8 @@
                     {% if book.author %}<p>{{ _("Auteur :") }} </p>{% endif %}
                     {% if book.editor %}<p>{{ _("Editeur :") }} </p>{% endif %}
                     {% if book.year %}<p>{{ _("Année :") }} </p>{% endif %}
-                    {% if book.isbn %}<p>{{ _("ISBN :") }} </p>{% endif %}
+                    {% if book.isbn %}<p>{{ _("ISBN officiel :") }} </p>{% endif %}
+                    {% if book.barcode %}<p>{{ _("Référence classe :") }} </p>{% endif %}
                 </div>
                 <div class="column">
                     <p><strong>{{ book.title }}</strong></p>
@@ -43,6 +44,7 @@
                     {% if book.editor %}<p><strong>{{ book.editor }}</strong></p>{% endif %}
                     {% if book.year %}<p><strong>{{ book.year }}</strong></p>{% endif %}
                     {% if book.isbn %}<p><strong>{{ book.isbn }}</strong></p>{% endif %}
+                    {% if book.barcode %}<p><span class="tag is-info is-light has-text-weight-bold"><i class="fas fa-barcode mr-1"></i>{{ book.barcode }}</span></p>{% endif %}
                 </div>
             </div>
         </div>
