@@ -3,7 +3,9 @@
 from flask import Blueprint, render_template, request
 from flask_babel import gettext as _
 from flask_login import current_user
+from sqlalchemy import func
 
+from . import db
 from .models import Book, Loan, Student, Tags
 
 ressource = Blueprint("ressource", __name__)
@@ -24,22 +26,42 @@ def diplome():
     students_list = []
 
     if current_user.is_authenticated:
-        students_list = (
+        raw_students = (
             Student.query.filter_by(user_id=current_user.id)
             .order_by(Student.name, Student.firstname)
             .all()
         )
+
+        # Calculer le nombre de livres lus (retournés) par élève
+        loan_counts_query = (
+            db.session.query(Loan.student_id, func.count(Loan.id))
+            .filter(Loan.date_return.isnot(None))
+            .join(Student, Loan.student_id == Student.id)
+            .filter(Student.user_id == current_user.id)
+            .group_by(Loan.student_id)
+            .all()
+        )
+        loan_counts = dict(loan_counts_query)
+
+        # Nombre total d'emprunts en secours si aucun retour marqué
+        total_loans_query = (
+            db.session.query(Loan.student_id, func.count(Loan.id))
+            .join(Student, Loan.student_id == Student.id)
+            .filter(Student.user_id == current_user.id)
+            .group_by(Loan.student_id)
+            .all()
+        )
+        total_loans = dict(total_loans_query)
+
+        for s in raw_students:
+            cnt = loan_counts.get(s.id, total_loans.get(s.id, 0))
+            s.read_count = cnt
+            students_list.append(s)
+
         if student_id:
-            student = Student.query.filter_by(
-                id=student_id, user_id=current_user.id
-            ).first()
+            student = next((s for s in students_list if s.id == student_id), None)
             if student:
-                # Nombre de livres dont la date de retour est renseignée
-                read_count = (
-                    Loan.query.filter_by(student_id=student.id)
-                    .filter(Loan.date_return.isnot(None))
-                    .count()
-                )
+                read_count = student.read_count
 
     return render_template(
         "ressources/diplome.html",

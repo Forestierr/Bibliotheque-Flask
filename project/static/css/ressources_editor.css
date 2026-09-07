@@ -21,6 +21,10 @@
     flex-direction: column;
     min-height: calc(100vh - 70px);
     background: #f1f5f9;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .studio-toolbar {
@@ -35,6 +39,9 @@
     top: 52px;
     z-index: 40;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
 }
 
 .studio-toolbar-title {
@@ -123,6 +130,165 @@
     background-size: 20px 20px;
 }
 
+/* Utilitaires d'affichage réactif pour le studio */
+.studio-mobile-only {
+    display: none !important;
+}
+
+.studio-desktop-only {
+    display: block !important;
+}
+
+/* =========================================================
+   Responsive Mobile & Tablette (< 1024px)
+   Aperçu A4 positionné automatiquement SOUS le formulaire
+   ========================================================= */
+
+@media screen and (max-width: 1023px) {
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+    }
+
+    .studio-mobile-only {
+        display: flex !important;
+    }
+
+    .studio-desktop-only {
+        display: none !important;
+    }
+
+    .studio-wrapper {
+        min-height: auto;
+        height: auto;
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .studio-toolbar {
+        position: sticky;
+        top: 52px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        z-index: 40;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+    }
+
+    .studio-toolbar-title {
+        font-size: 0.88rem;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        word-break: break-word;
+        max-width: 100%;
+    }
+
+    .studio-toolbar-title a {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.82rem;
+    }
+
+    .studio-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100%;
+        gap: 0.4rem;
+        box-sizing: border-box;
+    }
+
+    .studio-actions > .button {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 0.78rem;
+        padding: 0.45rem 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        justify-content: center;
+    }
+
+    .studio-zoom-controls {
+        flex: 0 0 auto;
+    }
+
+    /* Disposition empilée : Formulaire au-dessus, Prévisualisation A4 en-dessous */
+    .studio-body {
+        flex-direction: column !important;
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
+        height: auto !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+    }
+
+    .studio-sidebar {
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+        border-right: none !important;
+        border-bottom: 2px solid var(--res-border) !important;
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
+        box-shadow: none !important;
+        padding: 1rem 0.75rem !important;
+        height: auto !important;
+    }
+
+    .studio-section {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 0.85rem;
+    }
+
+    .studio-section input,
+    .studio-section textarea,
+    .studio-section select {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .studio-canvas-container {
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        padding: 1rem 0.25rem 3.5rem 0.25rem !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .studio-mobile-preview-notice {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 0.5rem;
+        margin-bottom: 0.75rem;
+        box-sizing: border-box;
+    }
+
+    .a4-sheet {
+        margin: 0 auto !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+}
+
 .studio-zoom-controls {
     display: inline-flex;
     align-items: center;
@@ -194,20 +360,25 @@
 /* Éléments éditables directement sur la feuille */
 .editable {
     outline: none;
-    transition: background 0.15s, box-shadow 0.15s;
-    border-radius: 3px;
-    display: inline-block;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 4px;
+    cursor: text;
+    min-width: 1ch;
+    min-height: 1.1em;
 }
 
 .editable:hover {
     background: rgba(59, 130, 246, 0.08);
-    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
-    cursor: text;
+    box-shadow: 0 0 0 1.5px rgba(59, 130, 246, 0.35);
 }
 
 .editable:focus {
     background: rgba(59, 130, 246, 0.12);
-    box-shadow: 0 0 0 2px var(--res-primary);
+    box-shadow: 0 0 0 2px var(--res-primary, #3b82f6);
+}
+
+.editable:empty::before {
+    content: '\00a0';
 }
 
 /* =========================================================
@@ -359,6 +530,38 @@
     font-size: 0.88rem;
     font-weight: 600;
     color: #475569;
+}
+
+/* Mode multi-diplômes (Toute la classe) */
+.diplome-multi-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12mm;
+    width: 100%;
+}
+
+.diplome-page {
+    width: 100%;
+    height: 100%;
+    min-height: 190mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+@media print {
+    .diplome-page {
+        page-break-after: always !important;
+        break-after: page !important;
+        height: 188mm !important;
+        min-height: 188mm !important;
+        max-height: 188mm !important;
+    }
+    .diplome-page:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+    }
 }
 
 /* --- 2. Marque-pages « Emprunt & Avis » --- */

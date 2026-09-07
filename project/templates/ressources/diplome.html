@@ -26,25 +26,88 @@
 <div class="studio-section">
     <div class="studio-section-title">
         <i class="fas fa-user-graduate"></i>
-        <span>{{ _("Sélectionner un élève") }}</span>
+        <span>{{ _("Élèves de mon compte") }}</span>
     </div>
-    <div class="field">
-        <div class="control has-icons-left">
-            <div class="select is-fullwidth is-small">
-                <select id="studentSelector">
-                    <option value="">-- {{ _("Choisir dans ma classe") }} --</option>
-                    {% for s in students_list %}
-                    <option value="{{ s.firstname }} {{ s.name }}" {% if student and student.id == s.id %}selected{% endif %}>
-                        {{ s.firstname }} {{ s.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="icon is-small is-left">
-                <i class="fas fa-users"></i>
-            </div>
+
+    <!-- Choix du mode : Individuel ou Toute la classe -->
+    <div class="field mb-3">
+        <div class="control">
+            <label class="radio is-size-7 mr-3">
+                <input type="radio" name="diplomeMode" value="single" checked onchange="switchDiplomeMode('single')">
+                <span class="has-text-weight-semibold">{{ _("Élève individuel") }}</span>
+            </label>
+            <label class="radio is-size-7">
+                <input type="radio" name="diplomeMode" value="all" onchange="switchDiplomeMode('all')">
+                <span class="has-text-weight-semibold">{{ _("Toute la classe") }} ({{ students_list|count }})</span>
+            </label>
         </div>
     </div>
+
+    <div id="singleStudentControls">
+        <div class="field">
+            <label class="label is-small">{{ _("Sélectionner dans ma classe") }}</label>
+            <div class="control has-icons-left">
+                <div class="select is-fullwidth is-small">
+                    <select id="studentSelector">
+                        <option value="" data-name="" data-count="0">-- {{ _("Saisie libre / Autre élève") }} --</option>
+                        {% for s in students_list %}
+                        <option value="{{ s.id }}" data-name="{{ s.firstname }} {{ s.name }}" data-count="{{ s.read_count }}" {% if student and student.id == s.id %}selected{% endif %}>
+                            {{ s.firstname }} {{ s.name }} ({{ s.read_count }} {{ _('livres lus') if s.read_count > 1 else _('livre lu') }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="icon is-small is-left">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation rapide Précédent / Suivant -->
+        <div class="buttons has-addons are-small is-centered mb-0 mt-2">
+            <button type="button" class="button is-light" id="btnPrevStudent" title="{{ _('Élève précédent') }}">
+                <span class="icon is-small"><i class="fas fa-chevron-left"></i></span>
+                <span>{{ _("Précédent") }}</span>
+            </button>
+            <button type="button" class="button is-light" id="btnNextStudent" title="{{ _('Élève suivant') }}">
+                <span>{{ _("Suivant") }}</span>
+                <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
+            </button>
+        </div>
+    </div>
+
+    <div id="allStudentsNotice" style="display: none;" class="notification is-info is-light p-3 is-size-7 mb-0">
+        <i class="fas fa-print mr-1"></i>
+        {{ _("Diplômes générés pour chacun des") }} <strong>{{ students_list|count }} {{ _("élèves") }}</strong> {{ _("avec leurs statistiques de lecture individuelles.") }}
+    </div>
+</div>
+{% elif current_user.is_authenticated %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-user-graduate"></i>
+        <span>{{ _("Élèves de mon compte") }}</span>
+    </div>
+    <p class="is-size-7 has-text-grey mb-2">
+        {{ _("Vous n'avez pas encore d'élèves enregistrés dans votre classe.") }}
+    </p>
+    <a href="{{ url_for('eleve.ajouter_eleve') }}" class="button is-small is-link is-light is-fullwidth">
+        <span class="icon is-small"><i class="fas fa-user-plus"></i></span>
+        <span>{{ _("Ajouter des élèves") }}</span>
+    </a>
+</div>
+{% else %}
+<div class="studio-section">
+    <div class="studio-section-title">
+        <i class="fas fa-user-graduate"></i>
+        <span>{{ _("Élèves de votre classe") }}</span>
+    </div>
+    <p class="is-size-7 has-text-grey mb-2">
+        {{ _("Connectez-vous pour sélectionner automatiquement vos élèves et leurs statistiques de lecture.") }}
+    </p>
+    <a href="{{ url_for('auth.login', next=request.path) }}" class="button is-small is-link is-light is-fullwidth">
+        <span class="icon is-small"><i class="fas fa-sign-in-alt"></i></span>
+        <span>{{ _("Se connecter à mon compte") }}</span>
+    </a>
 </div>
 {% endif %}
 
@@ -64,21 +127,21 @@
     <div class="field">
         <label class="label is-small">{{ _("Sous-titre / Mention") }}</label>
         <div class="control">
-            <input class="input is-small" type="text" data-bind="diplomeSubtitle" value="{{ _('Décerné avec toutes les félicitations à') }}">
+            <input class="input is-small" type="text" data-bind="diplomeSubtitle" value="{{ _('Décerné avec toutes les félicitations de la classe à') }}">
         </div>
     </div>
 
     <div class="field">
-        <label class="label is-small">{{ _("Prénom & Nom de l'élève") }}</label>
+        <label class="label is-small">{{ _("Prénom & Nom de l'élève") }} <span class="has-text-grey-light font-weight-normal">({{ _("saisie libre ou base") }})</span></label>
         <div class="control">
-            <input class="input is-small has-text-weight-bold" type="text" id="inputRecipient" data-bind="diplomeRecipient" value="{% if student %}{{ student.firstname }} {{ student.name }}{% else %}{{ _('Thomas Dubois') }}{% endif %}">
+            <input class="input is-small has-text-weight-bold" type="text" id="inputRecipient" data-bind="diplomeRecipient" placeholder="{{ _('Ex: Thomas Dubois') }}" value="{% if student %}{{ student.firstname }} {{ student.name }}{% else %}{{ _('Thomas Dubois') }}{% endif %}">
         </div>
     </div>
 
     <div class="field">
         <label class="label is-small">{{ _("Motif / Réalisation") }}</label>
         <div class="control">
-            <textarea class="textarea is-small" rows="2" data-bind="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('pour son engagement, sa curiosité et ses belles découvertes littéraires au sein de la bibliothèque de classe.') }}{% endif %}</textarea>
+            <textarea class="textarea is-small" rows="2" id="inputReason" data-bind="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.') }}{% endif %}</textarea>
         </div>
     </div>
 
@@ -111,7 +174,8 @@
 {% endblock %}
 
 {% block sheet_content %}
-<div class="diplome-frame">
+<!-- Mode individuel (1 diplôme) -->
+<div id="singleDiplomeView" class="diplome-frame">
     <!-- En-tête : Sceau classique & Titre -->
     <div class="diplome-header">
         <div class="diplome-seal">
@@ -126,13 +190,7 @@
         <div class="diplome-recipient editable" id="diplomeRecipient">
             {% if student %}{{ student.firstname }} {{ student.name }}{% else %}{{ _("Thomas Dubois") }}{% endif %}
         </div>
-        <p class="diplome-reason editable" id="diplomeReason">
-            {% if read_count > 0 %}
-                {{ _("pour avoir lu avec succès") }} {{ read_count }} {{ _("livres dans la bibliothèque de classe.") }}
-            {% else %}
-                {{ _("pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.") }}
-            {% endif %}
-        </p>
+        <p class="diplome-reason editable" id="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.') }}{% endif %}</p>
     </div>
 
     <!-- Pied de page : Date & Signatures -->
@@ -151,20 +209,164 @@
         </div>
     </div>
 </div>
+
+<!-- Mode toute la classe (multi-diplômes) -->
+{% if students_list %}
+<div id="allDiplomesView" class="diplome-multi-container" style="display: none;">
+    {% for s in students_list %}
+    <div class="diplome-page">
+        <div class="diplome-frame">
+            <div class="diplome-header">
+                <div class="diplome-seal"><i class="fas fa-book-open"></i></div>
+                <h1 class="diplome-title class-diplome-title">{{ _("DIPLÔME DE LECTURE") }}</h1>
+                <p class="diplome-subtitle class-diplome-subtitle">{{ _("Décerné avec toutes les félicitations de la classe à") }}</p>
+            </div>
+            <div class="diplome-body">
+                <div class="diplome-recipient editable">{{ s.firstname }} {{ s.name }}</div>
+                <p class="diplome-reason editable">
+                    {% if s.read_count > 0 %}
+                        {{ _("pour avoir franchi avec brio le palier de") }} {{ s.read_count }} {{ _("livres lus dans la bibliothèque de classe !") }}
+                    {% else %}
+                        {{ _("pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.") }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="diplome-footer">
+                <div class="diplome-sign-box">
+                    <p class="class-diplome-school" style="font-weight: 700; color: #1e293b;">{{ _("Classe de CM1-B") }}</p>
+                    <p class="class-diplome-date" style="font-size: 0.85rem; color: #64748b;">Le 06/09/2026</p>
+                </div>
+                <div class="diplome-sign-box">
+                    <div class="diplome-sign-line">
+                        <span class="class-diplome-teacher">
+                            {% if current_user.is_authenticated and current_user.name %}{{ current_user.name }}{% else %}{{ _("L'enseignant(e)") }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const studentSelector = document.getElementById('studentSelector');
+const studentsData = [
+    {% for s in students_list %}
+    {
+        id: {{ s.id }},
+        name: "{{ s.firstname }} {{ s.name }}",
+        count: {{ s.read_count }}
+    },
+    {% endfor %}
+];
+
+function getCongratulationText(count) {
+    if (count > 0) {
+        return `{{ _("pour avoir franchi avec brio le palier de") }} ${count} {{ _("livres lus dans la bibliothèque de classe !") }}`;
+    } else {
+        return `{{ _("pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.") }}`;
+    }
+}
+
+function selectStudentById(id) {
+    const selector = document.getElementById('studentSelector');
     const recipientInput = document.getElementById('inputRecipient');
     const recipientEl = document.getElementById('diplomeRecipient');
+    const reasonInput = document.getElementById('inputReason');
+    const reasonEl = document.getElementById('diplomeReason');
 
-    if (studentSelector && recipientInput && recipientEl) {
+    if (!id) {
+        if (selector) selector.value = '';
+        return;
+    }
+
+    const st = studentsData.find(s => s.id === parseInt(id, 10));
+    if (st) {
+        if (selector) selector.value = st.id;
+        if (recipientInput) recipientInput.value = st.name;
+        if (recipientEl) recipientEl.textContent = st.name;
+
+        const reason = getCongratulationText(st.count);
+        if (reasonInput) reasonInput.value = reason;
+        if (reasonEl) reasonEl.textContent = reason;
+    }
+}
+
+function switchDiplomeMode(mode) {
+    const singleView = document.getElementById('singleDiplomeView');
+    const allView = document.getElementById('allDiplomesView');
+    const singleControls = document.getElementById('singleStudentControls');
+    const allNotice = document.getElementById('allStudentsNotice');
+    const sheet = document.getElementById('printableSheet');
+
+    if (mode === 'all') {
+        if (singleView) singleView.style.display = 'none';
+        if (allView) allView.style.display = 'flex';
+        if (singleControls) singleControls.style.display = 'none';
+        if (allNotice) allNotice.style.display = 'block';
+        if (sheet) sheet.classList.add('multi-page');
+        syncAllDiplomesCommonFields();
+    } else {
+        if (singleView) singleView.style.display = 'flex';
+        if (allView) allView.style.display = 'none';
+        if (singleControls) singleControls.style.display = 'block';
+        if (allNotice) allNotice.style.display = 'none';
+        if (sheet) sheet.classList.remove('multi-page');
+    }
+}
+
+function syncAllDiplomesCommonFields() {
+    const titleVal = document.querySelector('[data-bind="diplomeTitle"]')?.value || '';
+    const subtitleVal = document.querySelector('[data-bind="diplomeSubtitle"]')?.value || '';
+    const schoolVal = document.querySelector('[data-bind="diplomeSchool"]')?.value || '';
+    const dateVal = document.querySelector('[data-bind="diplomeDate"]')?.value || '';
+    const teacherVal = document.querySelector('[data-bind="diplomeTeacher"]')?.value || '';
+
+    document.querySelectorAll('.class-diplome-title').forEach(el => el.textContent = titleVal);
+    document.querySelectorAll('.class-diplome-subtitle').forEach(el => el.textContent = subtitleVal);
+    document.querySelectorAll('.class-diplome-school').forEach(el => el.textContent = schoolVal);
+    document.querySelectorAll('.class-diplome-date').forEach(el => el.textContent = dateVal);
+    document.querySelectorAll('.class-diplome-teacher').forEach(el => el.textContent = teacherVal);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const studentSelector = document.getElementById('studentSelector');
+    const btnPrev = document.getElementById('btnPrevStudent');
+    const btnNext = document.getElementById('btnNextStudent');
+
+    if (studentSelector) {
         studentSelector.addEventListener('change', function () {
             if (this.value) {
-                recipientInput.value = this.value;
-                recipientEl.textContent = this.value;
+                selectStudentById(this.value);
+            }
+        });
+    }
+
+    if (btnPrev && studentSelector) {
+        btnPrev.addEventListener('click', function () {
+            const curIdx = studentSelector.selectedIndex;
+            if (curIdx > 1) {
+                studentSelector.selectedIndex = curIdx - 1;
+                selectStudentById(studentSelector.value);
+            } else if (studentSelector.options.length > 1) {
+                studentSelector.selectedIndex = studentSelector.options.length - 1;
+                selectStudentById(studentSelector.value);
+            }
+        });
+    }
+
+    if (btnNext && studentSelector) {
+        btnNext.addEventListener('click', function () {
+            const curIdx = studentSelector.selectedIndex;
+            if (curIdx < studentSelector.options.length - 1) {
+                studentSelector.selectedIndex = curIdx + 1;
+                selectStudentById(studentSelector.value);
+            } else if (studentSelector.options.length > 1) {
+                studentSelector.selectedIndex = 1;
+                selectStudentById(studentSelector.value);
             }
         });
     }
@@ -178,6 +380,14 @@ document.addEventListener('DOMContentLoaded', function () {
         dateInput.value = `Le ${formatted}`;
         dateEl.textContent = `Le ${formatted}`;
     }
+
+    // Synchronisation en temps réel des champs communs pour le mode multi-diplômes
+    ['diplomeTitle', 'diplomeSubtitle', 'diplomeSchool', 'diplomeDate', 'diplomeTeacher'].forEach(id => {
+        const input = document.querySelector(`[data-bind="${id}"]`);
+        if (input) {
+            input.addEventListener('input', syncAllDiplomesCommonFields);
+        }
+    });
 });
 </script>
 {% endblock %}

@@ -83,8 +83,8 @@
     <!-- Marque-page 1 : Recto -->
     <div class="marque-page-card mp-col-1">
         <div class="mp-header">
-            <div class="mp-title">{{ _("FICHE D'EMPRUNT") }}</div>
-            <div class="mp-school mp-owner-text">{{ _("Bibliothèque de") }} <strong>{{ _("la classe de CM1-B") }}</strong></div>
+            <div class="mp-title editable">{{ _("FICHE D'EMPRUNT") }}</div>
+            <div class="mp-school mp-owner-text editable">{{ _("Bibliothèque de") }} <strong>{{ _("la classe de CM1-B") }}</strong></div>
         </div>
 
         <div style="margin: 0.4rem 0;">
@@ -114,16 +114,16 @@
             </table>
         </div>
 
-        <div class="mp-notes-box has-text-centered mp-footer-msg" style="font-size: 0.65rem;">
-            {{ _("Merci de prendre soin de ce livre et de le rapporter après lecture.") }}
+        <div class="mp-notes-box has-text-centered mp-footer-msg editable" style="font-size: 0.65rem;">
+            {{ _("Prends soin de moi et rapporte-moi à l'école !") }}
         </div>
     </div>
 
     <!-- Marque-page 2 : Verso (ou 2e Recto selon mode) -->
     <div class="marque-page-card mp-col-2">
         <div class="mp-header">
-            <div class="mp-title">{{ _("AVIS DE LECTURE") }}</div>
-            <div class="mp-school">{{ _("Partage ton impression") }}</div>
+            <div class="mp-title editable">{{ _("AVIS DE LECTURE") }}</div>
+            <div class="mp-school editable">{{ _("Partage ton impression") }}</div>
         </div>
 
         <div class="mp-rating">
@@ -132,7 +132,7 @@
         </div>
 
         <div style="margin: 0.5rem 0; flex: 1; display: flex; flex-direction: column;">
-            <p class="mp-review-prompt" style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
+            <p class="mp-review-prompt editable" style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
                 {{ _("J'ai aimé ce livre parce que :") }}
             </p>
             <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
@@ -151,8 +151,8 @@
     <!-- Marque-page 3 : Recto (Copie 2) -->
     <div class="marque-page-card mp-col-3">
         <div class="mp-header">
-            <div class="mp-title">{{ _("FICHE D'EMPRUNT") }}</div>
-            <div class="mp-school mp-owner-text">{{ _("Bibliothèque de") }} <strong>{{ _("la classe de CM1-B") }}</strong></div>
+            <div class="mp-title editable">{{ _("FICHE D'EMPRUNT") }}</div>
+            <div class="mp-school mp-owner-text editable">{{ _("Bibliothèque de") }} <strong>{{ _("la classe de CM1-B") }}</strong></div>
         </div>
 
         <div style="margin: 0.4rem 0;">
@@ -182,16 +182,16 @@
             </table>
         </div>
 
-        <div class="mp-notes-box has-text-centered mp-footer-msg" style="font-size: 0.65rem;">
-            {{ _("Merci de prendre soin de ce livre et de le rapporter après lecture.") }}
+        <div class="mp-notes-box has-text-centered mp-footer-msg editable" style="font-size: 0.65rem;">
+            {{ _("Prends soin de moi et rapporte-moi à l'école !") }}
         </div>
     </div>
 
     <!-- Marque-page 4 : Verso (Copie 2) -->
     <div class="marque-page-card mp-col-4">
         <div class="mp-header">
-            <div class="mp-title">{{ _("AVIS DE LECTURE") }}</div>
-            <div class="mp-school">{{ _("Partage ton impression") }}</div>
+            <div class="mp-title editable">{{ _("AVIS DE LECTURE") }}</div>
+            <div class="mp-school editable">{{ _("Partage ton impression") }}</div>
         </div>
 
         <div class="mp-rating">
@@ -200,7 +200,7 @@
         </div>
 
         <div style="margin: 0.5rem 0; flex: 1; display: flex; flex-direction: column;">
-            <p class="mp-review-prompt" style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
+            <p class="mp-review-prompt editable" style="font-size: 0.72rem; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
                 {{ _("J'ai aimé ce livre parce que :") }}
             </p>
             <div style="border-bottom: 1px dotted #94a3b8; height: 22px;"></div>
@@ -222,7 +222,7 @@
 <script>
 function updateClassOwner(val) {
     document.querySelectorAll('.mp-owner-text').forEach(el => {
-        el.innerHTML = `{{ _("Ce livre appartient à") }} <strong>${val}</strong>`;
+        el.innerHTML = `{{ _("Bibliothèque de") }} <strong>${val}</strong>`;
     });
 }
 
@@ -234,7 +234,7 @@ function updateReviewPrompt(val) {
 
 function updateEncouragement(val) {
     document.querySelectorAll('.mp-footer-msg').forEach(el => {
-        el.textContent = `🌱 ${val}`;
+        el.textContent = val;
     });
 }
 

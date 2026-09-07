@@ -58,7 +58,7 @@
             <p style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: var(--res-primary-dark); text-transform: uppercase;">
                 {{ _("Livret individuel de lecture") }}
             </p>
-            <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0.2rem 0;">{{ _("PASSEPORT DE LECTEUR") }}</h2>
+            <h2 class="editable" style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0.2rem 0;">{{ _("PASSEPORT DE LECTEUR") }}</h2>
             <p class="editable" id="passportSchool" style="font-size: 0.75rem; color: #475569;">{{ _("École élémentaire • Classe de CM1") }}</p>
         </div>
 
@@ -108,7 +108,7 @@
     <!-- Volet Droit : Suivi des Genres Littéraires -->
     <div class="passeport-panel">
         <div style="text-align: center; border-bottom: 1.5px solid var(--res-primary); padding-bottom: 0.5rem;">
-            <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--res-primary-dark); text-transform: uppercase;">
+            <h3 class="editable" style="font-size: 1.05rem; font-weight: 800; color: var(--res-primary-dark); text-transform: uppercase;">
                 {{ _("PARCOURS DES GENRES LITTÉRAIRES") }}
             </h3>
             <p style="font-size: 0.7rem; color: #64748b;">{{ _("Coche ou tamponne chaque genre exploré au cours de l'année") }}</p>
@@ -127,7 +127,7 @@
                 ('REV', 'Revue / Presse')
             ] %}
             <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; height: 100%; box-sizing: border-box; background: #f8fafc;">
-                <span style="font-size: 0.68rem; font-weight: 700; color: #1e293b;">{{ label }}</span>
+                <span class="editable" style="font-size: 0.68rem; font-weight: 700; color: #1e293b;">{{ label }}</span>
                 <div style="width: 24px; height: 24px; border: 1px dashed var(--res-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; background: white;">
                     <span style="font-size: 0.6rem; color: #94a3b8;">{{ code }}</span>
                 </div>

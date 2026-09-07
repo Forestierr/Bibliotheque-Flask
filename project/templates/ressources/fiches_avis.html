@@ -29,7 +29,7 @@
     <div class="field">
         <label class="label is-small">{{ _("Titre du fanion") }}</label>
         <div class="control">
-            <input class="input is-small" type="text" id="inputFicheTitle" value="{{ _('COUP DE CŒUR DE LA CLASSE !') }}" oninput="updateFicheTitles(this.value)">
+            <input class="input is-small" type="text" id="inputFicheTitle" value="{{ _('COUP DE CŒUR DE LECTEUR') }}" oninput="updateFicheTitles(this.value)">
         </div>
     </div>
 </div>
@@ -43,7 +43,7 @@
             <h2 class="fiche-title-text editable" style="font-size: 0.88rem; font-weight: 800; color: var(--res-primary-dark, #9f1239); text-transform: uppercase; letter-spacing: 0.5px;">
                 {{ _("COUP DE CŒUR DE LECTEUR") }}
             </h2>
-            <p style="font-size: 0.68rem; color: #64748b;">{{ _("Conseil et partage entre camarades") }}</p>
+            <p class="editable" style="font-size: 0.68rem; color: #64748b;">{{ _("Conseil et partage entre camarades") }}</p>
         </div>
 
         <div style="font-size: 0.75rem; color: #1e293b; display: flex; flex-direction: column; gap: 0.35rem;">
@@ -67,7 +67,7 @@
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-around; margin: 0.4rem 0;">
-            <p style="font-size: 0.75rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
+            <p class="editable" style="font-size: 0.75rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
                 {{ _("Ce qui m'a plu dans cette histoire :") }}
             </p>
             <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
@@ -76,7 +76,7 @@
             <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
         </div>
 
-        <div style="margin-top: auto; padding-top: 0.35rem; border-top: 1px solid #f1f5f9; font-size: 0.65rem; color: #64748b; text-align: center;">
+        <div class="editable" style="margin-top: auto; padding-top: 0.35rem; border-top: 1px solid #f1f5f9; font-size: 0.65rem; color: #64748b; text-align: center;">
             {{ _("À insérer dans le livre pour laisser dépasser l'onglet en rayon.") }}
         </div>
     </div>
