@@ -10,7 +10,13 @@
 
 {% block content %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <!-- Quagga2 (local avec secours CDN) -->
+    <script src="{{ url_for('static', filename='javascript/quagga2.min.js') }}"></script>
+    <script>
+        if (typeof Quagga === "undefined") {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"><\/script>');
+        }
+    </script>
 
     <style>
         .scanner-container {
@@ -20,14 +26,33 @@
             overflow: hidden;
             background: #0f172a;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            min-height: 320px;
         }
-        video {
+
+        #scanner-viewport {
+            position: relative;
+            width: 100%;
+            height: auto;
+            min-height: 280px;
+            max-height: 72vh;
+            overflow: hidden;
+        }
+
+        #scanner-viewport video {
             width: 100%;
             height: auto;
             max-height: 72vh;
             min-height: 280px;
             display: block;
             object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        #scanner-viewport canvas.drawingBuffer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none !important;
         }
 
         /* Overlay viseur / hologramme de visée */
@@ -51,6 +76,7 @@
             border-radius: 12px;
             box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.38);
             border: 1px solid rgba(56, 189, 248, 0.25);
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         /* 4 coins du viseur */
@@ -61,6 +87,7 @@
             border-color: #ffffff;
             border-style: solid;
             filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+            transition: border-color 0.25s ease, filter 0.25s ease;
         }
         .viewfinder-corner.tl {
             top: -2px;
@@ -97,6 +124,7 @@
             box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
             border-radius: 2px;
             animation: scanLaser 2.2s ease-in-out infinite alternate;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
         }
 
         @keyframes scanLaser {
@@ -119,6 +147,7 @@
             align-items: center;
             justify-content: center;
             pointer-events: none;
+            transition: opacity 0.2s ease;
         }
 
         @keyframes hologramPulse {
@@ -139,6 +168,47 @@
             letter-spacing: 0.3px;
         }
 
+        /* État de confirmation de scan réussi (flash vert) */
+        .viewfinder-frame.scan-success {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 35px rgba(34, 197, 94, 0.85), 0 0 0 9999px rgba(15, 23, 42, 0.42) !important;
+        }
+        .viewfinder-frame.scan-success .viewfinder-corner {
+            border-color: #22c55e !important;
+            filter: drop-shadow(0 0 8px #22c55e) !important;
+        }
+        .viewfinder-frame.scan-success .viewfinder-laser {
+            background: #22c55e !important;
+            box-shadow: 0 0 14px #22c55e !important;
+            animation-play-state: paused;
+        }
+
+        .scan-success-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(16, 185, 129, 0.95);
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 24px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            z-index: 20;
+            white-space: nowrap;
+            pointer-events: none;
+            animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
         .lens-controls {
             position: absolute;
             bottom: 12px;
@@ -152,34 +222,36 @@
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
         }
         .lens-controls button:hover,
         .lens-controls button:focus {
             color: #ffffff;
             border-color: #ffffff;
         }
-        #barcode-result {
-            text-align: center;
-            font-size: 1.5em;
-            margin-top: 10px;
+        .zoom-btn.is-active {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #60a5fa !important;
             font-weight: bold;
         }
     </style>
 
-    <div class="container is-max-desktop scanner-container">
-        <video id="video" autoplay playsinline></video>
+    <div class="container is-max-desktop scanner-container" id="scanner-container">
+        <!-- Zone de flux vidéo injectée dynamiquement -->
+        <div id="scanner-viewport"></div>
 
         <!-- Viseur / Hologramme de référence -->
         <div class="scanner-viewfinder-overlay">
-            <div class="viewfinder-frame">
+            <div class="viewfinder-frame" id="viewfinder-frame">
                 <div class="viewfinder-corner tl"></div>
                 <div class="viewfinder-corner tr"></div>
                 <div class="viewfinder-corner bl"></div>
                 <div class="viewfinder-corner br"></div>
-                <div class="viewfinder-laser"></div>
-                
+                <div class="viewfinder-laser" id="viewfinder-laser"></div>
+
                 <!-- Hologramme 1D blanc épuré -->
-                <div class="hologram-ghost">
+                <div class="hologram-ghost" id="hologram-ghost">
                     <svg viewBox="0 0 120 60" width="100%" height="100%" fill="currentColor">
                         <rect x="4" y="6" width="3.5" height="48" rx="1"/>
                         <rect x="11" y="6" width="2" height="48" rx="1"/>
@@ -201,24 +273,30 @@
                         <rect x="114" y="6" width="2.5" height="48" rx="1"/>
                     </svg>
                 </div>
-                
-                <div class="viewfinder-caption">{{ _("Centrez le code-barres dans ce cadre") }}</div>
+
+                <div class="viewfinder-caption" id="viewfinder-caption">{{ _("Centrez le code-barres dans ce cadre") }}</div>
+
+                <!-- Badge de succès lors de la détection -->
+                <div id="scan-success-badge" class="scan-success-badge" style="display: none;">
+                    <span class="icon"><i class="fas fa-check-circle"></i></span>
+                    <span id="scan-success-text">{{ _("Code détecté !") }}</span>
+                </div>
             </div>
         </div>
 
         <div class="lens-controls">
             <div class="buttons is-centered is-flex">
-                <button class="button is-rounded torch-button" onclick="toggleTorch()">
+                <button type="button" class="button is-rounded torch-button" onclick="toggleTorch()" title="{{ _("Lampe torche") }}">
                     <span class="icon is-small">
                       <i class="fas fa-bolt"></i>
                     </span>
                 </button>
 
-                <button class="button is-rounded" onclick="switchCamera('ultra-wide')">.5</button>
-                <button class="button is-rounded" onclick="switchCamera('normal')">1</button>
-                <button class="button is-rounded" onclick="switchCamera('zoom')">2</button>
+                <button type="button" id="btn-zoom-0_5" class="button is-rounded zoom-btn" onclick="applyZoom(0.5)">.5</button>
+                <button type="button" id="btn-zoom-1" class="button is-rounded zoom-btn is-active is-info" onclick="applyZoom(1)">1×</button>
+                <button type="button" id="btn-zoom-2" class="button is-rounded zoom-btn" onclick="applyZoom(2)">2×</button>
 
-                <button id="switch-side" class="button is-rounded" onclick="switchCamera('user')">
+                <button type="button" id="switch-side" class="button is-rounded" onclick="toggleCameraSide()" title="{{ _("Changer de caméra") }}">
                     <span class="icon is-small">
                       <i class="fas fa-sync"></i>
                     </span>
@@ -276,102 +354,34 @@
     </div>
 
     <script>
-        let videoStream;
+        let isScannerRunning = false;
+        let isProcessingDetection = false;
+        let currentFacingMode = 'environment';
+        let currentZoomFactor = 1;
+        let torchState = false;
+        let nativeDetector = null;
+        let nativeDetectorInterval = null;
 
-        async function switchCamera(cameraType) {
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
+        // Buffers de confirmation anti-faux-positifs
+        let lastDetectedCode = null;
+        let detectionCount = 0;
+        let lastDetectionTime = 0;
+
+        // Vérification de la somme de contrôle ISBN-13 officielle
+        function verifyIsbnChecksum(isbnStr) {
+            const clean = String(isbnStr).replace(/[^0-9]/g, '');
+            if (clean.length !== 13) return false;
+            let sum = 0;
+            for (let i = 0; i < 12; i++) {
+                sum += parseInt(clean[i], 10) * (i % 2 === 0 ? 1 : 3);
             }
-
-            let constraints = {
-                video: {
-                    facingMode: cameraType === 'user' ? 'user' : 'environment',
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                }
-            };
-
-            if (cameraType === 'user') {
-                document.getElementById('switch-side').onclick = () => switchCamera('environment');
-            } else {
-                document.getElementById('switch-side').onclick = () => switchCamera('user');
-            }
-
-            if (cameraType === 'ultra-wide') {
-                constraints.video.advanced = [{ zoom: 0.5 }];
-            }
-
-            if (cameraType === 'zoom') {
-                constraints.video.advanced = [{ zoom: 2 }];
-            }
-
-            if (cameraType === 'normal') {
-                constraints.video.advanced = [{ zoom: 1 }];
-            }
-
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia(constraints);
-                document.getElementById('video').srcObject = videoStream;
-                startBarcodeScanner();
-            } catch (error) {
-                console.error("Erreur d'accès à la caméra :", error);
-                document.getElementById('camera-error').style.display = 'block';
-            }
+            const checkDigit = (10 - (sum % 10)) % 10;
+            return checkDigit === parseInt(clean[12], 10);
         }
 
-        async function toggleTorch() {
-            if (!videoStream) return;
-
-            let track = videoStream.getVideoTracks()[0];
-            let capabilities = track.getCapabilities();
-
-            if (!capabilities.torch) {
-                console.warn("La lampe torche n'est pas supportée sur cet appareil.");
-                return;
-            }
-
-            let torchState = !track.getSettings().torch;
-            let torchButton = document.querySelector('.torch-button');
-
-            if (torchState) {
-                torchButton.classList.add('is-warning');
-            } else {
-                torchButton.classList.remove('is-warning');
-            }
-
-            await track.applyConstraints({ advanced: [{ torch: torchState }] });
-        }
-
-        function startBarcodeScanner() {
-            Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector("#video"),
-                    constraints: {
-                        facingMode: "environment"
-                    }
-                },
-                locator: {
-                    patchSize: "medium",
-                    halfSample: true
-                },
-                numOfWorkers: 8,
-                frequency: 10,
-                decoder: {
-                    readers: ["ean_reader", "code_128_reader"] // Scanner les codes EAN-13 et CODE-128
-                },
-                locate: true
-            }, function (err) {
-                if (err) {
-                    console.error("Erreur Quagga : ", err);
-                    return;
-                }
-                Quagga.start();
-            });
-
-            // Quagga.onProcessed(drawOverlay);
-            Quagga.onDetected(onBarcodeDetected);
+        function isISBN(code) {
+            let clean = String(code).trim().replace(/-/g, "");
+            return clean.length === 13 && (clean.startsWith("978") || clean.startsWith("979"));
         }
 
         function isValidCode(code) {
@@ -384,50 +394,344 @@
             return false;
         }
 
-        function isISBN(code) {
-            let clean = String(code).trim().replace(/-/g, "");
-            return clean.length === 13 && (clean.startsWith("978") || clean.startsWith("979"));
+        // Bip audio agréable et léger lors du scan (Web Audio API)
+        function playBeep() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.15);
+            } catch(e) {
+                // Ignore audio policy errors
+            }
         }
 
-        function onBarcodeDetected(result) {
-            let code = String(result.codeResult.code).trim();
+        // Vibration haptique
+        function triggerHaptic() {
+            if (navigator.vibrate) {
+                try {
+                    navigator.vibrate(120);
+                } catch(e) {}
+            }
+        }
 
-            if (!isValidCode(code)) {
-                console.log("Code-barres ignoré (format non supporté) : ", code);
+        function stopScanner() {
+            if (nativeDetectorInterval) {
+                clearInterval(nativeDetectorInterval);
+                nativeDetectorInterval = null;
+            }
+            if (isScannerRunning && typeof Quagga !== 'undefined') {
+                try {
+                    Quagga.stop();
+                } catch(e) {}
+                isScannerRunning = false;
+            }
+        }
+
+        function resetScannerUI() {
+            const frame = document.getElementById('viewfinder-frame');
+            if (frame) frame.classList.remove('scan-success');
+            const badge = document.getElementById('scan-success-badge');
+            if (badge) badge.style.display = 'none';
+            const ghost = document.getElementById('hologram-ghost');
+            if (ghost) ghost.style.opacity = '1';
+        }
+
+        function confirmAndProceed(code) {
+            if (isProcessingDetection) return;
+            isProcessingDetection = true;
+
+            // Retours sensoriels immédiats (bip + vibration)
+            playBeep();
+            triggerHaptic();
+
+            // Retours visuels sur le viseur
+            const frame = document.getElementById('viewfinder-frame');
+            if (frame) frame.classList.add('scan-success');
+            const ghost = document.getElementById('hologram-ghost');
+            if (ghost) ghost.style.opacity = '0';
+            const badge = document.getElementById('scan-success-badge');
+            const badgeText = document.getElementById('scan-success-text');
+            if (badge && badgeText) {
+                badgeText.textContent = code;
+                badge.style.display = 'flex';
+            }
+
+            // Arrêt immédiat de la détection pour économiser les ressources
+            stopScanner();
+
+            // Court délai de 400ms pour laisser voir la confirmation verte
+            setTimeout(() => {
+                fetch("{{ url_for('livre.livre_exist', isbn='CODE_PARAM') }}".replace("CODE_PARAM", encodeURIComponent(code)))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.info("Livre non trouvé en base :", code);
+                            if (data.is_isbn || isISBN(code)) {
+                                window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}`;
+                            } else {
+                                window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}`;
+                            }
+                            return;
+                        }
+
+                        if (data.multiple) {
+                            window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
+                        } else {
+                            window.location.href = `/livre/${data.id}/edit`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erreur de recherche du livre :", error);
+                        setTimeout(() => {
+                            isProcessingDetection = false;
+                            resetScannerUI();
+                            startScanner();
+                        }, 1500);
+                    });
+            }, 400);
+        }
+
+        function handleDetectedCode(rawCode) {
+            if (isProcessingDetection) return;
+            if (!rawCode) return;
+            const code = String(rawCode).trim();
+            if (!isValidCode(code)) return;
+
+            const now = Date.now();
+            // Reset buffer si dernière détection > 1200ms
+            if (now - lastDetectionTime > 1200) {
+                detectionCount = 0;
+                lastDetectedCode = null;
+            }
+            lastDetectionTime = now;
+
+            // Si c'est un ISBN avec somme de contrôle valide, confirmation immédiate
+            if (isISBN(code) && verifyIsbnChecksum(code)) {
+                confirmAndProceed(code);
                 return;
             }
 
-            console.log("Code-barres détecté : ", code);
+            // Pour les codes personnalisés (ou non-ISBN), exiger 2 lectures consécutives identiques
+            if (code === lastDetectedCode) {
+                detectionCount++;
+                if (detectionCount >= 2) {
+                    confirmAndProceed(code);
+                }
+            } else {
+                lastDetectedCode = code;
+                detectionCount = 1;
+            }
+        }
 
-            // Suspendre temporairement le scanner pendant la requête pour éviter les doubles déclenchements
-            try { Quagga.stop(); } catch(e) {}
+        // Accélération matérielle native BarcodeDetector (Chrome Android, Edge, Safari 17+)
+        async function setupNativeBarcodeDetector(videoEl) {
+            if (!('BarcodeDetector' in window)) return;
+            try {
+                const formats = await BarcodeDetector.getSupportedFormats();
+                const needed = ['ean_13', 'code_128', 'ean_8'];
+                const supported = formats.filter(f => needed.includes(f));
+                if (supported.length > 0) {
+                    nativeDetector = new BarcodeDetector({ formats: supported });
+                    console.log("Accélération matérielle BarcodeDetector activée !", supported);
 
-            fetch("{{ url_for('livre.livre_exist', isbn='CODE_PARAM') }}".replace("CODE_PARAM", encodeURIComponent(code)))
-                .then(response => response.json())
-                .then(data => {
-                    // Livre non trouvé dans la bibliothèque de l'enseignant
-                    if (data.error) {
-                        console.info("Livre non trouvé en base :", code);
-                        if (data.is_isbn || isISBN(code)) {
-                            // C'est un ISBN : on redirige vers l'ajout avec ?isbn= pour interroger Google Books
-                            window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}`;
-                        } else {
-                            // C'est un code de classe custom : on pré-remplit le champ code-barre sans Google Books
-                            window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}`;
-                        }
+                    if (nativeDetectorInterval) clearInterval(nativeDetectorInterval);
+                    nativeDetectorInterval = setInterval(async () => {
+                        if (isProcessingDetection || !videoEl || videoEl.readyState < 2) return;
+                        try {
+                            const barcodes = await nativeDetector.detect(videoEl);
+                            if (barcodes && barcodes.length > 0) {
+                                for (const b of barcodes) {
+                                    if (b.rawValue) {
+                                        handleDetectedCode(b.rawValue);
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch(e) {}
+                    }, 100);
+                }
+            } catch(e) {
+                console.warn("BarcodeDetector indisponible :", e);
+            }
+        }
+
+        function startScanner() {
+            stopScanner();
+            resetScannerUI();
+            isProcessingDetection = false;
+
+            const viewport = document.getElementById('scanner-viewport');
+            if (viewport) {
+                viewport.innerHTML = '';
+            }
+
+            if (typeof Quagga === 'undefined') {
+                console.error("Quagga n'est pas chargé.");
+                document.getElementById('camera-error').style.display = 'block';
+                return;
+            }
+
+            const numWorkers = Math.min(navigator.hardwareConcurrency || 2, 2);
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: viewport,
+                    constraints: {
+                        facingMode: currentFacingMode,
+                        width: { min: 640, ideal: 1280, max: 1920 },
+                        height: { min: 480, ideal: 720, max: 1080 },
+                        aspectRatio: { min: 1, max: 2 }
+                    }
+                },
+                locator: {
+                    patchSize: "medium",
+                    halfSample: true
+                },
+                numOfWorkers: numWorkers,
+                frequency: 10,
+                decoder: {
+                    readers: [
+                        "ean_reader",
+                        "code_128_reader",
+                        "ean_8_reader"
+                    ]
+                },
+                locate: true
+            }, function (err) {
+                if (err) {
+                    console.error("Erreur d'accès caméra Quagga :", err);
+                    document.getElementById('camera-error').style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('camera-error').style.display = 'none';
+                Quagga.start();
+                isScannerRunning = true;
+
+                // Écouteur Quagga (retiré avant ré-enregistrement pour éviter les doublons)
+                Quagga.offDetected(onQuaggaDetected);
+                Quagga.onDetected(onQuaggaDetected);
+
+                // Initialiser le détecteur natif dès que la vidéo est prête
+                const videoEl = viewport.querySelector('video');
+                if (videoEl) {
+                    videoEl.setAttribute('playsinline', 'true');
+                    videoEl.setAttribute('muted', 'true');
+                    setupNativeBarcodeDetector(videoEl);
+                }
+
+                // Vérifier les capacités de zoom/torche
+                updateCapabilities();
+
+                // Ré-appliquer le zoom actif
+                if (currentZoomFactor !== 1) {
+                    applyZoom(currentZoomFactor);
+                }
+            });
+        }
+
+        function onQuaggaDetected(result) {
+            if (result && result.codeResult && result.codeResult.code) {
+                handleDetectedCode(result.codeResult.code);
+            }
+        }
+
+        function updateCapabilities() {
+            const track = Quagga.CameraAccess ? Quagga.CameraAccess.getActiveTrack() : null;
+            if (!track || typeof track.getCapabilities !== 'function') return;
+            const capabilities = track.getCapabilities();
+
+            const torchBtn = document.querySelector('.torch-button');
+            if (torchBtn) {
+                if (!capabilities.torch) {
+                    torchBtn.style.opacity = '0.4';
+                    torchBtn.title = "{{ _("Lampe torche non supportée sur cet appareil") }}";
+                } else {
+                    torchBtn.style.opacity = '1';
+                }
+            }
+        }
+
+        async function toggleTorch() {
+            const track = Quagga.CameraAccess ? Quagga.CameraAccess.getActiveTrack() : null;
+            if (!track) return;
+            const capabilities = (typeof track.getCapabilities === 'function') ? track.getCapabilities() : {};
+
+            if (!capabilities.torch) {
+                console.warn("La torche n'est pas supportée sur cet appareil.");
+                return;
+            }
+
+            torchState = !torchState;
+            try {
+                await track.applyConstraints({ advanced: [{ torch: torchState }] });
+                const torchBtn = document.querySelector('.torch-button');
+                if (torchBtn) {
+                    torchBtn.classList.toggle('is-warning', torchState);
+                }
+            } catch(e) {
+                console.warn("Erreur bascule torche :", e);
+            }
+        }
+
+        async function applyZoom(factor) {
+            currentZoomFactor = factor;
+
+            // Mise à jour de l'état actif des boutons
+            document.querySelectorAll('.zoom-btn').forEach(btn => {
+                btn.classList.remove('is-active', 'is-info');
+            });
+            const activeId = 'btn-zoom-' + String(factor).replace('.', '_');
+            const activeBtn = document.getElementById(activeId);
+            if (activeBtn) {
+                activeBtn.classList.add('is-active', 'is-info');
+            }
+
+            const track = Quagga.CameraAccess ? Quagga.CameraAccess.getActiveTrack() : null;
+            const videoEl = document.querySelector('#scanner-viewport video');
+
+            if (track && typeof track.getCapabilities === 'function') {
+                const capabilities = track.getCapabilities();
+                if (capabilities.zoom) {
+                    const min = capabilities.zoom.min || 1;
+                    const max = capabilities.zoom.max || 1;
+                    const targetZoom = Math.min(Math.max(factor, min), max);
+                    try {
+                        await track.applyConstraints({ advanced: [{ zoom: targetZoom }] });
+                        if (videoEl) videoEl.style.transform = 'none';
                         return;
+                    } catch(e) {
+                        console.warn("Erreur zoom optique/matériel :", e);
                     }
+                }
+            }
 
-                    if (data.multiple) {
-                        window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
-                    } else {
-                        window.location.href = `/livre/${data.id}/edit`;
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur de recherche du livre :", error);
-                    try { Quagga.start(); } catch(e) {}
-                });
+            // Zoom logiciel de secours si matériel non supporté
+            if (videoEl) {
+                if (factor === 1) {
+                    videoEl.style.transform = 'none';
+                } else {
+                    videoEl.style.transform = `scale(${factor})`;
+                    videoEl.style.transformOrigin = 'center center';
+                }
+            }
+        }
+
+        function toggleCameraSide() {
+            currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+            startScanner();
         }
 
         function toggleHelp() {
@@ -438,7 +742,15 @@
             chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
         }
 
-        switchCamera('ultra-wide'); // Par défaut sur la caméra arrière
+        window.addEventListener('beforeunload', stopScanner);
+
+        // Démarrage initial avec la caméra arrière en 1×
+        document.addEventListener('DOMContentLoaded', () => {
+            startScanner();
+        });
+        if (document.readyState !== 'loading') {
+            startScanner();
+        }
     </script>
 
 

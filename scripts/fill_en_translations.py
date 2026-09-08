@@ -892,6 +892,10 @@ translations = {
     "Voir l'aperçu du document ci-dessous": "View document preview below",
     "Aperçu A4 en direct": "Live A4 Preview",
     "Haut de page": "Top of page",
+    "Code détecté !": "Barcode detected!",
+    "Lampe torche": "Flashlight",
+    "Changer de caméra": "Switch camera",
+    "Lampe torche non supportée sur cet appareil": "Flashlight not supported on this device",
 }
 
 with open(po_path, "rb") as f:
