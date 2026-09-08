@@ -892,6 +892,10 @@ translations = {
     "Voir l'aperçu du document ci-dessous": "Dokumentenvorschau unten anzeigen",
     "Aperçu A4 en direct": "Live A4-Vorschau",
     "Haut de page": "Nach oben",
+    "Code détecté !": "Barcode erkannt!",
+    "Lampe torche": "Taschenlampe",
+    "Changer de caméra": "Kamera wechseln",
+    "Lampe torche non supportée sur cet appareil": "Taschenlampe auf diesem Gerät nicht unterstützt",
 }
 
 with open(po_path, "rb") as f:

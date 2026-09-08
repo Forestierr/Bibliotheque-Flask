@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-07 12:08+0200\n"
+"POT-Creation-Date: 2026-09-08 16:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -336,7 +336,7 @@ msgstr "Le scanner utilise votre caméra pour lire le code-barres ISBN et récup
 msgid "Comment scanner un livre"
 msgstr "Comment scanner un livre"
 
-#: project/templates/aide.html:211 project/templates/livre/livre_scann.html:258
+#: project/templates/aide.html:211 project/templates/livre/livre_scann.html:336
 msgid "Retournez le livre"
 msgstr "Retournez le livre"
 
@@ -2116,96 +2116,112 @@ msgstr "Emprunté par :"
 msgid "Disponible"
 msgstr "Disponible"
 
-#: project/templates/livre/livre_scann.html:205
+#: project/templates/livre/livre_scann.html:277
 msgid "Centrez le code-barres dans ce cadre"
 msgstr "Centrez le code-barres dans ce cadre"
 
-#: project/templates/livre/livre_scann.html:236
+#: project/templates/livre/livre_scann.html:282
+msgid "Code détecté !"
+msgstr "Code détecté !"
+
+#: project/templates/livre/livre_scann.html:289
+msgid "Lampe torche"
+msgstr "Lampe torche"
+
+#: project/templates/livre/livre_scann.html:299
+msgid "Changer de caméra"
+msgstr "Changer de caméra"
+
+#: project/templates/livre/livre_scann.html:314
 msgid "Impossible d'accéder à la caméra."
 msgstr "Impossible d'accéder à la caméra."
 
-#: project/templates/livre/livre_scann.html:237
+#: project/templates/livre/livre_scann.html:315
 msgid ""
 "Vérifiez que vous avez autorisé l'accès à la caméra dans votre "
 "navigateur, puis rechargez la page."
 msgstr "Vérifiez que vous avez autorisé l'accès à la caméra dans votre navigateur, puis rechargez la page."
 
-#: project/templates/livre/livre_scann.html:241
+#: project/templates/livre/livre_scann.html:319
 msgid "Voir le guide de dépannage"
 msgstr "Voir le guide de dépannage"
 
-#: project/templates/livre/livre_scann.html:250
+#: project/templates/livre/livre_scann.html:328
 msgid "Comment scanner un livre ?"
 msgstr "Comment scanner un livre ?"
 
-#: project/templates/livre/livre_scann.html:258
+#: project/templates/livre/livre_scann.html:336
 msgid "pour voir le verso (4ème de couverture)"
 msgstr "pour voir le verso (4ème de couverture)"
 
-#: project/templates/livre/livre_scann.html:259
+#: project/templates/livre/livre_scann.html:337
 #: project/templates/user/dashboard.html:284
 msgid "Le"
 msgstr "Le"
 
-#: project/templates/livre/livre_scann.html:259
+#: project/templates/livre/livre_scann.html:337
 msgid "code-barres"
 msgstr "code-barres"
 
-#: project/templates/livre/livre_scann.html:259
+#: project/templates/livre/livre_scann.html:337
 msgid "l'ISBN officiel (978...) ou votre étiquette de classe (ex : BAC-A-001)"
 msgstr "l'ISBN officiel (978...) ou votre étiquette de classe (ex : BAC-A-001)"
 
-#: project/templates/livre/livre_scann.html:260
+#: project/templates/livre/livre_scann.html:338
 msgid "Pointez la caméra à"
 msgstr "Pointez la caméra à"
 
-#: project/templates/livre/livre_scann.html:260
+#: project/templates/livre/livre_scann.html:338
 msgid "environ 15-20 cm"
 msgstr "environ 15-20 cm"
 
-#: project/templates/livre/livre_scann.html:260
+#: project/templates/livre/livre_scann.html:338
 msgid "du code-barres"
 msgstr "du code-barres"
 
-#: project/templates/livre/livre_scann.html:261
+#: project/templates/livre/livre_scann.html:339
 msgid "Maintenez l'appareil"
 msgstr "Maintenez l'appareil"
 
-#: project/templates/livre/livre_scann.html:261
+#: project/templates/livre/livre_scann.html:339
 msgid "stable"
 msgstr "stable"
 
-#: project/templates/livre/livre_scann.html:261
+#: project/templates/livre/livre_scann.html:339
 msgid "quelques secondes — le scan est automatique"
 msgstr "quelques secondes — le scan est automatique"
 
-#: project/templates/livre/livre_scann.html:262
+#: project/templates/livre/livre_scann.html:340
 msgid "Si la lumière est faible, utilisez le bouton"
 msgstr "Si la lumière est faible, utilisez le bouton"
 
-#: project/templates/livre/livre_scann.html:262
+#: project/templates/livre/livre_scann.html:340
 msgid "torche"
 msgstr "torche"
 
-#: project/templates/livre/livre_scann.html:266
+#: project/templates/livre/livre_scann.html:344
 msgid "Astuce :"
 msgstr "Astuce :"
 
-#: project/templates/livre/livre_scann.html:266
+#: project/templates/livre/livre_scann.html:344
 msgid "Utilisez la mise au point du bouton"
 msgstr "Utilisez la mise au point du bouton"
 
-#: project/templates/livre/livre_scann.html:266
+#: project/templates/livre/livre_scann.html:344
 msgid "si le scan ne fonctionne pas — l'ultra-large"
 msgstr "si le scan ne fonctionne pas — l'ultra-large"
 
-#: project/templates/livre/livre_scann.html:266
+#: project/templates/livre/livre_scann.html:344
 msgid "peut mal détecter à courte distance."
 msgstr "peut mal détecter à courte distance."
 
-#: project/templates/livre/livre_scann.html:271
+#: project/templates/livre/livre_scann.html:349
 msgid "Guide complet du scanner"
 msgstr "Guide complet du scanner"
+
+#: project/templates/livre/livre_scann.html:660
+msgid "Lampe torche non supportée sur cet appareil"
+msgstr "Lampe torche non supportée sur cet appareil"
 
 #: project/templates/livre/livre_scann_live.html:6
 msgid "Scanner des livres"
