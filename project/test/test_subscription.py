@@ -837,3 +837,49 @@ def test_stripe_webhook_subscription_updated_cancel_at_period_end(client, app):
         assert updated_user.subscription_end_at is not None
         assert updated_user.is_canceling is True
         assert updated_user.is_premium is True
+
+
+def test_stripe_webhook_subscription_updated_cancel_at_without_period_end(client, app):
+    """Vérifie le cas où Stripe renvoie cancel_at sans cancel_at_period_end=True."""
+    with app.app_context():
+        user = User(
+            id=101,
+            email="cancel_direct_at@test.com",
+            plan="premium",
+            stripe_customer_id="cus_hook_cancel_at",
+            stripe_subscription_id="sub_hook_cancel_at",
+            stripe_subscription_status="active",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        future_timestamp = int(
+            (datetime.now(timezone.utc) + timedelta(days=30)).timestamp()
+        )
+        payload = {
+            "id": "evt_sub_update_cancel_at_only",
+            "type": "customer.subscription.updated",
+            "data": {
+                "object": {
+                    "id": "sub_hook_cancel_at",
+                    "customer": "cus_hook_cancel_at",
+                    "status": "active",
+                    "cancel_at_period_end": False,
+                    "cancel_at": future_timestamp,
+                }
+            },
+        }
+
+        with patch("stripe.Webhook.construct_event", return_value=payload):
+            resp = client.post(
+                "/webhook/stripe",
+                data=json.dumps(payload),
+                headers={"Stripe-Signature": "sig"},
+                content_type="application/json",
+            )
+            assert resp.status_code == 200
+
+        updated_user = db.session.get(User, 101)
+        assert updated_user.subscription_end_at is not None
+        assert updated_user.is_canceling is True
+        assert updated_user.is_premium is True

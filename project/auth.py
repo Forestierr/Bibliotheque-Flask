@@ -361,14 +361,15 @@ def reglage():
         try:
             stripe.api_key = stripe_key
             sub = stripe.Subscription.retrieve(user.stripe_subscription_id)
-            if getattr(sub, "cancel_at_period_end", False):
-                cancel_ts = getattr(sub, "cancel_at", None) or getattr(
-                    sub, "current_period_end", None
+            # Une résiliation programmée peut être signalée par cancel_at ou par cancel_at_period_end
+            cancel_ts = getattr(sub, "cancel_at", None)
+            if not cancel_ts and getattr(sub, "cancel_at_period_end", False):
+                cancel_ts = getattr(sub, "current_period_end", None)
+
+            if cancel_ts:
+                user.subscription_end_at = datetime.fromtimestamp(
+                    cancel_ts, tz=timezone.utc
                 )
-                if cancel_ts:
-                    user.subscription_end_at = datetime.fromtimestamp(
-                        cancel_ts, tz=timezone.utc
-                    )
             else:
                 user.subscription_end_at = None
             db.session.commit()

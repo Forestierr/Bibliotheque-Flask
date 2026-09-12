@@ -366,10 +366,11 @@ def _handle_subscription_updated(sub):
             target_plan = "free"
 
         end_at = None
-        if cancel_at_period_end:
-            cancel_ts = cancel_at or current_period_end
-            if cancel_ts:
-                end_at = datetime.fromtimestamp(cancel_ts, tz=timezone.utc)
+        cancel_ts = cancel_at
+        if not cancel_ts and cancel_at_period_end:
+            cancel_ts = current_period_end
+        if cancel_ts:
+            end_at = datetime.fromtimestamp(cancel_ts, tz=timezone.utc)
 
         # Idempotence : si le statut, le plan et subscription_end_at sont déjà identiques, pas de commit redondant
         if (
