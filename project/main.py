@@ -41,6 +41,7 @@ from .query import (
     get_books_most_borrowed,
     get_books_read_by_students,
     get_last_book_loan,
+    get_loans_count,
     get_loans_over_the_year,
     get_students_count,
     get_students_most_borrowed,
@@ -87,6 +88,7 @@ def index():
 def dashboard():
     n_books = get_books_count(current_user.id)
     n_students = get_students_count(current_user.id)
+    n_loans = get_loans_count(current_user.id)
 
     # get the 5 books most borrowed
     books = get_books_most_borrowed(current_user.id)
@@ -135,6 +137,7 @@ def dashboard():
         "user/dashboard.html",
         n_books=n_books,
         n_students=n_students,
+        n_loans=n_loans,
         books=books,
         students=students,
         books_loaned=books_loaned,

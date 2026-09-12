@@ -23,7 +23,7 @@
       </figure>
       <div class="media-content">
         <h2 class="title is-4 mb-1">{{ _("Bienvenue dans votre bibliothèque !") }}</h2>
-        <p class="subtitle is-6 mb-0">{{ _("Suivez ces 3 étapes pour commencer en moins de 5 minutes") }}</p>
+        <p class="subtitle is-6">{{ _("Suivez ces 3 étapes pour commencer en moins de 5 minutes") }}</p>
       </div>
     </article>
     <div class="block">
@@ -137,12 +137,10 @@
       {% if current_user.plan == 'founder' %}
         {# Aucun badge sur le dashboard pour les membres fondateurs (visible uniquement dans réglages) #}
       {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
-        <span class="tag is-success is-light is-rounded has-text-weight-bold" style="border: 1px solid #48c774;">
-          ⭐ {{ _("Plan Premium (Accès illimité)") }}
-        </span>
+        {# Aucun badge sur le dashboard pour les membres premium (pas de quotas) #}
       {% elif current_user.is_in_trial %}
         <span class="tag is-info is-light is-rounded has-text-weight-bold" style="border: 1px solid #3273dc;">
-          🎁 {{ _("Essai Premium : encore %(days)s jours", days=current_user.trial_days_left) }}
+          {{ _("Essai Premium : encore %(days)s jours", days=current_user.trial_days_left) }}
         </span>
       {% else %}
         <a href="{{ url_for('subscription.tarifs') }}" class="tag is-link is-light is-rounded has-text-weight-semibold">
@@ -164,8 +162,8 @@
           <p class="title is-4 mb-0">{{ n_students }}</p>
         </div>
         <div class="column">
-          <p class="is-size-7 has-text-grey">{{ _("Scans code-barres") }}</p>
-          <p class="title is-4 mb-0 has-text-success">{{ _("Illimités") }}</p>
+          <p class="is-size-7 has-text-grey">{{ _("Prêts enregistrés") }}</p>
+          <p class="title is-4 mb-0">{{ n_loans|default(0) }}</p>
         </div>
       </div>
     {% else %}

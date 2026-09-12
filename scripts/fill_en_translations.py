@@ -991,6 +991,7 @@ translations = {
     "Aucun livre ni élève n'est supprimé si vous arrêtez.": "No book or student is deleted if you cancel.",
     "← Revenir au comparatif complet des offres": "← Back to plans and pricing comparison",
     "Procéder au paiement sécurisé": "Proceed to secure checkout",
+    "Prêts enregistrés": "Recorded loans",
 }
 
 with open(po_path, "rb") as f:
