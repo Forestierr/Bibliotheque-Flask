@@ -74,14 +74,16 @@ def test_trial_period_attributes():
     assert user_premium.effective_plan == "premium"
     assert user_premium.is_premium is True
 
-    # Abonné premium avec paiement en retard (past_due)
+    # Abonné premium avec paiement en retard (past_due) :
+    # Stripe relance la facturation pendant 3–7 jours (dunning period).
+    # L'enseignant conserve l'accès Premium pour ne pas être coupé au premier échec.
     user_past_due = User(
         email="pastdue@test.com",
         plan="premium",
         stripe_subscription_status="past_due",
     )
-    assert user_past_due.effective_plan == "free"
-    assert user_past_due.is_premium is False
+    assert user_past_due.effective_plan == "free"  # pas "premium actif" dans l'UI
+    assert user_past_due.is_premium is True  # mais accès maintenu pendant dunning
 
 
 def test_student_quota_enforcement_free_user(client, app):

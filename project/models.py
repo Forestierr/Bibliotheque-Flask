@@ -88,7 +88,12 @@ class User(UserMixin, db.Model):
     def is_premium(self) -> bool:
         if self.plan == "founder":
             return True
-        if self.plan == "premium" and self.stripe_subscription_status == "active":
+        # "past_due" : Stripe tente de relancer le paiement pendant 3–7 jours (dunning period).
+        # On conserve l'accès pendant cette période pour ne pas couper l'enseignant au premier échec.
+        if self.plan == "premium" and self.stripe_subscription_status in (
+            "active",
+            "past_due",
+        ):
             return True
         return self.is_in_trial
 

@@ -124,10 +124,13 @@
                         </div>
                     </div>
                     <div class="level-right">
-                        <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-link is-light is-rounded">
-                            <span class="icon"><i class="fas fa-credit-card"></i></span>
-                            <span>{{ _("Gérer mon abonnement") }}</span>
-                        </a>
+                        <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="button is-link is-light is-rounded">
+                                <span class="icon"><i class="fas fa-credit-card"></i></span>
+                                <span>{{ _("Gérer mon abonnement") }}</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
