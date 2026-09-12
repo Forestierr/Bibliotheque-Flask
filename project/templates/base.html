@@ -3,7 +3,7 @@
 {% from "utils/footer.html" import footer, footer_mobile %}
 
 <!DOCTYPE html>
-<html lang="{{ get_locale() }}">
+<html lang="{{ get_locale() }}" data-theme="light">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -73,7 +73,7 @@
     <script src="{{ url_for('static', filename='/javascript/app.js') }}"></script>
 
     <!-- Bulma & Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.4/css/bulma.min.css"/>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script src="https://kit.fontawesome.com/222094ca6a.js" crossorigin="anonymous"></script>
 

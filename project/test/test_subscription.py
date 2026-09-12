@@ -521,6 +521,10 @@ def test_paiement_page_display(client, app):
     text = resp_anon_yearly.get_data(as_text=True)
     assert "Votre abonnement Premium" in text
     assert "30.-" in text
+    assert "TTC" in text
+    assert "CHF" in text
+    assert "Résiliation" in text
+    assert "Mentions Légales" in text
     assert "Créer un compte enseignant" in text
 
     # 2. Visiteur anonyme - formule mensuelle
@@ -528,6 +532,8 @@ def test_paiement_page_display(client, app):
     assert resp_anon_monthly.status_code == 200
     text_m = resp_anon_monthly.get_data(as_text=True)
     assert "5.-" in text_m
+    assert "TTC" in text_m
+    assert "CHF" in text_m
 
     # 3. Utilisateur connecté gratuit
     with app.app_context():
@@ -542,6 +548,7 @@ def test_paiement_page_display(client, app):
         text_auth = resp_auth.get_data(as_text=True)
         assert "btnSubmitCheckout" in text_auth
         assert "Procéder au paiement sécurisé" in text_auth
+        assert "30.- CHF TTC / an" in text_auth
 
 
 def test_portail_abonne_route(client, app):
@@ -883,3 +890,74 @@ def test_stripe_webhook_subscription_updated_cancel_at_without_period_end(client
         assert updated_user.subscription_end_at is not None
         assert updated_user.is_canceling is True
         assert updated_user.is_premium is True
+
+
+def test_tarifs_page_legal_and_pricing_requirements(client):
+    """Vérifie la présence des prix TTC en CHF, du lien vers CGU/Mentions Légales et de la mention de résiliation sans frais cachés sur /tarifs."""
+    resp = client.get("/tarifs")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 1. Prix TTC clairement affichés en CHF
+    assert "CHF" in html
+    assert "TTC" in html
+    assert "5.-" in html
+    assert "30.-" in html
+    assert "toutes taxes comprises" in html or "TTC" in html
+
+    # 2. Lien vers les CGU / Mentions légales
+    assert "/mentions_legales" in html or "/mentions-legales" in html
+    assert "Conditions Générales de Vente" in html or "Mentions Légales" in html
+
+    # 3. Information sur la résiliation (à tout moment, sans frais cachés)
+    assert "sans frais" in html
+    assert "sans engagement" in html or "résiliable à tout moment" in html
+    assert "1 clic" in html or "en 1 clic" in html
+    assert "frais caché" in html or "frais cachés" in html
+
+
+def test_canceling_user_display_in_tarifs_and_navbar(app, client):
+    """Vérifie que pour un utilisateur en résiliation programmée, /tarifs et la navbar affichent l'état de résiliation et non le simple badge Premium actif."""
+    from datetime import datetime, timedelta, timezone
+
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        user = User(
+            id=105,
+            email="canceling_user@test.com",
+            name="Prof Canceling",
+            plan="premium",
+            stripe_subscription_status="active",
+            stripe_customer_id="cus_canceling_105",
+            subscription_end_at=datetime.now(timezone.utc) + timedelta(days=20),
+            is_verified=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "105"
+
+        # 1. Vérification sur /tarifs
+        resp_tarifs = client.get("/tarifs")
+        assert resp_tarifs.status_code == 200
+        html_tarifs = resp_tarifs.get_data(as_text=True)
+
+        assert "Résiliation programmée" in html_tarifs
+        assert "accès Premium maintenu" in html_tarifs
+        assert "Réactiver" in html_tarifs
+        # Ne doit PAS afficher le simple message "Votre abonnement Premium est actif"
+        assert "Votre abonnement Premium est actif" not in html_tarifs
+
+        # 2. Vérification dans la navbar (rendue sur /tarifs ou /dashboard)
+        # Doit afficher le badge Résiliation programmée dans le menu avatar
+        assert "Résiliation programmée" in html_tarifs
+        assert "avatar-dropdown" in html_tarifs
+
+        # 3. Vérification sur /dashboard
+        resp_dash = client.get("/dashboard")
+        assert resp_dash.status_code == 200
+        html_dash = resp_dash.get_data(as_text=True)
+        assert "Premium jusqu'au" in html_dash

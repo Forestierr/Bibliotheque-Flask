@@ -292,3 +292,46 @@ def test_signup_page_multilingual(client):
     assert "Vereinfachen Sie Ihre Klassenbuch-Verwaltung" in html_de
     assert "Registrieren und kostenlos starten" in html_de
     assert "verwaltete Schüler" in html_de
+
+
+# Test conservation de l'email lors d'un échec de connexion
+def test_login_retains_email_on_failure(client, app):
+    with (
+        app.app_context(),
+        patch("project.auth.User.query") as mock_query,
+        patch("project.auth.os.getenv", return_value=""),
+    ):
+        mock_query.filter_by().first.return_value = None
+        response = client.post(
+            "/login",
+            data={"email": "professeur@ecole.ch", "password": "mauvais_mot_de_passe"},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert 'value="professeur@ecole.ch"' in html
+
+
+# Test conservation de l'email et du nom lors d'un échec d'inscription
+def test_signup_retains_email_and_name_on_failure(client, app):
+    with (
+        app.app_context(),
+        patch("project.auth.User.query") as mock_query,
+        patch("project.auth.os.getenv", return_value=""),
+    ):
+        # Simule email déjà existant
+        mock_query.filter_by().first.return_value = MagicMock()
+        response = client.post(
+            "/signup",
+            data={
+                "email": "existant@ecole.ch",
+                "name": "Mme Dupont",
+                "password": "motdepasse123",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert 'value="existant@ecole.ch"' in html
+        assert 'value="Mme Dupont"' in html
+

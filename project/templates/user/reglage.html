@@ -100,6 +100,140 @@
         gap: 1rem;
         flex-wrap: wrap;
     }
+    .button.is-locked-btn {
+        background-color: hsl(0, 0%, 96%) !important;
+        border: 1px solid hsl(0, 0%, 86%) !important;
+        color: hsl(0, 0%, 48%) !important;
+        box-shadow: none !important;
+        opacity: 0.8;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .button.is-locked-btn:hover {
+        opacity: 1;
+        background-color: #fef3c7 !important;
+        border-color: #fcd34d !important;
+        color: #92400e !important;
+    }
+    .button.disabled,
+    a.button.disabled {
+        opacity: 0.5 !important;
+        pointer-events: none !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+    }
+    .tab-label-short {
+        display: none;
+    }
+    @media (max-width: 768px) {
+        .settings-tabs {
+            display: flex;
+            width: 100%;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .settings-tab-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 0.55rem 0.25rem;
+            font-size: 0.85rem;
+            gap: 0.35rem;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .tab-label-full {
+            display: none;
+        }
+        .tab-label-short {
+            display: inline;
+        }
+        .profile-header-card {
+            padding: 1.25rem 1rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .profile-avatar-big {
+            width: 52px;
+            height: 52px;
+            font-size: 1.4rem;
+        }
+        .settings-card {
+            padding: 1.25rem 1rem;
+        }
+        .settings-plan-actions {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .settings-plan-actions .button,
+        .settings-plan-actions form,
+        .settings-plan-actions a.button {
+            width: 100% !important;
+            white-space: normal !important;
+            height: auto !important;
+            padding: 0.75rem 1rem !important;
+            text-align: center !important;
+            line-height: 1.35 !important;
+            justify-content: center !important;
+            display: flex !important;
+        }
+        .danger-zone-box {
+            padding: 1rem !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 0.85rem !important;
+        }
+        .danger-zone-box .button {
+            width: 100% !important;
+            margin-left: 0 !important;
+            white-space: normal !important;
+            height: auto !important;
+            padding: 0.65rem 0.85rem !important;
+            text-align: center !important;
+            line-height: 1.3 !important;
+            justify-content: center !important;
+        }
+        .modal-card {
+            margin: 0 10px !important;
+            width: calc(100vw - 20px) !important;
+            max-width: calc(100vw - 20px) !important;
+            max-height: calc(100vh - 30px) !important;
+            border-radius: 14px !important;
+        }
+        .modal-card-head {
+            padding: 0.85rem 1rem !important;
+        }
+        .modal-card-head .modal-card-title {
+            font-size: 1.05rem !important;
+            line-height: 1.3 !important;
+            margin-right: 0.5rem !important;
+        }
+        .modal-card-body {
+            padding: 1rem !important;
+            font-size: 0.92rem !important;
+            max-height: 55vh !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        .modal-card-foot {
+            padding: 0.75rem 1rem !important;
+            flex-direction: column-reverse !important;
+            gap: 0.5rem !important;
+            align-items: stretch !important;
+        }
+        .modal-card-foot .button,
+        .modal-card-foot a.button,
+        .modal-card-foot form {
+            width: 100% !important;
+            margin: 0 !important;
+            white-space: normal !important;
+            height: auto !important;
+            padding: 0.65rem 0.75rem !important;
+            text-align: center !important;
+            line-height: 1.3 !important;
+            font-size: 0.95rem !important;
+        }
+    }
 </style>
 
 <section class="section">
@@ -144,17 +278,20 @@
 
         <!-- Onglets -->
         <div class="settings-tabs">
-            <button class="settings-tab-btn is-active" onclick="switchSettingsTab('compte')" id="tabBtnCompte">
+            <button class="settings-tab-btn is-active" onclick="switchSettingsTab('compte')" id="tabBtnCompte" title="{{ _('Mon Compte') }}">
                 <span class="icon"><i class="fas fa-user-cog"></i></span>
-                <span>{{ _("Mon Compte") }}</span>
+                <span class="tab-label-full">{{ _("Mon Compte") }}</span>
+                <span class="tab-label-short">{{ _("Compte") }}</span>
             </button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('export')" id="tabBtnExport">
+            <button class="settings-tab-btn" onclick="switchSettingsTab('export')" id="tabBtnExport" title="{{ _('Exporter mes données') }}">
                 <span class="icon"><i class="fas fa-file-export"></i></span>
-                <span>{{ _("Exporter mes données") }}</span>
+                <span class="tab-label-full">{{ _("Exporter mes données") }}</span>
+                <span class="tab-label-short">{{ _("Exports") }}</span>
             </button>
-            <button class="settings-tab-btn" onclick="switchSettingsTab('danger')" id="tabBtnDanger">
+            <button class="settings-tab-btn" onclick="switchSettingsTab('danger')" id="tabBtnDanger" title="{{ _('Zone de danger') }}">
                 <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-                <span>{{ _("Zone de danger") }}</span>
+                <span class="tab-label-full">{{ _("Zone de danger") }}</span>
+                <span class="tab-label-short">{{ _("Danger") }}</span>
             </button>
         </div>
 
@@ -210,7 +347,7 @@
                             {% endif %}
                         </p>
                     </div>
-                    <div>
+                    <div class="settings-plan-actions">
                         {% if user.plan == 'founder' %}
                             {# Membre fondateur : aucun bouton #}
                         {% elif user.is_canceling %}
@@ -357,23 +494,28 @@
                 <div class="columns is-multiline">
                     <div class="column is-6">
                         <div class="export-box">
-                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                            <div style="display:flex; align-items:flex-start; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0; margin-top: 2px;">
                                     <i class="fas fa-book fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">{{ _("Tous les livres") }}</h4>
-                                {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
-                                {% endif %}
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 class="title is-5 mb-1" style="line-height: 1.3;">{{ _("Tous les livres") }}</h4>
+                                    {% if not current_user.is_premium %}
+                                        <span class="tag is-warning is-light is-rounded is-small">
+                                            <span class="icon is-small mr-1"><i class="fas fa-lock fa-xs"></i></span>{{ _("Premium") }}
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste complète de tous les livres enregistrés dans votre bibliothèque.") }}</p>
                             {% if current_user.is_premium %}
-                            <a href="{{ url_for('export.export_books') }}" class="button is-link is-outlined is-fullwidth is-rounded disabled">
+                            <a href="{{ url_for('export.export_books') }}" class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
-                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark">
+                            <button onclick="openModal('modalPremiumExport')" class="button is-fullwidth is-rounded is-locked-btn">
+                                <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}
@@ -382,14 +524,18 @@
 
                     <div class="column is-6">
                         <div class="export-box">
-                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                            <div style="display:flex; align-items:flex-start; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0; margin-top: 2px;">
                                     <i class="fas fa-user-graduate fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">{{ _("Lectures par élève") }}</h4>
-                                {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
-                                {% endif %}
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 class="title is-5 mb-1" style="line-height: 1.3;">{{ _("Lectures par élève") }}</h4>
+                                    {% if not current_user.is_premium %}
+                                        <span class="tag is-warning is-light is-rounded is-small">
+                                            <span class="icon is-small mr-1"><i class="fas fa-lock fa-xs"></i></span>{{ _("Premium") }}
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("Historique des livres lus et empruntés classé par élève.") }}</p>
                             {% if current_user.is_premium %}
@@ -398,7 +544,8 @@
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
-                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark disabled">
+                            <button onclick="openModal('modalPremiumExport')" class="button is-fullwidth is-rounded is-locked-btn">
+                                <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}
@@ -407,14 +554,18 @@
 
                     <div class="column is-6">
                         <div class="export-box">
-                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                            <div style="display:flex; align-items:flex-start; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0; margin-top: 2px;">
                                     <i class="fas fa-exchange-alt fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">{{ _("Prêts en cours") }}</h4>
-                                {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
-                                {% endif %}
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 class="title is-5 mb-1" style="line-height: 1.3;">{{ _("Prêts en cours") }}</h4>
+                                    {% if not current_user.is_premium %}
+                                        <span class="tag is-warning is-light is-rounded is-small">
+                                            <span class="icon is-small mr-1"><i class="fas fa-lock fa-xs"></i></span>{{ _("Premium") }}
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste des emprunts actifs non encore retournés.") }}</p>
                             {% if current_user.is_premium %}
@@ -423,7 +574,8 @@
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
-                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark disabled">
+                            <button onclick="openModal('modalPremiumExport')" class="button is-fullwidth is-rounded is-locked-btn">
+                                <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}
@@ -432,14 +584,18 @@
 
                     <div class="column is-6">
                         <div class="export-box">
-                            <div style="display:flex; align-items:center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0;">
+                            <div style="display:flex; align-items:flex-start; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 10px; background: hsl(210, 60%, 95%); color: hsl(210, 50%, 50%); display: flex; align-items: center; justify-content: center; flex-shrink:0; margin-top: 2px;">
                                     <i class="fas fa-history fa-lg"></i>
                                 </div>
-                                <h4 class="title is-5 mb-0">{{ _("Historique des prêts") }}</h4>
-                                {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
-                                {% endif %}
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 class="title is-5 mb-1" style="line-height: 1.3;">{{ _("Historique des prêts") }}</h4>
+                                    {% if not current_user.is_premium %}
+                                        <span class="tag is-warning is-light is-rounded is-small">
+                                            <span class="icon is-small mr-1"><i class="fas fa-lock fa-xs"></i></span>{{ _("Premium") }}
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("L'ensemble de tous les prêts réalisés depuis la création de la bibliothèque.") }}</p>
                             {% if current_user.is_premium %}
@@ -448,7 +604,8 @@
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
-                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark disabled">
+                            <button onclick="openModal('modalPremiumExport')" class="button is-fullwidth is-rounded is-locked-btn">
+                                <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}
@@ -624,7 +781,7 @@
     <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
         <header class="modal-card-head" style="background: #fef3c7;">
             <p class="modal-card-title has-text-warning-dark">
-                <span class="icon mr-2">🔒</span>
+                <span class="icon mr-2"><i class="fas fa-lock"></i></span>
                 {{ _("Fonctionnalité Premium : Export Excel") }}
             </p>
             <button class="delete" aria-label="close" onclick="closeModal('modalPremiumExport')"></button>

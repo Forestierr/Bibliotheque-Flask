@@ -236,7 +236,7 @@
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        background: linear-gradient(135deg, hsl(217, 71%, 53%), hsl(250, 60%, 60%));
+        background: linear-gradient(135deg, hsl(191, 70%, 55%), hsl(199, 91%, 31%));
         color: white;
         font-weight: 700;
         font-size: 0.95rem;
@@ -349,24 +349,52 @@
         {% if current_user.is_authenticated %}
         <!-- Menu connecte -->
         <div class="navbar-end" style="align-items: center;">
+            <div class="navbar-item mobile-only-nav py-2 mb-2" style="border-bottom: 1px solid hsl(0, 0%, 92%); width: 100%;">
+                <div class="is-flex is-align-items-center is-justify-content-space-between" style="width: 100%;">
+                    <span class="has-text-weight-bold is-size-6">{{ current_user.name }}</span>
+                    {% if current_user.plan == 'founder' %}
+                        {# Aucun badge #}
+                    {% elif current_user.is_canceling is sameas true %}
+                        <span class="tag is-warning is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #ffdd57;">
+                            ⚠️ {{ _("Résiliation en cours") }}
+                        </span>
+                    {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+                        <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #48c774;">
+                            {{ _("Premium") }}
+                        </span>
+                    {% elif current_user.is_in_trial %}
+                        <span class="tag is-info is-light is-rounded has-text-weight-semibold" style="font-size: 0.72rem; border: 1px solid #3273dc;">
+                            {{ _("Essai (%(days)sj)", days=current_user.trial_days_left) }}
+                        </span>
+                    {% else %}
+                        <span class="tag is-light is-rounded" style="font-size: 0.72rem;">
+                            {{ _("Version Gratuite") }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
             <a href="{{ url_for('livre.livre_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'livre.' in request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2"><i class="fas fa-book"></i></span>
+                <span class="icon"><i class="fas fa-book"></i></span>
                 <span>{{ _('Livres') }}</span>
             </a>
             <a href="{{ url_for('eleve.eleve_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'eleve.' in request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2"><i class="fas fa-users"></i></span>
+                <span class="icon"><i class="fas fa-users"></i></span>
                 <span>{{ _('Élèves') }}</span>
             </a>
             <a href="{{ url_for('emprunt.emprunt_db') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'emprunt.' in request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2"><i class="fas fa-exchange-alt"></i></span>
+                <span class="icon"><i class="fas fa-exchange-alt"></i></span>
                 <span>{{ _('Emprunts') }}</span>
             </a>
             <a href="{{ url_for('ressource.index') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'ressource.' in request.endpoint %}is-active-link{% endif %}">
-                <span class="icon mr-2"><i class="fas fa-print"></i></span>
+                <span class="icon"><i class="fas fa-print"></i></span>
                 <span>{{ _('Ressources') }}</span>
             </a>
 
             <!-- Liens directs visibles uniquement sur mobile -->
+            <a href="{{ url_for('subscription.tarifs') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint == 'subscription.tarifs' %}is-active-link{% endif %}">
+                <span class="icon mr-2"><i class="fas fa-tag"></i></span>
+                <span>{{ _('Tarifs & Abonnements') }}</span>
+            </a>
             <a href="{{ url_for('main.aide') }}" class="navbar-item navbar-item-custom mobile-only-nav {% if request.endpoint == 'main.aide' %}is-active-link{% endif %}">
                 <span class="icon mr-2"><i class="fas fa-question-circle"></i></span>
                 <span>{{ _('Aide') }}</span>
@@ -410,13 +438,17 @@
                             <div style="margin-top: 4px;">
                                 {% if current_user.plan == 'founder' %}
                                     {# Aucun badge dans le menu déroulant pour les fondateurs #}
+                                {% elif current_user.is_canceling is sameas true %}
+                                    <span class="tag is-warning is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #ffdd57;" title="{{ _('Résiliation programmée') }}">
+                                        ⚠️ {{ _("Résiliation programmée") }}
+                                    </span>
                                 {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
                                     <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #48c774;">
-                                        ⭐ {{ _("Premium") }}
+                                        {{ _("Premium") }}
                                     </span>
                                 {% elif current_user.is_in_trial %}
                                     <span class="tag is-info is-light is-rounded has-text-weight-semibold" style="font-size: 0.72rem; border: 1px solid #3273dc;">
-                                        🎁 {{ _("Essai (%(days)sj)", days=current_user.trial_days_left) }}
+                                        {{ _("Essai (%(days)sj)", days=current_user.trial_days_left) }}
                                     </span>
                                 {% else %}
                                     <span class="tag is-light is-rounded" style="font-size: 0.72rem;">
@@ -469,6 +501,9 @@
         {% else %}
         <!-- Menu deconnecte (Visiteur / SEO) -->
         <div class="navbar-end" style="align-items: center;">
+            <a href="{{ url_for('subscription.tarifs') }}" class="navbar-item navbar-item-custom {% if 'tarifs' in request.path %}is-active-link{% endif %}">
+                {{ _('Tarifs') }}
+            </a>
             <a href="{{ url_for('main.enseignants_index') }}" class="navbar-item navbar-item-custom {% if 'enseignants' in request.path %}is-active-link{% endif %}">
                 {{ _('Guides') }}
             </a>

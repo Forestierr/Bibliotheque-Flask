@@ -83,3 +83,28 @@ def test_dashboard_premium_shows_loans_count(app):
         assert res.status_code == 200
         html = res.get_data(as_text=True)
         assert "Prêts enregistrés" in html
+
+
+def test_mentions_legales_payment_and_cancellation_terms(client):
+    """Vérifie que la page mentions légales mentionne bien Stripe, les clauses de résiliation, non-remboursement et sécurité des données."""
+    for url in ("/mentions_legales", "/mentions-legales"):
+        res = client.get(url)
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+
+        # Partenaire Stripe
+        assert "Stripe" in html
+        # Données bancaires non stockées
+        assert "Aucune coordonnée bancaire" in html
+        # Durée de l'engagement (mensuelle / annuelle)
+        assert "douze mois" in html or "12 mois" in html or "engagement" in html
+        assert "5.00 CHF" in html
+        assert "30.00 CHF" in html
+        # Politique d'annulation et non-destruction des données
+        assert "résilié à tout moment" in html
+        assert "Aucune donnée n'est supprimée ni bloquée" in html
+        # Non-remboursement
+        assert "non-remboursement" in html or "non remboursable" in html
+        # Notifications par email
+        assert "e-mail" in html or "email" in html
+        assert "gestion de votre abonnement" in html or "factures et reçus" in html

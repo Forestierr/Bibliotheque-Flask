@@ -82,14 +82,120 @@
 
 {% block content %}
 
+<style>
+    /* Desktop enhancements */
+    .hero-title {
+        font-weight: 800;
+        line-height: 1.18;
+        letter-spacing: -0.025em;
+    }
+    .hero-subtitle {
+        line-height: 1.45;
+        color: hsl(0, 0%, 40%);
+    }
+
+    /* Mobile responsiveness (max-width: 768px) */
+    @media (max-width: 768px) {
+        /* Section padding & spacing */
+        .section {
+            padding: 1.25rem 0.85rem !important;
+        }
+        .section.block {
+            padding: 1.5rem 0.5rem !important;
+            margin-top: 2rem !important;
+        }
+
+        /* Hero Section Typography */
+        .hero-title,
+        h1.title.is-1 {
+            font-size: 1.75rem !important;
+            line-height: 1.25 !important;
+            letter-spacing: -0.02em;
+        }
+        .hero-subtitle,
+        h2.subtitle.is-3 {
+            font-size: 1.05rem !important;
+            line-height: 1.5 !important;
+            margin-top: 0.9rem !important;
+        }
+        .hero-cta-box {
+            margin-top: 1.5rem !important;
+        }
+        .hero-cta-btn,
+        .column .button.is-large {
+            width: 100% !important;
+            font-size: 1.05rem !important;
+            padding: 0.75rem 1.25rem !important;
+            height: auto !important;
+            justify-content: center !important;
+        }
+
+        /* Section Headings & Subtitles */
+        h2.title.is-2 {
+            font-size: 1.45rem !important;
+            line-height: 1.3 !important;
+            margin-bottom: 1rem !important;
+        }
+        h3.title.is-4 {
+            font-size: 1.15rem !important;
+            line-height: 1.35 !important;
+            margin-bottom: 0.5rem !important;
+        }
+        .subtitle.is-4 {
+            font-size: 1rem !important;
+            line-height: 1.45 !important;
+        }
+        .subtitle.is-5 {
+            font-size: 0.92rem !important;
+            line-height: 1.45 !important;
+        }
+
+        /* Stats Counter on mobile */
+        .level.is-mobile .title {
+            font-size: 1.4rem !important;
+        }
+        .level.is-mobile .heading {
+            font-size: 0.72rem !important;
+        }
+
+        /* Boxes padding on mobile */
+        .box {
+            padding: 1.25rem 1rem !important;
+        }
+        .content.box.p-6 {
+            padding: 1.25rem 1rem !important;
+        }
+        #fonctionnalites {
+            padding: 1.5rem 1rem !important;
+            margin-top: 2rem !important;
+        }
+
+        /* Feature section image ratio */
+        .feature-mobile-img {
+            max-width: 35% !important;
+            right: 0.25rem !important;
+        }
+
+        /* Bottom Install Buttons */
+        .buttons.is-centered .button.is-large {
+            width: 100% !important;
+            font-size: 1rem !important;
+            margin: 0.35rem 0 !important;
+            height: auto !important;
+            padding: 0.75rem 1rem !important;
+            justify-content: center !important;
+        }
+    }
+</style>
+
     <section class="section">
         <!-- Hero Section -->
         <div class="section columns is-multiline is-centered is-vcentered" style="padding-top: 1rem;">
             <div class="column">
-                <h1 class="title is-1">{{ _("Le logiciel de gestion de bibliothèque pour les enseignants") }}</h1>
-                <h2 class="subtitle is-3" style="margin-top: 1.5rem;">{{ _("Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves et développez la lecture dans votre classe.") }}</h2>
-                <div style="margin-top: 2.5rem;">
-                    <a href="{{ url_for('auth.signup') }}" class="button is-large is-link is-rounded">
+                <h1 class="title is-1 hero-title">{{ _("Le logiciel de gestion de bibliothèque pour les enseignants") }}</h1>
+                <h2 class="subtitle is-3 hero-subtitle" style="margin-top: 1.5rem;">{{ _("Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves et développez la lecture dans votre classe.") }}</h2>
+                <div class="hero-cta-box" style="margin-top: 2.5rem;">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-large is-link is-rounded hero-cta-btn">
                         <span>{{ _("Essayer gratuitement") }}</span>
                     </a>
                 </div>

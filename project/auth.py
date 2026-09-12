@@ -51,8 +51,10 @@ def on_user_loaded_from_cookie(sender, user):
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
+    email = session.pop("login_email", "")
     return render_template(
         "auth/login.html",
+        email=email,
         hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
     )
 
@@ -62,8 +64,8 @@ def login_post():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
 
-    email = request.form.get("email")
-    password = request.form.get("password")
+    email = request.form.get("email", "")
+    password = request.form.get("password", "")
     remember = bool(request.form.get("remember"))
 
     # Vérification hCaptcha (ignorée si la clé n'est pas configurée)
@@ -72,6 +74,7 @@ def login_post():
         captcha_token = request.form.get("h-captcha-response", "")
         if not captcha_token:
             flash(_("Veuillez compléter le CAPTCHA."), "error")
+            session["login_email"] = email
             return redirect(url_for("auth.login"))
         verify_response = requests.post(
             "https://api.hcaptcha.com/siteverify",
@@ -80,6 +83,7 @@ def login_post():
         )
         if not verify_response.json().get("success", False):
             flash(_("CAPTCHA invalide. Veuillez réessayer."), "error")
+            session["login_email"] = email
             return redirect(url_for("auth.login"))
 
     user = User.query.filter_by(email=email).first()
@@ -88,16 +92,19 @@ def login_post():
     # take the user supplied password, hash it, and compare it to the hashed password in database
     if not user or not check_password_hash(user.password, password):
         flash(_("Vérifier si votre email et votre mot de passe sont correcte."))
+        session["login_email"] = email
         return redirect(
             url_for("auth.login")
         )  # if user doesn't exist or password is wrong, reload the page
 
     if not user.is_verified:
         flash(_("Veuillez vérifier votre adresse e-mail avant de vous connecter."))
+        session["login_email"] = email
         return redirect(url_for("auth.login"))
 
     # if the above check passes, then we know the user has the right credentials
     session.permanent = True
+    session.pop("login_email", None)
     pref = getattr(user, "preferred_language", None)
     if isinstance(pref, str) and pref:
         session["lang"] = pref
@@ -109,8 +116,12 @@ def login_post():
 def signup():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
+    email = session.pop("signup_email", "")
+    name = session.pop("signup_name", "")
     return render_template(
         "auth/signup.html",
+        email=email,
+        name=name,
         hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
         max_students=MAX_FREE_STUDENTS,
         max_books=MAX_FREE_BOOKS,
@@ -124,9 +135,9 @@ def signup_post():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
 
-    email = request.form.get("email")
-    name = request.form.get("name")
-    password = request.form.get("password")
+    email = request.form.get("email", "")
+    name = request.form.get("name", "")
+    password = request.form.get("password", "")
 
     # Vérification hCaptcha (ignorée si la clé n'est pas configurée)
     hcaptcha_secret = os.getenv("HCAPTCHA_SECRET_KEY", "")
@@ -134,6 +145,8 @@ def signup_post():
         captcha_token = request.form.get("h-captcha-response", "")
         if not captcha_token:
             flash(_("Veuillez compléter le CAPTCHA."), "error")
+            session["signup_email"] = email
+            session["signup_name"] = name
             return redirect(url_for("auth.signup"))
         verify_response = requests.post(
             "https://api.hcaptcha.com/siteverify",
@@ -142,6 +155,8 @@ def signup_post():
         )
         if not verify_response.json().get("success", False):
             flash(_("CAPTCHA invalide. Veuillez réessayer."), "error")
+            session["signup_email"] = email
+            session["signup_name"] = name
             return redirect(url_for("auth.signup"))
 
     user = User.query.filter_by(
@@ -150,7 +165,12 @@ def signup_post():
 
     if user:  # if a user is found, we want to redirect back to signup page so user can try again
         flash(_("Cette email est déjà utilisé."))
+        session["signup_email"] = email
+        session["signup_name"] = name
         return redirect(url_for("auth.signup"))
+
+    session.pop("signup_email", None)
+    session.pop("signup_name", None)
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     current_lang = session.get("lang")

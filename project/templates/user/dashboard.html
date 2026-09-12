@@ -136,6 +136,14 @@
     <div class="level-right">
       {% if current_user.plan == 'founder' %}
         {# Aucun badge sur le dashboard pour les membres fondateurs (visible uniquement dans réglages) #}
+      {% elif current_user.is_canceling is sameas true %}
+        <a href="{{ url_for('auth.reglage') }}" class="tag is-warning is-light is-rounded has-text-weight-bold" style="border: 1px solid #ffdd57;" title="{{ _('Résiliation programmée') }}">
+          {% if current_user.effective_cancellation_date and current_user.effective_cancellation_date.__class__.__name__ != 'MagicMock' %}
+            ⚠️ {{ _("Premium jusqu'au %(date)s", date=current_user.effective_cancellation_date|format_date) }}
+          {% else %}
+            ⚠️ {{ _("Résiliation programmée") }}
+          {% endif %}
+        </a>
       {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
         {# Aucun badge sur le dashboard pour les membres premium (pas de quotas) #}
       {% elif current_user.is_in_trial %}

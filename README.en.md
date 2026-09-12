@@ -141,15 +141,32 @@ stripe trigger customer.subscription.deleted
 stripe trigger invoice.payment_failed
 ```
 
-### 6. In-Browser Checkout & Customer Portal
+### 6. In-Browser Checkout & Stripe Test Cards
 
 - Visit `http://localhost:5000/tarifs`
 - Select either plan to access the order summary at `/paiement`.
 - Click "Procéder au paiement sécurisé" to open Stripe Checkout.
-- Test card: `4242 4242 4242 4242` (future expiry date, any CVC).
-- Customer Portal: access via `/portail-abonne` or "Gérer mon abonnement" in settings.
+- After validation, you are redirected to `/subscription/success` and the account is upgraded to Premium.
 
-### 7. Idempotency & CSRF Exemption
+#### Stripe Test Cards
+
+Test mode (using your `sk_test_...` keys) is completely disconnected from the actual banking network. To validate payments and test the integration flow, exclusively use fake card numbers provided by Stripe:
+
+- **Successful payment (most common)**: `4242 4242 4242 4242`
+- **Declined payment (insufficient funds)**: `4000 0000 0000 0002`
+- **Declined payment (lost/stolen card)**: `4000 0000 0000 0022`
+- **Payment requiring 3D Secure authentication**: `4000 0000 0000 3020`
+
+For expiration date, enter any date in the future (e.g. `12/30`).  
+For CVC, enter any 3 digits (e.g. `123`).
+
+### 7. Customer Portal
+
+A Premium user can manage payment methods, download invoices or cancel anytime:
+- Directly at `http://localhost:5000/portail-abonne`
+- Or via "Gérer mon abonnement" in settings (`/reglage`) and `/tarifs`.
+
+### 8. Idempotency & CSRF Exemption
 
 - The `/webhook/stripe` route is decorated with `@csrf.exempt` to ensure Stripe webhook requests bypass Flask-WTF CSRF validation.
 - All webhook event handlers implement idempotent state checks to safely handle duplicate webhook deliveries.

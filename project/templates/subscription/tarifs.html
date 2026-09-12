@@ -90,6 +90,24 @@
         border: 1px solid hsl(0, 0%, 90%);
         margin-top: 3rem;
     }
+    .table-comparison .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .table-comparison .table {
+        min-width: 500px;
+    }
+    .table-comparison .table th:nth-child(2),
+    .table-comparison .table th:nth-child(3),
+    .table-comparison .table td:nth-child(2),
+    .table-comparison .table td:nth-child(3) {
+        white-space: nowrap;
+    }
+    @media (max-width: 768px) {
+        .table-comparison.box {
+            padding: 1.25rem 0.75rem;
+        }
+    }
 </style>
 
 <section class="section">
@@ -126,19 +144,31 @@
                     </div>
                 </div>
             </div>
+            {% elif current_user.is_canceling is sameas true %}
+            <div class="notification is-warning is-light mb-6" style="border-radius: 12px; border-left: 5px solid #d97706; padding: 1.4rem 1.6rem;">
+                <p class="title is-5 mb-2 has-text-warning-dark" style="font-weight: 700;">
+                    <span class="icon mr-1"><i class="fas fa-exclamation-triangle"></i></span>
+                    {{ _("Résiliation programmée : accès Premium maintenu") }}
+                </p>
+                <p class="is-size-6" style="color: #78350f; line-height: 1.5; margin-bottom: 0;">
+                    {% if current_user.effective_cancellation_date and current_user.effective_cancellation_date.__class__.__name__ != 'MagicMock' %}
+                        {{ _("Votre abonnement ne sera pas renouvelé, mais vous conservez tous vos accès illimités (scans, exports, étiquettes) jusqu'au %(date)s. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.", date=current_user.effective_cancellation_date|format_date) }}
+                    {% else %}
+                        {{ _("Votre demande de résiliation a bien été prise en compte. Vous continuez à profiter de l'ensemble des fonctionnalités Premium sans interruption jusqu'au terme de votre période. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.") }}
+                    {% endif %}
+                </p>
+            </div>
             {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
-            <div class="notification is-success is-light mb-6" style="border-radius: 12px; border-left: 5px solid #48c774;">
-                <div class="level">
-                    <div class="level-left">
-                        <div>
-                            <p class="title is-5 mb-1">{{ _("Votre abonnement Premium est actif") }}</p>
-                            <p class="is-size-6 has-text-grey">{{ _("Vous bénéficiez d'un accès illimité à toutes les fonctionnalités de Livres en Classe.") }}</p>
-                        </div>
+            <div class="notification is-success is-light mb-6" style="border-radius: 12px; border-left: 5px solid #48c774; padding: 1.4rem 1.6rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+                    <div style="flex: 1 1 520px; min-width: 0;">
+                        <p class="title is-5 mb-1">{{ _("Votre abonnement Premium est actif") }}</p>
+                        <p class="is-size-6 has-text-grey" style="line-height: 1.5; margin-bottom: 0;">{{ _("Vous bénéficiez d'un accès illimité à toutes les fonctionnalités de Livres en Classe.") }}</p>
                     </div>
-                    <div class="level-right">
-                        <form action="{{ url_for('subscription.portal') }}" method="POST">
+                    <div style="flex-shrink: 0;">
+                        <form action="{{ url_for('subscription.portal') }}" method="POST" style="margin: 0;">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="button is-link is-light is-rounded">
+                            <button type="submit" class="button is-link is-light is-rounded has-text-weight-bold" style="white-space: nowrap;">
                                 <span class="icon"><i class="fas fa-credit-card"></i></span>
                                 <span>{{ _("Gérer mon abonnement") }}</span>
                             </button>
@@ -167,13 +197,13 @@
                 <div class="pricing-card">
                     <div>
                         <h3 class="title is-4 mb-1">{{ _("Mensuel") }}</h3>
-                        <p class="is-size-6 has-text-grey">{{ _("Sans engagement, liberté totale") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("Sans engagement, résiliable à tout moment") }}</p>
                     </div>
 
                     <div class="price-tag">
-                        5.- <small>{{ currency }} / {{ _("mois") }}</small>
+                        5.- <small>{{ currency }} {{ _("TTC") }} / {{ _("mois") }}</small>
                     </div>
-                    <p class="is-size-7 has-text-grey mb-4">{{ _("Facturé chaque mois, résiliable en 1 clic") }}</p>
+                    <p class="is-size-7 has-text-grey mb-4">{{ _("Facturé chaque mois, résiliation en 1 clic sans frais cachés") }}</p>
 
                     <ul class="feature-list">
                         <li>
@@ -207,6 +237,11 @@
                         <button class="button is-light is-fullwidth is-rounded" disabled>
                             {{ _("Inclus à vie (Fondateur)") }}
                         </button>
+                        {% elif current_user.is_canceling is sameas true %}
+                        <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-warning is-light is-fullwidth is-rounded has-text-weight-bold">
+                            <span class="icon"><i class="fas fa-undo"></i></span>
+                            <span>{{ _("Réactiver mon abonnement") }}</span>
+                        </a>
                         {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
                         <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-light is-fullwidth is-rounded">
                             {{ _("Gérer mon abonnement") }}
@@ -231,11 +266,11 @@
 
                     <div>
                         <h3 class="title is-4 mb-1 has-text-link">{{ _("Annuel") }}</h3>
-                        <p class="is-size-6 has-text-grey">{{ _("La formule idéale pour l'année scolaire") }}</p>
+                        <p class="is-size-6 has-text-grey">{{ _("La formule idéale pour l'année scolaire, résiliable à tout moment") }}</p>
                     </div>
 
                     <div class="price-tag has-text-link">
-                        30.- <small>{{ currency }} / {{ _("an") }}</small>
+                        30.- <small>{{ currency }} {{ _("TTC") }} / {{ _("an") }}</small>
                     </div>
                     <p class="is-size-7 has-text-dark has-text-weight-semibold mb-4">
                         {{ _("Soit seulement 2.50 CHF par mois") }}
@@ -277,6 +312,11 @@
                         <button class="button is-light is-fullwidth is-rounded" disabled>
                             {{ _("Inclus à vie (Fondateur)") }}
                         </button>
+                        {% elif current_user.is_canceling is sameas true %}
+                        <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-warning is-light is-fullwidth is-rounded has-text-weight-bold">
+                            <span class="icon"><i class="fas fa-undo"></i></span>
+                            <span>{{ _("Réactiver mon abonnement") }}</span>
+                        </a>
                         {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
                         <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-light is-fullwidth is-rounded">
                             {{ _("Gérer mon abonnement") }}
@@ -298,57 +338,70 @@
         <!-- Tableau comparatif Free vs Premium -->
         <div class="table-comparison box">
             <h3 class="title is-4 mb-4 has-text-centered">{{ _("Comparatif des fonctionnalités") }}</h3>
-            <table class="table is-fullwidth is-hoverable">
-                <thead>
-                    <tr>
-                        <th style="width: 50%;">{{ _("Fonctionnalité") }}</th>
-                        <th class="has-text-centered" style="width: 25%;">{{ _("Gratuit (Free)") }}</th>
-                        <th class="has-text-centered has-text-link" style="width: 25%;">{{ _("Premium") }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>{{ _("Nombre d'élèves") }}</strong></td>
-                        <td class="has-text-centered">{{ max_students }} {{ _("élèves max") }}</td>
-                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ _("Nombre de livres") }}</strong></td>
-                        <td class="has-text-centered">{{ max_books }} {{ _("livres max") }}</td>
-                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ _("Scanner code-barres par caméra") }}</strong></td>
-                        <td class="has-text-centered">{{ max_scans }} {{ _("scans d'essai") }}</td>
-                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ _("Historique des prêts") }}</strong></td>
-                        <td class="has-text-centered">{{ history_months }} {{ _("derniers mois") }}</td>
-                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Archives illimitées") }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ _("Téléchargement & Exports Excel") }}</strong></td>
-                        <td class="has-text-centered has-text-grey"><i class="fas fa-lock mr-1"></i> {{ _("Non") }}</td>
-                        <td class="has-text-centered has-text-weight-bold has-text-dark"><i class="fas fa-check mr-1"></i> {{ _("Oui") }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ _("Planches d'étiquettes & codes-barres") }}</strong></td>
-                        <td class="has-text-centered has-text-grey"><i class="fas fa-lock mr-1"></i> {{ _("Non") }}</td>
-                        <td class="has-text-centered has-text-weight-bold has-text-dark"><i class="fas fa-check mr-1"></i> {{ _("Oui") }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>{{ _("Codes de réduction / bons d'école") }}</strong></td>
-                        <td class="has-text-centered">-</td>
-                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Acceptés sur Stripe") }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container mb-0">
+                <table class="table is-fullwidth is-hoverable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%; min-width: 220px;">{{ _("Fonctionnalité") }}</th>
+                            <th class="has-text-centered" style="width: 25%; min-width: 140px;">{{ _("Gratuit (Free)") }}</th>
+                            <th class="has-text-centered has-text-link" style="width: 25%; min-width: 140px;">{{ _("Premium") }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>{{ _("Nombre d'élèves") }}</strong></td>
+                            <td class="has-text-centered">{{ max_students }} {{ _("élèves max") }}</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ _("Nombre de livres") }}</strong></td>
+                            <td class="has-text-centered">{{ max_books }} {{ _("livres max") }}</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ _("Scanner code-barres par caméra") }}</strong></td>
+                            <td class="has-text-centered">{{ max_scans }} {{ _("scans d'essai") }}</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ _("Historique des prêts") }}</strong></td>
+                            <td class="has-text-centered">{{ history_months }} {{ _("derniers mois") }}</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Archives illimitées") }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ _("Téléchargement & Exports Excel") }}</strong></td>
+                            <td class="has-text-centered has-text-grey"><i class="fas fa-lock mr-1"></i> {{ _("Non") }}</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark"><i class="fas fa-check mr-1"></i> {{ _("Oui") }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ _("Planches d'étiquettes & codes-barres") }}</strong></td>
+                            <td class="has-text-centered has-text-grey"><i class="fas fa-lock mr-1"></i> {{ _("Non") }}</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark"><i class="fas fa-check mr-1"></i> {{ _("Oui") }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ _("Codes de réduction / bons d'école") }}</strong></td>
+                            <td class="has-text-centered">-</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Acceptés sur Stripe") }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- FAQ & Garanties de sérénité -->
         <div class="columns is-multiline mt-5">
-            <div class="column is-6">
+            <div class="column is-4">
+                <div class="box" style="height: 100%;">
+                    <h4 class="title is-5 mb-2">
+                        <span class="icon has-text-link mr-1"><i class="fas fa-calendar-check"></i></span>
+                        {{ _("Résiliation libre et sans frais") }}
+                    </h4>
+                    <p class="is-size-6 has-text-grey">
+                        {{ _("Résiliez à tout moment en 1 clic depuis vos réglages. Aucun frais caché ni pénalité : vous conservez vos accès complets jusqu'au terme de votre échéance.") }}
+                    </p>
+                </div>
+            </div>
+            <div class="column is-4">
                 <div class="box" style="height: 100%;">
                     <h4 class="title is-5 mb-2">
                         <span class="icon has-text-link mr-1"><i class="fas fa-shield-alt"></i></span>
@@ -359,10 +412,10 @@
                     </p>
                 </div>
             </div>
-            <div class="column is-6">
+            <div class="column is-4">
                 <div class="box" style="height: 100%;">
                     <h4 class="title is-5 mb-2">
-                        <span class="icon has-text-link mr-1"><i class="fas fa-credit-card"></i></span>
+                        <span class="icon has-text-link mr-1"><i class="fas fa-tag"></i></span>
                         {{ _("Puis-je utiliser un code de réduction ?") }}
                     </h4>
                     <p class="is-size-6 has-text-grey">
@@ -370,6 +423,20 @@
                     </p>
                 </div>
             </div>
+        </div>
+
+        <!-- Réassurance légale & Lien vers CGV / Mentions Légales -->
+        <div class="has-text-centered mt-6 pt-5" style="border-top: 1px solid hsl(0, 0%, 88%);">
+            <p class="is-size-7 has-text-grey mb-2">
+                <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
+                {{ _("Paiement 100%% sécurisé par carte bancaire via Stripe.")|replace("%%", "%") }}
+                {{ _("Tarifs nets en Francs Suisses (CHF) toutes taxes comprises (TTC), sans engagement contraignant ni frais cachés.") }}
+            </p>
+            <p class="is-size-7">
+                <a href="{{ url_for('main.mentions_legales') }}" class="has-text-link has-text-weight-semibold" style="text-decoration: underline;">
+                    {{ _("Consulter nos Conditions Générales de Vente (CGV) & Mentions Légales") }}
+                </a>
+            </p>
         </div>
 
     </div>

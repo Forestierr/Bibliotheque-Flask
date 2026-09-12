@@ -9,7 +9,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="section">
+<style>
+    .eleve-section {
+        padding: 3rem 1.5rem 4rem 1.5rem;
+    }
+    .eleve-card {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+    @media (max-width: 768px) {
+        .eleve-section {
+            padding: 1.5rem 0.75rem 2.5rem 0.75rem;
+        }
+        .eleve-card {
+            padding: 1.75rem 1.25rem !important;
+        }
+    }
+</style>
+
+<div class="section eleve-section">
     <div class="columns login-container" style="align-items: center;">
         <div class="column is-half is-hidden-mobile left-side">
             <h1 class="title">{{ _("Ajouter un élève") }}</h1>
@@ -30,7 +51,7 @@
             </div>
         </div>
         <div class="column is-half right-side">
-            <div class="container box" style="width: 80%; max-width: 400px;">
+            <div class="box eleve-card">
                 <h2 class="title is-4 has-text-centered">{{ _("Nouvel·le élève") }}</h2>
 
                 {% include "utils/flash_message.html" %}

@@ -167,16 +167,24 @@ Ouvrez un second terminal pour déclencher des simulations d'événements Stripe
   stripe trigger invoice.payment_failed
   ```
 
-### 6. Tester le paiement dans le navigateur
+### 6. Tester le paiement dans le navigateur (Cartes de test Stripe)
 
 - Rendez-vous sur la page des tarifs : `http://localhost:5000/tarifs`
 - Cliquez sur "Souscrire pour 30.- CHF / an" ou "Choisir la formule mensuelle" pour accéder au récapitulatif `/paiement`.
 - Cliquez sur "Procéder au paiement sécurisé" pour être redirigé vers Stripe Checkout.
-- **Numéro de carte de test Stripe** : `4242 4242 4242 4242`
-  - Date d'expiration : n'importe quelle date future (ex: `12/34`)
-  - CVC : `123`
-  - Nom & Code postal : quelconques
 - Après validation, vous êtes automatiquement redirigé vers la page de félicitations `/subscription/success` et votre classe passe en Premium illimité.
+
+#### Cartes de test fournies par Stripe
+
+Le mode test (avec vos clés `sk_test_...`) est un environnement totalement déconnecté du réseau bancaire réel. Pour valider vos paiements et tester le bon fonctionnement de votre intégration, vous devez utiliser exclusivement les numéros de cartes fictives fournis par Stripe :
+
+- **Paiement réussi (la plus utilisée)** : `4242 4242 4242 4242`
+- **Paiement refusé (fonds insuffisants)** : `4000 0000 0000 0002`
+- **Paiement refusé (carte perdue/volée)** : `4000 0000 0000 0022`
+- **Paiement nécessitant une authentification 3D Secure** : `4000 0000 0000 3020`
+
+Pour la date d'expiration, entrez simplement n'importe quelle date dans le futur (par exemple `12/30`).  
+Pour le CVC, tapez n'importe quels 3 chiffres (par exemple `123`).
 
 ### 7. Portail Client (Customer Portal)
 

@@ -336,6 +336,7 @@ def feedback():
 
 
 @main.route("/mentions_legales")
+@main.route("/mentions-legales")
 def mentions_legales():
     return render_template("mentions-legales.html")
 

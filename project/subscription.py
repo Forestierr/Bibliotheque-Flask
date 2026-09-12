@@ -1,12 +1,14 @@
 # subscription.py
 import logging
 import os
+import threading
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 
 import stripe
 from flask import (
     Blueprint,
+    current_app,
     flash,
     jsonify,
     redirect,
@@ -245,6 +247,10 @@ def success():
                     current_user.stripe_customer_id = str(session.customer)
                 if session.subscription:
                     current_user.stripe_subscription_id = str(session.subscription)
+                # Récupérer le type d'abonnement (mensuel/annuel) depuis les métadonnées de session
+                plan_type = (session.metadata or {}).get("plan_type")
+                if plan_type and not current_user.stripe_price_id:
+                    current_user.stripe_price_id = plan_type
                 db.session.commit()
         except Exception as e:  # noqa: BLE001
             logger.warning("Erreur vérification session_id success : %s", e)
@@ -338,6 +344,9 @@ def _handle_checkout_completed(session):
             user.stripe_customer_id = customer_id
         if subscription_id:
             user.stripe_subscription_id = subscription_id
+        plan_type = session.get("metadata", {}).get("plan_type")
+        if plan_type:
+            user.stripe_price_id = plan_type
         db.session.commit()
         logger.info(
             "Utilisateur %s activé en Premium via checkout.session.completed",
@@ -373,10 +382,20 @@ def _handle_subscription_updated(sub):
             end_at = datetime.fromtimestamp(cancel_ts, tz=timezone.utc)
 
         # Idempotence : si le statut, le plan et subscription_end_at sont déjà identiques, pas de commit redondant
+        # On compare les timestamps (int) pour éviter les problèmes timezone-aware vs naive avec SQLite
+        existing_end_ts = None
+        if user.subscription_end_at:
+            dt = user.subscription_end_at
+            existing_end_ts = int(
+                dt.replace(tzinfo=timezone.utc).timestamp()
+                if dt.tzinfo is None
+                else dt.timestamp()
+            )
+        new_end_ts = int(end_at.timestamp()) if end_at else None
         if (
             user.stripe_subscription_status == status
             and user.plan == target_plan
-            and user.subscription_end_at == end_at
+            and existing_end_ts == new_end_ts
         ):
             logger.info(
                 "Subscription %s déjà à jour pour l'utilisateur %s (idempotent)",
@@ -388,6 +407,13 @@ def _handle_subscription_updated(sub):
         user.stripe_subscription_status = status
         user.plan = target_plan
         user.subscription_end_at = end_at
+        if sub.get("items", {}).get("data"):
+            price_obj = sub["items"]["data"][0].get("price", {})
+            interval = price_obj.get("recurring", {}).get("interval")
+            if interval:
+                user.stripe_price_id = "yearly" if interval == "year" else "monthly"
+            elif price_obj.get("id"):
+                user.stripe_price_id = price_obj.get("id")
         db.session.commit()
         logger.info(
             "Statut d'abonnement mis à jour pour l'utilisateur %s : %s (fin prévue: %s)",
@@ -434,22 +460,30 @@ def _handle_subscription_deleted(sub):
             user.id,
         )
 
-        # Envoi d'un email de confirmation de résiliation et d'information sur le délai de grâce
-        try:
-            html_body = render_template(
-                "email/email_subscription_canceled.html",
-                user=user,
-                reactivate_url=url_for("subscription.paiement", _external=True),
-            )
-            send_html_email(
-                subject="Confirmation d'interruption de votre abonnement Livres en Classe",
-                sender=os.getenv("MAIL_USERNAME"),
-                recipients=[user.email],
-                html_body=html_body,
-            )
-            logger.info("Email de résiliation envoyé à %s", user.email)
-        except Exception as e:  # noqa: BLE001
-            logger.warning("Impossible d'envoyer l'email de résiliation : %s", e)
+        # Envoi d'un email de confirmation de résiliation (en arrière-plan pour ne pas bloquer le webhook)
+        app = current_app._get_current_object()
+        user_email = user.email
+        user_copy = {"email": user_email, "name": getattr(user, "name", "")}
+
+        def _send_cancellation_email():
+            with app.app_context():
+                try:
+                    html_body = render_template(
+                        "email/email_subscription_canceled.html",
+                        user=user_copy,
+                        reactivate_url=url_for("subscription.paiement", _external=True),
+                    )
+                    send_html_email(
+                        subject="Confirmation d'interruption de votre abonnement Livres en Classe",
+                        sender=os.getenv("MAIL_USERNAME"),
+                        recipients=[user_email],
+                        html_body=html_body,
+                    )
+                    logger.info("Email de résiliation envoyé à %s", user_email)
+                except Exception as e:  # noqa: BLE001
+                    logger.warning("Impossible d'envoyer l'email de résiliation : %s", e)
+
+        threading.Thread(target=_send_cancellation_email, daemon=True).start()
 
 
 def _handle_invoice_payment_failed(invoice):
@@ -460,19 +494,27 @@ def _handle_invoice_payment_failed(invoice):
         user.stripe_subscription_status = "past_due"
         db.session.commit()
 
-        # Envoi d'un e-mail d'alerte pour mettre à jour la carte bancaire
-        try:
-            html_body = render_template(
-                "email/email_payment_failed.html",
-                user=user,
-                reglage_url=url_for("auth.reglage", _external=True),
-            )
-            send_html_email(
-                subject="Problème de paiement pour votre abonnement Livres en Classe",
-                sender=os.getenv("MAIL_USERNAME"),
-                recipients=[user.email],
-                html_body=html_body,
-            )
-            logger.info("Email d'échec de paiement envoyé à %s", user.email)
-        except Exception as e:  # noqa: BLE001
-            logger.warning("Impossible d'envoyer l'email d'échec de paiement : %s", e)
+        # Envoi d'un e-mail d'alerte (en arrière-plan pour ne pas bloquer le webhook)
+        app = current_app._get_current_object()
+        user_email = user.email
+        user_copy = {"email": user_email, "name": getattr(user, "name", "")}
+
+        def _send_payment_failed_email():
+            with app.app_context():
+                try:
+                    html_body = render_template(
+                        "email/email_payment_failed.html",
+                        user=user_copy,
+                        reglage_url=url_for("auth.reglage", _external=True),
+                    )
+                    send_html_email(
+                        subject="Problème de paiement pour votre abonnement Livres en Classe",
+                        sender=os.getenv("MAIL_USERNAME"),
+                        recipients=[user_email],
+                        html_body=html_body,
+                    )
+                    logger.info("Email d'échec de paiement envoyé à %s", user_email)
+                except Exception as e:  # noqa: BLE001
+                    logger.warning("Impossible d'envoyer l'email d'échec de paiement : %s", e)
+
+        threading.Thread(target=_send_payment_failed_email, daemon=True).start()

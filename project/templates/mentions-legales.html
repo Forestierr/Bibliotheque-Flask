@@ -225,13 +225,10 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("8. ACCÈS AUX DONNÉES PERSONNELLES") }}</h3>
+            <h3 class="title is-3">{{ _("8. ACCÈS AUX DONNÉES PERSONNELLES & CONFIDENTIALITÉ") }}</h3>
           <div class="container">
             <p>
-                En vertu de la Règlementation applicable en matière de protection des Données à caractère
-                personnel, l'Utilisateur dispose d'un droit d'accès, de rectification, de suppression et d'opposition de
-                ses données personnelles. L'Utilisateur peut exercer ce droit :
-                - depuis le formulaire de contact ;
+                {{ _("En vertu de la législation suisse sur la protection des données (LPD) et du RGPD le cas échéant, l'Utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données personnelles. Les données collectées (notamment l'adresse e-mail et le nom) sont strictement destinées au fonctionnement du service et à l'envoi des notifications contractuelles d'abonnement. Pour le traitement des paiements, notre sous-traitant Stripe opère en conformité avec les réglementations de protection des données financières. Pour exercer vos droits, vous pouvez nous écrire à livresenclasse@gmail.com.") }}
             </p>
           </div>
         </div>
@@ -252,15 +249,39 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("10. CONDITIONS GÉNÉRALES DE VENTE & ABONNEMENTS (CGV)") }}</h3>
+            <h3 class="title is-3">{{ _("10. PAIEMENT, ABONNEMENTS & CONDITIONS GÉNÉRALES DE VENTE (CGV)") }}</h3>
             <div class="container content">
-                <p><strong>{{ _("Tarification & Modalités :") }}</strong> {{ _("Le service Livres en Classe propose une formule gratuite ainsi qu'un abonnement Premium proposé à 5.00 CHF par mois ou 30.00 CHF par an (facturé annuellement). Les tarifs sont indiqués en Francs Suisses (CHF) toutes taxes comprises.") }}</p>
+                <p>
+                    <strong>{{ _("Partenaire de paiement et sécurité bancaire :") }}</strong>
+                    {{ _("Tous les paiements en ligne et abonnements récurrents sont opérés de manière chiffrée et sécurisée par notre prestataire agréé Stripe (Stripe Payments Europe, Ltd. / Stripe Inc.). Les données bancaires (numéro de carte, date d'expiration, cryptogramme visuel CVC) sont collectées, gérées et traitées exclusivement par Stripe conformément aux normes de sécurité les plus strictes de l'industrie bancaire (certification PCI-DSS Niveau 1). Aucune coordonnée bancaire n'est collectée, consultée ni stockée sur les serveurs de Livres en Classe.") }}
+                </p>
 
-                <p><strong>{{ _("Paiement sécurisé :") }}</strong> {{ _("Tous les paiements en ligne et abonnements récurrents sont opérés de façon chiffrée et sécurisée par notre prestataire agréé Stripe Inc. Aucune coordonnée bancaire (numéro de carte, cryptogramme) n'est stockée sur nos serveurs.") }}</p>
+                <p>
+                    <strong>{{ _("Tarifs et durée de l'engagement :") }}</strong>
+                    {{ _("Le service Livres en Classe propose une formule gratuite ainsi qu'un abonnement Premium disponible au tarif de 5.00 CHF par mois ou 30.00 CHF par an (tarifs indiqués en Francs Suisses toutes taxes comprises). La souscription mensuelle engage l'utilisateur pour une période d'un mois renouvelable. La souscription annuelle engage l'utilisateur pour une période ferme de douze mois. Sauf résiliation effectuée avant la date d'échéance, tout abonnement est tacitement reconduit pour une durée identique.") }}
+                </p>
 
-                <p><strong>{{ _("Résiliation & Politique de conservation des données :") }}</strong> {{ _("L'abonnement Premium peut être résilié à tout moment en un clic depuis les réglages du compte (via le portail client Stripe). L'accès complet reste actif jusqu'à l'échéance de la période payée en cours. En cas de résiliation ou de passage en formule gratuite,") }} <strong>{{ _("aucune donnée n'est supprimée ni bloquée") }}</strong>. {{ _("Vos livres, élèves et historiques de prêts restent consultables et utilisables ; seul l'ajout de nouveaux éléments au-delà des plafonds gratuits (40 élèves, 500 livres) est limité.") }}</p>
+                <p>
+                    <strong>{{ _("Politique d'annulation et résiliation :") }}</strong>
+                    {{ _("L'abonnement Premium peut être résilié à tout moment, en toute autonomie et sans frais, directement depuis les réglages de votre compte via le portail sécurisé Stripe. La résiliation prend effet à la fin de la période facturée en cours (mensuelle ou annuelle). Vous conservez l'accès à l'ensemble des fonctionnalités Premium jusqu'à cette date d'échéance.") }}
+                    <strong>{{ _("Politique de non-destruction des données :") }}</strong>
+                    {{ _("À l'issue de la période d'abonnement, votre compte bascule automatiquement en formule gratuite. Aucune donnée n'est supprimée ni bloquée : vos livres, élèves et historiques de prêts restent consultables et utilisables ; seul l'ajout de nouveaux éléments au-delà des plafonds gratuits est limité.") }}
+                </p>
 
-                <p><strong>{{ _("Contact & Facturation :") }}</strong> {{ _("Pour toute question relative à votre abonnement, facturation ou demande d'assistance, vous pouvez nous écrire à livresenclasse@gmail.com.") }}</p>
+                <p>
+                    <strong>{{ _("Politique de non-remboursement :") }}</strong>
+                    {{ _("Compte tenu de la fourniture immédiate d'un service numérique dès la validation de la commande et de la mise à disposition d'une formule gratuite complète permettant d'essayer la plateforme sans engagement, toute période d'abonnement entamée (mensuelle ou annuelle) est due dans son intégralité. Aucun remboursement, total ou partiel au prorata temporis, ne sera consenti en cas d'annulation en cours de période, d'interruption anticipée ou de non-utilisation du service.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Notifications d'abonnement et facturation par e-mail :") }}</strong>
+                    {{ _("L'adresse e-mail associée à votre compte est utilisée pour l'envoi des communications strictement nécessaires à la gestion de votre abonnement : confirmations de commande, factures et reçus de paiement, alertes d'échéance ou de renouvellement, avis d'échec de prélèvement et confirmations de résiliation. Ces communications présentent un caractère contractuel et transactionnel nécessaire à l'exécution du service.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Contact & Facturation :") }}</strong>
+                    {{ _("Pour toute question relative à votre abonnement, facturation ou demande d'assistance, vous pouvez nous écrire à livresenclasse@gmail.com.") }}
+                </p>
             </div>
         </div>
     </section>

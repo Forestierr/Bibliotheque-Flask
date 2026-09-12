@@ -12,7 +12,47 @@
 {% endblock %}
 
 {% block content %}
-<div class="section">
+<style>
+    .login-section {
+        padding: 3rem 1.5rem 4rem 1.5rem;
+    }
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+    .captcha-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    @media (max-width: 768px) {
+        .login-section {
+            padding: 1.5rem 0.75rem 2.5rem 0.75rem;
+        }
+        .login-card {
+            padding: 1.5rem 1rem !important;
+        }
+    }
+    @media (max-width: 360px) {
+        .captcha-container {
+            transform: scale(0.9);
+            transform-origin: center center;
+        }
+    }
+    @media (max-width: 330px) {
+        .captcha-container {
+            transform: scale(0.82);
+            transform-origin: center center;
+        }
+    }
+</style>
+
+<div class="section login-section">
     <div class="columns login-container" style="align-items: center;">
         <div class="column is-half is-hidden-mobile left-side">
             <h1 class="title">{{ _("Ma Bibliothèque") }}</h1>
@@ -31,17 +71,17 @@
             </div>
         </div>
         <div class="column is-half right-side">
-            <div class="container box" style="width: 80%; max-width: 400px;">
+            <div class="box login-card">
                 <h2 class="title is-4 has-text-centered">{{ _("Connexion") }}</h2>
 
                 {% include "utils/flash_message.html" %}
 
-                <form method="POST" action="/login">
-    {% include 'utils/csrf.html' %}
+                <form method="POST" action="/login" id="loginForm">
+                    {% include 'utils/csrf.html' %}
                     <div class="field">
                         <label class="label">{{ _("Email") }}</label>
                         <div class="control">
-                            <input class="input" type="email" name="email" placeholder="{{ _('Votre email') }}" required>
+                            <input class="input" type="email" name="email" value="{{ email|default('') }}" placeholder="{{ _('Votre email') }}" required>
                         </div>
                     </div>
                     <div class="field">
@@ -57,10 +97,12 @@
                         </label>
                     </div>
                     {% if hcaptcha_site_key %}
-                    <div class="field h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
+                    <div class="captcha-container">
+                        <div class="field h-captcha" data-sitekey="{{ hcaptcha_site_key }}" data-callback="onCaptchaSuccess" data-expired-callback="onCaptchaExpired"></div>
+                    </div>
                     {% endif %}
                     <div class="field has-text-centered">
-                        <button class="button is-primary is-fullwidth">{{ _("Se connecter") }}</button>
+                        <button type="submit" class="button is-primary is-fullwidth">{{ _("Se connecter") }}</button>
                     </div>
                 </form>
                 <p class="has-text-centered mt-3">
@@ -75,5 +117,51 @@
 {% block scripts %}
 {% if hcaptcha_site_key %}
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<script>
+window.onCaptchaSuccess = function() {
+    const err = document.getElementById('captchaError');
+    if (err) err.remove();
+};
+window.onCaptchaExpired = function() {
+    // expired
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        const captchaElem = document.querySelector('.h-captcha');
+        if (captchaElem) {
+            let token = '';
+            if (typeof hcaptcha !== 'undefined') {
+                try {
+                    token = hcaptcha.getResponse();
+                } catch (ex) {}
+            }
+            if (!token) {
+                const respInput = document.querySelector('[name="h-captcha-response"]');
+                if (respInput && respInput.value) {
+                    token = respInput.value;
+                }
+            }
+
+            if (!token) {
+                e.preventDefault();
+                let err = document.getElementById('captchaError');
+                if (!err) {
+                    err = document.createElement('div');
+                    err.id = 'captchaError';
+                    err.className = 'notification is-danger is-light py-2 px-3 mb-3 is-size-7 has-text-centered';
+                    const container = captchaElem.closest('.captcha-container') || captchaElem;
+                    container.parentNode.insertBefore(err, container.nextSibling);
+                }
+                err.textContent = "{{ _('Veuillez compléter le CAPTCHA.') }}";
+                return false;
+            }
+        }
+    });
+});
+</script>
 {% endif %}
 {% endblock %}

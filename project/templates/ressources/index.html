@@ -77,6 +77,28 @@
         width: 100%;
         justify-content: center;
     }
+    .studio-btn.is-locked-btn {
+        background-color: hsl(0, 0%, 96%) !important;
+        border: 1px solid hsl(0, 0%, 86%) !important;
+        color: hsl(0, 0%, 48%) !important;
+        box-shadow: none !important;
+        opacity: 0.8;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .studio-btn.is-locked-btn:hover {
+        opacity: 1;
+        background-color: #fef3c7 !important;
+        border-color: #fcd34d !important;
+        color: #92400e !important;
+    }
+    .button.disabled,
+    a.button.disabled {
+        opacity: 0.5 !important;
+        pointer-events: none !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+    }
 
     .filter-btn {
         border-radius: 999px;
@@ -104,6 +126,47 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+    }
+    @media (max-width: 768px) {
+        .modal-card {
+            margin: 0 10px !important;
+            width: calc(100vw - 20px) !important;
+            max-width: calc(100vw - 20px) !important;
+            max-height: calc(100vh - 30px) !important;
+            border-radius: 14px !important;
+        }
+        .modal-card-head {
+            padding: 0.85rem 1rem !important;
+        }
+        .modal-card-head .modal-card-title {
+            font-size: 1.05rem !important;
+            line-height: 1.3 !important;
+            margin-right: 0.5rem !important;
+        }
+        .modal-card-body {
+            padding: 1rem !important;
+            font-size: 0.92rem !important;
+            max-height: 55vh !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+        .modal-card-foot {
+            padding: 0.75rem 1rem !important;
+            flex-direction: column-reverse !important;
+            gap: 0.5rem !important;
+            align-items: stretch !important;
+        }
+        .modal-card-foot .button,
+        .modal-card-foot a.button {
+            width: 100% !important;
+            margin: 0 !important;
+            white-space: normal !important;
+            height: auto !important;
+            padding: 0.65rem 0.75rem !important;
+            text-align: center !important;
+            line-height: 1.3 !important;
+            font-size: 0.95rem !important;
+        }
     }
 </style>
 
@@ -197,7 +260,7 @@
                     {% if current_user.is_authenticated and current_user.is_premium %}
                         <span class="studio-card-badge">{{ _("Bacs & Cotes") }}</span>
                     {% else %}
-                        <span class="studio-card-badge" style="background: #fef3c7; color: #b45309; border-color: #fcd34d;">🔒 {{ _("Premium") }}</span>
+                        <span class="studio-card-badge" style="background: #fef3c7; color: #b45309; border-color: #fcd34d;"><i class="fas fa-lock fa-xs mr-1"></i>{{ _("Premium") }}</span>
                     {% endif %}
                     <div class="studio-icon" style="background: #ecfeff; color: #0e7490;">
                         <i class="fas fa-layer-group"></i>
@@ -209,8 +272,8 @@
                             {{ _("Personnaliser et imprimer") }}
                         </a>
                     {% else %}
-                        <button onclick="openModal('modalPremiumRessource')" class="button is-light studio-btn has-text-grey-dark">
-                            <span class="icon">🔒</span>
+                        <button onclick="openModal('modalPremiumRessource')" class="button studio-btn is-locked-btn">
+                            <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
                             <span>{{ _("Personnaliser (Premium)") }}</span>
                         </button>
                     {% endif %}
@@ -238,7 +301,7 @@
                     {% if current_user.is_authenticated and current_user.is_premium %}
                         <span class="studio-card-badge">{{ _("Vectoriel") }}</span>
                     {% else %}
-                        <span class="studio-card-badge" style="background: #fef3c7; color: #b45309; border-color: #fcd34d;">🔒 {{ _("Premium") }}</span>
+                        <span class="studio-card-badge" style="background: #fef3c7; color: #b45309; border-color: #fcd34d;"><i class="fas fa-lock fa-xs mr-1"></i>{{ _("Premium") }}</span>
                     {% endif %}
                     <div class="studio-icon" style="background: #f1f5f9; color: #334155;">
                         <i class="fas fa-barcode"></i>
@@ -250,8 +313,8 @@
                             {{ _("Personnaliser et imprimer") }}
                         </a>
                     {% else %}
-                        <button onclick="openModal('modalPremiumRessource')" class="button is-light studio-btn has-text-grey-dark">
-                            <span class="icon">🔒</span>
+                        <button onclick="openModal('modalPremiumRessource')" class="button studio-btn is-locked-btn">
+                            <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
                             <span>{{ _("Personnaliser (Premium)") }}</span>
                         </button>
                     {% endif %}
@@ -366,7 +429,7 @@ document.addEventListener('keydown', function (e) {
     <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
         <header class="modal-card-head" style="background: #fef3c7;">
             <p class="modal-card-title has-text-warning-dark">
-                <span class="icon mr-2">🔒</span>
+                <span class="icon mr-2"><i class="fas fa-lock"></i></span>
                 {{ _("Outil réservé aux membres Premium") }}
             </p>
             <button class="delete" aria-label="close" onclick="closeModal('modalPremiumRessource')"></button>
