@@ -240,6 +240,7 @@ def success():
             if session.payment_status == "paid" or session.status == "complete":
                 current_user.plan = "premium"
                 current_user.stripe_subscription_status = "active"
+                current_user.subscription_end_at = None
                 if session.customer:
                     current_user.stripe_customer_id = str(session.customer)
                 if session.subscription:
@@ -332,6 +333,7 @@ def _handle_checkout_completed(session):
 
         user.plan = "premium"
         user.stripe_subscription_status = "active"
+        user.subscription_end_at = None
         if customer_id:
             user.stripe_customer_id = customer_id
         if subscription_id:
@@ -347,6 +349,9 @@ def _handle_subscription_updated(sub):
     sub_id = sub.get("id")
     customer_id = sub.get("customer")
     status = sub.get("status")
+    cancel_at_period_end = sub.get("cancel_at_period_end", False)
+    cancel_at = sub.get("cancel_at")
+    current_period_end = sub.get("current_period_end")
 
     user = User.query.filter(
         (User.stripe_subscription_id == sub_id)
@@ -360,8 +365,18 @@ def _handle_subscription_updated(sub):
         elif status in ("canceled", "unpaid") and user.plan != "founder":
             target_plan = "free"
 
-        # Idempotence : si le statut et le plan sont déjà identiques, pas de commit redondant
-        if user.stripe_subscription_status == status and user.plan == target_plan:
+        end_at = None
+        if cancel_at_period_end:
+            cancel_ts = cancel_at or current_period_end
+            if cancel_ts:
+                end_at = datetime.fromtimestamp(cancel_ts, tz=timezone.utc)
+
+        # Idempotence : si le statut, le plan et subscription_end_at sont déjà identiques, pas de commit redondant
+        if (
+            user.stripe_subscription_status == status
+            and user.plan == target_plan
+            and user.subscription_end_at == end_at
+        ):
             logger.info(
                 "Subscription %s déjà à jour pour l'utilisateur %s (idempotent)",
                 sub_id,
@@ -371,11 +386,13 @@ def _handle_subscription_updated(sub):
 
         user.stripe_subscription_status = status
         user.plan = target_plan
+        user.subscription_end_at = end_at
         db.session.commit()
         logger.info(
-            "Statut d'abonnement mis à jour pour l'utilisateur %s : %s",
+            "Statut d'abonnement mis à jour pour l'utilisateur %s : %s (fin prévue: %s)",
             user.id,
             status,
+            end_at,
         )
 
 
@@ -408,6 +425,7 @@ def _handle_subscription_deleted(sub):
             user.plan = "free"
             # Délai de grâce de 48h pour ne pas bloquer l'enseignant en pleine journée de classe
             user.trial_ends_at = datetime.now(timezone.utc) + timedelta(hours=48)
+            user.subscription_end_at = None
 
         db.session.commit()
         logger.info(

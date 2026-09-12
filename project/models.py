@@ -48,6 +48,33 @@ class User(UserMixin, db.Model):
     stripe_subscription_id = db.Column(db.String(120), nullable=True, index=True)
     stripe_subscription_status = db.Column(db.String(30), nullable=True)
     stripe_price_id = db.Column(db.String(120), nullable=True)
+    subscription_end_at = db.Column(db.DateTime, nullable=True)
+
+    @property
+    def is_canceling(self) -> bool:
+        """Indique si l'abonnement a été résilié mais bénéficie encore de ses accès jusqu'à échéance."""
+        if self.plan == "founder":
+            return False
+        # Cas 1 : abonnement premium avec date de fin programmée dans le futur
+        if self.plan == "premium" and self.subscription_end_at:
+            end_dt = (
+                self.subscription_end_at.replace(tzinfo=timezone.utc)
+                if self.subscription_end_at.tzinfo is None
+                else self.subscription_end_at
+            )
+            if datetime.now(timezone.utc) < end_dt:
+                return True
+        # Cas 2 : abonnement résilié sur Stripe mais dans le délai de grâce
+        return bool(self.stripe_subscription_status == "canceled" and self.is_in_trial)
+
+    @property
+    def effective_cancellation_date(self):
+        """Date effective jusqu'à laquelle l'utilisateur conserve son accès complet."""
+        if self.plan == "premium" and self.subscription_end_at:
+            return self.subscription_end_at
+        if self.stripe_subscription_status == "canceled" and self.trial_ends_at:
+            return self.trial_ends_at
+        return None
 
     @property
     def is_in_trial(self) -> bool:
@@ -94,6 +121,9 @@ class User(UserMixin, db.Model):
             "active",
             "past_due",
         ):
+            return True
+        # Abonnement résilié mais période payée ou délai de grâce non échus
+        if self.is_canceling:
             return True
         return self.is_in_trial
 

@@ -35,7 +35,7 @@
         width: 64px;
         height: 64px;
         border-radius: 50%;
-        background: linear-gradient(135deg, hsl(217, 71%, 53%), hsl(250, 60%, 60%));
+        background: linear-gradient(135deg, hsl(191, 70%, 55%), hsl(199, 91%, 31%));
         color: white;
         font-weight: 800;
         font-size: 1.75rem;
@@ -118,16 +118,20 @@
                 </p>
                 <div>
                     {% if user.plan == 'founder' %}
-                        <span class="tag is-warning is-rounded has-text-weight-bold">
+                        <span class="tag is-light is-rounded has-text-weight-bold">
                             {{ _("Membre Fondateur") }}
                         </span>
-                    {% elif user.is_premium %}
-                        <span class="tag is-success is-rounded has-text-weight-bold">
-                            ⭐ {{ _("Abonné Premium") }}
+                    {% elif user.is_canceling %}
+                        <span class="tag is-warning is-light is-rounded has-text-weight-bold">
+                            ⚠️ {{ _("Premium jusqu'au %(date)s", date=user.effective_cancellation_date|format_date) }}
                         </span>
                     {% elif user.is_in_trial %}
-                        <span class="tag is-info is-rounded has-text-weight-bold">
-                            ⏳ {{ _("Essai Premium") }} ({{ user.trial_days_left }} {{ _("jours restants") }})
+                        <span class="tag is-light is-rounded has-text-weight-bold">
+                            {{ _("Essai Premium") }} ({{ user.trial_days_left }} {{ _("jours restants") }})
+                        </span>
+                    {% elif user.is_premium %}
+                        <span class="tag is-light is-rounded has-text-weight-bold">
+                            {{ _("Abonné Premium") }}
                         </span>
                     {% else %}
                         <span class="tag is-light is-rounded has-text-weight-semibold">
@@ -136,17 +140,6 @@
                     {% endif %}
                 </div>
             </div>
-            {% if user.plan == 'premium' and user.stripe_subscription_status == 'active' %}
-            <div class="is-hidden-mobile">
-                <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;">
-                    {% include 'utils/csrf.html' %}
-                    <button type="submit" class="button is-link is-outlined is-rounded is-small">
-                        <span class="icon"><i class="fas fa-credit-card"></i></span>
-                        <span>{{ _("Facturation & Abonnement") }}</span>
-                    </button>
-                </form>
-            </div>
-            {% endif %}
         </div>
 
         <!-- Onglets -->
@@ -170,6 +163,22 @@
 
         <!-- TAB 1 : Mon Compte -->
         <div id="tabContentCompte" class="settings-tab-content">
+            {% if user.is_canceling %}
+            <div class="notification is-warning is-light mb-5" style="border-radius: 12px; border-left: 5px solid #f59e0b;">
+                <div class="is-flex is-align-items-center" style="gap: 1rem;">
+                    <span class="icon is-large has-text-warning-dark"><i class="fas fa-calendar-times fa-2x"></i></span>
+                    <div>
+                        <p class="title is-6 mb-1" style="color: #92400e;">
+                            {{ _("Résiliation programmée : accès Premium maintenu") }}
+                        </p>
+                        <p class="is-size-7" style="color: #78350f;">
+                            {{ _("Votre abonnement ne sera pas renouvelé, mais vous conservez tous vos accès illimités (scans, exports, étiquettes) jusqu'au %(date)s.", date=user.effective_cancellation_date|format_date) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Carte Formule & Abonnement -->
             <div class="settings-card mb-5">
                 <div class="is-flex is-align-items-center is-justify-content-space-between" style="flex-wrap: wrap; gap: 1rem;">
@@ -177,21 +186,25 @@
                         <h2 class="title is-5 mb-1">
                             {% if user.plan == 'founder' %}
                                 {{ _("Formule Fondateur") }}
-                            {% elif user.is_premium %}
-                                ⭐ {{ _("Abonnement Premium Actif") }}
+                            {% elif user.is_canceling %}
+                                ⚠️ {{ _("Abonnement résilié (actif jusqu'au %(date)s)", date=user.effective_cancellation_date|format_date) }}
                             {% elif user.is_in_trial %}
-                                ⏳ {{ _("Période d'essai Premium") }}
+                                {{ _("Période d'essai Premium") }}
+                            {% elif user.is_premium %}
+                                {{ _("Abonnement Premium Actif") }}
                             {% else %}
-                                📖 {{ _("Formule Gratuite") }}
+                                {{ _("Formule Gratuite") }}
                             {% endif %}
                         </h2>
                         <p class="has-text-grey is-size-7">
                             {% if user.plan == 'founder' %}
                                 {{ _("Vous bénéficiez d'un accès complet et illimité à vie pour vous remercier de votre soutien initial.") }}
-                            {% elif user.is_premium %}
-                                {{ _("Votre abonnement Premium est actif. Vous disposez de toutes les fonctionnalités sans aucune limite.") }}
+                            {% elif user.is_canceling %}
+                                {{ _("Votre demande de résiliation a bien été prise en compte. Vous continuez à profiter de l'ensemble des fonctionnalités Premium sans interruption jusqu'au %(date)s. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.", date=user.effective_cancellation_date|format_date) }}
                             {% elif user.is_in_trial %}
                                 {{ _("Vous bénéficiez de l'accès Premium complet pendant 30 jours (encore %(days)d jours).", days=user.trial_days_left) }}
+                            {% elif user.is_premium %}
+                                {{ _("Votre abonnement Premium est actif. Vous disposez de toutes les fonctionnalités sans aucune limite.") }}
                             {% else %}
                                 {{ _("Vous utilisez la version gratuite (jusqu'à 40 élèves, 500 livres et 30 scans codes-barres).") }}
                             {% endif %}
@@ -200,6 +213,20 @@
                     <div>
                         {% if user.plan == 'founder' %}
                             {# Membre fondateur : aucun bouton #}
+                        {% elif user.is_canceling %}
+                            {% if user.stripe_customer_id %}
+                            <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;">
+                                {% include 'utils/csrf.html' %}
+                                <button type="submit" class="button is-warning is-outlined is-rounded">
+                                    <span class="icon"><i class="fas fa-undo"></i></span>
+                                    <span>{{ _("Réactiver ou modifier mon abonnement") }}</span>
+                                </button>
+                            </form>
+                            {% else %}
+                            <a href="{{ url_for('subscription.paiement') }}" class="button is-primary is-rounded">
+                                <span>{{ _("Se réabonner à Premium") }}</span>
+                            </a>
+                            {% endif %}
                         {% elif user.plan == 'premium' and user.stripe_subscription_status == 'active' %}
                             <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;">
                                 {% include 'utils/csrf.html' %}
@@ -210,7 +237,6 @@
                             </form>
                         {% else %}
                             <a href="{{ url_for('subscription.tarifs') }}" class="button is-primary is-rounded">
-                                <span class="icon"><i class="fas fa-star"></i></span>
                                 <span>{{ _("Passer à Premium (dès 5.- CHF/mois)") }}</span>
                             </a>
                         {% endif %}
@@ -337,18 +363,17 @@
                                 </div>
                                 <h4 class="title is-5 mb-0">{{ _("Tous les livres") }}</h4>
                                 {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">🔒 Premium</span>
+                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
                                 {% endif %}
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste complète de tous les livres enregistrés dans votre bibliothèque.") }}</p>
                             {% if current_user.is_premium %}
-                            <a href="{{ url_for('export.export_books') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                            <a href="{{ url_for('export.export_books') }}" class="button is-link is-outlined is-fullwidth is-rounded disabled">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
                             <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark">
-                                <span class="icon">🔒</span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}
@@ -363,7 +388,7 @@
                                 </div>
                                 <h4 class="title is-5 mb-0">{{ _("Lectures par élève") }}</h4>
                                 {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">🔒 Premium</span>
+                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
                                 {% endif %}
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("Historique des livres lus et empruntés classé par élève.") }}</p>
@@ -373,8 +398,7 @@
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
-                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark">
-                                <span class="icon">🔒</span>
+                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark disabled">
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}
@@ -389,7 +413,7 @@
                                 </div>
                                 <h4 class="title is-5 mb-0">{{ _("Prêts en cours") }}</h4>
                                 {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">🔒 Premium</span>
+                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
                                 {% endif %}
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste des emprunts actifs non encore retournés.") }}</p>
@@ -399,8 +423,7 @@
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
-                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark">
-                                <span class="icon">🔒</span>
+                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark disabled">
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}
@@ -415,7 +438,7 @@
                                 </div>
                                 <h4 class="title is-5 mb-0">{{ _("Historique des prêts") }}</h4>
                                 {% if not current_user.is_premium %}
-                                    <span class="tag is-warning is-light is-rounded ml-auto">🔒 Premium</span>
+                                    <span class="tag is-warning is-light is-rounded ml-auto">Premium</span>
                                 {% endif %}
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("L'ensemble de tous les prêts réalisés depuis la création de la bibliothèque.") }}</p>
@@ -425,8 +448,7 @@
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
                             {% else %}
-                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark">
-                                <span class="icon">🔒</span>
+                            <button onclick="openModal('modalPremiumExport')" class="button is-light is-fullwidth is-rounded has-text-grey-dark disabled">
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </button>
                             {% endif %}

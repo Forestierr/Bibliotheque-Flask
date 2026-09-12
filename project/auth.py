@@ -4,8 +4,10 @@ import os
 from datetime import datetime, timedelta, timezone
 
 import requests
+import stripe
 from flask import (
     Blueprint,
+    current_app,
     flash,
     redirect,
     render_template,
@@ -346,6 +348,32 @@ def reglage():
         flash(_("Vos informations ont été mises à jour."), "success")
 
     user = db.session.get(User, current_user.id)
+
+    # Synchronisation immédiate avec Stripe (utile quand l'utilisateur revient du portail client après résiliation)
+    stripe_key = os.getenv("STRIPE_SECRET_KEY")
+    if (
+        user
+        and user.plan == "premium"
+        and user.stripe_subscription_id
+        and stripe_key
+        and not current_app.config.get("TESTING")
+    ):
+        try:
+            stripe.api_key = stripe_key
+            sub = stripe.Subscription.retrieve(user.stripe_subscription_id)
+            if getattr(sub, "cancel_at_period_end", False):
+                cancel_ts = getattr(sub, "cancel_at", None) or getattr(
+                    sub, "current_period_end", None
+                )
+                if cancel_ts:
+                    user.subscription_end_at = datetime.fromtimestamp(
+                        cancel_ts, tz=timezone.utc
+                    )
+            else:
+                user.subscription_end_at = None
+            db.session.commit()
+        except Exception as e:  # noqa: BLE001
+            current_app.logger.debug("Sync Stripe reglage : %s", e)
 
     return render_template("user/reglage.html", user=user)
 

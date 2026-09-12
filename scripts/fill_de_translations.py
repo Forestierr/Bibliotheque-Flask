@@ -990,8 +990,14 @@ translations = {
     "Données 100%% préservées": "100%% Datenerhalt",
     "Aucun livre ni élève n'est supprimé si vous arrêtez.": "Kein Buch und kein Schüler wird bei Beendigung gelöscht.",
     "← Revenir au comparatif complet des offres": "← Zurück zur Tarifübersicht",
-    "Procéder au paiement sécurisé": "Zur sicheren Bezahlung",
     "Prêts enregistrés": "Erfasste Ausleihen",
+    "Premium jusqu'au %(date)s": "Premium bis %(date)s",
+    "Résiliation programmée : accès Premium maintenu": "Kündigung geplant: Premium-Zugang bleibt aktiv",
+    "Votre abonnement ne sera pas renouvelé, mais vous conservez tous vos accès illimités (scans, exports, étiquettes) jusqu'au %(date)s.": "Ihr Abonnement wird nicht verlängert, Sie behalten jedoch den unbegrenzten Zugriff (Scans, Exporte, Etiketten) bis zum %(date)s.",
+    "Abonnement résilié (actif jusqu'au %(date)s)": "Abonnement gekündigt (aktiv bis %(date)s)",
+    "Votre demande de résiliation a bien été prise en compte. Vous continuez à profiter de l'ensemble des fonctionnalités Premium sans interruption jusqu'au %(date)s. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.": "Ihre Kündigung wurde erfolgreich erfasst. Sie nutzen weiterhin alle Premium-Funktionen ohne Unterbrechung bis zum %(date)s. Danach wechselt Ihr Konto automatisch in den kostenlosen Tarif, ohne dass Bücher, Schüler oder Ausleihen gelöscht werden.",
+    "Réactiver ou modifier mon abonnement": "Abonnement reaktivieren oder verwalten",
+    "Se réabonner à Premium": "Erneut Premium abonnieren",
 }
 
 with open(po_path, "rb") as f:

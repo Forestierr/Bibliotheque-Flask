@@ -728,3 +728,112 @@ def test_admin_coupons_create_uses_modern_stripe_promotion(client, app):
             code="RENTREE50",
             max_redemptions=100,
         )
+
+
+def test_user_is_canceling_attributes():
+    """Vérifie la gestion des attributs is_canceling et effective_cancellation_date."""
+    now = datetime.now(timezone.utc)
+    future_date = now + timedelta(days=12)
+
+    # Utilisateur avec résiliation programmée
+    user_canceling = User(
+        email="canceling@test.com",
+        plan="premium",
+        stripe_subscription_status="active",
+        subscription_end_at=future_date,
+    )
+    assert user_canceling.is_canceling is True
+    assert user_canceling.is_premium is True
+    assert user_canceling.effective_cancellation_date == future_date
+
+    # Utilisateur dont la date de fin est dépassée
+    user_ended = User(
+        email="ended@test.com",
+        plan="premium",
+        stripe_subscription_status="canceled",
+        subscription_end_at=now - timedelta(days=1),
+    )
+    assert user_ended.is_canceling is False
+
+    # Membre fondateur (ne doit jamais être considéré comme canceling)
+    user_founder = User(
+        email="founder_cancel@test.com",
+        plan="founder",
+        subscription_end_at=future_date,
+    )
+    assert user_founder.is_canceling is False
+
+
+def test_reglage_displays_cancellation_info(app):
+    """Vérifie que la page /reglage indique la résiliation programmée et la date d'échéance."""
+    future_date = datetime.now(timezone.utc) + timedelta(days=15)
+    with app.app_context():
+        user = User(
+            id=88,
+            email="canceling_teacher@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            stripe_customer_id="cus_canceling_test",
+            subscription_end_at=future_date,
+            is_verified=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "88"
+
+        res = client.get("/reglage")
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+
+        assert "Résiliation programmée" in html
+        assert "Abonnement résilié" in html
+        assert "Réactiver ou modifier mon abonnement" in html
+
+
+def test_stripe_webhook_subscription_updated_cancel_at_period_end(client, app):
+    """Vérifie que le webhook customer.subscription.updated enregistre bien subscription_end_at."""
+    with app.app_context():
+        user = User(
+            id=99,
+            email="cancel_webhook@test.com",
+            plan="premium",
+            stripe_customer_id="cus_hook_cancel",
+            stripe_subscription_id="sub_hook_cancel",
+            stripe_subscription_status="active",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        future_timestamp = int(
+            (datetime.now(timezone.utc) + timedelta(days=20)).timestamp()
+        )
+        payload = {
+            "id": "evt_sub_update_cancel",
+            "type": "customer.subscription.updated",
+            "data": {
+                "object": {
+                    "id": "sub_hook_cancel",
+                    "customer": "cus_hook_cancel",
+                    "status": "active",
+                    "cancel_at_period_end": True,
+                    "cancel_at": future_timestamp,
+                }
+            },
+        }
+
+        with patch("stripe.Webhook.construct_event", return_value=payload):
+            resp = client.post(
+                "/webhook/stripe",
+                data=json.dumps(payload),
+                headers={"Stripe-Signature": "sig"},
+                content_type="application/json",
+            )
+            assert resp.status_code == 200
+
+        updated_user = db.session.get(User, 99)
+        assert updated_user.subscription_end_at is not None
+        assert updated_user.is_canceling is True
+        assert updated_user.is_premium is True
