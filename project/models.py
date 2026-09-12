@@ -51,6 +51,18 @@ class User(UserMixin, db.Model):
     subscription_end_at = db.Column(db.DateTime, nullable=True)
 
     @property
+    def subscription_type(self) -> str | None:
+        """Retourne le type d'abonnement ('monthly', 'yearly') pour les comptes premium."""
+        if self.plan != "premium":
+            return None
+        if self.stripe_price_id:
+            if "year" in self.stripe_price_id.lower():
+                return "yearly"
+            if "month" in self.stripe_price_id.lower():
+                return "monthly"
+        return "monthly"
+
+    @property
     def is_canceling(self) -> bool:
         """Indique si l'abonnement a été résilié mais bénéficie encore de ses accès jusqu'à échéance."""
         if self.plan == "founder":
@@ -106,6 +118,10 @@ class User(UserMixin, db.Model):
         if self.plan == "founder":
             return "founder"
         if self.plan == "premium" and self.stripe_subscription_status == "active":
+            return "premium"
+        # Abonnement résilié mais encore dans la période payée (cancel_at_period_end)
+        # L'accès est maintenu (is_premium=True) mais on retourne "premium" pour cohérence UI
+        if self.is_canceling:
             return "premium"
         if self.is_in_trial:
             return "trial"

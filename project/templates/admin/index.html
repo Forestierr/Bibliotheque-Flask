@@ -1,273 +1,711 @@
-{% extends "base.html" %}
+{% extends "admin/base_admin.html" %}
 
-{% block title %}Administration - Livres en Classe{% endblock %}
+{% block admin_title %}Tableau de bord{% endblock %}
 
-{% block content %}
-<section class="section">
-    <div class="container">
-        
-        <h1 class="title is-2 mb-6">Panneau d'Administration</h1>
+{% block admin_header_title %}Tableau de Bord{% endblock %}
+{% block admin_header_subtitle %}Vue d'ensemble de l'activité, métriques clés et tendances de la plateforme.{% endblock %}
 
-        <!-- Messages Flash -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="notification is-{{ category }} is-light">
-                        <button class="delete"></button>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+{% block admin_actions %}
+<div class="buttons">
+  <a href="{{ url_for('admin.users') }}" class="button is-small is-light" style="border: 1px solid #cbd5e1; border-radius: 8px;">
+    <span class="icon is-small"><i class="fas fa-users"></i></span>
+    <span>Gérer les Utilisateurs</span>
+  </a>
+  <a href="{{ url_for('admin.emails') }}" class="button is-small is-primary" style="border-radius: 8px; font-weight: 600;">
+    <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
+    <span>Envoyer une Newsletter</span>
+  </a>
+</div>
+{% endblock %}
 
-        <div class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <h2 class="title is-4 mb-0">Utilisateurs inscrits ({{ users|length }})</h2>
-                </div>
-            </div>
-            <div class="level-right">
-                <div class="level-item">
-                    <a href="{{ url_for('admin.coupons') }}" class="button is-light" style="border: 1px solid #cbd5e1;">
-                        <span class="icon has-text-primary"><i class="fas fa-ticket-alt"></i></span>
-                        <span>Codes Promo Stripe</span>
-                    </a>
-                </div>
-                <div class="level-item">
-                    <a href="{{ url_for('admin.feedbacks') }}" class="button is-light" style="border: 1px solid #cbd5e1;">
-                        <span class="icon"><i class="fas fa-comment-alt"></i></span>
-                        <span>Retours & Bugs</span>
-                        {% if new_feedbacks_count and new_feedbacks_count > 0 %}
-                            <span class="tag is-warning is-rounded ml-2" style="font-weight: 700;">{{ new_feedbacks_count }}</span>
-                        {% endif %}
-                    </a>
-                </div>
-                <div class="level-item">
-                    <a href="{{ url_for('admin.emails') }}" class="button is-link">
-                        <span class="icon"><i class="fas fa-paper-plane"></i></span>
-                        <span>Envoyer une Newsletter</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="field mb-5">
-                <p class="control has-icons-left">
-                    <input class="input is-rounded" type="text" id="searchInput" placeholder="Rechercher par ID, Email ou Nom...">
-                    <span class="icon is-small is-left">
-                        <i class="fas fa-search"></i>
-                    </span>
-                </p>
-            </div>
-
-            <div class="table-container">
-                <table class="table is-fullwidth is-striped is-hoverable" id="usersTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Email</th>
-                            <th>Nom</th>
-                            <th>Statut</th>
-                            <th>Formule</th>
-                            <th>Scans</th>
-                            <th>Newsletter</th>
-                            <th>Livres</th>
-                            <th>Élèves</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for u in users %}
-                        <tr class="user-row">
-                            <td class="user-id">{{ u.id }}</td>
-                            <td class="user-email"><strong>{{ u.email }}</strong></td>
-                            <td class="user-name">{{ u.name or '-' }}</td>
-                            <td>
-                                {% if u.is_verified %}
-                                    <span class="tag is-success is-light">Vérifié</span>
-                                {% else %}
-                                    <span class="tag is-warning is-light">Non vérifié</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if u.plan == 'founder' %}
-                                    <span class="tag is-warning is-light" title="Accès illimité à vie">👑 Fondateur</span>
-                                {% elif u.is_in_trial %}
-                                    <span class="tag is-info is-light" title="Période d'essai">Essai ({{ u.trial_days_left }}j)</span>
-                                {% elif u.is_premium %}
-                                    <span class="tag is-success is-light" title="Abonnement Stripe actif">Premium</span>
-                                {% else %}
-                                    <span class="tag is-light">Gratuit</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="tag {% if (u.free_scans_used or 0) >= 30 and not u.is_premium %}is-danger is-light{% else %}is-light{% endif %}" title="Scans de codes-barres utilisés">
-                                    {{ u.free_scans_used or 0 }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if u.newsletter_subscribed %}
-                                    <span class="tag is-success is-light" title="Abonné à la newsletter">
-                                        <i class="fas fa-bell mr-1"></i> Abonné
-                                    </span>
-                                {% else %}
-                                    <span class="tag is-light" title="Désabonné de la newsletter">
-                                        <i class="fas fa-bell-slash mr-1"></i> Non
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td>{{ u.books|length }}</td>
-                            <td>{{ u.students|length }}</td>
-                            <td>
-                                <div class="buttons are-small">
-                                    <button type="button" class="button is-warning is-outlined" title="Modifier le plan / quotas" onclick="openPlanModal('{{ u.id }}', '{{ u.email }}', '{{ u.plan }}', '{{ u.free_scans_used or 0 }}', '{{ u.trial_days_left if u.is_in_trial else 0 }}')">
-                                        <span class="icon"><i class="fas fa-crown"></i></span>
-                                    </button>
-
-                                    {% if not u.is_verified %}
-                                    <form action="{{ url_for('admin.verify_user', user_id=u.id) }}" method="POST" class="is-inline">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                        <button type="submit" class="button is-success is-outlined" title="Forcer la vérification">
-                                            <span class="icon"><i class="fas fa-check"></i></span>
-                                        </button>
-                                    </form>
-                                    {% endif %}
-                                    
-                                    <form action="{{ url_for('admin.reset_password', user_id=u.id) }}" method="POST" class="is-inline" onsubmit="return confirm('Générer un nouveau mot de passe pour cet utilisateur ?');">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                        <button type="submit" class="button is-info is-outlined" title="Réinitialiser le MDP">
-                                            <span class="icon"><i class="fas fa-key"></i></span>
-                                        </button>
-                                    </form>
-
-                                    <form action="{{ url_for('admin.delete_user', user_id=u.id) }}" method="POST" class="is-inline" onsubmit="return confirm('ATTENTION ! Voulez-vous vraiment supprimer DÉFINITIVEMENT ce compte et toutes ses données (Livres, Élèves, Emprunts) ? Cette action est irréversible.');">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                        <button type="submit" class="button is-danger is-outlined" title="Supprimer le compte">
-                                            <span class="icon"><i class="fas fa-trash"></i></span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <div id="noResults" class="has-text-centered has-text-grey mt-5 is-hidden">
-                    Aucun utilisateur trouvé.
-                </div>
-            </div>
-        </div>
+{% block admin_content %}
+<!-- 4 Cartes Métriques Clés -->
+<div class="columns is-multiline mb-5">
+  <!-- Carte 1: Utilisateurs Totaux -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Utilisateurs</span>
+        <span class="icon" style="background: rgba(0, 209, 178, 0.14); color: #008774; border-radius: 8px; width: 36px; height: 36px;">
+          <i class="fas fa-users"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.total_users }}</div>
+      <p class="is-size-7 has-text-grey">
+        <span class="has-text-success has-text-weight-semibold">{{ stats.active_users }}</span> vérifiés &bull;
+        <span class="has-text-warning has-text-weight-semibold">{{ stats.unconfirmed_users }}</span> en attente
+      </p>
+      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
+        <a href="{{ url_for('admin.users') }}" class="is-size-7 has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px; color: #008774;">
+          <span>Consulter le répertoire</span>
+          <i class="fas fa-arrow-right is-size-7"></i>
+        </a>
+      </div>
     </div>
-</section>
+  </div>
 
-<!-- Modal Modification du Plan & Quotas -->
-<div id="modalEditPlan" class="modal">
-    <div class="modal-background" onclick="closePlanModal()"></div>
-    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
-        <header class="modal-card-head">
-            <p class="modal-card-title">Formule : <span id="modalPlanUserEmail" class="has-text-weight-bold"></span></p>
-            <button class="delete" aria-label="close" onclick="closePlanModal()"></button>
-        </header>
-        <form id="formEditPlan" method="POST" action="">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <section class="modal-card-body">
-                <div class="field">
-                    <label class="label">Formule / Plan</label>
-                    <div class="control">
-                        <div class="select is-fullwidth">
-                            <select name="plan" id="selectPlan">
-                                <option value="free">Gratuit (Free)</option>
-                                <option value="trial">Période d'essai (Trial)</option>
-                                <option value="premium">Premium (Forcé)</option>
-                                <option value="founder">Fondateur (Founder - Illimité à vie)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label class="label">Jours d'essai additionnels / restant</label>
-                    <div class="control">
-                        <input class="input" type="number" name="trial_days" id="inputTrialDays" placeholder="30" min="0">
-                    </div>
-                    <p class="help">Permet d'ajouter ou prolonger la durée d'essai de l'utilisateur.</p>
-                </div>
-
-                <div class="field mt-4">
-                    <label class="checkbox">
-                        <input type="checkbox" name="reset_scans" value="1">
-                        <strong>Réinitialiser le compteur de scans</strong> (actuellement : <span id="modalScansCount">0</span>/30)
-                    </label>
-                </div>
-            </section>
-            <footer class="modal-card-foot" style="justify-content: flex-end;">
-                <button type="button" class="button is-light" onclick="closePlanModal()">Annuler</button>
-                <button type="submit" class="button is-primary">Enregistrer</button>
-            </footer>
-        </form>
+  <!-- Carte 2: Formules & Membres Premium -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Abonnements</span>
+        <span class="icon has-text-warning" style="background: rgba(234, 179, 8, 0.12); border-radius: 8px; width: 36px; height: 36px;">
+          <i class="fas fa-crown"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.paying_or_founder_users }}</div>
+      <p class="is-size-7 has-text-grey">
+        <span class="tag is-success is-light is-rounded is-small py-0 px-2" style="font-size: 0.65rem;">{{ stats.premium_users }} Premium</span>
+        <span class="tag is-warning is-light is-rounded is-small py-0 px-2" style="font-size: 0.65rem;">{{ stats.founder_users }} Fondateurs</span>
+        <span class="tag is-info is-light is-rounded is-small py-0 px-2" style="font-size: 0.65rem;">{{ stats.trial_users }} Essai</span>
+      </p>
+      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
+        <a href="{{ url_for('admin.users', plan='premium') }}" class="is-size-7 has-text-warning-dark has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px;">
+          <span>Filtrer les premiums</span>
+          <i class="fas fa-arrow-right is-size-7"></i>
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- Carte 3: Livres & Bibliothèque -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Catalogue Global</span>
+        <span class="icon has-text-info" style="background: rgba(14, 165, 233, 0.1); border-radius: 8px; width: 36px; height: 36px;">
+          <i class="fas fa-book-open"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.total_books }}</div>
+      <p class="is-size-7 has-text-grey">
+        <span class="has-text-weight-semibold">{{ stats.total_students }}</span> élèves &bull;
+        <span class="has-text-weight-semibold">{{ stats.total_loans }}</span> prêts enregistrés
+      </p>
+      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
+        <a href="{{ url_for('admin.livres') }}" class="is-size-7 has-text-info has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px;">
+          <span>Explorer les livres</span>
+          <i class="fas fa-arrow-right is-size-7"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carte 4: Communication & Retours -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Audience & Support</span>
+        <span class="icon has-text-danger" style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; width: 36px; height: 36px;">
+          <i class="fas fa-comment-dots"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.newsletter_subscribers }}</div>
+      <p class="is-size-7 has-text-grey">
+        abonnés newsletter &bull;
+        <span class="{% if stats.new_feedbacks > 0 %}has-text-danger has-text-weight-bold{% else %}has-text-grey{% endif %}">
+          {{ stats.new_feedbacks }} ticket(s) en attente
+        </span>
+      </p>
+      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
+        <a href="{{ url_for('admin.feedbacks') }}" class="is-size-7 has-text-danger has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px;">
+          <span>Consulter les retours</span>
+          <i class="fas fa-arrow-right is-size-7"></i>
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- SECTION REVENUS & PERFORMANCE DES ABONNEMENTS -->
+<div class="is-flex is-align-items-center is-justify-content-space-between mb-4 mt-5">
+  <div>
+    <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
+      <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-wallet"></i></span>
+      Revenus & Performance des Abonnements
+    </h2>
+    <p class="is-size-7 has-text-grey">Indicateurs financiers récurrents (MRR/ARR) et souscriptions en cours</p>
+  </div>
+  {% if financial_stats.stripe_connected %}
+    <span class="tag is-success is-light is-rounded has-text-weight-semibold" style="border: 1px solid #bbf7d0;">
+      <span class="icon is-small mr-1"><i class="fab fa-stripe has-text-info"></i></span>
+      Stripe Actif &bull; {{ financial_stats.currency }}
+    </span>
+  {% else %}
+    <span class="tag is-light is-rounded has-text-weight-semibold" style="border: 1px solid #e2e8f0; color: #64748b;">
+      <span class="icon is-small mr-1"><i class="fas fa-database"></i></span>
+      Base locale &bull; {{ financial_stats.currency }}
+    </span>
+  {% endif %}
+</div>
+
+<!-- 4 Cartes Métriques Financières -->
+<div class="columns is-multiline mb-5">
+  <!-- MRR -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card" style="border-top: 3px solid #00b89c;">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">MRR (Mensuel)</span>
+        <span class="icon" style="background: rgba(0, 184, 156, 0.12); color: #008774; border-radius: 8px; width: 34px; height: 34px;">
+          <i class="fas fa-coins"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
+        {{ "%.2f"|format(financial_stats.mrr) }} <span class="is-size-6 has-text-grey">{{ financial_stats.currency }}</span>
+      </div>
+      <p class="is-size-7 has-text-grey">
+        Revenu récurrent mensuel normalisé
+      </p>
+    </div>
+  </div>
+
+  <!-- ARR -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card" style="border-top: 3px solid #3b82f6;">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">ARR (Annuel)</span>
+        <span class="icon" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border-radius: 8px; width: 34px; height: 34px;">
+          <i class="fas fa-chart-line"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
+        {{ "%.2f"|format(financial_stats.arr) }} <span class="is-size-6 has-text-grey">{{ financial_stats.currency }}</span>
+      </div>
+      <p class="is-size-7 has-text-grey">
+        Projection annuelle (MRR &times; 12)
+      </p>
+    </div>
+  </div>
+
+  <!-- Total Encaissé -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card" style="border-top: 3px solid #8b5cf6;">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Total Encaissé</span>
+        <span class="icon" style="background: rgba(139, 92, 246, 0.1); color: #7c3aed; border-radius: 8px; width: 34px; height: 34px;">
+          <i class="fas fa-receipt"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
+        {{ "%.2f"|format(financial_stats.total_revenue) }} <span class="is-size-6 has-text-grey">{{ financial_stats.currency }}</span>
+      </div>
+      <p class="is-size-7 has-text-grey">
+        Volume total des factures payées
+      </p>
+    </div>
+  </div>
+
+  <!-- Abonnements Payants Actifs -->
+  <div class="column is-6-tablet is-3-desktop">
+    <div class="stat-card" style="border-top: 3px solid #f59e0b;">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Abonnements Payants</span>
+        <span class="icon" style="background: rgba(245, 158, 11, 0.12); color: #d97706; border-radius: 8px; width: 34px; height: 34px;">
+          <i class="fas fa-credit-card"></i>
+        </span>
+      </div>
+      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
+        {{ financial_stats.active_subscriptions }}
+      </div>
+      <p class="is-size-7 has-text-grey">
+        <span class="has-text-weight-semibold" style="color: #008774;">{{ financial_stats.monthly_subs }} mensuel</span> &bull;
+        <span class="has-text-weight-semibold" style="color: #2563eb;">{{ financial_stats.yearly_subs }} annuel</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Graphiques Financiers : Revenus & Abonnements par type -->
+<div class="columns is-multiline mb-5">
+  <!-- Graphique 1: Revenus encaissés sur 6 mois (Bar Chart) -->
+  <div class="column is-12-tablet is-7-desktop">
+    <div class="admin-card h-100">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
+        <div>
+          <h3 class="title is-6 mb-1" style="font-weight: 700; color: #1e293b;">
+            <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-money-bill-wave"></i></span>
+            Évolution des Revenus Encaissés (6 derniers mois)
+          </h3>
+          <p class="is-size-7 has-text-grey">Volume des encaissements en {{ financial_stats.currency }}</p>
+        </div>
+        <span class="tag is-rounded has-text-weight-bold is-small" style="background: rgba(0, 184, 156, 0.12); color: #008774;">
+          Total : {{ "%.2f"|format(financial_stats.total_revenue) }} {{ financial_stats.currency }}
+        </span>
+      </div>
+      <div style="position: relative; height: 230px; width: 100%;">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphique 2: Abonnements Actifs par Type (Donut Chart) -->
+  <div class="column is-12-tablet is-5-desktop">
+    <div class="admin-card h-100">
+      <div class="mb-3">
+        <h3 class="title is-6 mb-1" style="font-weight: 700; color: #1e293b;">
+          <span class="icon is-small has-text-warning-dark mr-2"><i class="fas fa-layer-group"></i></span>
+          Abonnements Actifs par Type
+        </h3>
+        <p class="is-size-7 has-text-grey">Répartition Mensuel vs Annuel et part de MRR</p>
+      </div>
+      <div style="position: relative; height: 160px; width: 100%; display: flex; align-items: center; justify-content: center;">
+        <canvas id="subTypesChart"></canvas>
+      </div>
+      <div class="columns is-mobile mt-3 pt-2 mb-0" style="border-top: 1px solid #f1f5f9; font-size: 0.75rem;">
+        <div class="column has-text-centered py-1">
+          <span class="has-text-weight-bold" style="color: #00b89c;">● Mensuel (5 CHF)</span>
+          <div class="has-text-weight-bold is-size-6" style="color: #0f172a;">{{ financial_stats.monthly_subs }}</div>
+          <div class="is-size-7 has-text-grey">{{ "%.2f"|format(financial_stats.monthly_mrr) }} CHF/mois</div>
+        </div>
+        <div class="column has-text-centered py-1">
+          <span class="has-text-weight-bold" style="color: #3b82f6;">● Annuel (30 CHF)</span>
+          <div class="has-text-weight-bold is-size-6" style="color: #0f172a;">{{ financial_stats.yearly_subs }}</div>
+          <div class="is-size-7 has-text-grey">{{ "%.2f"|format(financial_stats.yearly_mrr) }} CHF/mois</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION CROISSANCE & UTILISATEURS -->
+<div class="mb-3 mt-5">
+  <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
+    <span class="icon is-small mr-2" style="color: #3b82f6;"><i class="fas fa-chart-line"></i></span>
+    Activité & Croissance Utilisateurs
+  </h2>
+  <p class="is-size-7 has-text-grey">Évolution des nouvelles inscriptions et structure globale des comptes</p>
+</div>
+
+<!-- Graphiques Analytiques (remplace les raccourcis redondants) -->
+<div class="columns is-multiline mb-5">
+  <!-- Courbe des inscriptions sur 30 jours -->
+  <div class="column is-12-tablet is-8-desktop">
+    <div class="admin-card h-100">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
+        <div>
+          <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
+            <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-chart-line"></i></span>
+            Nouvelles Inscriptions (30 derniers jours)
+          </h2>
+          <p class="is-size-7 has-text-grey">Dynamique d'adhésion quotidienne sur la plateforme</p>
+        </div>
+        <span class="tag is-rounded has-text-weight-bold is-small" style="background: rgba(0, 209, 178, 0.14); color: #007a68;">
+          {{ chart_signups_data | sum }} inscription(s)
+        </span>
+      </div>
+      <div style="position: relative; height: 250px; width: 100%;">
+        <canvas id="signupsChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Répartition des Formules (Doughnut) -->
+  <div class="column is-12-tablet is-4-desktop">
+    <div class="admin-card h-100">
+      <div class="mb-3">
+        <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
+          <span class="icon is-small has-text-warning mr-2"><i class="fas fa-chart-pie"></i></span>
+          Répartition des Formules
+        </h2>
+        <p class="is-size-7 has-text-grey">Structure des comptes par formule</p>
+      </div>
+      <div style="position: relative; height: 180px; width: 100%; display: flex; align-items: center; justify-content: center;">
+        <canvas id="plansChart"></canvas>
+      </div>
+      <div class="is-flex is-justify-content-space-around mt-3 pt-2" style="border-top: 1px solid #f1f5f9; font-size: 0.75rem;">
+        <div class="has-text-centered">
+          <span class="has-text-grey">Gratuit</span>
+          <div class="has-text-weight-bold" style="color: #64748b;">{{ plans_distribution['Gratuit'] }}</div>
+        </div>
+        <div class="has-text-centered">
+          <span class="has-text-info">Essai</span>
+          <div class="has-text-weight-bold has-text-info">{{ plans_distribution['Essai'] }}</div>
+        </div>
+        <div class="has-text-centered">
+          <span class="has-text-success">Premium</span>
+          <div class="has-text-weight-bold has-text-success">{{ plans_distribution['Premium'] }}</div>
+        </div>
+        <div class="has-text-centered">
+          <span class="has-text-warning-dark">Fondateur</span>
+          <div class="has-text-weight-bold has-text-warning-dark">{{ plans_distribution['Fondateur'] }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deux colonnes d'activité récente -->
+<div class="columns is-multiline">
+  <!-- Derniers Utilisateurs Inscrits -->
+  <div class="column is-12-tablet is-6-desktop">
+    <div class="admin-card h-100">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
+        <div>
+          <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
+            <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-user-plus"></i></span>
+            Dernières inscriptions
+          </h2>
+          <p class="is-size-7 has-text-grey">Les 5 derniers comptes créés sur la plateforme</p>
+        </div>
+        <a href="{{ url_for('admin.users') }}" class="button is-small is-light" style="border-radius: 8px;">
+          <span>Tout voir</span>
+          <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
+        </a>
+      </div>
+
+      <div class="table-container">
+        <table class="table is-fullwidth is-hoverable" style="background: transparent;">
+          <thead>
+            <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
+              <th>UTILISATEUR</th>
+              <th>FORMULE</th>
+              <th>STATUT</th>
+              <th class="has-text-right">DATE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in recent_users %}
+              <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
+                <td>
+                  <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #e6fffa; color: #007a68; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem;">
+                      {{ (u.name or u.email)[:2]|upper }}
+                    </div>
+                    <div>
+                      <div class="has-text-weight-semibold" style="color: #0f172a;">{{ u.name or 'Sans nom' }}</div>
+                      <div class="is-size-7 has-text-grey">{{ u.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  {% if u.plan == 'founder' %}
+                    <span class="tag is-warning is-light is-rounded is-small">👑 Fondateur</span>
+                  {% elif u.is_in_trial %}
+                    <span class="tag is-info is-light is-rounded is-small">Essai ({{ u.trial_days_left }}j)</span>
+                  {% elif u.is_premium %}
+                    <span class="tag is-success is-light is-rounded is-small">Premium</span>
+                  {% else %}
+                    <span class="tag is-light is-rounded is-small">Gratuit</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if u.is_verified %}
+                    <span class="tag is-success is-light is-rounded is-small"><i class="fas fa-check-circle mr-1"></i> Vérifié</span>
+                  {% else %}
+                    <span class="tag is-warning is-light is-rounded is-small"><i class="fas fa-clock mr-1"></i> En attente</span>
+                  {% endif %}
+                </td>
+                <td class="has-text-right is-size-7 has-text-grey">
+                  {% if u.created_at %}
+                    {{ u.created_at.strftime('%d/%m/%Y') }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="has-text-centered has-text-grey py-4">Aucun utilisateur enregistré.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Derniers Retours & Signalements de Bugs -->
+  <div class="column is-12-tablet is-6-desktop">
+    <div class="admin-card h-100">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
+        <div>
+          <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
+            <span class="icon is-small has-text-danger mr-2"><i class="fas fa-bug"></i></span>
+            Derniers retours & bugs
+          </h2>
+          <p class="is-size-7 has-text-grey">Signalements récents des utilisateurs</p>
+        </div>
+        <a href="{{ url_for('admin.feedbacks') }}" class="button is-small is-light" style="border-radius: 8px;">
+          <span>Gérer</span>
+          <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
+        </a>
+      </div>
+
+      <div class="table-container">
+        <table class="table is-fullwidth is-hoverable" style="background: transparent;">
+          <thead>
+            <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
+              <th>SUJET</th>
+              <th>EXPÉDITEUR</th>
+              <th>STATUT</th>
+              <th class="has-text-right">DATE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fb in recent_feedbacks %}
+              <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
+                <td>
+                  <div class="has-text-weight-semibold" style="color: #0f172a; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ fb.subject }}">
+                    {{ fb.subject }}
+                  </div>
+                  <div class="is-size-7 has-text-grey" style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{ fb.message }}
+                  </div>
+                </td>
+                <td class="is-size-7">
+                  <div>{{ fb.user.name if fb.user else 'Anonyme' }}</div>
+                  <div class="has-text-grey">{{ fb.user.email if fb.user else '-' }}</div>
+                </td>
+                <td>
+                  {% if fb.status == 'new' %}
+                    <span class="tag is-danger is-light is-rounded is-small">Nouveau</span>
+                  {% elif fb.status == 'en_cours' %}
+                    <span class="tag is-info is-light is-rounded is-small">En cours</span>
+                  {% elif fb.status == 'resolved' %}
+                    <span class="tag is-success is-light is-rounded is-small">Résolu</span>
+                  {% else %}
+                    <span class="tag is-light is-rounded is-small">{{ fb.status }}</span>
+                  {% endif %}
+                </td>
+                <td class="has-text-right is-size-7 has-text-grey">
+                  {% if fb.created_at %}
+                    {{ fb.created_at.strftime('%d/%m/%Y') }}
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="has-text-centered has-text-grey py-4">Aucun retour enregistré. Tout va bien !</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Flash messages dismissal
-        (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-            const $notification = $delete.parentNode;
-            $delete.addEventListener('click', () => {
-                $notification.parentNode.removeChild($notification);
-            });
-        });
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Graphique Courbe des Inscriptions (30j)
+  const signupsCtx = document.getElementById('signupsChart');
+  if (signupsCtx) {
+    const ctx = signupsCtx.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+    gradient.addColorStop(0, 'rgba(0, 209, 178, 0.28)');
+    gradient.addColorStop(1, 'rgba(0, 209, 178, 0.0)');
 
-        // Search functionality
-        const searchInput = document.getElementById('searchInput');
-        const userRows = document.querySelectorAll('.user-row');
-        const noResults = document.getElementById('noResults');
-
-        if(searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                let hasVisible = false;
-
-                userRows.forEach(row => {
-                    const id = row.querySelector('.user-id').textContent.toLowerCase();
-                    const email = row.querySelector('.user-email').textContent.toLowerCase();
-                    const name = row.querySelector('.user-name').textContent.toLowerCase();
-
-                    if (id.includes(term) || email.includes(term) || name.includes(term)) {
-                        row.style.display = '';
-                        hasVisible = true;
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-
-                if (hasVisible) {
-                    noResults.classList.add('is-hidden');
-                } else {
-                    noResults.classList.remove('is-hidden');
-                }
-            });
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: {{ chart_signups_labels | tojson | safe }},
+        datasets: [{
+          label: 'Nouvelles Inscriptions',
+          data: {{ chart_signups_data | tojson | safe }},
+          borderColor: '#00b89c',
+          borderWidth: 2.5,
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#00b89c',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            titleFont: { size: 12, weight: '700' },
+            bodyFont: { size: 12 },
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                return ` ${context.parsed.y} inscription(s)`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              maxTicksLimit: 10,
+              color: '#94a3b8',
+              font: { size: 11 }
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              precision: 0,
+              color: '#94a3b8',
+              font: { size: 11 }
+            },
+            grid: {
+              color: '#f1f5f9'
+            }
+          }
         }
+      }
     });
+  }
 
-    function openPlanModal(userId, email, plan, scans, trialDays) {
-        document.getElementById('modalPlanUserEmail').textContent = email;
-        document.getElementById('selectPlan').value = plan;
-        document.getElementById('modalScansCount').textContent = scans;
-        document.getElementById('inputTrialDays').value = (trialDays && trialDays > 0) ? trialDays : '';
-        document.getElementById('formEditPlan').action = '/admin/set_plan/' + userId;
-        document.getElementById('modalEditPlan').classList.add('is-active');
-    }
-
-    function closePlanModal() {
-        document.getElementById('modalEditPlan').classList.remove('is-active');
-    }
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closePlanModal();
+  // 2. Graphique Donut Répartition des Formules
+  const plansCtx = document.getElementById('plansChart');
+  if (plansCtx) {
+    new Chart(plansCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Gratuit', 'Essai', 'Premium', 'Fondateur'],
+        datasets: [{
+          data: [
+            {{ plans_distribution['Gratuit'] }},
+            {{ plans_distribution['Essai'] }},
+            {{ plans_distribution['Premium'] }},
+            {{ plans_distribution['Fondateur'] }}
+          ],
+          backgroundColor: [
+            '#cbd5e1',
+            '#38bdf8',
+            '#00d1b2',
+            '#f59e0b'
+          ],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                return ` ${context.label} : ${context.parsed}`;
+              }
+            }
+          }
         }
+      }
     });
+  }
+
+  // 3. Graphique Revenus Encaissés (Bar Chart)
+  const revCtx = document.getElementById('revenueChart');
+  if (revCtx) {
+    new Chart(revCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ revenue_chart_labels | tojson | safe }},
+        datasets: [{
+          label: 'Encaissements ({{ financial_stats.currency }})',
+          data: {{ revenue_chart_data | tojson | safe }},
+          backgroundColor: '#00b89c',
+          borderRadius: 6,
+          maxBarThickness: 38,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                return ' ' + context.parsed.y.toFixed(2) + ' {{ financial_stats.currency }}';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: '#94a3b8',
+              font: { size: 11 }
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: '#94a3b8',
+              font: { size: 11 },
+              callback: function(value) {
+                return value + ' {{ financial_stats.currency }}';
+              }
+            },
+            grid: {
+              color: '#f1f5f9'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // 4. Graphique Donut Abonnements par Type (Mensuel vs Annuel)
+  const subTypesCtx = document.getElementById('subTypesChart');
+  if (subTypesCtx) {
+    const monthlyCount = {{ financial_stats.monthly_subs }};
+    const yearlyCount = {{ financial_stats.yearly_subs }};
+    const hasSubs = (monthlyCount + yearlyCount) > 0;
+
+    new Chart(subTypesCtx, {
+      type: 'doughnut',
+      data: {
+        labels: hasSubs ? ['Mensuel (5 CHF)', 'Annuel (30 CHF)'] : ['Aucun abonnement payant'],
+        datasets: [{
+          data: hasSubs ? [monthlyCount, yearlyCount] : [1],
+          backgroundColor: hasSubs ? ['#00b89c', '#3b82f6'] : ['#e2e8f0'],
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          hoverOffset: hasSubs ? 4 : 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                if (!hasSubs) return ' Aucun abonnement payant pour le moment';
+                return ` ${context.label} : ${context.parsed} actif(s)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+});
 </script>
 {% endblock %}

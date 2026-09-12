@@ -1,0 +1,125 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Élèves - Administration{% endblock %}
+
+{% block admin_header_title %}Répertoire des Élèves{% endblock %}
+{% block admin_header_subtitle %}Vue d'ensemble de tous les élèves enregistrés par les enseignants dans leurs classes.{% endblock %}
+
+{% block admin_actions %}
+<div class="tags has-addons mb-0">
+  <span class="tag is-medium is-light">Total élèves</span>
+  <span class="tag is-medium is-primary has-text-weight-bold">{{ total_students }}</span>
+</div>
+{% endblock %}
+
+{% block admin_content %}
+<div class="admin-card">
+  <!-- Barre de recherche -->
+  <form method="GET" action="{{ url_for('admin.eleves') }}" class="mb-5">
+    <div class="field has-addons">
+      <div class="control has-icons-left is-expanded">
+        <input class="input is-rounded" type="text" name="q" value="{{ search_query or '' }}" placeholder="Rechercher par nom ou prénom d'élève...">
+        <span class="icon is-small is-left">
+          <i class="fas fa-search"></i>
+        </span>
+      </div>
+      <div class="control">
+        <button type="submit" class="button is-primary is-rounded px-5">
+          <span>Rechercher</span>
+        </button>
+      </div>
+      {% if search_query %}
+        <div class="control ml-2">
+          <a href="{{ url_for('admin.eleves') }}" class="button is-light is-rounded" title="Effacer la recherche">
+            <span class="icon is-small"><i class="fas fa-times"></i></span>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </form>
+
+  <!-- Table des élèves -->
+  <div class="table-container">
+    <table class="table is-fullwidth is-hoverable" style="vertical-align: middle;">
+      <thead>
+        <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
+          <th style="width: 60px;">ID</th>
+          <th>ÉLÈVE</th>
+          <th>CLASSE / ENSEIGNANT</th>
+          <th class="has-text-centered">EMPRUNTS EN COURS</th>
+          <th class="has-text-centered">TOTAL PRÊTS HISTORIQUE</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+          <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
+            <td class="has-text-grey-light is-size-7">#{{ s.id }}</td>
+            <td>
+              <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem;">
+                  <i class="fas fa-user-graduate"></i>
+                </div>
+                <div>
+                  <div class="has-text-weight-bold" style="color: #0f172a;">
+                    {{ s.firstname or '' }} {{ s.name or '' }}
+                  </div>
+                  <div class="is-size-7 has-text-grey">
+                    Élève enregistré
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              {% if s.user %}
+                <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
+                  <div style="width: 26px; height: 26px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.65rem;">
+                    {{ (s.user.name or s.user.email)[:2]|upper }}
+                  </div>
+                  <div>
+                    <div class="has-text-weight-semibold is-size-7" style="color: #1e293b;">{{ s.user.name or 'Enseignant' }}</div>
+                    <div class="is-size-7 has-text-grey">{{ s.user.email }}</div>
+                  </div>
+                </div>
+              {% else %}
+                <span class="tag is-warning is-light is-small">Orphelin</span>
+              {% endif %}
+            </td>
+            <td class="has-text-centered">
+              {% set active_loans = s.loans | selectattr('date_return', 'none') | list if s.loans else [] %}
+              {% if active_loans | length > 0 %}
+                <span class="tag is-warning is-light is-rounded is-small">
+                  <i class="fas fa-book-reader mr-1"></i> {{ active_loans | length }} en cours
+                </span>
+              {% else %}
+                <span class="tag is-light is-rounded is-small has-text-grey">0</span>
+              {% endif %}
+            </td>
+            <td class="has-text-centered">
+              <span class="tag is-light is-rounded is-small">
+                {{ s.loans | length if s.loans else 0 }} prêt(s)
+              </span>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5" class="has-text-centered py-6">
+              <span class="icon is-large has-text-grey-light"><i class="fas fa-user-graduate fa-3x"></i></span>
+              <p class="has-text-grey mt-3">Aucun élève trouvé{% if search_query %} pour « {{ search_query }} »{% endif %}.</p>
+              {% if search_query %}
+                <a href="{{ url_for('admin.eleves') }}" class="button is-small is-light mt-2">Réinitialiser le filtre</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if students|length >= 100 %}
+    <div class="notification is-light is-size-7 mt-4" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+      <span class="icon has-text-info mr-1"><i class="fas fa-info-circle"></i></span>
+      Affichage limité aux 100 premiers résultats pour optimiser les performances. Utilisez la recherche pour filtrer un élève spécifique.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

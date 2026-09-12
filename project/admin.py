@@ -1,8 +1,10 @@
+import importlib.metadata
 import os
 import random
 import re
 import secrets
 import string
+import sys
 import time
 from datetime import datetime, timedelta, timezone
 from threading import Thread
@@ -22,22 +24,261 @@ from flask import (
 from flask_babel import force_locale
 from flask_babel import gettext as _
 from flask_mail import Message
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
 
-from . import db, mail
-from .models import Feedback, NewsletterCampaign, NewsletterDelivery, User
+from . import config_plans, db, mail
+from .models import (
+    Book,
+    Feedback,
+    Loan,
+    NewsletterCampaign,
+    NewsletterDelivery,
+    Student,
+    User,
+)
 
 admin = Blueprint("admin", __name__)
 
 
+@admin.context_processor
+def inject_admin_globals():
+    try:
+        new_feedbacks = Feedback.query.filter_by(status="nouveau").count()
+        total_users = User.query.count()
+    except SQLAlchemyError:
+        new_feedbacks = 0
+        total_users = 0
+    return {
+        "new_feedbacks_count": new_feedbacks,
+        "total_users_count": total_users,
+    }
+
+
 @admin.route("/admin")
 def index():
-    # Fetch all users, order by ID descending (newest first)
-    users = User.query.order_by(User.id.desc()).all()
-    new_feedbacks_count = Feedback.query.filter_by(status="nouveau").count()
+    now = datetime.now(timezone.utc)
+    total_users = User.query.count()
+    active_users = User.query.filter_by(is_verified=True).count()
+    unconfirmed_users = max(0, total_users - active_users)
+    premium_users = User.query.filter_by(plan="premium").count()
+    founder_users = User.query.filter_by(plan="founder").count()
+    paying_or_founder_users = premium_users + founder_users
+    trial_users = User.query.filter(User.trial_ends_at > now).count()
+    free_users = max(0, total_users - paying_or_founder_users - trial_users)
+    newsletter_subscribers = User.query.filter_by(newsletter_subscribed=True).count()
+
+    total_books = Book.query.count()
+    total_students = Student.query.count()
+    total_loans = Loan.query.count()
+    total_scans = db.session.query(func.sum(User.free_scans_used)).scalar() or 0
+
+    new_feedbacks = Feedback.query.filter_by(status="nouveau").count()
+    total_feedbacks = Feedback.query.count()
+
+    recent_users = User.query.order_by(User.id.desc()).limit(5).all()
+    recent_feedbacks = Feedback.query.order_by(Feedback.id.desc()).limit(5).all()
+
+    # Évolution des inscriptions sur les 30 derniers jours
+    today = datetime.now(timezone.utc).date()
+    days_labels = []
+    days_map = {}
+    for i in range(29, -1, -1):
+        day_date = today - timedelta(days=i)
+        days_labels.append(day_date.strftime("%d/%m"))
+        days_map[day_date] = 0
+
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    recent_users_30d = User.query.filter(User.created_at >= thirty_days_ago).all()
+    for u in recent_users_30d:
+        if u.created_at:
+            u_date = (
+                u.created_at.date() if hasattr(u.created_at, "date") else u.created_at
+            )
+            if u_date in days_map:
+                days_map[u_date] += 1
+
+    chart_signups_data = [
+        days_map[today - timedelta(days=i)] for i in range(29, -1, -1)
+    ]
+
+    # Métriques financières et répartition des abonnements payants
+    stripe_key = os.getenv("STRIPE_SECRET_KEY")
+    stripe_connected = False
+    currency = config_plans.DEFAULT_CURRENCY
+    monthly_subs_count = 0
+    yearly_subs_count = 0
+    monthly_mrr = 0.0
+    yearly_mrr = 0.0
+    total_revenue_collected = 0.0
+
+    # Période de 6 mois pour le graphique des encaissements
+    cur_year = today.year
+    cur_month = today.month
+    revenue_slots = []
+    for i in range(5, -1, -1):
+        m = cur_month - i
+        y = cur_year
+        while m <= 0:
+            m += 12
+            y -= 1
+        revenue_slots.append((y, m))
+
+    month_names_fr = {
+        1: "Janv",
+        2: "Févr",
+        3: "Mars",
+        4: "Avr",
+        5: "Mai",
+        6: "Juin",
+        7: "Juil",
+        8: "Août",
+        9: "Sept",
+        10: "Oct",
+        11: "Nov",
+        12: "Déc",
+    }
+    revenue_chart_labels = [
+        f"{month_names_fr[m]} {str(y)[2:]}" for (y, m) in revenue_slots
+    ]
+    revenue_by_slot = {s: 0.0 for s in revenue_slots}
+
+    if stripe_key:
+        try:
+            stripe.api_key = stripe_key
+            stripe_subs = stripe.Subscription.list(status="active", limit=100)
+            stripe_connected = True
+            for s in stripe_subs.data:
+                interval = None
+                amount = 0.0
+                if getattr(s, "plan", None):
+                    interval = s.plan.interval
+                    amount = (s.plan.amount or 0) / 100.0
+                elif s.items and s.items.data:
+                    item = s.items.data[0]
+                    if item.price and item.price.recurring:
+                        interval = item.price.recurring.interval
+                        amount = (item.price.unit_amount or 0) / 100.0
+
+                if interval == "year":
+                    yearly_subs_count += 1
+                    yearly_mrr += amount / 12.0
+                else:
+                    monthly_subs_count += 1
+                    monthly_mrr += amount
+
+            # Invoices payées pour l'historique de revenus
+            invoices = stripe.Invoice.list(status="paid", limit=100)
+            for inv in invoices.data:
+                paid = round((inv.amount_paid or 0) / 100.0, 2)
+                total_revenue_collected += paid
+                inv_dt = datetime.fromtimestamp(inv.created, tz=timezone.utc)
+                slot = (inv_dt.year, inv_dt.month)
+                if slot in revenue_by_slot:
+                    revenue_by_slot[slot] += paid
+        except Exception as e:  # noqa: BLE001
+            current_app.logger.warning(
+                "Erreur de récupération des métriques Stripe : %s", e
+            )
+            stripe_connected = False
+
+    # Fallback si Stripe non connecté ou hors-ligne (ex: tests automatisés)
+    if not stripe_connected or (
+        monthly_subs_count == 0 and yearly_subs_count == 0 and premium_users > 0
+    ):
+        premium_db_users = User.query.filter_by(plan="premium").all()
+        for u in premium_db_users:
+            if u.stripe_price_id and (
+                "year" in u.stripe_price_id.lower()
+                or u.stripe_price_id == os.getenv("STRIPE_PRICE_ID_YEARLY")
+            ):
+                yearly_subs_count += 1
+            else:
+                monthly_subs_count += 1
+
+        monthly_mrr = monthly_subs_count * config_plans.PRICE_MONTHLY_AMOUNT
+        yearly_mrr = yearly_subs_count * (config_plans.PRICE_YEARLY_AMOUNT / 12.0)
+        if total_revenue_collected == 0:
+            total_revenue_collected = (
+                monthly_subs_count * config_plans.PRICE_MONTHLY_AMOUNT
+            ) + (yearly_subs_count * config_plans.PRICE_YEARLY_AMOUNT)
+            revenue_by_slot[revenue_slots[-1]] = round(
+                monthly_mrr + (yearly_mrr * 12.0), 2
+            )
+
+    total_mrr = round(monthly_mrr + yearly_mrr, 2)
+    total_arr = round(total_mrr * 12.0, 2)
+    total_revenue_collected = round(total_revenue_collected, 2)
+    revenue_chart_data = [round(revenue_by_slot[s], 2) for s in revenue_slots]
+    active_subscriptions_count = monthly_subs_count + yearly_subs_count
+
+    financial_stats = {
+        "mrr": total_mrr,
+        "arr": total_arr,
+        "total_revenue": total_revenue_collected,
+        "currency": currency,
+        "active_subscriptions": active_subscriptions_count,
+        "monthly_subs": monthly_subs_count,
+        "yearly_subs": yearly_subs_count,
+        "monthly_mrr": round(monthly_mrr, 2),
+        "yearly_mrr": round(yearly_mrr, 2),
+        "stripe_connected": stripe_connected,
+    }
+
+    subscriptions_type_distribution = {
+        "Mensuel (5 CHF)": monthly_subs_count,
+        "Annuel (30 CHF)": yearly_subs_count,
+    }
+
+    plans_distribution = {
+        "Gratuit": free_users,
+        "Essai": trial_users,
+        "Premium": premium_users,
+        "Fondateur": founder_users,
+    }
+
+    stats = {
+        "total_users": total_users,
+        "active_users": active_users,
+        "unconfirmed_users": unconfirmed_users,
+        "premium_users": premium_users,
+        "founder_users": founder_users,
+        "paying_or_founder_users": paying_or_founder_users,
+        "trial_users": trial_users,
+        "free_users": free_users,
+        "newsletter_subscribers": newsletter_subscribers,
+        "total_books": total_books,
+        "total_students": total_students,
+        "total_loans": total_loans,
+        "total_scans": total_scans,
+        "new_feedbacks": new_feedbacks,
+        "total_feedbacks": total_feedbacks,
+    }
+
     return render_template(
-        "admin/index.html", users=users, new_feedbacks_count=new_feedbacks_count
+        "admin/index.html",
+        stats=stats,
+        recent_users=recent_users,
+        recent_feedbacks=recent_feedbacks,
+        chart_signups_labels=days_labels,
+        chart_signups_data=chart_signups_data,
+        plans_distribution=plans_distribution,
+        financial_stats=financial_stats,
+        subscriptions_type_distribution=subscriptions_type_distribution,
+        revenue_chart_labels=revenue_chart_labels,
+        revenue_chart_data=revenue_chart_data,
+        active_page="dashboard",
+    )
+
+
+@admin.route("/admin/utilisateurs")
+def users():
+    users_list = User.query.order_by(User.id.desc()).all()
+    return render_template(
+        "admin/users.html",
+        users=users_list,
+        active_page="users",
     )
 
 
@@ -57,7 +298,7 @@ def reset_password(user_id):
         f"Le mot de passe pour {user.email} a été réinitialisé. Nouveau mot de passe : {new_password}",
         "success",
     )
-    return redirect(url_for("admin.index"))
+    return redirect(request.referrer or url_for("admin.users"))
 
 
 @admin.route("/admin/verify_user/<int:user_id>", methods=["POST"])
@@ -69,7 +310,7 @@ def verify_user(user_id):
         flash(f"L'utilisateur {user.email} a été marqué comme vérifié.", "success")
     else:
         flash(f"L'utilisateur {user.email} est déjà vérifié.", "info")
-    return redirect(url_for("admin.index"))
+    return redirect(request.referrer or url_for("admin.users"))
 
 
 @admin.route("/admin/delete_user/<int:user_id>", methods=["POST"])
@@ -82,7 +323,7 @@ def delete_user(user_id):
         f"Le compte {email} et toutes ses données associées ont été supprimés.",
         "success",
     )
-    return redirect(url_for("admin.index"))
+    return redirect(request.referrer or url_for("admin.users"))
 
 
 @admin.route("/admin/set_plan/<int:user_id>", methods=["POST"])
@@ -125,7 +366,7 @@ def set_plan(user_id):
         f"Le plan de {user.email} a été mis à jour avec succès (Plan: {user.plan}, Effectif: {user.effective_plan}).",
         "success",
     )
-    return redirect(url_for("admin.index"))
+    return redirect(request.referrer or url_for("admin.users"))
 
 
 @admin.route("/admin/coupons", methods=["GET", "POST"])
@@ -141,6 +382,7 @@ def coupons():
             coupons=[],
             promo_codes=[],
             stripe_configured=False,
+            active_page="coupons",
         )
 
     stripe.api_key = stripe_key
@@ -219,6 +461,86 @@ def coupons():
         coupons=coupons_list,
         promo_codes=promos_list,
         stripe_configured=True,
+        active_page="coupons",
+    )
+
+
+@admin.route("/admin/livres")
+def livres():
+    q = request.args.get("q", "").strip()
+    query = Book.query
+    if q:
+        query = query.filter(
+            Book.title.ilike(f"%{q}%")
+            | Book.author.ilike(f"%{q}%")
+            | Book.isbn.ilike(f"%{q}%")
+        )
+    total_books = query.count()
+    books_list = query.order_by(Book.id.desc()).limit(100).all()
+
+    return render_template(
+        "admin/livres.html",
+        books=books_list,
+        total_books=total_books,
+        search_query=q,
+        active_page="livres",
+    )
+
+
+@admin.route("/admin/eleves")
+def eleves():
+    q = request.args.get("q", "").strip()
+    query = Student.query
+    if q:
+        query = query.filter(
+            Student.name.ilike(f"%{q}%") | Student.firstname.ilike(f"%{q}%")
+        )
+    total_students = query.count()
+    students_list = query.order_by(Student.id.desc()).limit(100).all()
+
+    return render_template(
+        "admin/eleves.html",
+        students=students_list,
+        total_students=total_students,
+        search_query=q,
+        active_page="eleves",
+    )
+
+
+@admin.route("/admin/parametres")
+def parametres():
+    stripe_configured = bool(os.getenv("STRIPE_SECRET_KEY"))
+    mail_configured = bool(os.getenv("MAIL_USERNAME"))
+
+    try:
+        stripe_version = importlib.metadata.version("stripe")
+    except importlib.metadata.PackageNotFoundError:
+        stripe_version = "Non installé"
+
+    try:
+        flask_version = importlib.metadata.version("flask")
+    except importlib.metadata.PackageNotFoundError:
+        flask_version = "Non installé"
+
+    system_info = {
+        "python_version": sys.version.split(" ")[0],
+        "flask_version": flask_version,
+        "stripe_sdk_version": stripe_version,
+        "database": str(db.engine.url),
+        "stripe_configured": stripe_configured,
+        "mail_configured": mail_configured,
+        "max_free_students": config_plans.MAX_FREE_STUDENTS,
+        "max_free_books": config_plans.MAX_FREE_BOOKS,
+        "max_free_scans": config_plans.MAX_FREE_SCANS,
+        "free_history_months": config_plans.FREE_HISTORY_MONTHS,
+        "price_monthly": config_plans.PRICE_MONTHLY_AMOUNT,
+        "price_yearly": config_plans.PRICE_YEARLY_AMOUNT,
+    }
+
+    return render_template(
+        "admin/parametres.html",
+        system_info=system_info,
+        active_page="parametres",
     )
 
 
@@ -347,14 +669,87 @@ def send_newsletter_async(
 
 @admin.route("/admin/emails", methods=["GET", "POST"])
 def emails():
-    # Stats for audience counters and health dashboard
-    total_users = User.query.count()
-    verified_users = User.query.filter_by(is_verified=True).count()
-    subscribed_users = User.query.filter_by(newsletter_subscribed=True).count()
-    verified_subscribed_users = User.query.filter_by(
-        is_verified=True, newsletter_subscribed=True
-    ).count()
-    unsubscribed_users = total_users - subscribed_users
+    # Stats for audience counters, interactive matrix, and health dashboard
+    now = datetime.now(timezone.utc)
+    users_data = db.session.query(
+        User.is_verified,
+        User.newsletter_subscribed,
+        User.plan,
+        User.trial_ends_at,
+        User.preferred_language,
+        User.email,
+    ).all()
+
+    target_keys = ["verified_subscribed", "all_subscribed", "system_all"]
+    plan_keys = ["all", "founder", "premium", "trial", "free"]
+    lang_keys = ["all", "fr", "en", "de"]
+
+    counts_matrix = {
+        t: {p: {l: 0 for l in lang_keys} for p in plan_keys}
+        for t in target_keys
+    }
+
+    subscribed_users = 0
+    verified_users = 0
+    verified_subscribed_users = 0
+    unsubscribed_users = 0
+    total_users = 0
+    lang_distribution = {
+        "fr": {"count": 0, "pct": 0},
+        "en": {"count": 0, "pct": 0},
+        "de": {"count": 0, "pct": 0},
+    }
+
+    for is_verified, subscribed, plan, trial_ends_at, pref_lang, email in users_data:
+        total_users += 1
+        if is_verified:
+            verified_users += 1
+        if subscribed:
+            subscribed_users += 1
+            if is_verified:
+                verified_subscribed_users += 1
+        else:
+            unsubscribed_users += 1
+
+        if not email:
+            continue
+
+        lang = pref_lang if pref_lang in ("fr", "en", "de") else "fr"
+        if subscribed and lang in lang_distribution:
+            lang_distribution[lang]["count"] += 1
+
+        # Effective plan category for email targeting:
+        if plan == "founder":
+            user_plan = "founder"
+        elif plan == "premium":
+            user_plan = "premium"
+        else:
+            if trial_ends_at:
+                end_dt = (
+                    trial_ends_at.replace(tzinfo=timezone.utc)
+                    if trial_ends_at.tzinfo is None
+                    else trial_ends_at
+                )
+                if end_dt > now:
+                    user_plan = "trial"
+                else:
+                    user_plan = "free"
+            else:
+                user_plan = "free"
+
+        user_targets = ["system_all"]
+        if subscribed:
+            user_targets.append("all_subscribed")
+            if is_verified:
+                user_targets.append("verified_subscribed")
+
+        for t in user_targets:
+            # All plans
+            counts_matrix[t]["all"]["all"] += 1
+            counts_matrix[t]["all"][lang] += 1
+            # Specific plan
+            counts_matrix[t][user_plan]["all"] += 1
+            counts_matrix[t][user_plan][lang] += 1
 
     active_rate = (
         round((subscribed_users / total_users * 100), 1) if total_users > 0 else 100.0
@@ -363,78 +758,12 @@ def emails():
         round((verified_users / total_users * 100), 1) if total_users > 0 else 100.0
     )
 
-    # Counts by language for interactive selector matrix
-    subscribed_fr = User.query.filter_by(
-        newsletter_subscribed=True, preferred_language="fr"
-    ).count()
-    subscribed_en = User.query.filter_by(
-        newsletter_subscribed=True, preferred_language="en"
-    ).count()
-    subscribed_de = User.query.filter_by(
-        newsletter_subscribed=True, preferred_language="de"
-    ).count()
-
-    verified_sub_fr = User.query.filter_by(
-        is_verified=True, newsletter_subscribed=True, preferred_language="fr"
-    ).count()
-    verified_sub_en = User.query.filter_by(
-        is_verified=True, newsletter_subscribed=True, preferred_language="en"
-    ).count()
-    verified_sub_de = User.query.filter_by(
-        is_verified=True, newsletter_subscribed=True, preferred_language="de"
-    ).count()
-
-    all_fr = User.query.filter_by(preferred_language="fr").count()
-    all_en = User.query.filter_by(preferred_language="en").count()
-    all_de = User.query.filter_by(preferred_language="de").count()
-
-    counts_matrix = {
-        "verified_subscribed": {
-            "all": verified_subscribed_users,
-            "fr": verified_sub_fr,
-            "en": verified_sub_en,
-            "de": verified_sub_de,
-        },
-        "all_subscribed": {
-            "all": subscribed_users,
-            "fr": subscribed_fr,
-            "en": subscribed_en,
-            "de": subscribed_de,
-        },
-        "system_all": {
-            "all": total_users,
-            "fr": all_fr,
-            "en": all_en,
-            "de": all_de,
-        },
-    }
-
-    lang_distribution = {
-        "fr": {
-            "count": subscribed_fr,
-            "pct": (
-                round(subscribed_fr / subscribed_users * 100, 1)
-                if subscribed_users
-                else 0
-            ),
-        },
-        "en": {
-            "count": subscribed_en,
-            "pct": (
-                round(subscribed_en / subscribed_users * 100, 1)
-                if subscribed_users
-                else 0
-            ),
-        },
-        "de": {
-            "count": subscribed_de,
-            "pct": (
-                round(subscribed_de / subscribed_users * 100, 1)
-                if subscribed_users
-                else 0
-            ),
-        },
-    }
+    for l_key in ("fr", "en", "de"):
+        lang_distribution[l_key]["pct"] = (
+            round(lang_distribution[l_key]["count"] / subscribed_users * 100, 1)
+            if subscribed_users > 0
+            else 0
+        )
 
     stats = {
         "total": total_users,
@@ -452,9 +781,19 @@ def emails():
     duplicate_campaign = None
     duplicate_id = request.args.get("duplicate_id")
     target_lang_prefill = request.args.get("target_lang", "all")
+    duplicate_target = "verified_subscribed"
+    duplicate_plan = "all"
     if duplicate_id:
         try:
             duplicate_campaign = db.session.get(NewsletterCampaign, int(duplicate_id))
+            if duplicate_campaign:
+                if ":" in duplicate_campaign.target:
+                    duplicate_target, duplicate_plan = duplicate_campaign.target.split(
+                        ":", 1
+                    )
+                else:
+                    duplicate_target = duplicate_campaign.target
+                    duplicate_plan = "all"
         except (ValueError, TypeError):
             pass
 
@@ -467,6 +806,7 @@ def emails():
     if request.method == "POST":
         subject = request.form.get("subject")
         target = request.form.get("target", "verified_subscribed")
+        target_plan = request.form.get("target_plan", "all")
         target_lang = request.form.get("target_lang", "all")
         message_content = request.form.get("message")
         template_choice = request.form.get("template_choice", "newsletter.html")
@@ -475,7 +815,7 @@ def emails():
             flash("Veuillez remplir le sujet et le message.", "error")
             return redirect(url_for("admin.emails"))
 
-        # Build recipient query based on target selection
+        # Build recipient query based on target, plan, and language selection
         query = User.query
         if target in ("verified_subscribed", "verified"):
             query = query.filter_by(is_verified=True, newsletter_subscribed=True)
@@ -485,6 +825,23 @@ def emails():
             pass
         else:
             query = query.filter_by(is_verified=True, newsletter_subscribed=True)
+
+        # Plan filtering
+        if target_plan == "founder":
+            query = query.filter(User.plan == "founder")
+        elif target_plan == "premium":
+            query = query.filter(User.plan == "premium")
+        elif target_plan == "trial":
+            query = query.filter(
+                User.plan == "free",
+                User.trial_ends_at.is_not(None),
+                User.trial_ends_at > now,
+            )
+        elif target_plan == "free":
+            query = query.filter(
+                User.plan == "free",
+                (User.trial_ends_at.is_(None) | (User.trial_ends_at <= now)),
+            )
 
         if target_lang in ("fr", "en", "de"):
             query = query.filter_by(preferred_language=target_lang)
@@ -535,11 +892,14 @@ def emails():
             return redirect(url_for("admin.emails"))
 
         # 1. Create NewsletterCampaign record
+        campaign_target = (
+            f"{target}:{target_plan}" if target_plan != "all" else target
+        )
         campaign = NewsletterCampaign(
             subject=subject,
             content=message_content,
             template=template_choice,
-            target=target,
+            target=campaign_target,
             target_lang=target_lang,
             total_recipients=len(valid_users),
             sent_count=0,
@@ -626,7 +986,10 @@ def emails():
         campaigns=campaigns,
         active_tab=active_tab,
         duplicate_campaign=duplicate_campaign,
+        duplicate_target=duplicate_target,
+        duplicate_plan=duplicate_plan,
         target_lang_prefill=target_lang_prefill,
+        active_page="emails",
     )
 
 
@@ -749,6 +1112,7 @@ def feedbacks():
         counts=counts,
         current_status=status_filter,
         current_category=category_filter,
+        active_page="feedbacks",
     )
 
 
