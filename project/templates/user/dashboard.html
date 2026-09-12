@@ -129,10 +129,95 @@
 {% endif %}
 
 <div class="block">
-  <h4 class="title is-4 block">{{ _("Infos") }}</h4>
+  <div class="level mb-2">
+    <div class="level-left">
+      <h4 class="title is-4 mb-0">{{ _("Infos & Quotas") }}</h4>
+    </div>
+    <div class="level-right">
+      {% if current_user.plan == 'founder' %}
+        {# Aucun badge sur le dashboard pour les membres fondateurs (visible uniquement dans réglages) #}
+      {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+        <span class="tag is-success is-light is-rounded has-text-weight-bold" style="border: 1px solid #48c774;">
+          ⭐ {{ _("Plan Premium (Accès illimité)") }}
+        </span>
+      {% elif current_user.is_in_trial %}
+        <span class="tag is-info is-light is-rounded has-text-weight-bold" style="border: 1px solid #3273dc;">
+          🎁 {{ _("Essai Premium : encore %(days)s jours", days=current_user.trial_days_left) }}
+        </span>
+      {% else %}
+        <a href="{{ url_for('subscription.tarifs') }}" class="tag is-link is-light is-rounded has-text-weight-semibold">
+          {{ _("Version Gratuite") }} &bull; <span class="ml-1">{{ _("Passer Premium") }} &rarr;</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
   <div class="box">
-    <p>{{ _("Nombre de livres :") }} <strong>{{ n_books }}</strong></p>
-    <p>{{ _("Nombre d'élèves  :") }} <strong>{{ n_students }}</strong></p>
+    {% if current_user.plan in ('founder', 'premium') or current_user.is_in_trial %}
+      <div class="columns is-mobile">
+        <div class="column">
+          <p class="is-size-7 has-text-grey">{{ _("Livres enregistrés") }}</p>
+          <p class="title is-4 mb-0">{{ n_books }}</p>
+        </div>
+        <div class="column">
+          <p class="is-size-7 has-text-grey">{{ _("Élèves enregistrés") }}</p>
+          <p class="title is-4 mb-0">{{ n_students }}</p>
+        </div>
+        <div class="column">
+          <p class="is-size-7 has-text-grey">{{ _("Scans code-barres") }}</p>
+          <p class="title is-4 mb-0 has-text-success">{{ _("Illimités") }}</p>
+        </div>
+      </div>
+    {% else %}
+      {% set max_books = max_books|default(500) %}
+      {% set max_students = max_students|default(40) %}
+      {% set max_scans = max_scans|default(30) %}
+      {% set warning_percent = warning_percent|default(80) %}
+      <!-- Jauges discrètes pour la version gratuite -->
+      <div class="columns is-multiline">
+        <!-- Jauge Livres -->
+        <div class="column is-4">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
+            <span class="is-size-7 has-text-grey">{{ _("Livres") }}</span>
+            <span class="is-size-7 has-text-weight-semibold">
+              {{ n_books }} / {{ max_books }}
+              {% if (n_books / max_books) >= (warning_percent / 100) %}
+                <a href="{{ url_for('subscription.tarifs') }}" class="has-text-warning-dark ml-1" title="{{ _('Augmenter la limite') }}"><i class="fas fa-arrow-up"></i></a>
+              {% endif %}
+            </span>
+          </div>
+          <progress class="progress is-small {% if n_books >= max_books %}is-danger{% elif (n_books / max_books) >= (warning_percent / 100) %}is-warning{% else %}is-link{% endif %}" value="{{ n_books }}" max="{{ max_books }}" style="height: 6px;"></progress>
+        </div>
+
+        <!-- Jauge Élèves -->
+        <div class="column is-4">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
+            <span class="is-size-7 has-text-grey">{{ _("Élèves") }}</span>
+            <span class="is-size-7 has-text-weight-semibold">
+              {{ n_students }} / {{ max_students }}
+              {% if (n_students / max_students) >= (warning_percent / 100) %}
+                <a href="{{ url_for('subscription.tarifs') }}" class="has-text-warning-dark ml-1" title="{{ _('Augmenter la limite') }}"><i class="fas fa-arrow-up"></i></a>
+              {% endif %}
+            </span>
+          </div>
+          <progress class="progress is-small {% if n_students >= max_students %}is-danger{% elif (n_students / max_students) >= (warning_percent / 100) %}is-warning{% else %}is-link{% endif %}" value="{{ n_students }}" max="{{ max_students }}" style="height: 6px;"></progress>
+        </div>
+
+        <!-- Jauge Scans offerts -->
+        <div class="column is-4">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
+            <span class="is-size-7 has-text-grey">{{ _("Scans offerts") }}</span>
+            <span class="is-size-7 has-text-weight-semibold">
+              {{ current_user.free_scans_used or 0 }} / {{ max_scans }}
+              {% if ((current_user.free_scans_used or 0) / max_scans) >= (warning_percent / 100) %}
+                <a href="{{ url_for('subscription.tarifs') }}" class="has-text-warning-dark ml-1" title="{{ _('Débloquer scans illimités') }}"><i class="fas fa-arrow-up"></i></a>
+              {% endif %}
+            </span>
+          </div>
+          <progress class="progress is-small {% if (current_user.free_scans_used or 0) >= max_scans %}is-danger{% elif ((current_user.free_scans_used or 0) / max_scans) >= (warning_percent / 100) %}is-warning{% else %}is-link{% endif %}" value="{{ current_user.free_scans_used or 0 }}" max="{{ max_scans }}" style="height: 6px;"></progress>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </div>
 

@@ -4,10 +4,11 @@ import re
 import secrets
 import string
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from threading import Thread
 
 import markupsafe
+import stripe
 from flask import (
     Blueprint,
     current_app,
@@ -82,6 +83,114 @@ def delete_user(user_id):
         "success",
     )
     return redirect(url_for("admin.index"))
+
+
+@admin.route("/admin/set_plan/<int:user_id>", methods=["POST"])
+def set_plan(user_id):
+    user = db.get_or_404(User, user_id)
+    new_plan = request.form.get("plan")
+    trial_days = request.form.get("trial_days")
+    reset_scans = request.form.get("reset_scans") == "1"
+
+    if new_plan in ["free", "founder", "premium"]:
+        user.plan = new_plan
+        if new_plan == "premium":
+            user.stripe_subscription_status = "active"
+        elif new_plan in ["free", "founder"]:
+            user.stripe_subscription_status = None
+    elif new_plan == "trial":
+        user.plan = "free"
+        days = int(trial_days) if trial_days and trial_days.isdigit() else 30
+        user.trial_ends_at = datetime.now(timezone.utc) + timedelta(days=days)
+        user.trial_reminder_sent = False
+
+    if (
+        trial_days
+        and trial_days.isdigit()
+        and int(trial_days) > 0
+        and new_plan != "trial"
+    ):
+        user.trial_ends_at = datetime.now(timezone.utc) + timedelta(
+            days=int(trial_days)
+        )
+
+    if reset_scans:
+        user.free_scans_used = 0
+
+    db.session.commit()
+    flash(
+        f"Le plan de {user.email} a été mis à jour avec succès (Plan: {user.plan}, Effectif: {user.effective_plan}).",
+        "success",
+    )
+    return redirect(url_for("admin.index"))
+
+
+@admin.route("/admin/coupons", methods=["GET", "POST"])
+def coupons():
+    stripe_key = os.getenv("STRIPE_SECRET_KEY")
+    if not stripe_key:
+        flash(
+            "La variable STRIPE_SECRET_KEY n'est pas configurée dans l'environnement.",
+            "warning",
+        )
+        return render_template(
+            "admin/coupons.html",
+            coupons=[],
+            promo_codes=[],
+            stripe_configured=False,
+        )
+
+    stripe.api_key = stripe_key
+
+    if request.method == "POST":
+        code = request.form.get("code", "").strip().upper()
+        discount_type = request.form.get("discount_type", "percent")
+        discount_val = request.form.get("discount_value")
+        duration = request.form.get("duration", "once")
+        duration_in_months = request.form.get("duration_in_months")
+        max_redemptions = request.form.get("max_redemptions")
+
+        try:
+            coupon_args = {"duration": duration, "name": f"Code {code}"}
+            if discount_type == "percent":
+                coupon_args["percent_off"] = float(discount_val)
+            else:
+                coupon_args["amount_off"] = int(float(discount_val) * 100)
+                coupon_args["currency"] = "chf"
+
+            if duration == "repeating" and duration_in_months:
+                coupon_args["duration_in_months"] = int(duration_in_months)
+
+            coupon = stripe.Coupon.create(**coupon_args)
+
+            promo_args = {"coupon": coupon.id, "code": code}
+            if max_redemptions and max_redemptions.isdigit():
+                promo_args["max_redemptions"] = int(max_redemptions)
+
+            stripe.PromotionCode.create(**promo_args)
+            flash(
+                f"Code promotionnel '{code}' créé avec succès sur Stripe !",
+                "success",
+            )
+        except Exception as e:  # noqa: BLE001
+            flash(f"Erreur lors de la création sur Stripe : {e}", "danger")
+
+        return redirect(url_for("admin.coupons"))
+
+    coupons_list = []
+    promos_list = []
+    try:
+        coupons_list = stripe.Coupon.list(limit=50).get("data", [])
+        promos_list = stripe.PromotionCode.list(limit=50).get("data", [])
+    except Exception as e:  # noqa: BLE001
+        flash(f"Impossible de charger les données Stripe : {e}", "warning")
+
+    return render_template(
+        "admin/coupons.html",
+        coupons=coupons_list,
+        promo_codes=promos_list,
+        stripe_configured=True,
+    )
 
 
 PSEUDO_PATTERN = re.compile(

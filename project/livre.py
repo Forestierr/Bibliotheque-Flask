@@ -18,6 +18,7 @@ from flask_babel import gettext as _
 from flask_login import current_user, login_required
 
 from . import db
+from .config_plans import MAX_FREE_BOOKS, MAX_FREE_SCANS
 from .models import Book, BookTags, Loan, Tags
 from .query import (
     get_book_actual_loan,
@@ -169,6 +170,22 @@ def livre_infos(id):
 @login_required
 def livre_ajout():
     if request.method == "POST":
+        # Vérification du quota pour les utilisateurs en plan gratuit
+        if not current_user.is_premium:
+            current_count = get_books_count(current_user.id)
+            if current_count >= MAX_FREE_BOOKS:
+                msg = _(
+                    "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres existants restent utilisables. Pour en ajouter d'autres, passez Premium ou supprimez un livre existant.",
+                    max=MAX_FREE_BOOKS,
+                )
+                if (
+                    request.headers.get("X-Requested-With") == "XMLHttpRequest"
+                    or request.is_json
+                ):
+                    return jsonify({"error": "quota_reached", "message": msg}), 403
+                flash(msg, "warning")
+                return redirect(url_for("subscription.tarifs"))
+
         title = request.form.get("title")
         author = request.form.get("author") if request.form.get("author") else None
         editor = request.form.get("editor") if request.form.get("editor") else None
@@ -483,6 +500,29 @@ def livre_delete(id):
 @livre.route("/livre/<isbn>/exist")
 @login_required
 def livre_exist(isbn):
+    # Vérification du quota de scans pour les comptes gratuits
+    if (
+        not current_user.is_premium
+        and (current_user.free_scans_used or 0) >= MAX_FREE_SCANS
+    ):
+        return make_response(
+            jsonify(
+                {
+                    "error": "scan_limit_reached",
+                    "message": _(
+                        "Vous avez scanné %(max)s livres ! Passez Premium à 30.- CHF/an pour scanner en illimité.",
+                        max=MAX_FREE_SCANS,
+                    ),
+                }
+            ),
+            403,
+        )
+
+    # Incrémentation du compteur de scans pour les utilisateurs en mode gratuit
+    if not current_user.is_premium:
+        current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
+        db.session.commit()
+
     # 1. Search by custom barcode first
     books = get_books_by_barcode(current_user.id, isbn)
     if not books:

@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Codes Promo Stripe - Administration{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="level mb-6">
+            <div class="level-left">
+                <div>
+                    <a href="{{ url_for('admin.index') }}" class="button is-small is-light mb-3">
+                        <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                        <span>Retour à l'administration</span>
+                    </a>
+                    <h1 class="title is-2 mb-0">Codes Promo & Coupons Stripe</h1>
+                </div>
+            </div>
+            <div class="level-right">
+                <button class="button is-primary" onclick="document.getElementById('modalCreateCoupon').classList.add('is-active')">
+                    <span class="icon"><i class="fas fa-plus"></i></span>
+                    <span>Créer un code promo</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="notification is-{{ category }} is-light">
+                        <button class="delete"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if not stripe_configured %}
+            <div class="notification is-warning is-light">
+                <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+                <strong>Configuration requise :</strong> La variable <code>STRIPE_SECRET_KEY</code> n'est pas définie dans votre fichier <code>.env</code>. La gestion en direct avec Stripe est inactive.
+            </div>
+        {% endif %}
+
+        <div class="columns">
+            <!-- Codes de réduction actifs -->
+            <div class="column is-7">
+                <div class="box">
+                    <h2 class="title is-4 mb-4">
+                        <span class="icon mr-2 has-text-info"><i class="fas fa-tags"></i></span>
+                        Codes Promotionnels Actifs ({{ promo_codes|length }})
+                    </h2>
+
+                    {% if not promo_codes %}
+                        <p class="has-text-grey">Aucun code promotionnel actif trouvé sur votre compte Stripe.</p>
+                    {% else %}
+                        <div class="table-container">
+                            <table class="table is-fullwidth is-striped is-hoverable">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Réduction</th>
+                                        <th>Durée</th>
+                                        <th>Utilisations</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for promo in promo_codes %}
+                                    <tr>
+                                        <td><strong>{{ promo.code }}</strong></td>
+                                        <td>
+                                            {% if promo.coupon.percent_off %}
+                                                <span class="tag is-success is-light">-{{ promo.coupon.percent_off }}%</span>
+                                            {% elif promo.coupon.amount_off %}
+                                                <span class="tag is-info is-light">-{{ (promo.coupon.amount_off / 100)|round(2) }} {{ (promo.coupon.currency or 'CHF')|upper }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if promo.coupon.duration == 'forever' %}
+                                                À vie
+                                            {% elif promo.coupon.duration == 'once' %}
+                                                1 fois
+                                            {% elif promo.coupon.duration == 'repeating' %}
+                                                {{ promo.coupon.duration_in_months }} mois
+                                            {% else %}
+                                                {{ promo.coupon.duration }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ promo.times_redeemed or 0 }}
+                                            {% if promo.max_redemptions %} / {{ promo.max_redemptions }}{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if promo.active %}
+                                                <span class="tag is-success is-light">Actif</span>
+                                            {% else %}
+                                                <span class="tag is-light">Inactif</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Coupons Stripe sous-jacents -->
+            <div class="column is-5">
+                <div class="box">
+                    <h2 class="title is-4 mb-4">
+                        <span class="icon mr-2 has-text-primary"><i class="fas fa-percent"></i></span>
+                        Coupons ({{ coupons|length }})
+                    </h2>
+
+                    {% if not coupons %}
+                        <p class="has-text-grey">Aucun coupon trouvé.</p>
+                    {% else %}
+                        <div class="table-container">
+                            <table class="table is-fullwidth is-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID / Nom</th>
+                                        <th>Valeur</th>
+                                        <th>Valide</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for c in coupons %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ c.name or c.id }}</strong>
+                                            <div class="is-size-7 has-text-grey">{{ c.id }}</div>
+                                        </td>
+                                        <td>
+                                            {% if c.percent_off %}
+                                                {{ c.percent_off }}%
+                                            {% elif c.amount_off %}
+                                                {{ (c.amount_off / 100)|round(2) }} {{ (c.currency or 'CHF')|upper }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if c.valid %}
+                                                <span class="tag is-success is-light">Oui</span>
+                                            {% else %}
+                                                <span class="tag is-danger is-light">Non</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Création Coupon & Code Promo -->
+<div id="modalCreateCoupon" class="modal">
+    <div class="modal-background" onclick="document.getElementById('modalCreateCoupon').classList.remove('is-active')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Créer un code promotionnel Stripe</p>
+            <button class="delete" aria-label="close" onclick="document.getElementById('modalCreateCoupon').classList.remove('is-active')"></button>
+        </header>
+        <form method="POST" action="{{ url_for('admin.coupons') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Code promotionnel (affiché à l'utilisateur)</label>
+                    <div class="control">
+                        <input class="input" type="text" name="code" placeholder="Ex: RENTREE2026" required style="text-transform: uppercase;">
+                    </div>
+                    <p class="help">Le code que l'enseignant saisira lors du paiement sur Stripe Checkout.</p>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label">Type de réduction</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="discount_type">
+                                        <option value="percent">Pourcentage (%)</option>
+                                        <option value="amount">Montant fixe (CHF)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label">Valeur de la réduction</label>
+                            <div class="control">
+                                <input class="input" type="number" step="0.5" name="discount_value" placeholder="Ex: 20" required min="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label">Durée d'application</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="duration" id="durationSelect" onchange="toggleDurationMonths(this.value)">
+                                        <option value="once">Une seule fois (1er paiement)</option>
+                                        <option value="repeating">Pendant plusieurs mois</option>
+                                        <option value="forever">Toujours (à vie)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-6" id="durationMonthsField" style="display: none;">
+                        <div class="field">
+                            <label class="label">Nombre de mois</label>
+                            <div class="control">
+                                <input class="input" type="number" name="duration_in_months" placeholder="Ex: 3" min="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Nombre maximum d'utilisations (optionnel)</label>
+                    <div class="control">
+                        <input class="input" type="number" name="max_redemptions" placeholder="Laisser vide pour illimité" min="1">
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot" style="justify-content: flex-end;">
+                <button type="button" class="button is-light" onclick="document.getElementById('modalCreateCoupon').classList.remove('is-active')">Annuler</button>
+                <button type="submit" class="button is-primary">Créer sur Stripe</button>
+            </footer>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleDurationMonths(val) {
+    const el = document.getElementById('durationMonthsField');
+    if (val === 'repeating') {
+        el.style.display = 'block';
+    } else {
+        el.style.display = 'none';
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+        const $notification = $delete.parentNode;
+        $delete.addEventListener('click', () => {
+            $notification.parentNode.removeChild($notification);
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -194,15 +194,26 @@
             <!-- 5. Étiquettes de Genres & Bacs -->
             <div class="column is-4 res-item" data-category="organisation">
                 <div class="studio-card">
-                    <span class="studio-card-badge">{{ _("Bacs & Cotes") }}</span>
+                    {% if current_user.is_authenticated and current_user.is_premium %}
+                        <span class="studio-card-badge">{{ _("Bacs & Cotes") }}</span>
+                    {% else %}
+                        <span class="studio-card-badge" style="background: #fef3c7; color: #b45309; border-color: #fcd34d;">🔒 {{ _("Premium") }}</span>
+                    {% endif %}
                     <div class="studio-icon" style="background: #ecfeff; color: #0e7490;">
                         <i class="fas fa-layer-group"></i>
                     </div>
                     <h2 class="studio-title">{{ _("Étiquettes de Genres & Bacs") }}</h2>
                     <p class="studio-desc">{{ _("Grandes étiquettes visuelles pour bacs ou bandes de cotes pour tranches. Compatible avec les tags personnalisés de votre compte.") }}</p>
-                    <a href="{{ url_for('ressource.etiquettes') }}" class="button is-link is-light studio-btn">
-                        {{ _("Personnaliser et imprimer") }}
-                    </a>
+                    {% if current_user.is_authenticated and current_user.is_premium %}
+                        <a href="{{ url_for('ressource.etiquettes') }}" class="button is-link is-light studio-btn">
+                            {{ _("Personnaliser et imprimer") }}
+                        </a>
+                    {% else %}
+                        <button onclick="openModal('modalPremiumRessource')" class="button is-light studio-btn has-text-grey-dark">
+                            <span class="icon">🔒</span>
+                            <span>{{ _("Personnaliser (Premium)") }}</span>
+                        </button>
+                    {% endif %}
                 </div>
             </div>
 
@@ -224,15 +235,26 @@
             <!-- 7. Codes-barres Custom -->
             <div class="column is-4 res-item" data-category="organisation">
                 <div class="studio-card">
-                    <span class="studio-card-badge">{{ _("Vectoriel") }}</span>
+                    {% if current_user.is_authenticated and current_user.is_premium %}
+                        <span class="studio-card-badge">{{ _("Vectoriel") }}</span>
+                    {% else %}
+                        <span class="studio-card-badge" style="background: #fef3c7; color: #b45309; border-color: #fcd34d;">🔒 {{ _("Premium") }}</span>
+                    {% endif %}
                     <div class="studio-icon" style="background: #f1f5f9; color: #334155;">
                         <i class="fas fa-barcode"></i>
                     </div>
                     <h2 class="studio-title">{{ _("Planches de Codes-Barres") }}</h2>
                     <p class="studio-desc">{{ _("Génération vectorielle de codes-barres Code 128 pour étiqueter vos livres sans ISBN ou créer des cartes de prêt pour vos élèves.") }}</p>
-                    <a href="{{ url_for('ressource.codes_barres') }}" class="button is-link is-light studio-btn">
-                        {{ _("Personnaliser et imprimer") }}
-                    </a>
+                    {% if current_user.is_authenticated and current_user.is_premium %}
+                        <a href="{{ url_for('ressource.codes_barres') }}" class="button is-link is-light studio-btn">
+                            {{ _("Personnaliser et imprimer") }}
+                        </a>
+                    {% else %}
+                        <button onclick="openModal('modalPremiumRessource')" class="button is-light studio-btn has-text-grey-dark">
+                            <span class="icon">🔒</span>
+                            <span>{{ _("Personnaliser (Premium)") }}</span>
+                        </button>
+                    {% endif %}
                 </div>
             </div>
 
@@ -318,6 +340,53 @@ function filterResources(category, btn) {
         }
     });
 }
+
+function openModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('is-active');
+}
+
+function closeModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('is-active');
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.is-active').forEach(function (m) {
+            m.classList.remove('is-active');
+        });
+    }
+});
 </script>
+
+<!-- Modale Paywall Ressource Premium -->
+<div id="modalPremiumRessource" class="modal">
+    <div class="modal-background" onclick="closeModal('modalPremiumRessource')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+        <header class="modal-card-head" style="background: #fef3c7;">
+            <p class="modal-card-title has-text-warning-dark">
+                <span class="icon mr-2">🔒</span>
+                {{ _("Outil réservé aux membres Premium") }}
+            </p>
+            <button class="delete" aria-label="close" onclick="closeModal('modalPremiumRessource')"></button>
+        </header>
+        <section class="modal-card-body">
+            <p class="mb-3">
+                {{ _("La génération personnalisée d'étiquettes pour bacs et cotes ainsi que les planches de codes-barres vectoriels sont réservées aux abonnés Premium et membres Fondateurs.") }}
+            </p>
+            <p class="has-text-grey is-size-7">
+                {{ _("Étiquetez votre classe et vos livres en quelques clics pour faciliter les prêts et l'autonomie de vos élèves.") }}
+            </p>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end;">
+            <button class="button is-light" onclick="closeModal('modalPremiumRessource')">{{ _("Fermer") }}</button>
+            <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-dark">
+                <span class="icon"><i class="fas fa-bolt"></i></span>
+                <span>{{ _("Découvrir les offres Premium (dès 5.- CHF/mois)") }}</span>
+            </a>
+        </footer>
+    </div>
+</div>
 
 {% endblock %}

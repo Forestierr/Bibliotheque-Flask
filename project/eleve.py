@@ -1,11 +1,20 @@
 # eleve.py
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from sqlalchemy import and_, or_
 
 from . import db
+from .config_plans import MAX_FREE_STUDENTS
 from .models import Loan, Student
 from .query import (
     get_all_students_info,
@@ -28,6 +37,22 @@ def eleve_db():
 @login_required
 def ajouter_eleve():
     if request.method == "POST":
+        # Vérification du quota pour les utilisateurs en plan gratuit
+        if not current_user.is_premium:
+            current_count = Student.query.filter_by(user_id=current_user.id).count()
+            if current_count >= MAX_FREE_STUDENTS:
+                msg = _(
+                    "Vous avez atteint la limite de %(max)s élèves du plan gratuit. Vos élèves existants restent utilisables. Pour en ajouter d'autres, passez Premium ou supprimez un élève existant.",
+                    max=MAX_FREE_STUDENTS,
+                )
+                if (
+                    request.headers.get("X-Requested-With") == "XMLHttpRequest"
+                    or request.is_json
+                ):
+                    return jsonify({"error": "quota_reached", "message": msg}), 403
+                flash(msg, "warning")
+                return redirect(url_for("subscription.tarifs"))
+
         name = request.form.get("name")
         firstname = request.form.get("firstname")
 
@@ -48,9 +73,16 @@ def ajouter_eleve():
         db.session.add(new_student)
         db.session.commit()
 
-        redirect(url_for("eleve.eleve_db"))
+        return redirect(url_for("eleve.eleve_db"))
 
-    return render_template("eleve/eleve_add.html")
+    student_count = Student.query.filter_by(user_id=current_user.id).count()
+    quota_reached = not current_user.is_premium and student_count >= MAX_FREE_STUDENTS
+    return render_template(
+        "eleve/eleve_add.html",
+        quota_reached=quota_reached,
+        max_students=MAX_FREE_STUDENTS,
+        student_count=student_count,
+    )
 
 
 @eleve.route("/eleve/<id>")

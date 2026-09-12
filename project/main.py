@@ -25,6 +25,14 @@ from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 
 from . import db
+from .config_plans import (
+    FREE_HISTORY_MONTHS,
+    MAX_FREE_BOOKS,
+    MAX_FREE_SCANS,
+    MAX_FREE_STUDENTS,
+    PRICE_MONTHLY_AMOUNT,
+    PRICE_YEARLY_AMOUNT,
+)
 from .email import send_email_async, send_email_confirmation, send_email_to_me
 from .models import Feedback, NewsletterDelivery
 from .query import (
@@ -62,7 +70,16 @@ def index():
 
     infos = get_app_infos()
 
-    return render_template("index.html", infos=infos)
+    return render_template(
+        "index.html",
+        infos=infos,
+        max_students=MAX_FREE_STUDENTS,
+        max_books=MAX_FREE_BOOKS,
+        max_scans=MAX_FREE_SCANS,
+        history_months=FREE_HISTORY_MONTHS,
+        price_monthly=PRICE_MONTHLY_AMOUNT,
+        price_yearly=PRICE_YEARLY_AMOUNT,
+    )
 
 
 @main.route("/dashboard")
@@ -107,6 +124,13 @@ def dashboard():
         if current_date is not None:
             months.append((current_date, current_span))
 
+    from .config_plans import (
+        GAUGE_WARNING_PERCENT,
+        MAX_FREE_BOOKS,
+        MAX_FREE_SCANS,
+        MAX_FREE_STUDENTS,
+    )
+
     return render_template(
         "user/dashboard.html",
         n_books=n_books,
@@ -116,6 +140,10 @@ def dashboard():
         books_loaned=books_loaned,
         months=months,
         loans=loans,
+        max_students=MAX_FREE_STUDENTS,
+        max_books=MAX_FREE_BOOKS,
+        max_scans=MAX_FREE_SCANS,
+        warning_percent=GAUGE_WARNING_PERCENT,
     )
 
 

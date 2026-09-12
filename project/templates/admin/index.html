@@ -28,6 +28,12 @@
             </div>
             <div class="level-right">
                 <div class="level-item">
+                    <a href="{{ url_for('admin.coupons') }}" class="button is-light" style="border: 1px solid #cbd5e1;">
+                        <span class="icon has-text-primary"><i class="fas fa-ticket-alt"></i></span>
+                        <span>Codes Promo Stripe</span>
+                    </a>
+                </div>
+                <div class="level-item">
                     <a href="{{ url_for('admin.feedbacks') }}" class="button is-light" style="border: 1px solid #cbd5e1;">
                         <span class="icon"><i class="fas fa-comment-alt"></i></span>
                         <span>Retours & Bugs</span>
@@ -63,6 +69,8 @@
                             <th>Email</th>
                             <th>Nom</th>
                             <th>Statut</th>
+                            <th>Formule</th>
+                            <th>Scans</th>
                             <th>Newsletter</th>
                             <th>Livres</th>
                             <th>Élèves</th>
@@ -83,6 +91,22 @@
                                 {% endif %}
                             </td>
                             <td>
+                                {% if u.plan == 'founder' %}
+                                    <span class="tag is-warning is-light" title="Accès illimité à vie">👑 Fondateur</span>
+                                {% elif u.is_premium %}
+                                    <span class="tag is-success is-light" title="Abonnement Stripe actif">⭐ Premium</span>
+                                {% elif u.is_in_trial %}
+                                    <span class="tag is-info is-light" title="Période d'essai">⏳ Essai ({{ u.trial_days_left }}j)</span>
+                                {% else %}
+                                    <span class="tag is-light">Gratuit</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="tag {% if (u.free_scans_used or 0) >= 30 and not u.is_premium %}is-danger is-light{% else %}is-light{% endif %}" title="Scans de codes-barres utilisés">
+                                    {{ u.free_scans_used or 0 }}
+                                </span>
+                            </td>
+                            <td>
                                 {% if u.newsletter_subscribed %}
                                     <span class="tag is-success is-light" title="Abonné à la newsletter">
                                         <i class="fas fa-bell mr-1"></i> Abonné
@@ -97,6 +121,10 @@
                             <td>{{ u.students|length }}</td>
                             <td>
                                 <div class="buttons are-small">
+                                    <button type="button" class="button is-warning is-outlined" title="Modifier le plan / quotas" onclick="openPlanModal('{{ u.id }}', '{{ u.email }}', '{{ u.plan }}', '{{ u.free_scans_used or 0 }}', '{{ u.trial_days_left if u.is_in_trial else 0 }}')">
+                                        <span class="icon"><i class="fas fa-crown"></i></span>
+                                    </button>
+
                                     {% if not u.is_verified %}
                                     <form action="{{ url_for('admin.verify_user', user_id=u.id) }}" method="POST" class="is-inline">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -132,6 +160,54 @@
         </div>
     </div>
 </section>
+
+<!-- Modal Modification du Plan & Quotas -->
+<div id="modalEditPlan" class="modal">
+    <div class="modal-background" onclick="closePlanModal()"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Formule : <span id="modalPlanUserEmail" class="has-text-weight-bold"></span></p>
+            <button class="delete" aria-label="close" onclick="closePlanModal()"></button>
+        </header>
+        <form id="formEditPlan" method="POST" action="">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <section class="modal-card-body">
+                <div class="field">
+                    <label class="label">Formule / Plan</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="plan" id="selectPlan">
+                                <option value="free">Gratuit (Free)</option>
+                                <option value="trial">Période d'essai (Trial)</option>
+                                <option value="premium">Premium (Forcé)</option>
+                                <option value="founder">Fondateur (Founder - Illimité à vie)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Jours d'essai additionnels / restant</label>
+                    <div class="control">
+                        <input class="input" type="number" name="trial_days" id="inputTrialDays" placeholder="30" min="0">
+                    </div>
+                    <p class="help">Permet d'ajouter ou prolonger la durée d'essai de l'utilisateur.</p>
+                </div>
+
+                <div class="field mt-4">
+                    <label class="checkbox">
+                        <input type="checkbox" name="reset_scans" value="1">
+                        <strong>Réinitialiser le compteur de scans</strong> (actuellement : <span id="modalScansCount">0</span>/30)
+                    </label>
+                </div>
+            </section>
+            <footer class="modal-card-foot" style="justify-content: flex-end;">
+                <button type="button" class="button is-light" onclick="closePlanModal()">Annuler</button>
+                <button type="submit" class="button is-primary">Enregistrer</button>
+            </footer>
+        </form>
+    </div>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -172,6 +248,25 @@
                     noResults.classList.remove('is-hidden');
                 }
             });
+        }
+    });
+
+    function openPlanModal(userId, email, plan, scans, trialDays) {
+        document.getElementById('modalPlanUserEmail').textContent = email;
+        document.getElementById('selectPlan').value = plan;
+        document.getElementById('modalScansCount').textContent = scans;
+        document.getElementById('inputTrialDays').value = (trialDays && trialDays > 0) ? trialDays : '';
+        document.getElementById('formEditPlan').action = '/admin/set_plan/' + userId;
+        document.getElementById('modalEditPlan').classList.add('is-active');
+    }
+
+    function closePlanModal() {
+        document.getElementById('modalEditPlan').classList.remove('is-active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closePlanModal();
         }
     });
 </script>

@@ -1,6 +1,5 @@
-# emprunt.py
 import math
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from flask import (
     Blueprint,
@@ -15,6 +14,7 @@ from flask_babel import gettext as _
 from flask_login import current_user, login_required
 
 from . import db
+from .config_plans import FREE_HISTORY_MONTHS
 from .models import Book, Loan
 from .query import (
     get_loans_count,
@@ -24,6 +24,10 @@ from .query import (
 )
 
 emprunt = Blueprint("emprunt", __name__)
+
+
+def get_loan_history_cutoff():
+    return datetime.now(timezone.utc).date() - timedelta(days=FREE_HISTORY_MONTHS * 30)
 
 
 @emprunt.route("/emprunt", methods=["GET", "POST"])
@@ -46,6 +50,7 @@ def emprunt_db():
         only_active_loans=only_active_loans,
         nb_page=nb_page,
         page=page,
+        cutoff_date=get_loan_history_cutoff(),
     )
 
 
@@ -185,6 +190,7 @@ def search(page=1):
             only_active_loans=only_active_loans,
             nb_page=nb_page,
             page=int(page),
+            cutoff_date=get_loan_history_cutoff(),
         )
 
     # Si la recherche est typée (par exemple : titre:Harry Potter)
@@ -225,6 +231,7 @@ def search(page=1):
             only_active_loans=only_active_loans,
             nb_page=nb_page,
             page=int(page),
+            cutoff_date=get_loan_history_cutoff(),
         )
 
     # Recherche par défaut
@@ -246,4 +253,5 @@ def search(page=1):
         only_active_loans=only_active_loans,
         nb_page=nb_page,
         page=int(page),
+        cutoff_date=get_loan_history_cutoff(),
     )

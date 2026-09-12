@@ -399,7 +399,7 @@
             </a>
 
             <!-- Avatar dropdown (Desktop uniquement) -->
-            <div class="navbar-item desktop-only-avatar" style="padding-right: 0.5rem;">
+            <div class="navbar-item desktop-only-avatar" style="padding-right: 0.5rem; align-items: center;">
                 <div class="avatar-wrapper" id="avatarWrapper">
                     <button class="avatar-btn" id="avatarBtn" aria-label="{{ _('Menu utilisateur') }}" aria-haspopup="true" aria-expanded="false">
                         {{ current_user.name[0]|upper if current_user.name else '?' }}
@@ -407,7 +407,28 @@
                     <div class="avatar-dropdown" id="avatarDropdown" role="menu">
                         <div class="avatar-dropdown-header">
                             <div class="avatar-dropdown-name">{{ current_user.name }}</div>
+                            <div style="margin-top: 4px;">
+                                {% if current_user.plan == 'founder' %}
+                                    {# Aucun badge dans le menu déroulant pour les fondateurs #}
+                                {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+                                    <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #48c774;">
+                                        ⭐ {{ _("Premium") }}
+                                    </span>
+                                {% elif current_user.is_in_trial %}
+                                    <span class="tag is-info is-light is-rounded has-text-weight-semibold" style="font-size: 0.72rem; border: 1px solid #3273dc;">
+                                        🎁 {{ _("Essai (%(days)sj)", days=current_user.trial_days_left) }}
+                                    </span>
+                                {% else %}
+                                    <span class="tag is-light is-rounded" style="font-size: 0.72rem;">
+                                        {{ _("Version Gratuite") }}
+                                    </span>
+                                {% endif %}
+                            </div>
                         </div>
+                        <a href="{{ url_for('subscription.tarifs') }}" class="avatar-dropdown-item" role="menuitem">
+                            <span class="icon"><i class="fas fa-tag"></i></span>
+                            {{ _('Tarifs & Abonnements') }}
+                        </a>
                         <a href="{{ url_for('main.aide') }}" class="avatar-dropdown-item" role="menuitem">
                             <span class="icon"><i class="fas fa-question-circle"></i></span>
                             {{ _('Aide') }}

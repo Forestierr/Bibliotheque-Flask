@@ -1,6 +1,7 @@
 # auth.py
 
 import os
+from datetime import datetime, timedelta, timezone
 
 import requests
 from flask import (
@@ -23,6 +24,13 @@ from flask_login import (
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import csrf, db
+from .config_plans import (
+    FREE_HISTORY_MONTHS,
+    MAX_FREE_BOOKS,
+    MAX_FREE_SCANS,
+    MAX_FREE_STUDENTS,
+    TRIAL_PERIOD_DAYS,
+)
 from .email import (
     send_email_reset_password,
     send_email_verification,
@@ -102,6 +110,10 @@ def signup():
     return render_template(
         "auth/signup.html",
         hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
+        max_students=MAX_FREE_STUDENTS,
+        max_books=MAX_FREE_BOOKS,
+        max_scans=MAX_FREE_SCANS,
+        history_months=FREE_HISTORY_MONTHS,
     )
 
 
@@ -140,11 +152,18 @@ def signup_post():
 
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     current_lang = session.get("lang")
+    trial_ends = (
+        datetime.now(timezone.utc) + timedelta(days=TRIAL_PERIOD_DAYS)
+        if TRIAL_PERIOD_DAYS > 0
+        else None
+    )
     new_user = User(
         email=email,
         name=name,
         password=generate_password_hash(password, method="pbkdf2:sha256"),
         preferred_language=current_lang if current_lang in ["fr", "en", "de"] else "fr",
+        plan="free",
+        trial_ends_at=trial_ends,
     )
 
     # add the new user to the database
@@ -326,17 +345,7 @@ def reglage():
         db.session.commit()
         flash(_("Vos informations ont été mises à jour."), "success")
 
-    user = (
-        db.session.query(User)
-        .with_entities(
-            User.name,
-            User.email,
-            User.newsletter_subscribed,
-            User.preferred_language,
-        )
-        .filter(User.id == current_user.id)
-        .first()
-    )
+    user = db.session.get(User, current_user.id)
 
     return render_template("user/reglage.html", user=user)
 

@@ -7,12 +7,14 @@ from flask_login import current_user, login_required
 
 from . import db
 from .models import Book, Loan, Student
+from .subscription import premium_required
 
 export = Blueprint("export", __name__)
 
 
 @export.route("/export/books")
 @login_required
+@premium_required
 def export_books():
     books = Book.query.filter_by(user_id=current_user.id).all()
 
@@ -44,6 +46,7 @@ def export_books():
 
 @export.route("/export/students_reads")
 @login_required
+@premium_required
 def export_students_reads():
     # Élèves et les livres qu'ils ont lu (date de retour remplie, ou non)
     # On va faire une ligne par livre lu/emprunté par élève
@@ -88,6 +91,7 @@ def export_students_reads():
 
 @export.route("/export/active_loans")
 @login_required
+@premium_required
 def export_active_loans():
     loans = (
         db.session.query(Loan, Book, Student)
@@ -127,6 +131,7 @@ def export_active_loans():
 
 @export.route("/export/all_loans")
 @login_required
+@premium_required
 def export_all_loans():
     loans = (
         db.session.query(Loan, Book, Student)

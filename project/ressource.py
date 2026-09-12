@@ -7,6 +7,7 @@ from sqlalchemy import func
 
 from . import db
 from .models import Book, Loan, Student, Tags
+from .subscription import premium_required
 
 ressource = Blueprint("ressource", __name__)
 
@@ -90,6 +91,7 @@ def bingo():
 
 
 @ressource.route("/ressources/etiquettes")
+@premium_required
 def etiquettes():
     """Générateur de planches d'étiquettes de genres pour bacs et tranches."""
     user_tags = []
@@ -107,6 +109,7 @@ def fiches_avis():
 
 
 @ressource.route("/ressources/codes-barres")
+@premium_required
 def codes_barres():
     """Générateur de planches de codes-barres (livres ou cartes élèves)."""
     books_list = []

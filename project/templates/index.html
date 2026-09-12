@@ -162,6 +162,128 @@
             mobile_img_url=url_for('static',filename='/image/screenshots/eleve_phone.webp')
         ) }}
 
+        <!-- Comparatif Gratuit vs Premium -->
+        <div class="section block" style="margin-top: 4rem; padding-bottom: 2.5rem;">
+            <div class="has-text-centered mb-6">
+                <h2 class="title is-2 mb-4">{{ _("Une formule adaptée à votre classe") }}</h2>
+                <p class="subtitle is-5 has-text-grey" style="max-width: 650px; margin: 0 auto; line-height: 1.6;">
+                    {{ _("Démarrez gratuitement pour équiper votre classe, ou passez au forfait Premium pour profiter d'un accès illimité.") }}
+                </p>
+            </div>
+
+            <div class="columns is-vcentered">
+                <!-- Formule Gratuite -->
+                <div class="column is-6">
+                    <div class="box" style="border-radius: 16px; padding: 2.6rem 2.2rem; height: 100%; border: 1px solid hsl(0, 0%, 88%); box-shadow: 0 4px 14px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="is-flex is-align-items-center is-justify-content-space-between mb-4" style="gap: 1rem;">
+                                <h3 class="title is-4 mb-0">{{ _("Version Gratuite") }}</h3>
+                                <span class="tag is-success is-light is-rounded has-text-weight-bold ml-3" style="flex-shrink: 0;">{{ _("100%% gratuit")|replace("%%", "%") }}</span>
+                            </div>
+                            <p class="is-size-6 has-text-grey mb-5" style="line-height: 1.55;">
+                                {{ _("Idéal pour débuter et équiper une classe sans débourser un centime.") }}
+                            </p>
+
+                            <div class="mb-5 pb-1">
+                                <span class="title is-2 has-text-dark" style="font-weight: 800;">0.-</span>
+                                <span class="has-text-grey is-size-6"> CHF / {{ _("à vie") }}</span>
+                            </div>
+
+                            <ul class="mb-6" style="list-style: none; margin: 0; padding: 0;">
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
+                                    <span><strong>{{ max_students|default(40) }}</strong> {{ _("élèves max") }}</span>
+                                </li>
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
+                                    <span><strong>{{ max_books|default(500) }}</strong> {{ _("livres au catalogue") }}</span>
+                                </li>
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
+                                    <span><strong>{{ max_scans|default(30) }}</strong> {{ _("scans code-barres par caméra") }}</span>
+                                </li>
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
+                                    <span>{{ history_months|default(10) }} {{ _("mois d'historique des prêts") }}</span>
+                                </li>
+                                <li class="is-flex is-align-items-center" style="font-size: 0.95rem; line-height: 1.5; color: hsl(0, 0%, 55%);">
+                                    <span class="icon has-text-grey-light mr-3"><i class="fas fa-lock"></i></span>
+                                    <span>{{ _("Exports Excel & étiquettes de bacs réservés") }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-top: auto; padding-top: 1.5rem;">
+                            <a href="{{ url_for('auth.signup') }}" class="button is-link is-outlined is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.85rem 1.25rem; height: auto; font-size: 1rem;">
+                                <span>{{ _("Commencer gratuitement") }}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formule Premium -->
+                <div class="column is-6">
+                    <div class="box" style="border-radius: 16px; padding: 2.6rem 2.2rem; height: 100%; border: 2px solid hsl(217, 71%, 53%); box-shadow: 0 8px 24px rgba(66, 133, 244, 0.12); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                        <span style="position: absolute; top: -12px; right: 20px; background: #2563eb; color: white; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.35rem 0.85rem; border-radius: 999px;">
+                            {{ _("Accès complet") }}
+                        </span>
+
+                        <div>
+                            <div class="is-flex is-align-items-center is-justify-content-space-between mb-4" style="gap: 1rem;">
+                                <h3 class="title is-4 mb-0 has-text-link">{{ _("Abonnement Premium") }}</h3>
+                                <span class="tag is-link is-light is-rounded has-text-weight-bold ml-3" style="flex-shrink: 0;">{{ _("Dès 2.50 CHF/mois") }}</span>
+                            </div>
+                            <p class="is-size-6 has-text-grey mb-5" style="line-height: 1.55;">
+                                {{ _("Pour une utilisation sans aucune limite et tous les outils pédagogiques.") }}
+                            </p>
+
+                            <div class="mb-5 pb-1">
+                                <span class="title is-2 has-text-link" style="font-weight: 800;">30.-</span>
+                                <span class="has-text-grey is-size-6"> CHF / {{ _("an (ou 5.-/mois)") }}</span>
+                            </div>
+
+                            <ul class="mb-6" style="list-style: none; margin: 0; padding: 0;">
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-link mr-3"><i class="fas fa-check-circle"></i></span>
+                                    <span><strong>{{ _("Élèves et livres illimités") }}</strong></span>
+                                </li>
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-link mr-3"><i class="fas fa-check-circle"></i></span>
+                                    <span><strong>{{ _("Scans codes-barres illimités") }}</strong></span>
+                                </li>
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-link mr-3"><i class="fas fa-check-circle"></i></span>
+                                    <span><strong>{{ _("Historique et archives illimitées") }}</strong></span>
+                                </li>
+                                <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-link mr-3"><i class="fas fa-check-circle"></i></span>
+                                    <span>{{ _("Exports complets Excel pour vos bilans") }}</span>
+                                </li>
+                                <li class="is-flex is-align-items-center" style="font-size: 0.95rem; line-height: 1.5;">
+                                    <span class="icon has-text-link mr-3"><i class="fas fa-check-circle"></i></span>
+                                    <span>{{ _("Planches d'étiquettes de bacs & codes-barres") }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-top: auto; padding-top: 1.5rem;">
+                            <a href="{{ url_for('subscription.tarifs') }}" class="button is-link is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.85rem 1.25rem; height: auto; font-size: 1rem; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.25);">
+                                <span>{{ _("Voir le détail des tarifs & offres") }}</span>
+                                <span class="icon is-small ml-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lien discret vers comparatif complet -->
+            <div class="has-text-centered mt-6 pt-2">
+                <a href="{{ url_for('subscription.tarifs') }}" class="has-text-weight-semibold has-text-link is-size-6">
+                    {{ _("Consulter le comparatif détaillé de toutes les fonctionnalités") }} <i class="fas fa-angle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+
         <!-- Espace Ressources & Blog Promotion -->
         <div class="section block" style="margin-top: 4rem; padding-bottom: 2rem;">
             <h2 class="title is-2 has-text-centered mb-6">{{ _("Ressources & Guides pour les Enseignants") }}</h2>

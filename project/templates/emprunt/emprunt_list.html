@@ -2,10 +2,31 @@
 
 {% include "utils/flash_message.html" %}
 
+<style>
+.loan-blurred {
+    filter: blur(4px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.55;
+    transition: filter 0.2s ease;
+}
+.loan-locked-banner {
+    border-radius: 8px;
+    margin-top: 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #f39c12;
+}
+</style>
+
 <div class="container block">
+    {% set has_blurred = namespace(value=false) %}
     {% for loan in loans %}
+        {% set is_blurred = not current_user.is_premium and cutoff_date and loan.Loan.date_loan and loan.Loan.date_loan < cutoff_date %}
+        {% if is_blurred %}
+            {% set has_blurred.value = true %}
+        {% endif %}
         <hr style="margin: 5px 0 5px 0"/>
-        <div class="container" style="margin-bottom: 10px">
+        <div class="container {% if is_blurred %}loan-blurred{% endif %}" style="margin-bottom: 10px">
             <div class="columns is-mobile" style="margin-bottom: 0;">
                 <div class="column">
                     <a href="/livre/{{ loan.Book.id }}" class="has-text-weight-bold {% if loan.Loan.date_return == None %}has-text-danger{% endif %}">{{ loan.Book.title }}</a>
@@ -27,6 +48,18 @@
         <hr style="margin: 5px 0 5px 0" />
         {% endif %}
     {% endfor %}
+
+    {% if has_blurred.value %}
+    <div class="notification is-warning is-light has-text-centered loan-locked-banner">
+        <p class="is-size-6 mb-2">
+            🔒 <strong>{{ _("Archives antérieures à 10 mois masquées.") }}</strong>
+            {{ _("Passez Premium pour consulter l'historique complet de vos emprunts passés.") }}
+        </p>
+        <a href="{{ url_for('subscription.tarifs') }}" class="button is-small is-warning is-dark">
+            {{ _("Découvrir les offres Premium") }}
+        </a>
+    </div>
+    {% endif %}
 </div>
 
 {{ pagination(nb_page, page, url="emprunt.search") }}
