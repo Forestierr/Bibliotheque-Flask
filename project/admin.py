@@ -89,7 +89,7 @@ def delete_user(user_id):
 def set_plan(user_id):
     user = db.get_or_404(User, user_id)
     new_plan = request.form.get("plan")
-    trial_days = request.form.get("trial_days")
+    trial_days = request.form.get("trial_days", "").strip()
     reset_scans = request.form.get("reset_scans") == "1"
 
     if new_plan in ["free", "founder", "premium"]:
@@ -98,18 +98,21 @@ def set_plan(user_id):
             user.stripe_subscription_status = "active"
         elif new_plan in ["free", "founder"]:
             user.stripe_subscription_status = None
+            # On efface toujours trial_ends_at pour garantir un accès pleinement gratuit,
+            # sauf si trial_days est fourni et > 0 (traité ci-dessous).
+            user.trial_ends_at = None
     elif new_plan == "trial":
         user.plan = "free"
-        days = int(trial_days) if trial_days and trial_days.isdigit() else 30
-        user.trial_ends_at = datetime.now(timezone.utc) + timedelta(days=days)
+        days = int(trial_days) if trial_days.isdigit() else 30
+        if days > 0:
+            user.trial_ends_at = datetime.now(timezone.utc) + timedelta(days=days)
+        else:
+            # trial_days = 0 → gratuit immédiat, on efface la date d'essai
+            user.trial_ends_at = None
         user.trial_reminder_sent = False
 
-    if (
-        trial_days
-        and trial_days.isdigit()
-        and int(trial_days) > 0
-        and new_plan != "trial"
-    ):
+    # Surcharge de trial_ends_at pour les plans free/founder si trial_days > 0
+    if new_plan in ["free", "founder"] and trial_days.isdigit() and int(trial_days) > 0:
         user.trial_ends_at = datetime.now(timezone.utc) + timedelta(
             days=int(trial_days)
         )
@@ -180,8 +183,8 @@ def coupons():
     coupons_list = []
     promos_list = []
     try:
-        coupons_list = stripe.Coupon.list(limit=50).get("data", [])
-        promos_list = stripe.PromotionCode.list(limit=50).get("data", [])
+        coupons_list = stripe.Coupon.list(limit=50).data
+        promos_list = stripe.PromotionCode.list(limit=50).data
     except Exception as e:  # noqa: BLE001
         flash(f"Impossible de charger les données Stripe : {e}", "warning")
 

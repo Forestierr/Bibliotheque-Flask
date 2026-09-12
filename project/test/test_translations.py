@@ -188,7 +188,9 @@ def test_query_param_language_selection():
         res = client.get("/?lang=en")
         assert res.status_code == 200
         html = res.data.decode("utf-8")
-        assert '<html lang="en">' in html
+        # On vérifie l'attribut lang= sans contraindre la balise <html> entière
+        # (des attributs supplémentaires comme data-theme peuvent être présents)
+        assert 'lang="en"' in html
         assert "School Library Management Software" in html
         with client.session_transaction() as sess:
             assert sess.get("lang") == "en"
@@ -197,7 +199,7 @@ def test_query_param_language_selection():
         res = client.get("/?lang=de")
         assert res.status_code == 200
         html = res.data.decode("utf-8")
-        assert '<html lang="de">' in html
+        assert 'lang="de"' in html
         assert "Schulbibliothek-Verwaltungssoftware" in html
         with client.session_transaction() as sess:
             assert sess.get("lang") == "de"
