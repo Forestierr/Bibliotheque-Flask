@@ -67,24 +67,31 @@
                                 </thead>
                                 <tbody>
                                     {% for promo in promo_codes %}
+                                    {% set c = promo.coupon or (promo.promotion.coupon if (promo.promotion is defined and promo.promotion.coupon is defined) else none) %}
                                     <tr>
                                         <td><strong>{{ promo.code }}</strong></td>
                                         <td>
-                                            {% if promo.coupon.percent_off %}
-                                                <span class="tag is-success is-light">-{{ promo.coupon.percent_off }}%</span>
-                                            {% elif promo.coupon.amount_off %}
-                                                <span class="tag is-info is-light">-{{ (promo.coupon.amount_off / 100)|round(2) }} {{ (promo.coupon.currency or 'CHF')|upper }}</span>
+                                            {% if c and c.percent_off is defined and c.percent_off %}
+                                                <span class="tag is-success is-light">-{{ c.percent_off }}%</span>
+                                            {% elif c and c.amount_off is defined and c.amount_off %}
+                                                <span class="tag is-info is-light">-{{ (c.amount_off / 100)|round(2) }} {{ (c.currency or 'CHF')|upper }}</span>
+                                            {% else %}
+                                                <span class="has-text-grey">-</span>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if promo.coupon.duration == 'forever' %}
-                                                À vie
-                                            {% elif promo.coupon.duration == 'once' %}
-                                                1 fois
-                                            {% elif promo.coupon.duration == 'repeating' %}
-                                                {{ promo.coupon.duration_in_months }} mois
+                                            {% if c and c.duration is defined %}
+                                                {% if c.duration == 'forever' %}
+                                                    À vie
+                                                {% elif c.duration == 'once' %}
+                                                    1 fois
+                                                {% elif c.duration == 'repeating' %}
+                                                    {{ c.duration_in_months }} mois
+                                                {% else %}
+                                                    {{ c.duration }}
+                                                {% endif %}
                                             {% else %}
-                                                {{ promo.coupon.duration }}
+                                                <span class="has-text-grey">-</span>
                                             {% endif %}
                                         </td>
                                         <td>

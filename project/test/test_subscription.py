@@ -653,3 +653,78 @@ def test_stripe_webhook_csrf_exemption():
         )
         # Ne doit PAS renvoyer 400 Bad Request ("The CSRF session token is missing")
         assert resp.status_code == 200
+
+
+def test_admin_set_plan_free_resets_trial_ends_at(client, app):
+    """Vérifie que basculer un utilisateur sur 'free' efface complètement trial_ends_at."""
+    with app.app_context():
+        user = User(
+            id=55,
+            email="to_free@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            trial_ends_at=datetime.now(timezone.utc) + timedelta(days=20),
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # 1. Passage en free sans trial_days -> trial_ends_at doit être None
+        client.post(
+            "/admin/set_plan/55",
+            data={"plan": "free", "trial_days": ""},
+        )
+        updated = db.session.get(User, 55)
+        assert updated.plan == "free"
+        assert updated.trial_ends_at is None
+        assert updated.effective_plan == "free"
+
+        # 2. Passage en trial avec trial_days = 0 -> trial_ends_at doit être None
+        client.post(
+            "/admin/set_plan/55",
+            data={"plan": "trial", "trial_days": "0"},
+        )
+        updated2 = db.session.get(User, 55)
+        assert updated2.plan == "free"
+        assert updated2.trial_ends_at is None
+        assert updated2.effective_plan == "free"
+
+
+def test_admin_coupons_create_uses_modern_stripe_promotion(client, app):
+    """Vérifie la création d'un code promo avec le paramètre promotion moderne de Stripe."""
+    with (
+        patch("os.getenv", return_value="sk_test_mock"),
+        patch("stripe.Coupon.create") as mock_coupon_create,
+        patch("stripe.PromotionCode.create") as mock_promo_create,
+        patch("stripe.Coupon.list") as mock_coupon_list,
+        patch("stripe.PromotionCode.list") as mock_promo_list,
+    ):
+        mock_coupon_create.return_value = MagicMock(id="coup_test123")
+        mock_coupon_list.return_value = MagicMock(data=[])
+        mock_promo_list.return_value = MagicMock(data=[])
+
+        resp = client.post(
+            "/admin/coupons",
+            data={
+                "code": "RENTREE50",
+                "discount_type": "percent",
+                "discount_value": "50",
+                "duration": "once",
+                "max_redemptions": "100",
+            },
+            follow_redirects=True,
+        )
+        assert resp.status_code == 200
+
+        # Vérifier que Coupon.create a bien été appelé
+        mock_coupon_create.assert_called_once_with(
+            duration="once",
+            name="Code RENTREE50",
+            percent_off=50.0,
+        )
+
+        # Vérifier que PromotionCode.create a été appelé avec promotion={'type': 'coupon', 'coupon': ...}
+        mock_promo_create.assert_called_once_with(
+            promotion={"type": "coupon", "coupon": "coup_test123"},
+            code="RENTREE50",
+            max_redemptions=100,
+        )

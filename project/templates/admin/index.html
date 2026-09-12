@@ -93,10 +93,10 @@
                             <td>
                                 {% if u.plan == 'founder' %}
                                     <span class="tag is-warning is-light" title="Accès illimité à vie">👑 Fondateur</span>
-                                {% elif u.is_premium %}
-                                    <span class="tag is-success is-light" title="Abonnement Stripe actif">⭐ Premium</span>
                                 {% elif u.is_in_trial %}
-                                    <span class="tag is-info is-light" title="Période d'essai">⏳ Essai ({{ u.trial_days_left }}j)</span>
+                                    <span class="tag is-info is-light" title="Période d'essai">Essai ({{ u.trial_days_left }}j)</span>
+                                {% elif u.is_premium %}
+                                    <span class="tag is-success is-light" title="Abonnement Stripe actif">Premium</span>
                                 {% else %}
                                     <span class="tag is-light">Gratuit</span>
                                 {% endif %}

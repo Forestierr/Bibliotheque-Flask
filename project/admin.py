@@ -166,11 +166,23 @@ def coupons():
 
             coupon = stripe.Coupon.create(**coupon_args)
 
-            promo_args = {"coupon": coupon.id, "code": code}
+            promo_args = {"code": code}
             if max_redemptions and max_redemptions.isdigit():
                 promo_args["max_redemptions"] = int(max_redemptions)
 
-            stripe.PromotionCode.create(**promo_args)
+            try:
+                # API Stripe moderne (2024+) : promotion est un objet typé {'type': 'coupon', 'coupon': id}
+                stripe.PromotionCode.create(
+                    promotion={"type": "coupon", "coupon": coupon.id},
+                    **promo_args,
+                )
+            except stripe.error.InvalidRequestError as exc:
+                # Rétrocompatibilité avec les versions d'API antérieures attendant coupon direct
+                if "unknown parameter: promotion" in str(exc).lower():
+                    stripe.PromotionCode.create(coupon=coupon.id, **promo_args)
+                else:
+                    raise
+
             flash(
                 f"Code promotionnel '{code}' créé avec succès sur Stripe !",
                 "success",
@@ -184,7 +196,21 @@ def coupons():
     promos_list = []
     try:
         coupons_list = stripe.Coupon.list(limit=50).data
-        promos_list = stripe.PromotionCode.list(limit=50).data
+        try:
+            promos_list = stripe.PromotionCode.list(
+                limit=50, expand=["data.promotion.coupon"]
+            ).data
+        except stripe.error.StripeError:
+            promos_list = stripe.PromotionCode.list(limit=50).data
+
+        # Rétrocompatibilité d'accès au coupon pour l'affichage dans le template
+        for p in promos_list:
+            if (
+                not getattr(p, "coupon", None)
+                and hasattr(p, "promotion")
+                and hasattr(p.promotion, "coupon")
+            ):
+                p.coupon = p.promotion.coupon
     except Exception as e:  # noqa: BLE001
         flash(f"Impossible de charger les données Stripe : {e}", "warning")
 
