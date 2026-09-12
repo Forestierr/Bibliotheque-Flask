@@ -34,6 +34,63 @@ class User(UserMixin, db.Model):
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
+    plan = db.Column(
+        db.String(20), default="free", server_default="free", nullable=False
+    )
+    trial_ends_at = db.Column(db.DateTime, nullable=True)
+    trial_reminder_sent = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False
+    )
+    free_scans_used = db.Column(
+        db.Integer, default=0, server_default="0", nullable=False
+    )
+    stripe_customer_id = db.Column(db.String(120), nullable=True, index=True)
+    stripe_subscription_id = db.Column(db.String(120), nullable=True, index=True)
+    stripe_subscription_status = db.Column(db.String(30), nullable=True)
+    stripe_price_id = db.Column(db.String(120), nullable=True)
+
+    @property
+    def is_in_trial(self) -> bool:
+        if self.plan in ("founder", "premium"):
+            return False
+        if self.trial_ends_at:
+            end_dt = (
+                self.trial_ends_at.replace(tzinfo=timezone.utc)
+                if self.trial_ends_at.tzinfo is None
+                else self.trial_ends_at
+            )
+            return datetime.now(timezone.utc) < end_dt
+        return False
+
+    @property
+    def trial_days_left(self) -> int:
+        if not self.is_in_trial or not self.trial_ends_at:
+            return 0
+        end_dt = (
+            self.trial_ends_at.replace(tzinfo=timezone.utc)
+            if self.trial_ends_at.tzinfo is None
+            else self.trial_ends_at
+        )
+        delta = end_dt - datetime.now(timezone.utc)
+        return max(0, delta.days + (1 if delta.seconds > 0 else 0))
+
+    @property
+    def effective_plan(self) -> str:
+        if self.plan == "founder":
+            return "founder"
+        if self.plan == "premium" and self.stripe_subscription_status == "active":
+            return "premium"
+        if self.is_in_trial:
+            return "trial"
+        return "free"
+
+    @property
+    def is_premium(self) -> bool:
+        if self.plan == "founder":
+            return True
+        if self.plan == "premium" and self.stripe_subscription_status == "active":
+            return True
+        return self.is_in_trial
 
     # One-to-Many relationship with books
     books = relationship("Book", backref="user", lazy=True)  # User can have many books

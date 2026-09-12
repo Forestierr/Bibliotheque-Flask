@@ -200,4 +200,9 @@ def create_app(test_config=None):
 
     app.register_blueprint(ressource_blueprint)
 
+    # blueprint for subscription
+    from .subscription import subscription as subscription_blueprint
+
+    app.register_blueprint(subscription_blueprint)
+
     return app
