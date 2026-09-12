@@ -1,0 +1,42 @@
+<!-- templates/subscription/cancel.html -->
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Souscription interrompue | Livres en Classe") }}{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Souscription")) }}
+{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container" style="max-width: 600px; margin: 0 auto;">
+        <div class="box has-text-centered" style="border-radius: 18px; padding: 3rem 2rem;">
+            
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: hsl(48, 100%, 96%); color: hsl(48, 100%, 35%); display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-bottom: 1.5rem;">
+                <i class="fas fa-info-circle"></i>
+            </div>
+
+            <h1 class="title is-3 mb-2" style="font-weight: 800; color: hsl(0, 0%, 15%);">
+                {{ _("Paiement non finalisé") }}
+            </h1>
+            <p class="subtitle is-6 has-text-grey mb-5">
+                {{ _("L'opération a été interrompue. Aucun prélèvement n'a été effectué sur votre compte bancaire.") }}
+            </p>
+
+            <div class="notification is-light mb-5" style="border-radius: 12px; font-size: 0.95rem;">
+                {{ _("Vous conservez l'accès à votre compte et à vos données existantes. Vous pourrez souscrire à l'offre Premium quand vous le souhaiterez.") }}
+            </div>
+
+            <div class="buttons is-centered">
+                <a href="{{ url_for('subscription.tarifs') }}" class="button is-link is-rounded has-text-weight-bold">
+                    <span>{{ _("Revoir les offres & tarifs") }}</span>
+                </a>
+                <a href="{{ url_for('main.dashboard') }}" class="button is-light is-rounded">
+                    <span>{{ _("Retour au tableau de bord") }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

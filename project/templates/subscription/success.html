@@ -1,0 +1,76 @@
+<!-- templates/subscription/success.html -->
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Félicitations & Bienvenue dans Premium ! | Livres en Classe") }}{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Abonnement activé")) }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .confetti-container {
+        position: relative;
+        overflow: hidden;
+        padding: 4rem 1.5rem;
+        text-align: center;
+    }
+    .celebration-badge {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, hsl(141, 71%, 48%), hsl(171, 100%, 41%));
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        box-shadow: 0 10px 25px rgba(72, 199, 116, 0.4);
+        margin-bottom: 1.5rem;
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<section class="section">
+    <div class="container" style="max-width: 680px; margin: 0 auto;">
+        <div class="box has-text-centered" style="border-radius: 18px; padding: 3rem 2rem;">
+            
+            <div class="celebration-badge">
+                <i class="fas fa-check"></i>
+            </div>
+
+            <h1 class="title is-2 mb-2" style="font-weight: 800; color: hsl(0, 0%, 15%);">
+                {{ _("Félicitations !") }}
+            </h1>
+            <p class="subtitle is-5 has-text-grey mb-5">
+                {{ _("Votre abonnement Premium est maintenant activé.") }}
+            </p>
+
+            <div class="notification is-success is-light mb-5 has-text-left" style="border-radius: 12px;">
+                <p class="has-text-weight-bold mb-2">{{ _("Toutes vos fonctionnalités sont débloquées :") }}</p>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li class="mb-1"><i class="fas fa-check-circle has-text-success mr-2"></i> {{ _("Élèves et livres en quantité illimitée") }}</li>
+                    <li class="mb-1"><i class="fas fa-check-circle has-text-success mr-2"></i> {{ _("Scanner code-barres ISBN illimité") }}</li>
+                    <li class="mb-1"><i class="fas fa-check-circle has-text-success mr-2"></i> {{ _("Téléchargement de tous vos exports Excel") }}</li>
+                    <li class="mb-1"><i class="fas fa-check-circle has-text-success mr-2"></i> {{ _("Planches d'étiquettes de bacs et codes-barres") }}</li>
+                    <li><i class="fas fa-check-circle has-text-success mr-2"></i> {{ _("Archives et historique complet de vos prêts") }}</li>
+                </ul>
+            </div>
+
+            <p class="is-size-6 has-text-grey mb-5">
+                {{ _("Un reçu a été envoyé à votre adresse e-mail. Vous pouvez gérer ou résilier votre abonnement à tout moment depuis la page Réglages.") }}
+            </p>
+
+            <a href="{{ url_for('main.dashboard') }}" class="button is-link is-medium is-rounded has-text-weight-bold" style="padding: 0 2rem;">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>{{ _("Aller sur mon tableau de bord") }}</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

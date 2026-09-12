@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vous êtes Membre Fondateur à vie !</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <span style="font-size: 36px;">👑</span>
+        <h2 style="color: #b7791f; margin-top: 5px;">Merci d'avoir été là dès le début !</h2>
+    </div>
+    
+    <p>Bonjour {{ user.name or 'Enseignant' }},</p>
+    
+    <p>Vous faites partie des <strong>50 premiers enseignants</strong> à avoir fait confiance à <strong>Livres en Classe</strong> pour gérer la bibliothèque de votre classe.</p>
+    
+    <p>Pour vous remercier chaleureusement de votre soutien et de vos retours précieux pendant les premiers mois de développement, nous avons le plaisir de vous attribuer le statut exclusif de <strong>Membre Fondateur à vie</strong>.</p>
+    
+    <div style="background: #fefcbf; border: 1px solid #f6e05e; padding: 18px; margin: 25px 0; border-radius: 8px;">
+        <h4 style="margin: 0 0 8px 0; color: #744210;">Vos privilèges Fondateur :</h4>
+        <ul style="margin: 0; padding-left: 20px; color: #744210; font-size: 14px;">
+            <li><strong>Gratuité permanente et totale</strong> : aucun abonnement ne vous sera jamais demandé.</li>
+            <li><strong>Accès illimité sans quota</strong> : élèves illimités, livres illimités, scans illimités.</li>
+            <li><strong>Toutes les fonctions exclusives incluses</strong> : exports Excel, impression d'étiquettes et de codes-barres, archives complètes.</li>
+            <li><strong>Badge exclusif « Membre Fondateur »</strong> sur votre profil.</li>
+        </ul>
+    </div>
+    
+    <p>Vous n'avez rien à faire : votre statut a déjà été activé directement sur votre compte.</p>
+    
+    <p>Si vous appréciez l'application, la plus belle façon de nous aider est d'en <strong>parler à vos collègues enseignants</strong> ou de la partager dans votre école !</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ dashboard_url }}" style="background-color: #d69e2e; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Accéder à ma bibliothèque</a>
+    </div>
+    
+    <p>Encore un grand merci et une excellente année scolaire à vous et vos élèves !</p>
+    
+    <hr style="border: none; border-top: 1px solid #eee; margin-top: 40px;">
+    <p style="font-size: 12px; color: #999; text-align: center;">Robin Forestier &bull; Livres en Classe &bull; livresenclasse@gmail.com</p>
+</body>
+</html>

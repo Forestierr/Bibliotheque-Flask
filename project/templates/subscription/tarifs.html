@@ -1,0 +1,377 @@
+<!-- templates/subscription/tarifs.html -->
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Tarifs & Abonnements | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Découvrez les offres et tarifs de Livres en Classe pour les enseignants : version gratuite et abonnement Premium à 30.- CHF/an.") }}{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Tarifs")) }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .pricing-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid hsl(0, 0%, 88%);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+        padding: 2.2rem 1.8rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .pricing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    }
+    .pricing-card.is-featured {
+        border: 2px solid hsl(217, 71%, 53%);
+        box-shadow: 0 8px 24px rgba(66, 133, 244, 0.15);
+    }
+    .pricing-ribbon {
+        position: absolute;
+        top: -12px;
+        right: 20px;
+        background: #2563eb;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+    .price-tag {
+        font-size: 2.75rem;
+        font-weight: 800;
+        color: hsl(0, 0%, 15%);
+        line-height: 1;
+        margin: 1.2rem 0 0.5rem 0;
+    }
+    .price-tag small {
+        font-size: 1rem;
+        font-weight: 600;
+        color: hsl(0, 0%, 45%);
+    }
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0 2rem 0;
+        flex-grow: 1;
+    }
+    .feature-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.65rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        color: hsl(0, 0%, 30%);
+        line-height: 1.4;
+    }
+    .feature-list li .icon {
+        color: hsl(141, 71%, 45%);
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .feature-list li.is-disabled {
+        color: hsl(0, 0%, 60%);
+    }
+    .feature-list li.is-disabled .icon {
+        color: hsl(0, 0%, 75%);
+    }
+    .table-comparison {
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid hsl(0, 0%, 90%);
+        margin-top: 3rem;
+    }
+</style>
+
+<section class="section">
+    <div class="container" style="max-width: 980px; margin: 0 auto;">
+
+        {% include "utils/flash_message.html" %}
+
+        <!-- En-tête -->
+        <div class="has-text-centered mb-6">
+            <h1 class="title is-2 mb-3" style="font-weight: 800; color: hsl(0, 0%, 15%);">
+                {{ _("Un tarif simple et transparent") }}
+            </h1>
+            <p class="subtitle is-5 has-text-grey" style="max-width: 620px; margin: 0 auto;">
+                {% if trial_days and trial_days > 0 %}
+                    {{ _("30 jours d'accès complet offert sans engagement, puis une formule conçue pour s'adapter à votre budget d'école.") }}
+                {% else %}
+                    {{ _("Une formule simple et transparente conçue pour s'adapter à votre budget d'école.") }}
+                {% endif %}
+            </p>
+        </div>
+
+        {% if current_user.is_authenticated %}
+            {% if current_user.plan == 'founder' %}
+            <div class="notification is-warning is-light mb-6" style="border-radius: 12px; border-left: 5px solid #d69e2e;">
+                <div class="media">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-warning-dark"><i class="fas fa-award fa-2x"></i></span>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-5 mb-1" style="color: #744210;">{{ _("Vous êtes Membre Fondateur à vie") }}</p>
+                        <p class="is-size-6" style="color: #744210;">
+                            {{ _("En tant qu'utilisateur historique, vous bénéficiez d'un accès illimité et gratuit permanent à l'ensemble des fonctionnalités présentes et futures. Aucun abonnement ne vous sera jamais demandé.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+            <div class="notification is-success is-light mb-6" style="border-radius: 12px; border-left: 5px solid #48c774;">
+                <div class="level">
+                    <div class="level-left">
+                        <div>
+                            <p class="title is-5 mb-1">{{ _("Votre abonnement Premium est actif") }}</p>
+                            <p class="is-size-6 has-text-grey">{{ _("Vous bénéficiez d'un accès illimité à toutes les fonctionnalités de Livres en Classe.") }}</p>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <form action="{{ url_for('subscription.portal') }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="button is-link is-light is-rounded">
+                                <span class="icon"><i class="fas fa-credit-card"></i></span>
+                                <span>{{ _("Gérer mon abonnement") }}</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% elif current_user.is_in_trial %}
+            <div class="notification is-info is-light mb-6" style="border-radius: 12px; border-left: 5px solid #3273dc;">
+                <p class="title is-5 mb-1">
+                    <span class="icon mr-1"><i class="fas fa-gift"></i></span>
+                    {{ _("Vous profitez de l'essai gratuit Premium") }}
+                </p>
+                <p class="is-size-6">
+                    {{ _("Il vous reste %(days)s jours d'accès complet offert. Vous pouvez souscrire dès aujourd'hui pour poursuivre votre activité sans interruption.", days=current_user.trial_days_left) }}
+                </p>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <!-- Grille des 2 formules d'abonnement -->
+        <div class="columns is-vcentered mb-6">
+            
+            <!-- Offre Mensuelle -->
+            <div class="column is-6">
+                <div class="pricing-card">
+                    <div>
+                        <h3 class="title is-4 mb-1">{{ _("Mensuel") }}</h3>
+                        <p class="is-size-6 has-text-grey">{{ _("Sans engagement, liberté totale") }}</p>
+                    </div>
+
+                    <div class="price-tag">
+                        5.- <small>{{ currency }} / {{ _("mois") }}</small>
+                    </div>
+                    <p class="is-size-7 has-text-grey mb-4">{{ _("Facturé chaque mois, résiliable en 1 clic") }}</p>
+
+                    <ul class="feature-list">
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Élèves illimités") }}</strong></span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Livres illimités") }}</strong></span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Scans code-barres illimités") }}</strong></span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Historique complet des prêts") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Exports complets Excel") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Étiquettes & codes-barres imprimables") }}</span>
+                        </li>
+                    </ul>
+
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.plan == 'founder' %}
+                        <button class="button is-light is-fullwidth is-rounded" disabled>
+                            {{ _("Inclus à vie (Fondateur)") }}
+                        </button>
+                        {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+                        <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-light is-fullwidth is-rounded">
+                            {{ _("Gérer mon abonnement") }}
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('subscription.paiement', plan_type='monthly') }}" class="button is-link is-outlined is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto;">
+                            <span>{{ _("Choisir la formule mensuelle") }}</span>
+                        </a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{{ url_for('subscription.paiement', plan_type='monthly') }}" class="button is-link is-outlined is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto;">
+                        <span>{{ _("Choisir la formule mensuelle") }}</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Offre Annuelle (Mise en avant) -->
+            <div class="column is-6">
+                <div class="pricing-card is-featured">
+                    <span class="pricing-ribbon">{{ _("Économisez 50%%")|replace("%%", "%") }}</span>
+
+                    <div>
+                        <h3 class="title is-4 mb-1 has-text-link">{{ _("Annuel") }}</h3>
+                        <p class="is-size-6 has-text-grey">{{ _("La formule idéale pour l'année scolaire") }}</p>
+                    </div>
+
+                    <div class="price-tag has-text-link">
+                        30.- <small>{{ currency }} / {{ _("an") }}</small>
+                    </div>
+                    <p class="is-size-7 has-text-dark has-text-weight-semibold mb-4">
+                        {{ _("Soit seulement 2.50 CHF par mois") }}
+                    </p>
+
+                    <ul class="feature-list">
+                        <li>
+                            <span class="icon has-text-link"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Élèves illimités") }}</strong></span>
+                        </li>
+                        <li>
+                            <span class="icon has-text-link"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Livres illimités") }}</strong></span>
+                        </li>
+                        <li>
+                            <span class="icon has-text-link"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Scans code-barres illimités") }}</strong></span>
+                        </li>
+                        <li>
+                            <span class="icon has-text-link"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Historique complet des prêts") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon has-text-link"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Exports complets Excel") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon has-text-link"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Étiquettes & codes-barres imprimables") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon has-text-link"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Support prioritaire par e-mail") }}</span>
+                        </li>
+                    </ul>
+
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.plan == 'founder' %}
+                        <button class="button is-light is-fullwidth is-rounded" disabled>
+                            {{ _("Inclus à vie (Fondateur)") }}
+                        </button>
+                        {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+                        <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-light is-fullwidth is-rounded">
+                            {{ _("Gérer mon abonnement") }}
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('subscription.paiement', plan_type='yearly') }}" class="button is-link is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.35);">
+                            <span>{{ _("Souscrire pour 30.- CHF / an") }}</span>
+                        </a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{{ url_for('subscription.paiement', plan_type='yearly') }}" class="button is-link is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.35);">
+                        <span>{{ _("Souscrire pour 30.- CHF / an") }}</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau comparatif Free vs Premium -->
+        <div class="table-comparison box">
+            <h3 class="title is-4 mb-4 has-text-centered">{{ _("Comparatif des fonctionnalités") }}</h3>
+            <table class="table is-fullwidth is-hoverable">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">{{ _("Fonctionnalité") }}</th>
+                        <th class="has-text-centered" style="width: 25%;">{{ _("Gratuit (Free)") }}</th>
+                        <th class="has-text-centered has-text-link" style="width: 25%;">{{ _("Premium") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>{{ _("Nombre d'élèves") }}</strong></td>
+                        <td class="has-text-centered">{{ max_students }} {{ _("élèves max") }}</td>
+                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ _("Nombre de livres") }}</strong></td>
+                        <td class="has-text-centered">{{ max_books }} {{ _("livres max") }}</td>
+                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ _("Scanner code-barres par caméra") }}</strong></td>
+                        <td class="has-text-centered">{{ max_scans }} {{ _("scans d'essai") }}</td>
+                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ _("Historique des prêts") }}</strong></td>
+                        <td class="has-text-centered">{{ history_months }} {{ _("derniers mois") }}</td>
+                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Archives illimitées") }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ _("Téléchargement & Exports Excel") }}</strong></td>
+                        <td class="has-text-centered has-text-grey"><i class="fas fa-lock mr-1"></i> {{ _("Non") }}</td>
+                        <td class="has-text-centered has-text-weight-bold has-text-dark"><i class="fas fa-check mr-1"></i> {{ _("Oui") }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ _("Planches d'étiquettes & codes-barres") }}</strong></td>
+                        <td class="has-text-centered has-text-grey"><i class="fas fa-lock mr-1"></i> {{ _("Non") }}</td>
+                        <td class="has-text-centered has-text-weight-bold has-text-dark"><i class="fas fa-check mr-1"></i> {{ _("Oui") }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ _("Codes de réduction / bons d'école") }}</strong></td>
+                        <td class="has-text-centered">-</td>
+                        <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Acceptés sur Stripe") }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FAQ & Garanties de sérénité -->
+        <div class="columns is-multiline mt-5">
+            <div class="column is-6">
+                <div class="box" style="height: 100%;">
+                    <h4 class="title is-5 mb-2">
+                        <span class="icon has-text-link mr-1"><i class="fas fa-shield-alt"></i></span>
+                        {{ _("Que se passe-t-il si je résilie ?") }}
+                    </h4>
+                    <p class="is-size-6 has-text-grey">
+                        {{ _("Toutes vos données (élèves, livres, historique) restent intégralement conservées et utilisables pour gérer vos prêts du quotidien. Seul l'ajout de nouveaux éléments au-delà du seuil gratuit est mis en pause.") }}
+                    </p>
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="box" style="height: 100%;">
+                    <h4 class="title is-5 mb-2">
+                        <span class="icon has-text-link mr-1"><i class="fas fa-credit-card"></i></span>
+                        {{ _("Puis-je utiliser un code de réduction ?") }}
+                    </h4>
+                    <p class="is-size-6 has-text-grey">
+                        {{ _("Oui ! Si votre école, votre canton ou une promotion vous a fourni un code avantage, saisissez-le simplement lors du paiement sécurisé sur Stripe.") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,355 @@
+<!-- templates/subscription/paiement.html -->
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Finaliser votre abonnement Premium | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Récapitulatif de votre formule et paiement sécurisé par carte bancaire via Stripe pour Livres en Classe.") }}{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Paiement")) }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .checkout-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid hsl(0, 0%, 88%);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        padding: 2.2rem 2rem;
+    }
+    .plan-option {
+        border: 2px solid hsl(0, 0%, 88%);
+        border-radius: 12px;
+        padding: 1.25rem 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        background: hsl(0, 0%, 99%);
+        margin-bottom: 1rem;
+    }
+    .plan-option:hover {
+        border-color: hsl(217, 71%, 53%);
+        background: white;
+    }
+    .plan-option.is-selected {
+        border-color: #2563eb;
+        background: hsl(217, 100%, 99%);
+        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.12);
+    }
+    .plan-badge-savings {
+        position: absolute;
+        top: -10px;
+        right: 16px;
+        background: #2563eb;
+        color: white;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+    }
+    .feature-check-list {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0;
+    }
+    .feature-check-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        color: hsl(0, 0%, 25%);
+    }
+    .feature-check-list li .icon {
+        color: #2563eb;
+        font-size: 1.1rem;
+    }
+    .reassurance-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        font-size: 0.88rem;
+        color: hsl(0, 0%, 40%);
+        margin-bottom: 0.75rem;
+    }
+    .reassurance-item .icon {
+        color: #2563eb;
+        margin-top: 2px;
+    }
+</style>
+
+<section class="section">
+    <div class="container" style="max-width: 760px; margin: 0 auto;">
+
+        {% include "utils/flash_message.html" %}
+
+        <!-- En-tête -->
+        <div class="has-text-centered mb-5">
+            <h1 class="title is-2 mb-2" style="font-weight: 800; color: hsl(0, 0%, 15%);">
+                {{ _("Votre abonnement Premium") }}
+            </h1>
+            <p class="subtitle is-5 has-text-grey" style="max-width: 580px; margin: 0 auto;">
+                {{ _("Activez l'accès complet et illimité à toutes les fonctionnalités pour votre classe.") }}
+            </p>
+        </div>
+
+        {% if current_user.is_authenticated %}
+            {% if current_user.plan == 'founder' %}
+            <div class="notification is-warning is-light mb-5" style="border-radius: 12px; border-left: 5px solid #d69e2e;">
+                <div class="media">
+                    <div class="media-left">
+                        <span class="icon is-large has-text-warning-dark"><i class="fas fa-award fa-2x"></i></span>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-5 mb-1" style="color: #744210;">{{ _("Vous êtes Membre Fondateur à vie") }}</p>
+                        <p class="is-size-6" style="color: #744210;">
+                            {{ _("Votre compte bénéficie d'un accès illimité et permanent sans aucun frais. Vous n'avez pas besoin de souscrire un abonnement.") }}
+                        </p>
+                        <a href="{{ url_for('main.dashboard') }}" class="button is-warning is-dark is-rounded is-small mt-3">
+                            <span>{{ _("Accéder à mon tableau de bord") }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+            <div class="notification is-success is-light mb-5" style="border-radius: 12px; border-left: 5px solid #48c774;">
+                <div class="level">
+                    <div class="level-left">
+                        <div>
+                            <p class="title is-5 mb-1">{{ _("Votre abonnement Premium est déjà actif") }}</p>
+                            <p class="is-size-6 has-text-grey">{{ _("Vous disposez déjà de l'accès illimité. Vous pouvez gérer vos moyens de paiement ou factures à tout moment.") }}</p>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <a href="{{ url_for('subscription.portail_abonne') }}" class="button is-link is-light is-rounded">
+                            <span class="icon"><i class="fas fa-credit-card"></i></span>
+                            <span>{{ _("Gérer mon abonnement") }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="checkout-card">
+            <h2 class="title is-4 mb-4" style="font-weight: 700; color: hsl(0, 0%, 20%);">
+                {{ _("1. Choisissez votre fréquence de paiement") }}
+            </h2>
+
+            <!-- Formulaire de souscription vers Stripe Checkout -->
+            <form id="checkoutForm" action="{{ url_for('subscription.create_checkout_session') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="plan_type" id="selectedPlanType" value="{{ plan_type }}">
+
+                <div class="columns is-variable is-3 mb-4">
+                    <!-- Option Annuelle -->
+                    <div class="column is-6">
+                        <div class="plan-option {% if plan_type == 'yearly' %}is-selected{% endif %}" id="planOptionYearly" onclick="selectPlan('yearly')">
+                            <span class="plan-badge-savings">{{ _("Économisez 50%%")|replace("%%", "%") }}</span>
+                            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                                <div>
+                                    <h3 class="title is-5 mb-1" style="font-weight: 700; color: #2563eb;">{{ _("Annuel") }}</h3>
+                                    <p class="is-size-7 has-text-grey">{{ _("Le choix recommandé pour l'école") }}</p>
+                                </div>
+                                <div class="has-text-right">
+                                    <div class="is-size-4 has-text-weight-bold" style="color: #2563eb; line-height: 1.1;">
+                                        30.- <small class="is-size-7">{{ currency }} / {{ _("an") }}</small>
+                                    </div>
+                                    <div class="is-size-7 has-text-dark has-text-weight-semibold">
+                                        {{ _("soit 2.50 CHF / mois") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Option Mensuelle -->
+                    <div class="column is-6">
+                        <div class="plan-option {% if plan_type == 'monthly' %}is-selected{% endif %}" id="planOptionMonthly" onclick="selectPlan('monthly')">
+                            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                                <div>
+                                    <h3 class="title is-5 mb-1" style="font-weight: 700; color: hsl(0, 0%, 20%);">{{ _("Mensuel") }}</h3>
+                                    <p class="is-size-7 has-text-grey">{{ _("Liberté totale sans engagement") }}</p>
+                                </div>
+                                <div class="has-text-right">
+                                    <div class="is-size-4 has-text-weight-bold has-text-dark" style="line-height: 1.1;">
+                                        5.- <small class="is-size-7">{{ currency }} / {{ _("mois") }}</small>
+                                    </div>
+                                    <div class="is-size-7 has-text-grey">
+                                        {{ _("résiliable à tout moment") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box has-background-white-ter mb-5" style="border-radius: 12px; border: 1px solid hsl(0, 0%, 90%);">
+                    <h3 class="title is-5 mb-3" style="font-weight: 700; color: hsl(0, 0%, 20%);">
+                        {{ _("Ce qui est inclus dans votre abonnement :") }}
+                    </h3>
+                    <ul class="feature-check-list">
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Nombre d'élèves illimité") }}</strong> {{ _("(fini la limite de 40)") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Nombre de livres illimité") }}</strong> {{ _("(fini le seuil de 500)") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Scanner de codes-barres illimité") }}</strong> {{ _("(caméra smartphone / tablette)") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Exports Excel complets") }}</strong> {{ _("(livres, élèves, emprunts en cours)") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Planches d'étiquettes") }}</strong> {{ _("(codes-barres pour livres et étiquettes pour bacs)") }}</span>
+                        </li>
+                        <li>
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span><strong>{{ _("Historique complet et pérenne") }}</strong> {{ _("(archives de tous les prêts sans flou)") }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Récapitulatif tarifaire et Bons de réduction -->
+                <div class="level is-mobile py-3 px-4 mb-4" style="background: hsl(217, 100%, 98%); border-radius: 10px; border: 1px solid hsl(217, 80%, 90%);">
+                    <div class="level-left">
+                        <div>
+                            <span class="has-text-weight-bold" style="color: #1e3a8a;">{{ _("Total à régler aujourd'hui :") }}</span>
+                            <span class="is-block is-size-7 has-text-grey" id="billingFrequencyText">
+                                {% if plan_type == 'yearly' %}
+                                    {{ _("Abonnement annuel renouvelé à 30.- CHF / an") }}
+                                {% else %}
+                                    {{ _("Abonnement mensuel renouvelé à 5.- CHF / mois") }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="level-right">
+                        <span class="is-size-3 has-text-weight-bold" style="color: #2563eb;" id="totalPriceDisplay">
+                            {% if plan_type == 'yearly' %}30.- {{ currency }}{% else %}5.- {{ currency }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="notification is-light mb-5" style="border-radius: 10px; font-size: 0.9rem;">
+                    <span class="icon has-text-info mr-1"><i class="fas fa-tag"></i></span>
+                    <strong>{{ _("Code de réduction ou bon d'école ?") }}</strong>
+                    {{ _("Vous pourrez saisir votre code promo directement sur l'écran sécurisé de paiement Stripe.") }}
+                </div>
+
+                <!-- Bouton d'action principal -->
+                {% if current_user.is_authenticated %}
+                    {% if current_user.plan == 'founder' %}
+                        <button type="button" class="button is-light is-medium is-fullwidth is-rounded" disabled>
+                            {{ _("Inclus dans votre statut Fondateur") }}
+                        </button>
+                    {% else %}
+                        <button type="submit" id="btnSubmitCheckout" class="button is-link is-medium is-fullwidth is-rounded has-text-weight-bold" style="box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35); padding: 0.8rem 1.5rem; height: auto;">
+                            <span class="icon"><i class="fas fa-lock"></i></span>
+                            <span id="btnSubmitText">
+                                {% if plan_type == 'yearly' %}
+                                    {{ _("Procéder au paiement sécurisé (30.- CHF / an)") }}
+                                {% else %}
+                                    {{ _("Procéder au paiement sécurisé (5.- CHF / mois)") }}
+                                {% endif %}
+                            </span>
+                        </button>
+                    {% endif %}
+                {% else %}
+                    <div class="notification is-warning is-light mb-4" style="border-radius: 10px;">
+                        <p class="has-text-weight-bold mb-1">{{ _("Connectez-vous pour finaliser votre abonnement") }}</p>
+                        <p class="is-size-6">
+                            {{ _("Pour associer votre abonnement à votre classe, veuillez vous connecter ou créer votre compte en 1 minute.") }}
+                        </p>
+                    </div>
+                    <div class="buttons is-centered">
+                        <a href="{{ url_for('auth.signup', plan_type=plan_type) }}" class="button is-link is-medium is-rounded has-text-weight-bold">
+                            <span>{{ _("Créer un compte enseignant") }}</span>
+                        </a>
+                        <a href="{{ url_for('auth.login', next=url_for('subscription.paiement', plan_type=plan_type)) }}" class="button is-light is-medium is-rounded">
+                            <span>{{ _("J'ai déjà un compte (Connexion)") }}</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </form>
+
+            <hr class="my-5" style="background-color: hsl(0, 0%, 92%);">
+
+            <!-- Éléments de réassurance -->
+            <div class="columns is-multiline">
+                <div class="column is-6">
+                    <div class="reassurance-item">
+                        <span class="icon"><i class="fas fa-shield-alt"></i></span>
+                        <span><strong>{{ _("Paiement 100%% sécurisé")|replace("%%", "%") }}</strong> : {{ _("Transactions chiffrées de bout en bout par Stripe.") }}</span>
+                    </div>
+                </div>
+                <div class="column is-6">
+                    <div class="reassurance-item">
+                        <span class="icon"><i class="fas fa-bolt"></i></span>
+                        <span><strong>{{ _("Activation immédiate") }}</strong> : {{ _("Toutes vos fonctionnalités sont débloquées instantanément.") }}</span>
+                    </div>
+                </div>
+                <div class="column is-6">
+                    <div class="reassurance-item">
+                        <span class="icon"><i class="fas fa-calendar-times"></i></span>
+                        <span><strong>{{ _("Résiliation sans contrainte") }}</strong> : {{ _("Résiliez en 1 clic à tout moment depuis vos réglages.") }}</span>
+                    </div>
+                </div>
+                <div class="column is-6">
+                    <div class="reassurance-item">
+                        <span class="icon"><i class="fas fa-database"></i></span>
+                        <span><strong>{{ _("Données 100%% préservées")|replace("%%", "%") }}</strong> : {{ _("Aucun livre ni élève n'est supprimé si vous arrêtez.") }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="has-text-centered mt-4">
+                <a href="{{ url_for('subscription.tarifs') }}" class="is-size-7 has-text-grey" style="text-decoration: underline;">
+                    {{ _("← Revenir au comparatif complet des offres") }}
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+function selectPlan(plan) {
+    const hiddenInput = document.getElementById('selectedPlanType');
+    const optionYearly = document.getElementById('planOptionYearly');
+    const optionMonthly = document.getElementById('planOptionMonthly');
+    const totalPriceDisplay = document.getElementById('totalPriceDisplay');
+    const billingFrequencyText = document.getElementById('billingFrequencyText');
+    const btnSubmitText = document.getElementById('btnSubmitText');
+
+    hiddenInput.value = plan;
+
+    if (plan === 'yearly') {
+        optionYearly.classList.add('is-selected');
+        optionMonthly.classList.remove('is-selected');
+        totalPriceDisplay.textContent = '30.- {{ currency }}';
+        billingFrequencyText.textContent = "{{ _('Abonnement annuel renouvelé à 30.- CHF / an') }}";
+        if (btnSubmitText) {
+            btnSubmitText.textContent = "{{ _('Procéder au paiement sécurisé (30.- CHF / an)') }}";
+        }
+    } else {
+        optionMonthly.classList.add('is-selected');
+        optionYearly.classList.remove('is-selected');
+        totalPriceDisplay.textContent = '5.- {{ currency }}';
+        billingFrequencyText.textContent = "{{ _('Abonnement mensuel renouvelé à 5.- CHF / mois') }}";
+        if (btnSubmitText) {
+            btnSubmitText.textContent = "{{ _('Procéder au paiement sécurisé (5.- CHF / mois)') }}";
+        }
+    }
+}
+</script>
+{% endblock %}
