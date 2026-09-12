@@ -1,5 +1,5 @@
 from datetime import date
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -103,12 +103,20 @@ def test_bingo_page(client):
 
 
 def test_etiquettes_page(client):
-    """Vérifie l'accessibilité du générateur d'étiquettes de bacs."""
-    response = client.get("/ressources/etiquettes")
-    assert response.status_code == 200
-    html = response.get_data(as_text=True)
-    assert "ROMANS" in html
-    assert "BANDES DESSINÉES" in html
+    """Vérifie l'accessibilité du générateur d'étiquettes de bacs (premium requis)."""
+    resp_anon = client.get("/ressources/etiquettes")
+    assert resp_anon.status_code == 302
+
+    mock_user = MagicMock()
+    mock_user.id = 1
+    mock_user.is_authenticated = True
+    mock_user.is_premium = True
+    with patch("flask_login.utils._get_user", return_value=mock_user):
+        response = client.get("/ressources/etiquettes")
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert "ROMANS" in html
+        assert "BANDES DESSINÉES" in html
 
 
 def test_fiches_avis_page(client):
@@ -120,11 +128,19 @@ def test_fiches_avis_page(client):
 
 
 def test_codes_barres_page(client):
-    """Vérifie l'accessibilité du générateur de codes-barres."""
-    response = client.get("/ressources/codes-barres")
-    assert response.status_code == 200
-    html = response.get_data(as_text=True)
-    assert "JsBarcode" in html or "Codes-Barres" in html
+    """Vérifie l'accessibilité du générateur de codes-barres (premium requis)."""
+    resp_anon = client.get("/ressources/codes-barres")
+    assert resp_anon.status_code == 302
+
+    mock_user = MagicMock()
+    mock_user.id = 1
+    mock_user.is_authenticated = True
+    mock_user.is_premium = True
+    with patch("flask_login.utils._get_user", return_value=mock_user):
+        response = client.get("/ressources/codes-barres")
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert "JsBarcode" in html or "Codes-Barres" in html
 
 
 def test_passeport_page(client):
@@ -152,12 +168,11 @@ def test_a4_page_orientations(client):
         assert "size: A4 landscape" in html
         assert "a4-sheet landscape" in html
 
-    # Portrait
+    # Portrait (publiques)
     for route in [
         "/ressources/charte",
         "/ressources/bingo",
         "/ressources/marque-pages",
-        "/ressources/etiquettes",
         "/ressources/fiches-avis",
     ]:
         resp = client.get(route)
@@ -166,11 +181,22 @@ def test_a4_page_orientations(client):
         assert "size: A4 portrait" in html
         assert "a4-sheet portrait" in html
 
-    # Multi-page pour codes-barres
-    resp_cb = client.get("/ressources/codes-barres")
-    assert resp_cb.status_code == 200
-    html_cb = resp_cb.get_data(as_text=True)
-    assert "multi-page" in html_cb
+    # Ressources protégées (premium)
+    mock_user = MagicMock()
+    mock_user.id = 1
+    mock_user.is_authenticated = True
+    mock_user.is_premium = True
+    with patch("flask_login.utils._get_user", return_value=mock_user):
+        resp = client.get("/ressources/etiquettes")
+        assert resp.status_code == 200
+        html = resp.get_data(as_text=True)
+        assert "size: A4 portrait" in html
+        assert "a4-sheet portrait" in html
+
+        resp_cb = client.get("/ressources/codes-barres")
+        assert resp_cb.status_code == 200
+        html_cb = resp_cb.get_data(as_text=True)
+        assert "multi-page" in html_cb
 
 
 def test_diplome_authenticated_students_dropdown_and_batch(client, app):
@@ -281,7 +307,6 @@ def test_editable_elements_present_on_all_resources(client):
     routes = [
         "/ressources/diplome",
         "/ressources/charte",
-        "/ressources/etiquettes",
         "/ressources/marque-pages",
         "/ressources/bingo",
         "/ressources/fiches-avis",
@@ -294,6 +319,16 @@ def test_editable_elements_present_on_all_resources(client):
         assert 'class="' in html and "editable" in html, (
             f"Pas de classe editable sur {r}"
         )
+
+    mock_user = MagicMock()
+    mock_user.id = 1
+    mock_user.is_authenticated = True
+    mock_user.is_premium = True
+    with patch("flask_login.utils._get_user", return_value=mock_user):
+        resp = client.get("/ressources/etiquettes")
+        assert resp.status_code == 200
+        html = resp.get_data(as_text=True)
+        assert 'class="' in html and "editable" in html
 
 
 def test_mobile_responsive_preview_structure(client):
