@@ -82,6 +82,79 @@ If you have any problems developing with the scanner.
 You may need to use an HTTPS server.
 To do this, you can use the `--cert=adhoc` flag.
 
+
+## Stripe Integration & Local Testing with Stripe CLI
+
+The application integrates Stripe Checkout and the Stripe Customer Portal for the Premium subscription tier.
+
+### 1. Environment Variables (.env)
+
+Add your Stripe test credentials to `.env`:
+
+```bash
+STRIPE_PUBLIC_KEY='pk_test_...'
+STRIPE_SECRET_KEY='sk_test_...'
+STRIPE_WEBHOOK_SECRET='whsec_...'
+STRIPE_PRICE_MONTHLY='price_...'  # Monthly price ID (5.- CHF/month)
+STRIPE_PRICE_YEARLY='price_...'   # Annual price ID (30.- CHF/year)
+```
+
+### 2. Installing Stripe CLI
+
+The **Stripe CLI** allows forwarding live Stripe test webhook events directly to your local Flask server.
+
+- **Windows**: `scoop install stripe` or `choco install stripe-cli` or download `stripe.exe` from [GitHub Releases](https://github.com/stripe/stripe-cli/releases).
+- **macOS**: `brew install stripe/stripe-cli/stripe`
+- **Linux**: Install official `.deb` or `.rpm` packages.
+
+### 3. Authenticate Stripe CLI
+
+```bash
+stripe login
+```
+
+### 4. Forwarding Webhooks Locally
+
+Run webhook listening forwarding to your Flask port (default 5000):
+
+```bash
+stripe listen --forward-to localhost:5000/webhook/stripe
+```
+
+Copy the printed webhook signing secret `whsec_...` into `.env` under `STRIPE_WEBHOOK_SECRET`.
+
+### 5. Triggering Test Events
+
+In another terminal, trigger simulated events:
+
+```bash
+# Completed checkout & subscription activation
+stripe trigger checkout.session.completed
+
+# Subscription updated
+stripe trigger customer.subscription.updated
+
+# Subscription deleted / canceled (with 48h grace period & email notification)
+stripe trigger customer.subscription.deleted
+
+# Payment failed (email notification to update card)
+stripe trigger invoice.payment_failed
+```
+
+### 6. In-Browser Checkout & Customer Portal
+
+- Visit `http://localhost:5000/tarifs`
+- Select either plan to access the order summary at `/paiement`.
+- Click "Procéder au paiement sécurisé" to open Stripe Checkout.
+- Test card: `4242 4242 4242 4242` (future expiry date, any CVC).
+- Customer Portal: access via `/portail-abonne` or "Gérer mon abonnement" in settings.
+
+### 7. Idempotency & CSRF Exemption
+
+- The `/webhook/stripe` route is decorated with `@csrf.exempt` to ensure Stripe webhook requests bypass Flask-WTF CSRF validation.
+- All webhook event handlers implement idempotent state checks to safely handle duplicate webhook deliveries.
+
+
 ## Published
 
 To publish the application, I decided to use [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)

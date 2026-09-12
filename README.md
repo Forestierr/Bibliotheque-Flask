@@ -83,6 +83,114 @@ Il se peut que vous deviez utiliser un server en HTTPS.
 Pour cela, vous pouvez utiliser le flag  `--cert=adhoc`.
 
 
+## Intégration Stripe & Tests Locaux avec Stripe CLI
+
+L'application intègre Stripe Checkout et le Portail Client Stripe (Customer Portal) pour la formule d'abonnement Premium.
+
+### 1. Variables d'environnement (.env)
+
+Renseignez vos identifiants de test dans le fichier `.env` :
+
+```bash
+STRIPE_PUBLIC_KEY='pk_test_...'
+STRIPE_SECRET_KEY='sk_test_...'
+STRIPE_WEBHOOK_SECRET='whsec_...'
+STRIPE_PRICE_MONTHLY='price_...'  # ID du tarif mensuel (5.- CHF/mois)
+STRIPE_PRICE_YEARLY='price_...'   # ID du tarif annuel (30.- CHF/an)
+```
+
+> [!NOTE]
+> Les variables `STRIPE_PRICE_ID_YEARLY` et `STRIPE_PRICE_ID_MONTHLY` sont également acceptées pour assurer une compatibilité totale.
+
+### 2. Installer la Stripe CLI
+
+La **Stripe CLI** permet de rediriger les événements de paiement de Stripe directement vers votre serveur Flask local sans configuration de tunnel tiers.
+
+- **Windows** :
+  - Via Scoop : `scoop install stripe`
+  - Via Chocolatey : `choco install stripe-cli`
+  - Ou téléchargez le binaire `stripe.exe` depuis [GitHub Releases](https://github.com/stripe/stripe-cli/releases).
+- **macOS** :
+  ```bash
+  brew install stripe/stripe-cli/stripe
+  ```
+- **Linux** :
+  Téléchargez le paquet `.deb` ou `.rpm` depuis les releases officielles Stripe.
+
+### 3. Authentifier la CLI
+
+Connectez la CLI à votre compte Stripe de test :
+
+```bash
+stripe login
+```
+
+Suivez les instructions du terminal pour valider l'authentification dans votre navigateur.
+
+### 4. Rediriger les Webhooks vers votre serveur local
+
+Lancez la commande d'écoute en spécifiant le port de votre serveur Flask (par défaut 5000) :
+
+```bash
+stripe listen --forward-to localhost:5000/webhook/stripe
+```
+
+La CLI affichera immédiatement une clé de signature de test, par exemple :
+```text
+> Ready! Your webhook signing secret is whsec_1234567890abcdef...
+```
+
+Copiez cette valeur `whsec_...` et collez-la dans votre fichier `.env` :
+```bash
+STRIPE_WEBHOOK_SECRET='whsec_1234567890abcdef...'
+```
+Puis redémarrez votre serveur Flask pour qu'il prenne en compte le secret.
+
+### 5. Simuler les événements Stripe (Déclenchement CLI)
+
+Ouvrez un second terminal pour déclencher des simulations d'événements Stripe :
+
+- **Paiement réussi & Activation de l'abonnement** :
+  ```bash
+  stripe trigger checkout.session.completed
+  ```
+- **Mise à jour d'un abonnement existant** :
+  ```bash
+  stripe trigger customer.subscription.updated
+  ```
+- **Résiliation d'abonnement (avec délai de grâce 48h et e-mail)** :
+  ```bash
+  stripe trigger customer.subscription.deleted
+  ```
+- **Échec de prélèvement (alerte e-mail de carte)** :
+  ```bash
+  stripe trigger invoice.payment_failed
+  ```
+
+### 6. Tester le paiement dans le navigateur
+
+- Rendez-vous sur la page des tarifs : `http://localhost:5000/tarifs`
+- Cliquez sur "Souscrire pour 30.- CHF / an" ou "Choisir la formule mensuelle" pour accéder au récapitulatif `/paiement`.
+- Cliquez sur "Procéder au paiement sécurisé" pour être redirigé vers Stripe Checkout.
+- **Numéro de carte de test Stripe** : `4242 4242 4242 4242`
+  - Date d'expiration : n'importe quelle date future (ex: `12/34`)
+  - CVC : `123`
+  - Nom & Code postal : quelconques
+- Après validation, vous êtes automatiquement redirigé vers la page de félicitations `/subscription/success` et votre classe passe en Premium illimité.
+
+### 7. Portail Client (Customer Portal)
+
+Un utilisateur Premium peut gérer ses coordonnées bancaires, télécharger ses factures ou résilier à tout moment :
+- Directement via la route : `http://localhost:5000/portail-abonne`
+- Ou depuis le bouton "Gérer mon abonnement" dans les Réglages (`/reglage`) et la page `/tarifs`.
+
+### 8. Idempotence & Exemption CSRF
+
+- **Exemption CSRF** : Le endpoint `/webhook/stripe` est automatiquement exempté de la vérification de jeton CSRF de Flask-WTF (`@csrf.exempt`) afin d'accepter les requêtes HTTP signées provenant de Stripe.
+- **Idempotence** : Si Stripe envoie plusieurs fois le même événement `checkout.session.completed` ou `customer.subscription.updated`, le serveur détecte l'état existant et ne produit aucune modification redondante en base de données.
+
+
+
 ## Tests et Qualité du code (CI/CD)
 
 Pour que votre code soit accepté lors d'une Pull Request (PR), il doit respecter les standards de formatage et passer tous les tests automatisés. Si ces vérifications échouent, la PR sera bloquée.
