@@ -7,6 +7,38 @@
 {% block title %}{{ _("Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels") }}{% endblock %}
 {% block meta_description %}{{ _("Comment susciter le plaisir de lire en classe ? Découvrez notre guide de plus de 1300 mots : quart d'heure lecture, rallye lecture, et rituels pédagogiques.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "headline": {{ _("Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels")|tojson }},
+  "description": {{ _("Comment susciter le plaisir de lire en classe ? Découvrez notre guide de plus de 1300 mots : quart d'heure lecture, rallye lecture, et rituels pédagogiques.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "{{ get_locale() }}",
+  "datePublished": "2024-09-10",
+  "dateModified": "2026-09-12"
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
@@ -98,8 +130,8 @@
                     Pour que le rallye reste positif et n'exclue pas les lecteurs plus lents :
                 </p>
                 <ul>
-                    <li>Proposez des livres de difficultés très variées avec des barèmes adaptés (un livre court rapporte moins de points qu'un roman dense, mais permet d'avancer à son rythme).</li>
-                    <li>Valorisez l'effort plutôt que le classement final en remettant des diplômes de lecteur basés sur des paliers de points personnels.</li>
+                    <li>Proposez des livres de difficultés très variées avec des barèmes adaptés (un livre court rapporte moins de points qu'un roman dense, mais permet d'avancer à son rythme, comme notre <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}">sélection pour le CP</a>).</li>
+                    <li>Valorisez l'effort plutôt que le classement final en remettant notre <a href="{{ url_for('ressource.diplome') }}">diplôme de lecture personnalisé</a> ou en proposant un <a href="{{ url_for('ressource.bingo') }}">bingo de lecture ludique</a>.</li>
                 </ul>
 
                 <hr class="my-6">
@@ -109,7 +141,7 @@
                     Les enfants font souvent plus confiance aux recommandations de leurs camarades qu'à celles de leur enseignant. Profitez-en en instaurant des temps d'échanges courts et dynamiques.
                 </p>
                 <p>
-                    Une fois par semaine, accordez 5 minutes à deux ou trois élèves volontaires pour présenter un livre de la bibliothèque de classe qu'ils ont adoré. Le format doit être ultra court (le "pitch" d'une minute) :
+                    Une fois par semaine, accordez 5 minutes à deux ou trois élèves volontaires pour présenter un livre de la bibliothèque de classe qu'ils ont adoré. Le format doit être ultra court (le "pitch" d'une minute) en s'appuyant sur nos <a href="{{ url_for('ressource.fiches_avis') }}">fiches d'avis de lecture pour enfants</a> :
                 </p>
                 <ol>
                     <li>Présenter le titre, l'auteur et montrer la couverture.</li>
@@ -137,7 +169,7 @@
                     Pour donner envie de lire, il est important de donner de la visibilité aux réussites des élèves. 
                 </p>
                 <p>
-                    Avec un outil comme <strong>Livres en Classe</strong>, l'historique des lectures de chaque élève est enregistré. Vous pouvez ainsi valoriser discrètement le chemin parcouru : féliciter un élève qui a lu son premier roman en entier, imprimer un bilan de lecture valorisant, ou identifier quel élève a emprunté le plus de bandes dessinées ou de documentaires scientifiques sur l'année.
+                    Avec un outil comme <strong>Livres en Classe</strong>, l'historique des lectures de chaque élève est enregistré. Vous pouvez ainsi valoriser discrètement le chemin parcouru : féliciter un élève qui a lu son premier roman en entier, lui délivrer un <a href="{{ url_for('ressource.passeport') }}">passeport de lecture personnalisé</a>, ou identifier quel élève a emprunté le plus de livres sur l'année.
                 </p>
                 <p>
                     Cette analyse fine vous permet également de repérer rapidement les élèves "décrocheurs" (ceux qui n'empruntent jamais ou qui ramènent les livres le lendemain sans les avoir ouverts) et de leur proposer un accompagnement individuel bienveillant en ciblant des ouvrages plus courts ou plus proches de leurs centres d'intérêt.

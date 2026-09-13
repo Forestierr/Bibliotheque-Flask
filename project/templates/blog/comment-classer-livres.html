@@ -7,6 +7,38 @@
 {% block title %}{{ _("Comment classer les livres de sa bibliothèque de classe ?") }}{% endblock %}
 {% block meta_description %}{{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "headline": {{ _("Comment classer les livres de sa bibliothèque de classe ?")|tojson }},
+  "description": {{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "{{ get_locale() }}",
+  "datePublished": "2024-09-05",
+  "dateModified": "2026-09-12"
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
@@ -152,7 +184,7 @@
                     Quel que soit le classement choisi, des livres finiront par être mal rangés ou égarés dans la classe. C'est ici que l'application <strong>Livres en Classe</strong> devient indispensable.
                 </p>
                 <p>
-                    En associant chaque livre de votre base de données à un "Bac de rangement virtuel" (que vous pouvez définir dans les détails ou les tags du livre), vous pouvez retrouver instantanément l'emplacement théorique d'un ouvrage perdu. De plus, lors du catalogage par scan ISBN, vous pouvez étiqueter vos livres en lot pour ne jamais perdre le fil de votre inventaire.
+                    En associant chaque livre de votre base de données à un "Bac de rangement virtuel" (que vous pouvez définir dans les détails ou les tags du livre), vous pouvez retrouver instantanément l'emplacement théorique d'un ouvrage perdu. De plus, lors du catalogage par scan ISBN, vous pouvez étiqueter vos livres en lot pour ne jamais perdre le fil de votre inventaire. Consultez notre <a href="{{ url_for('main.index') }}#comparatif">comparatif Livres en Classe vs. Excel</a> pour mesurer tout le temps gagné par rapport à une liste papier.
                 </p>
                 
                 <div class="box has-background-link-light has-text-centered p-5 my-5">
@@ -169,9 +201,9 @@
                 </p>
                 <ol>
                     <li><strong>Triez et désencombrez :</strong> Retirez tous les livres trop abîmés, obsolètes ou inadaptés à l'âge de vos élèves.</li>
-                    <li><strong>Étiquetez les bacs :</strong> Utilisez des étiquettes combinant texte et pictogramme (ex: une image de dinosaure pour le bac "Documentaires Animaux").</li>
-                    <li><strong>Marquez les livres :</strong> Mettez un repère visuel clair sur le dos du livre (une gommette de couleur correspondante au bac).</li>
-                    <li><strong>Formez les élèves :</strong> Consacrez une séance pédagogique complète en début d'année pour expliquer le fonctionnement du classement et faire des exercices de rangement sous forme de jeu.</li>
+                    <li><strong>Étiquetez les bacs :</strong> Utilisez des étiquettes combinant texte et pictogramme (ex: une image de dinosaure pour le bac "Documentaires Animaux"). Découvrez nos <a href="{{ url_for('ressource.index') }}">ressources et outils imprimables pour la classe</a> pour équiper vos bacs.</li>
+                    <li><strong>Marquez les livres :</strong> Mettez un repère visuel clair sur le dos du livre (une gommette de couleur correspondante au bac) ou glissez-y un <a href="{{ url_for('ressource.marque_pages') }}">marque-pages d'emprunt</a>.</li>
+                    <li><strong>Formez les élèves :</strong> Consacrez une séance pédagogique complète en début d'année pour expliquer le fonctionnement du classement et affichez notre <a href="{{ url_for('ressource.charte') }}">charte du coin lecture</a> sous forme de jeu.</li>
                 </ol>
 
                 <hr class="my-6">

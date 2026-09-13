@@ -1,0 +1,252 @@
+<!-- templates/blog/en/logiciel-bcd-ecole.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Best School Library Software for Primary & Elementary Schools: 2026 Guide{% endblock %}
+{% block meta_description %}Comparing library software for elementary schools. How to easily digitize and manage your primary school book collection and lending system.{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ lang_url('en', external=True) }}"
+      },
+      "headline": {{ "Best School Library Software for Primary & Elementary Schools: 2026 Guide"|tojson }},
+      "description": {{ "Comparing library software for elementary schools. How to easily digitize and manage your primary school book collection and lending system."|tojson }},
+      "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+      "author": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "url": "https://livresenclasse.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+        }
+      },
+      "inLanguage": "en",
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": {{ "What is the best free software for an elementary school library?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "Livres en Classe provides a generous free version requiring zero technical installation, allowing up to 500 books and 40 students with built-in camera barcode scanning."|tojson }}
+          }
+        },
+        {
+          "@type": "Question",
+          "name": {{ "Do you need a dedicated barcode scanner to catalog school books?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "No. With a modern web app like Livres en Classe, your smartphone or tablet camera serves as an instant barcode scanner."|tojson }}
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Desktop Table of Contents -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Primary School Library Challenges</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Software Comparison</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Cloud & Mobile Advantages</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Step-by-Step Digitization</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Frequently Asked Questions (FAQ)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Primary school library software</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">Best School Library Software for Primary & Elementary Schools: 2026 Guide</h1>
+                    <p class="subtitle is-5 has-text-grey">Reading time: 8 min | By the Livres en Classe Team</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    A central <strong>school library</strong> or classroom media hub is the beating heart of reading initiatives in elementary and primary schools. However, tracking shared collections across grades is often frustrating: lost paper cards, tedious manual inventories, and outdated school computers that break down easily.
+                </p>
+                <p>
+                    Adopting lightweight, modern <strong>school library management software</strong> streamlines lending routines, keeps your catalog organized, and saves educators countless hours. Read our practical comparison to find the ideal solution for your school.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Table of Contents -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Primary School Library Challenges</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Software Comparison</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Cloud & Mobile Advantages</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Step-by-Step Digitization</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Frequently Asked Questions (FAQ)</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. The Unique Challenges of Primary School Libraries</h2>
+                <p>
+                    Unlike university or municipal libraries with trained full-time librarians, elementary school libraries are typically run by busy classroom teachers, volunteers, or teaching assistants:
+                </p>
+                <ul>
+                    <li><strong>Varied age groups:</strong> From non-reading kindergarteners to confident 5th graders checking out chapter books.</li>
+                    <li><strong>No dedicated IT staff:</strong> Primary schools rarely have dedicated on-site server administrators to manage complicated local databases.</li>
+                    <li><strong>Shared responsibilities:</strong> Multiple teachers need easy, quick access to log loans without undergoing complex software training.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Software Comparison: Legacy Systems vs. Modern Cloud Apps</h2>
+                <p>
+                    Several software types are commonly found in elementary schools:
+                </p>
+
+                <table class="table is-fullwidth is-striped box">
+                    <thead>
+                        <tr>
+                            <th>Software Type</th>
+                            <th>Key Strengths</th>
+                            <th>Drawbacks</th>
+                            <th>Indicative Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Livres en Classe</strong></td>
+                            <td>100% web & cloud, camera ISBN scan, intuitive UI, zero installation, works on phones & tablets.</td>
+                            <td>Tailored for classroom and elementary school collections.</td>
+                            <td><strong>Free tier</strong> / 30 CHF/year (Unlimited Premium)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Legacy Desktop Software (e.g. BCDI)</strong></td>
+                            <td>Detailed traditional cataloging fields.</td>
+                            <td>Outdated user interface, single-computer Windows install, fragile local database.</td>
+                            <td>Annual recurring license</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Complex Open-Source SIGB (e.g. PMB, Koha)</strong></td>
+                            <td>Advanced cataloging standards (UNIMARC/MARC21).</td>
+                            <td>Steep learning curve, requires web server setup and ongoing technical maintenance.</td>
+                            <td>Free open-source but hosting/IT costs</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Why Choose a Cloud-Based Solution with Camera Scanning?</h2>
+                <p>
+                    Legacy desktop programs that require installation on an aging school desktop present major risks: if the hard drive fails, your entire inventory is lost unless you remembered manual backups.
+                </p>
+                <p>
+                    Switching to a lightweight progressive web application like <strong>Livres en Classe</strong> offers critical advantages:
+                </p>
+                <ul>
+                    <li><strong>Zero installation:</strong> Launch it directly in any browser on laptops, iPads, Chromebooks, or smartphones.</li>
+                    <li><strong>Built-in camera scanner:</strong> No need to invest €100+ in handheld USB barcode guns. Simply point your smartphone camera at the book's ISBN barcode.</li>
+                    <li><strong>Automatic cloud backups:</strong> Your catalog and loan histories are safely encrypted and synced.</li>
+                    <li><strong>1-click Excel reports:</strong> Export book lists, loan archives, and reading counts whenever required.</li>
+                </ul>
+
+                <div class="has-text-centered my-5">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded">Create Your Free School Catalog</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. How to Digitize Your School Library in One Week</h2>
+                <p>
+                    Transitioning from paper notebooks to an organized digital catalog is straightforward:
+                </p>
+                <ol>
+                    <li><strong>Weed out damaged titles:</strong> Recycle torn, outdated, or incomplete books before scanning.</li>
+                    <li><strong>Group scanning sessions:</strong> With the camera barcode scanner in <em>Livres en Classe</em>, two educators working together can easily catalog 400 titles in under an hour.</li>
+                    <li><strong>Organize shelf baskets:</strong> Label baskets with colors or themes so children can independently return books to the right bin. Explore our guide on <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}">how to organize classroom books</a>.</li>
+                    <li><strong>Involve students:</strong> Print our free <a href="{{ url_for('ressource.charte') }}">classroom reading charter</a> and award <a href="{{ url_for('ressource.diplome') }}">reading certificates</a> to encourage active participation.</li>
+                </ol>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Frequently Asked Questions (FAQ)</h2>
+
+                <h3>What is the best free software for an elementary school library?</h3>
+                <p>
+                    <strong>Livres en Classe</strong> provides a full-featured free version with no card required, supporting up to 500 books and 40 students with rapid camera barcode scanning.
+                </p>
+
+                <h3>Do you need a dedicated barcode scanner to catalog school books?</h3>
+                <p>
+                    No handheld USB scanner is necessary. The built-in camera barcode scanner works seamlessly through standard browsers on iOS (iPhone/iPad) and Android devices.
+                </p>
+
+                <!-- Suggested articles -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 Recommended Reading...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">PRACTICAL GUIDE</p>
+                                <p class="has-text-weight-bold has-text-dark">The Ultimate Guide to Creating an Effective Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">ORGANIZATION</p>
+                                <p class="has-text-weight-bold has-text-dark">How to Organize Books in Your Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

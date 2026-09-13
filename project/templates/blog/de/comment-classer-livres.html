@@ -1,0 +1,244 @@
+<!-- templates/blog/de/comment-classer-livres.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Comment classer les livres de sa bibliothèque de classe ?") }}{% endblock %}
+{% block meta_description %}{{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('de', external=True) }}"
+  },
+  "headline": {{ _("Comment classer les livres de sa bibliothèque de classe ?")|tojson }},
+  "description": {{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "de",
+  "datePublished": "2024-09-05",
+  "dateModified": "2026-09-12"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Inhaltsverzeichnis (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Nach literarischem Genre</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Nach Themengebieten</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Nach Lesestufe</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Alphabetische Reihenfolge</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Digitale Organisation</a></li>
+                                <li><a href="#section-6" style="color: #4a4a4a;">6. Checkliste für die Praxis</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Startseite</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Wie ordnet man Bücher?</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">Wie ordnet man Bücher in der Klassenbibliothek?</h1>
+                    <p class="subtitle is-5 has-text-grey">Lesezeit: 9 Min. | Von der Redaktion von Livres en Classe</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    Es ist der Albtraum jeder Lehrkraft am Ende des Schulhalbjahres: Comics vermischt mit Märchenbüchern, Sachbücher über den Weltraum verstreut zwischen Krimis und unbeschriftete Bücher im Chaos. Bücher im Klassenzimmer zu haben ist wunderbar – aber Bücher zu haben, die <strong>gut geordnet und sofort auffindbar</strong> sind, verändert den gesamten Unterrichtsalltag.
+                </p>
+                <p>
+                    Das Ordnen der Klassenbibliothek ist weit mehr als reine Dekoration: Es ist eine wertvolle Übung zur Kategorisierung für die Schüler. Ein gelungenes Ordnungssystem ermöglicht es bereits Erstklässlern, selbstständig ein Buch zu wählen und es wieder an seinen genauen Platz zurückzustellen.
+                </p>
+                <p>
+                    Erfahren Sie in diesem praxisnahen Leitfaden die besten Ordnungssysteme, ihre Vor- und Nachteile nach Klassenstufen sowie konkrete Tipps für dauerhafte Ordnung.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Inhaltsverzeichnis -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Nach literarischem Genre</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Nach Themengebieten</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Nach Lesestufe</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Alphabetische Reihenfolge</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Digitale Organisation</a></li>
+                        <li><a href="#section-6" style="color: #4a4a4a;">6. Checkliste für die Praxis</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Ordnung nach literarischem Genre: Der Klassiker</h2>
+                <p>
+                    Diese Struktur entspricht dem System öffentlicher Schulbibliotheken. Der Buchbestand wird in übersichtliche Hauptkategorien unterteilt.
+                </p>
+                
+                <h3>Wie setzt man das im Klassenzimmer um?</h3>
+                <p>
+                    Richten Sie getrennte Bereiche oder farbige Buchkisten ein für:
+                </p>
+                <ul>
+                    <li><strong>Bilderbücher:</strong> Meist großformatig; am besten in nach vorne offenen Kisten präsentiert, damit das Cover sichtbar ist.</li>
+                    <li><strong>Comics & Graphic Novels:</strong> Sehr beliebt; sollten zusammenstehen, um schnelles Stöbern zu ermöglichen.</li>
+                    <li><strong>Erzählende Kinderbücher & Romane:</strong> Unterteilt nach Lesekompetenz (Erstlesebücher, illustrierte Kinderromane, Jugendbücher).</li>
+                    <li><strong>Sachbücher:</strong> Alle wissensbasierten Werke (Tiere, Wissenschaft, Geschichte, Geografie).</li>
+                </ul>
+                <p>
+                    <strong>Empfohlen für:</strong> 2. bis 5. Klasse, da die Schüler hier bereits sicher zwischen Fiktion (erfundenen Geschichten) und Sachinformationen unterscheiden.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Thematische Ordnung: Ideal für Vorschule und Schulanfänger</h2>
+                <p>
+                    Für Schulanfänger ist die Unterscheidung nach literarischen Gattungen oft zu abstrakt. Die Sortierung nach Interessengebieten und Lieblingsthemen ist viel greifbarer.
+                </p>
+                
+                <h3>Wie gestaltet man das?</h3>
+                <p>
+                    Kennzeichnen Sie Kisten mit verständlichen Bildsymbolen und Piktogrammen:
+                </p>
+                <ul>
+                    <li>Die <strong>Tiere</strong>-Kiste (Tiersachbücher, Geschichten mit Wölfen, Bären, Haustieren).</li>
+                    <li>Die <strong>Natur & Jahreszeiten</strong>-Kiste.</li>
+                    <li>Die <strong>Weltall & Technik</strong>-Kiste.</li>
+                    <li>Die <strong>Schul- & Freundschaftsgeschichten</strong>-Kiste.</li>
+                    <li>Die <strong>Märchen, Ritter & Abenteuer</strong>-Kiste.</li>
+                </ul>
+                <p>
+                    <strong>Empfohlen für:</strong> Kindergarten, Vorschule und 1. Klasse. Kinder finden Bücher über vertraute Themen im Handumdrehen.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Ordnung nach Lesestufe: Fördern ohne Stigmatisierung</h2>
+                <p>
+                    Besonders für Erstlesereihen bewährt: Schüler können so selbstständig Bücher auswählen, die genau ihrem aktuellen Dekodiervermögen entsprechen.
+                </p>
+                
+                <h3>Das Farbpunkt-System</h3>
+                <p>
+                    Kleben Sie einen farbigen Klebepunkt auf den Buchrücken:
+                </p>
+                <ul>
+                    <li><span class="has-text-success">●</span> <strong>Grün:</strong> Leseanfänger (einfache Lautverbindungen, kurze Sätze).</li>
+                    <li><span class="has-text-warning">●</span> <strong>Orange:</strong> Fortgeschrittene (erste Diphthonge, längere Textabschnitte).</li>
+                    <li><span class="has-text-danger">●</span> <strong>Rot:</strong> Geübte Leser (vollständige Textseiten, Kapitelaufbau).</li>
+                </ul>
+                <p>
+                    <strong>Lehrer-Tipp:</strong> Um Leistungsdruck zu vermeiden, vergleichen Sie die Farbstufen mit "Gürteln im Kampfsport" – Übungsstufen, die man stolz meistert.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Alphabetische Ordnung: Für die höheren Klassen</h2>
+                <p>
+                    Die alphabetische Sortierung nach Autorennamen (A-Z) ist der Standard in Bibliotheken. In Grundschulklassen erfordert sie Disziplin beim täglichen Aufräumen.
+                </p>
+                <p>
+                    In der 3. und 4. Klasse ist sie jedoch eine ausgezeichnete praktische Übung für das Alphabet und bereitet die Kinder ideal auf die weiterführende Schule vor.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Wie digitale Werkzeuge den Überblick sichern</h2>
+                <p>
+                    Selbst beim besten System werden Bücher im Klassenalltag verlegt oder ohne Eintrag ausgeliehen. Hier erweist sich <strong>Livres en Classe</strong> als unverzichtbare Hilfe.
+                </p>
+                <p>
+                    Durch die Zuordnung jedes Titels zu einem virtuellen Kisten-Standort in der App wissen Sie immer, wo ein gesuchtes Buch hingehört. Mit dem schnellen Barcode-Scan per Kamera erfassen Sie Bücher in Sekundenschnelle. Entdecken Sie unseren <a href="{{ url_for('main.index') }}#comparatif">Vergleich Livres en Classe vs. Excel</a>, um zu sehen, wie viel Zeit Sie sparen.
+                </p>
+                
+                <div class="box has-background-link-light has-text-centered p-5 my-5">
+                    <h3 class="title is-4">Sparen Sie wertvolle Zeit im Schulalltag</h3>
+                    <p>Keine verlorenen Bücher mehr. Katalogisieren Sie Ihren Bestand und verwalten Sie Ausleihen kinderleicht.</p>
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Kostenlose Klassenbibliothek erstellen</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-6">6. Checkliste für die praktische Umsetzung</h2>
+                <p>
+                    So richten Sie Ihr Bibliothekssystem Schritt für Schritt ein:
+                </p>
+                <ol>
+                    <li><strong>Aussortieren:</strong> Beschädigte, veraltete oder unpassende Bücher konsequent entfernen.</li>
+                    <li><strong>Kisten beschriften:</strong> Nutzen Sie Schrift und Symbolkarten. Nutzen Sie unsere <a href="{{ url_for('ressource.index') }}">kostenlosen druckbaren Vorlagen</a> für Etiketten.</li>
+                    <li><strong>Bücher markieren:</strong> Farbpunkte auf den Rücken kleben oder den Schülern ein praktisches <a href="{{ url_for('ressource.marque_pages') }}">Ausleih-Lesezeichen</a> mitgeben.</li>
+                    <li><strong>Die Klasse einführen:</strong> Widmen Sie den Regeln eine eigene Stunde und hängen Sie unsere <a href="{{ url_for('ressource.charte') }}">Leseecken-Charta</a> gut sichtbar auf.</li>
+                </ol>
+
+                <hr class="my-6">
+
+                <h2>Fazit</h2>
+                <p>
+                    Es gibt kein allgemeingültiges "richtiges" System, sondern das System, das zu Ihrer Lerngruppe passt. Für Schulanfänger eignen sich Bildthemen, für Erstleser Farbstufen und für Fortgeschrittene Autoren und Genres. Unterstützt durch zeitsparende digitale Hilfsmittel wie <strong>Livres en Classe</strong> bleibt Ihre Leseecke das ganze Schuljahr über ein einladender Lernort.
+                </p>
+
+                <!-- Lesetipps -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 Weitere interessante Artikel...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">PRAXIS-LEITFADEN</p>
+                                <p class="has-text-weight-bold has-text-dark">Der ultimative Leitfaden zur Erstellung einer effektiven Klassenbibliothek</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">BUCHEMPFEHLUNGEN</p>
+                                <p class="has-text-weight-bold has-text-dark">Die 10 besten Bücher für die 1. Klasse: Unsere Schulanfangs-Auswahl</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

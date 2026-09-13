@@ -1,0 +1,256 @@
+<!-- templates/blog/application-scan-code-barre-livre.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Scanner les codes-barres de livres avec un smartphone à l'école : Guide & Application{% endblock %}
+{% block meta_description %}Comment scanner et inventorier les livres de votre classe avec la caméra d'un smartphone ? Découvrez l'application gratuite sans douchette USB.{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ lang_url(get_locale(), external=True) }}"
+      },
+      "headline": {{ "Scanner les codes-barres de livres avec un smartphone à l'école : Guide & Application"|tojson }},
+      "description": {{ "Comment scanner et inventorier les livres de votre classe avec la caméra d'un smartphone ? Découvrez l'application gratuite sans douchette USB."|tojson }},
+      "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+      "author": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "url": "https://livresenclasse.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+        }
+      },
+      "inLanguage": "{{ get_locale() }}",
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": {{ "Comment scanner le code-barres d'un livre avec un téléphone ?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "Ouvrez Livres en Classe sur votre smartphone, autorisez l'accès à la caméra et visez le code-barres ISBN (commençant par 978 ou 979) au dos du livre. Le titre et la couverture s'affichent automatiquement en une seconde."|tojson }}
+          }
+        },
+        {
+          "@type": "Question",
+          "name": {{ "Faut-il acheter une douchette USB pour inventorier les livres de sa classe ?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "Non. Une douchette filaire est coûteuse et peu pratique. La caméra de votre smartphone ou tablette d'école suffit largement pour scanner plusieurs centaines d'ouvrages."|tojson }}
+          }
+        },
+        {
+          "@type": "Question",
+          "name": {{ "Que faire si un livre n'a pas de code-barres ?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "Pour les livres très anciens ou sans code-barres, Livres en Classe permet de générer et d'imprimer des planches d'étiquettes à coller au dos des livres pour pouvoir les scanner comme n'importe quel autre ouvrage."|tojson }}
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Sommaire Desktop (Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Caméra vs Douchette USB</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Fonctionnement du scan ISBN</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Scanner 500 livres en 1h</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Les livres sans code-barres</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Questions fréquentes (FAQ)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Application scan code barre livre école</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">Scanner les codes-barres de livres avec un smartphone à l'école : Guide et Application</h1>
+                    <p class="subtitle is-5 has-text-grey">Temps de lecture : 7 min | Par l'équipe de Livres en Classe</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    Pour tout enseignant qui souhaite créer ou réorganiser sa bibliothèque scolaire, l'étape la plus redoutée est le <strong>catalogage initial</strong>. Taper à la main le titre, l'auteur, l'éditeur et l'année de publication de 200, 500 ou 1 000 livres représente des dizaines d'heures de travail fastidieux.
+                </p>
+                <p>
+                    Grâce aux technologies web modernes, il est aujourd'hui possible de transformer n'importe quel smartphone ou tablette en un <strong>lecteur de code-barres ultra-rapide</strong>. Fini les saisies manuelles : découvrez comment utiliser une <strong>application de scan de code-barre de livre pour l'école</strong> afin de cataloguer votre fonds en un temps record.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Sommaire -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Caméra vs Douchette USB</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Fonctionnement du scan ISBN</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Scanner 500 livres en 1h</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Les livres sans code-barres</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Questions fréquentes (FAQ)</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Pourquoi abandonner la douchette USB à l'école ?</h2>
+                <p>
+                    Pendant des années, la seule option pour informatiser une bibliothèque d'école était d'acheter un lecteur code-barres laser (une « douchette ») relié en USB à un ordinateur fixe. Si cette solution a rendu service, elle présente aujourd'hui des inconvénients majeurs en milieu scolaire :
+                </p>
+                <ul>
+                    <li><strong>Un coût élevé et inutile :</strong> Une bonne douchette coûte entre 50 € et 150 €, un budget conséquent pour une école qui préférerait acheter de nouveaux livres.</li>
+                    <li><strong>Incompatibilité avec les tablettes :</strong> Les douchettes USB ne se connectent généralement pas aux iPads et tablettes tactiles utilisées dans les classes.</li>
+                    <li><strong>Manque de mobilité :</strong> Vous êtes obligé d'amener les piles de livres jusqu'à l'ordinateur, au lieu de vous déplacer directement devant les étagères ou les bacs.</li>
+                </ul>
+                <p>
+                    L'appareil photo de votre smartphone ou de la tablette de votre classe est capable de lire un code-barres en une fraction de seconde, avec une précision souvent supérieure aux douchettes d'entrée de gamme.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Comment fonctionne le scan ISBN par caméra ?</h2>
+                <p>
+                    Tous les livres publiés dans le commerce possèdent un identifiant unique international à 13 chiffres appelé <strong>ISBN</strong> (International Standard Book Number), encodé sous la forme d'un code-barres EAN-13 commençant généralement par <strong>978</strong> ou <strong>979</strong>.
+                </p>
+                <p>
+                    Lorsque vous activez le scanner caméra dans <strong>Livres en Classe</strong> :
+                </p>
+                <ol>
+                    <li>La caméra détecte les lignes noires et blanches du code-barres et extrait les 13 chiffres de l'ISBN.</li>
+                    <li>L'application interroge instantanément les bases de données bibliographiques mondiales.</li>
+                    <li>La fiche complète du livre s'affiche : <strong>titre exact, auteur, illustrateur, éditeur et illustration de couverture</strong>.</li>
+                    <li>Le livre est ajouté à votre catalogue en un clic.</li>
+                </ol>
+
+                <div class="box has-background-white-bis my-5">
+                    <div class="columns is-vcentered">
+                        <div class="column is-2 has-text-centered">
+                            <span class="icon is-large has-text-link"><i class="fas fa-3x fa-barcode"></i></span>
+                        </div>
+                        <div class="column">
+                            <h4 class="title is-5 mb-2">Technologie PWA (Progressive Web App)</h4>
+                            <p>Vous n'avez même pas besoin d'installer une application lourde depuis l'App Store ou Google Play. Ouvrez simplement <a href="{{ url_for('main.index') }}">Livres en Classe</a> dans Safari ou Chrome et cliquez sur "Ajouter à l'écran d'accueil".</p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Protocole pour scanner 500 livres en moins d'une heure</h2>
+                <p>
+                    Voici l'organisation optimale adoptée par des centaines d'enseignants pour un inventaire éclair :
+                </p>
+                <ul>
+                    <li><strong>Travaillez en binôme :</strong> Un enseignant (ou un élève responsable) passe les livres un par un devant la caméra, le second range le livre dans le bac correspondant.</li>
+                    <li><strong>Soignez l'éclairage :</strong> Évitez les ombres portées directes sur le code-barres. Une lumière naturelle ou une lampe de bureau claire accélère la détection instantanée.</li>
+                    <li><strong>Gardez la bonne distance :</strong> Maintenez l'objectif à <strong>15 ou 20 centimètres</strong> du livre. S'approcher trop près rend l'image floue ; être trop loin réduit la netteté des barres.</li>
+                    <li><strong>Attention aux couvertures plastifiées :</strong> Si le livre est recouvert de film transparent, inclinez-le légèrement pour éviter le reflet de la lumière dans l'objectif.</li>
+                </ul>
+
+                <div class="has-text-centered my-5">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded">Tester le scanner gratuit sur vos livres</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Que faire pour les livres sans code-barres ?</h2>
+                <p>
+                    Dans les écoles, on trouve souvent de superbes albums anciens, des contes traditionnels ou des petits recueils de poésie publiés avant l'obligation de l'ISBN à 13 chiffres, ou dont le dos a été abîmé par le temps.
+                </p>
+                <p>
+                    Deux solutions simples s'offrent à vous :
+                </p>
+                <ul>
+                    <li><strong>La recherche manuelle par titre :</strong> Dans Livres en Classe, tapez simplement le titre et l'auteur pour retrouver la fiche et l'ajouter au catalogue sans code-barres.</li>
+                    <li><strong>L'impression de codes-barres personnalisés :</strong> Pour prêter ces livres aussi vite que les autres, vous pouvez utiliser notre outil de <a href="{{ url_for('ressource.codes_barres') }}">génération d'étiquettes codes-barres</a> à coller au dos des albums.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Foire aux questions (FAQ)</h2>
+
+                <h3>Comment scanner le code-barres d'un livre avec son téléphone ?</h3>
+                <p>
+                    Ouvrez Livres en Classe sur le navigateur de votre smartphone, autorisez la caméra et positionnez le code-barres ISBN (commençant par 978 ou 979) dans le cadre. La détection est automatique et immédiate.
+                </p>
+
+                <h3>L'application fonctionne-t-elle sur iPhone, iPad et Android ?</h3>
+                <p>
+                    Oui. L'application web fonctionne sur Safari (iOS/iPadOS) et Chrome/Firefox (Android, Windows, macOS, Chromebook). Aucune installation payante n'est nécessaire.
+                </p>
+
+                <h3>Combien de livres peut-on scanner gratuitement ?</h3>
+                <p>
+                    La formule gratuite de Livres en Classe vous offre 30 scans codes-barres d'essai pour tester le service en conditions réelles, puis un accès complet à l'inventaire et au prêt jusqu'à 500 livres. L'abonnement Premium illimité est proposé à seulement 30.- CHF par an.
+                </p>
+
+                <!-- Articles suggérés -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 À lire également...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='logiciel-bcd-ecole') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">COMPARATIF</p>
+                                <p class="has-text-weight-bold has-text-dark">Quel logiciel choisir pour la BCD de son école primaire ?</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">GUIDE COMPLET</p>
+                                <p class="has-text-weight-bold has-text-dark">Le Guide Ultime pour Créer et Gérer une Bibliothèque de Classe</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

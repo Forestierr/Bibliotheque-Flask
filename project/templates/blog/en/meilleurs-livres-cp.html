@@ -1,0 +1,254 @@
+<!-- templates/blog/en/meilleurs-livres-cp.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques") }}{% endblock %}
+{% block meta_description %}{{ _("Quels livres proposer à un élève de CP ? Découvrez notre sélection de plus de 1300 mots classée par niveau de décodage et collections de premières lectures.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('en', external=True) }}"
+  },
+  "headline": {{ _("Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques")|tojson }},
+  "description": {{ _("Quels livres proposer à un élève de CP ? Découvrez notre sélection de plus de 1300 mots classée par niveau de décodage et collections de premières lectures.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "en",
+  "datePublished": "2024-09-15",
+  "dateModified": "2026-09-12"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Table of contents (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Decoding Progress</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Leading Early Reader Series</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Selection by Level</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Non-Fiction and Comics</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Classroom Promotion</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Best Books for 1st Grade Readers</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">The Best Books for 1st Grade Readers: Curated Selection and Teaching Advice</h1>
+                    <p class="subtitle is-5 has-text-grey">Reading time: 8 min | By the Livres en Classe Editorial Team</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    The <strong>1st Grade (CP)</strong> year represents a pivotal milestone in a child's education. This is when the fundamental mechanics of reading take root. To guide students successfully along this journey, offering books tailored to their actual decoding abilities is crucial. A book that is too difficult quickly frustrates a beginning reader, while one that is overly simplistic fails to provide the engaging challenge needed for growth.
+                </p>
+                <p>
+                    Which books should you stock in your 1st-grade classroom library? How can you advise parents on choosing suitable home reading? This comprehensive guide presents a curated selection of series and titles, structured around the progression of decoding skills throughout the school year.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Table of Contents -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Decoding Progress</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Leading Early Reader Series</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Selection by Level</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Non-Fiction and Comics</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Classroom Promotion</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Understanding Reading Progression in 1st Grade</h2>
+                <p>
+                    Early literacy does not develop uniformly. It progresses remarkably between autumn and early summer across three distinctive phases:
+                </p>
+                <ul>
+                    <li><strong>Beginning of the Year (Terms 1 & 2):</strong> Students pair simple graphemes (letters) with phonemes (sounds). Reading is strictly phonetic and syllable-based. Sentences must be short and limited to regular phonics patterns.</li>
+                    <li><strong>Mid-Year (Term 3):</strong> Sight words and common high-frequency vocabulary are internalized, while initial digraphs and blends are introduced. Decoding becomes visibly smoother and more confident.</li>
+                    <li><strong>End of the Year (Terms 4 & 5):</strong> Most complex vowel digraphs and consonant blends are mastered. Students read with expressive intonation and comfortably comprehend multi-paragraph narrative arcs.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Essential Early Reader Collections</h2>
+                <p>
+                    Several renowned publishers specialize in leveled reading series carefully aligned with literacy curricula:
+                </p>
+
+                <h3>Phonics-Based Leveled Readers</h3>
+                <p>
+                    Highly acclaimed for their controlled vocabulary and decodable syllable structures, these books place familiar relatable characters in everyday situations (the first day of school, family outings, class pets).
+                </p>
+                <ul>
+                    <li><strong>Early Level:</strong> Strictly short decodable CVC words and repetitive sentence patterns.</li>
+                    <li><strong>Mid Level:</strong> Introduces common sight words and simple vowel teams.</li>
+                    <li><strong>Advanced Level:</strong> Longer story chapters with richer narrative pacing.</li>
+                </ul>
+
+                <h3>Rebus & Illustrated Clue Readers</h3>
+                <p>
+                    An engaging stepping-stone where complex or irregular nouns are represented by charming miniature illustrations, empowering emerging readers to follow complete storylines before mastering full decoding.
+                </p>
+
+                <h3>High-Contrast, Large-Print Readers</h3>
+                <p>
+                    Designed in collaboration with literacy specialists, these books feature generous line spacing, high contrast, and dyslexia-friendly typography to minimize visual fatigue for young eyes.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Recommended Book Selection by Decoding Stage</h2>
+
+                <div class="box has-background-white-bis p-5">
+                    <h3 class="title is-4">Level 1: First Steps (September - December)</h3>
+                    <p>
+                        Purely decodable texts featuring predictable, repetitive sentence structures.
+                    </p>
+                    <ul>
+                        <li><strong>"Back to School"</strong>: Simple schoolyard themes celebrating the start of the academic year.</li>
+                        <li><strong>"My First Pet"</strong>: Humorous phonics-friendly early adventures.</li>
+                        <li><strong>"The Treehouse"</strong>: Short text with just one or two sentences per spread.</li>
+                    </ul>
+                </div>
+
+                <div class="box has-background-white-bis p-5 mt-4">
+                    <h3 class="title is-4">Level 2: Taking Flight (January - March)</h3>
+                    <p>
+                        Books introducing common consonant digraphs, basic compound words, and deeper narrative context.
+                    </p>
+                    <ul>
+                        <li><strong>"The Wobbly Tooth"</strong>: An universally relatable milestone for 6-year-old students.</li>
+                        <li><strong>"Magic Science Bus at the Museum"</strong>: A lively blend of non-fiction curiosities and playful storytelling.</li>
+                        <li><strong>"A Day at the Pool"</strong>: Expanding vocabulary with clean, accessible syntax.</li>
+                    </ul>
+                </div>
+
+                <div class="box has-background-white-bis p-5 mt-4">
+                    <h3 class="title is-4">Level 3: Toward Independence (April - June)</h3>
+                    <p>
+                        For confident decoders eager to experience their first authentic illustrated chapter adventures.
+                    </p>
+                    <ul>
+                        <li><strong>"The Mystery Castle"</strong>: Multi-chapter storytelling with character dialogue and clues.</li>
+                        <li><strong>"The Secret Treehouse" (Early Reader Edition)</strong>: An accessible introduction to serialized adventures.</li>
+                        <li><strong>"The Nature Camp Trip"</strong>: Preparing students for end-of-year outdoor school trips.</li>
+                    </ul>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Illustrated Non-Fiction and Early Graphic Novels</h2>
+                <p>
+                    Never restrict first graders solely to fiction. Many young learners connect far more enthusiastically with books through real-world facts or visual storytelling.
+                </p>
+
+                <h3>Illustrated Early Non-Fiction</h3>
+                <p>
+                    Lively informational books focused on high-interest themes (dinosaurs, ancient castles, firefighters, planets). Even when full narrative text requires initial teacher guidance, the visual layouts encourage information gathering and curiosity.
+                </p>
+
+                <h3>Wordless and Early Dialogue Comics</h3>
+                <p>
+                    Wordless graphic novels foster chronological comprehension and narrative sequencing. When text is introduced, speech bubbles provide concise, natural dialogue that feels approachable for novice readers.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. How to Highlight These Books in Your Classroom</h2>
+                <p>
+                    Curating a wonderful collection is only half the battle; students must naturally gravitate toward them:
+                </p>
+                <ul>
+                    <li><strong>Showcase front covers:</strong> Face books forward in display bins rather than showing only spines. Organize shelves following our guide on <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}">how to organize classroom books</a>.</li>
+                    <li><strong>Daily read-aloud teasers:</strong> Dedicate 5 minutes to read the opening pages of an exciting title and stop right at the cliffhanger. Students will eagerly rush to borrow it!</li>
+                    <li><strong>Student book reviews:</strong> Invite children to share recommendations using our <a href="{{ url_for('ressource.fiches_avis') }}">children's book review templates</a> or award our <a href="{{ url_for('ressource.diplome') }}">customizable reading certificate</a> when they finish their first full book.</li>
+                    <li><strong>Track lending trends:</strong> Leverage <a href="{{ url_for('main.index') }}">Livres en Classe</a> to discover your classroom's most requested titles and adjust your collection dynamically.</li>
+                </ul>
+
+                <article class="message is-link mt-5">
+                    <div class="message-body">
+                        <strong>Did you know?</strong> With the <strong>Livres en Classe</strong> web application, you can scan ISBN barcodes in seconds to inventory your early reader collection and manage student loans with zero hassle.
+                        <br><br>
+                        <a href="{{ url_for('auth.signup') }}" class="button is-link">Create Your Classroom Catalog</a>
+                    </div>
+                </article>
+
+                <hr class="my-6">
+
+                <h2>Conclusion</h2>
+                <p>
+                    Selecting the right books for first grade is an exercise in thoughtful observation and adaptation. By pairing decodable phonics readers with rich illustrated read-alouds and high-interest non-fiction, you provide every learner with the ideal stepping stone to build confidence and develop a lifelong love of books.
+                </p>
+
+                <!-- Suggested reading -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 You Might Also Like...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">PEDAGOGY</p>
+                                <p class="has-text-weight-bold has-text-dark">How to Inspire a Love of Reading in Students: Classroom Tips and Routines</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">ORGANIZATION</p>
+                                <p class="has-text-weight-bold has-text-dark">How to Organize Books in Your Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

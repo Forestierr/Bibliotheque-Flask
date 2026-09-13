@@ -1,0 +1,219 @@
+<!-- templates/blog/en/donner-envie-lire.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels") }}{% endblock %}
+{% block meta_description %}{{ _("Comment susciter le plaisir de lire en classe ? Découvrez notre guide de plus de 1300 mots : quart d'heure lecture, rallye lecture, et rituels pédagogiques.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('en', external=True) }}"
+  },
+  "headline": {{ _("Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels")|tojson }},
+  "description": {{ _("Comment susciter le plaisir de lire en classe ? Découvrez notre guide de plus de 1300 mots : quart d'heure lecture, rallye lecture, et rituels pédagogiques.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "en",
+  "datePublished": "2024-09-10",
+  "dateModified": "2026-09-12"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Table of contents (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. The 15-Minute Reading Ritual</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Classroom Reading Challenges</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Flash Book Talks</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Teacher Read-Alouds</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Tracking with Digital Tools</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">How to inspire a love of reading?</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">How to Inspire a Love of Reading in Students: Classroom Tips and Routines</h1>
+                    <p class="subtitle is-5 has-text-grey">Reading time: 9 min | By the Livres en Classe Editorial Team</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    In an age dominated by touchscreens, video games, and social media, fostering genuine reading enjoyment among students has become one of the greatest challenges facing teachers and parents. Yet reading proficiency remains the cornerstone of academic success: it expands vocabulary, stimulates critical thinking, unlocks imagination, and strengthens focus.
+                </p>
+                <p>
+                    How can educators turn reading from an obligatory school chore into an authentic source of joy? As celebrated author Daniel Pennac famously observed in <i>Better Than Life</i>, "the verb to read does not tolerate the imperative." Forcing children to read rarely succeeds. Instead, we must invite them, inspire curiosity, and cultivate a welcoming reading atmosphere.
+                </p>
+                <p>
+                    Discover concrete routines, pedagogical strategies, and tested classroom activities to connect your students with books for the long term.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Table of Contents -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. The 15-Minute Reading Ritual</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Classroom Reading Challenges</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Flash Book Talks</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Teacher Read-Alouds</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Tracking with Digital Tools</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. The Daily 15-Minute Silent Reading Ritual (D.E.A.R.)</h2>
+                <p>
+                    The daily sustained silent reading block (frequently known as "Drop Everything And Read" or D.E.A.R.) has gained widespread popularity in primary and middle schools. Its principle is disarmingly simple, yet its impact relies entirely on steady regularity.
+                </p>
+                
+                <h3>The Golden Rules of Silent Reading:</h3>
+                <ul>
+                    <li><strong>Everyone reads—including the teacher:</strong> This is the most crucial rule. The teacher must model silent reading with their own book. Children learn by imitation: observing an adult absorbed in reading purely for pleasure is the most persuasive lesson possible.</li>
+                    <li><strong>Complete freedom of choice:</strong> Students pick what they truly want to read: graphic novels, non-fiction, fantasy, comics, or magazines. Your classroom collection must offer diverse genres to cater to all preferences.</li>
+                    <li><strong>No evaluations or book reports:</strong> This quiet reading window is never followed by quizzes, summaries, or grades. It is a gift of unpressured reading time.</li>
+                    <li><strong>Absolute silence:</strong> Providing an uninterrupted cocoon where every student can immerse themselves in their story.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Organizing a Classroom Reading Challenge: Healthy Gamification</h2>
+                <p>
+                    Some students benefit from an initial external spark of motivation. Gamification—applying playful game dynamics to educational goals—proves remarkably effective through classroom reading challenges and rallies.
+                </p>
+                <p>
+                    <strong>The principle:</strong> Over a 4 to 6-week period, students select books from a curated challenge shelf. After finishing a book, they answer brief comprehension questions online or on paper, earning points toward milestone achievements.
+                </p>
+                <p>
+                    To ensure the challenge remains encouraging and accessible to slower decoders:
+                </p>
+                <ul>
+                    <li>Provide a wide spectrum of reading difficulties with fair point scales (shorter early decodables award fewer points than chapter books, allowing each child to progress at their own speed, like our <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}">1st grade recommended selection</a>).</li>
+                    <li>Celebrate persistence and effort over competitive rankings by awarding our <a href="{{ url_for('ressource.diplome') }}">customizable reading certificates</a> or introducing an engaging <a href="{{ url_for('ressource.bingo') }}">reading bingo challenge</a>.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Flash Book Talks: The Power of Peer Recommendations</h2>
+                <p>
+                    Children often value recommendations from their classmates far more than suggestions from adults. Leverage this peer enthusiasm through brief, lively presentation routines.
+                </p>
+                <p>
+                    Once a week, give 5 minutes to two or three volunteer students to present a book from the classroom library they loved. Keep the format concise—a 1-minute elevator pitch using our <a href="{{ url_for('ressource.fiches_avis') }}">children's book review templates</a>:
+                </p>
+                <ol>
+                    <li>Introduce the title and author, and display the cover.</li>
+                    <li>Summarize the premise in two sentences (without spoiling the ending!).</li>
+                    <li>Explain what made them love it (humorous characters, suspense, captivating illustrations).</li>
+                </ol>
+                <p>
+                    This is an outstanding oral communication exercise for the speaker, and it almost always creates an instant waiting list for the presented book.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Teacher Read-Alouds: Sustaining the Magic of Storytelling</h2>
+                <p>
+                    Just because students have learned how to decode words independently does not mean teachers should stop reading aloud to them. On the contrary, interactive teacher read-alouds remain a cherished moment even in 4th and 5th grade.
+                </p>
+                <p>
+                    Listening to a story frees students from the cognitive load of decoding. They can focus entirely on constructing mental imagery, grasping narrative tension, and appreciating lyrical language. Select rich novels with sophisticated vocabulary, and conclude each session on a cliffhanger to build eager anticipation for the next chapter.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Celebrating Reading Milestones with Digital Tools</h2>
+                <p>
+                    To nurture continuous reading enthusiasm, making student progress visible and rewarding is key.
+                </p>
+                <p>
+                    With modern software like <strong>Livres en Classe</strong>, each student's borrowing history is preserved throughout the school year. You can quietly celebrate milestones—praising a child for completing their first chapter book, issuing a personalized <a href="{{ url_for('ressource.passeport') }}">reading passport</a>, or recognizing the class's top readers.
+                </p>
+                <p>
+                    These insights also enable you to identify reluctant readers early (students who never check out books or return them unread the next morning) and provide individualized encouragement by recommending shorter, high-interest titles tailored to their passions.
+                </p>
+
+                <div class="box has-background-white-bis has-text-centered p-5 my-5">
+                    <h3 class="title is-4">Manage Classroom Book Loans Effortlessly</h3>
+                    <p class="mb-4">Equip your classroom with our free application to track and celebrate student reading growth.</p>
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Try Livres en Classe for Free</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2>Conclusion</h2>
+                <p>
+                    Inspiring a lasting love of reading is a patient, supportive journey centered on variety and freedom of choice. By weaving together daily silent reading rituals, healthy reading challenges, peer book talks, and thoughtful tracking with <strong>Livres en Classe</strong>, you will nurture curious, confident, and lifelong readers.
+                </p>
+
+                <!-- Suggested reading -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 You Might Also Like...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">COMPLETE GUIDE</p>
+                                <p class="has-text-weight-bold has-text-dark">The Ultimate Guide to Creating an Effective Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">ORGANIZATION</p>
+                                <p class="has-text-weight-bold has-text-dark">How to Organize Books in Your Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

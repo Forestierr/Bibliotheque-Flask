@@ -1,0 +1,245 @@
+<!-- templates/blog/en/suivi-emprunts-livres-eleves.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Tracking Student Book Loans in the Classroom: Methods, Cards & Digital Apps{% endblock %}
+{% block meta_description %}How to organize student classroom library book checkout. Compare paper cards, spreadsheets, and 1-click digital tracking for elementary teachers.{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ lang_url('en', external=True) }}"
+      },
+      "headline": {{ "Tracking Student Book Loans in the Classroom: Methods, Cards & Digital Apps"|tojson }},
+      "description": {{ "How to organize student classroom library book checkout. Compare paper cards, spreadsheets, and 1-click digital tracking for elementary teachers."|tojson }},
+      "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+      "author": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "url": "https://livresenclasse.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+        }
+      },
+      "inLanguage": "en",
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": {{ "How long should classroom library book loans last?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "In lower elementary grades (1st–2nd), 1 to 2 weeks is ideal. In upper elementary grades (3rd–5th), 2 to 3 weeks accommodates longer chapter books comfortably."|tojson }}
+          }
+        },
+        {
+          "@type": "Question",
+          "name": {{ "How do teachers prevent missing books?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "1-click digital checkout using Livres en Classe gives teachers instant visibility into who currently has each title and how long they have had it."|tojson }}
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Desktop Table of Contents -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Why Paper Binders Fail</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Comparing 3 Checkout Methods</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Setting Up an Autonomous Routine</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Reading Data & Student Pride</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Frequently Asked Questions (FAQ)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Student book checkout system</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">Tracking Student Book Loans in the Classroom: Methods, Cards & Digital Apps</h1>
+                    <p class="subtitle is-5 has-text-grey">Reading time: 8 min | By the Livres en Classe Team</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    Allowing students to borrow classroom books to read at home is one of the most effective strategies to build independent reading habits. Yet without a seamless tracking routine, it quickly becomes stressful: <strong>messy sign-out notebooks, missing titles by mid-year, and awkward reminder discussions</strong>.
+                </p>
+                <p>
+                    How can educators organize a <strong>student classroom book checkout system</strong> that is fast, reliable, and promotes student ownership? Explore practical methods and digital tools designed for elementary classrooms.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Table of Contents -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Why Paper Binders Fail</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Comparing 3 Checkout Methods</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Setting Up an Autonomous Routine</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Reading Data & Student Pride</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Frequently Asked Questions (FAQ)</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Why Manual Paper Sign-Out Sheets Fall Apart</h2>
+                <p>
+                    Almost every teacher starts with a clipboard or paper checkout binder beside the book bins. Within weeks, predictable issues arise:
+                </p>
+                <ul>
+                    <li><strong>Illegible handwriting:</strong> Students rush, misspell titles, or forget to record dates.</li>
+                    <li><strong>Forgotten check-ins:</strong> Children slide books back onto shelves without crossing off their names, causing confusion.</li>
+                    <li><strong>Lost instructional time:</strong> Auditing 25 lines on a sign-out sheet every Friday wastes valuable teaching moments.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Comparing 3 Classroom Checkout Systems</h2>
+
+                <table class="table is-fullwidth is-striped box">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Advantages</th>
+                            <th>Drawbacks</th>
+                            <th>Average Checkout Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Index Cards & Pockets</strong></td>
+                            <td>Tangible, no screen required.</td>
+                            <td>Cards get lost; gluing card pockets in every book is time-consuming.</td>
+                            <td>1 to 2 minutes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Spreadsheets (Google Sheets/Excel)</strong></td>
+                            <td>Centralized electronic record.</td>
+                            <td>Requires manual typing, no cover art or ISBN lookup, data entry errors.</td>
+                            <td>45 seconds</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Livres en Classe Web App</strong></td>
+                            <td><strong>1-click checkout</strong>, student selector, loan duration alerts, automated reading histories.</td>
+                            <td>Requires a connected phone, tablet, or classroom computer.</td>
+                            <td><strong>5 seconds</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Setting Up an Autonomous Student Checkout Routine</h2>
+                <p>
+                    Empower your students to manage lending routines independently:
+                </p>
+                <ol>
+                    <li><strong>Appoint weekly "Class Librarians":</strong> A coveted classroom job where designated students manage loan check-ins during morning arrival.</li>
+                    <li><strong>Designate a "Return Bin":</strong> Have students drop returned titles into a central bin each morning instead of placing them back on shelves unchecked.</li>
+                    <li><strong>Printable checkout bookmarks:</strong> Provide our free <a href="{{ url_for('ressource.marque_pages') }}">printable checkout bookmarks</a> where students write their due date.</li>
+                    <li><strong>Reading Charter:</strong> Co-create expectations for book care and display our <a href="{{ url_for('ressource.charte') }}">classroom reading charter</a>.</li>
+                </ol>
+
+                <div class="has-text-centered my-5">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded">Track Your Classroom Loans for Free</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Using Reading Data to Celebrate Student Growth</h2>
+                <p>
+                    Digital tracking goes beyond preventing lost books—it provides encouraging pedagogical insights:
+                </p>
+                <ul>
+                    <li><strong>Classroom favorites:</strong> Discover which titles are borrowed most often to guide future book purchases.</li>
+                    <li><strong>Supportive intervention:</strong> Gently spot students who haven't borrowed recently and guide them toward appealing titles matching their reading confidence.</li>
+                    <li><strong>Celebrate milestones:</strong> Award our free <a href="{{ url_for('ressource.diplome') }}">customizable reading diploma</a> at the end of term reading challenges.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Frequently Asked Questions (FAQ)</h2>
+
+                <h3>How long should students keep borrowed books?</h3>
+                <p>
+                    For early readers (grades 1–2), 1 to 2 weeks keeps enthusiasm high. For upper elementary (grades 3–5), 2 to 3 weeks accommodates longer novels.
+                </p>
+
+                <h3>How do you handle torn or damaged books?</h3>
+                <p>
+                    Hold a brief "book hospital" tutorial teaching students how book-repair tape fixes minor tears gently without shame.
+                </p>
+
+                <!-- Suggested reading -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 Recommended Reading...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">PEDAGOGY</p>
+                                <p class="has-text-weight-bold has-text-dark">How to Inspire a Love of Reading in Students</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">COMPLETE GUIDE</p>
+                                <p class="has-text-weight-bold has-text-dark">The Ultimate Guide to Creating an Effective Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

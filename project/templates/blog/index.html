@@ -7,6 +7,25 @@
 {% block title %}{{ _("Le Blog des Enseignants | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Conseils pratiques, sélections littéraires et stratégies pédagogiques pour les enseignants qui gèrent une bibliothèque de classe.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["Blog", "CollectionPage"],
+  "name": {{ _("Le Blog des Enseignants | Livres en Classe")|tojson }},
+  "description": {{ _("Conseils pratiques, sélections littéraires et stratégies pédagogiques pour les enseignants qui gèrent une bibliothèque de classe.")|tojson }},
+  "url": "{{ lang_url(get_locale(), external=True) }}",
+  "inLanguage": "{{ get_locale() }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com",
+    "logo": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+  }
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
@@ -180,13 +199,46 @@
             </div>
 
             <div class="column is-6">
-                <div class="blog-card" style="background: hsl(0, 0%, 98.5%); border-style: dashed;">
-                    <div class="blog-card-body" style="justify-content: center; align-items: center; text-align: center;">
-                        <div style="width: 44px; height: 44px; border-radius: 50%; background: hsl(0, 0%, 93%); color: hsl(0, 0%, 50%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;">
-                            <i class="fas fa-pen"></i>
+                <div class="blog-card">
+                    <div class="blog-card-body">
+                        <span class="blog-tag tag-gestion">{{ _("Logiciel BCD") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='logiciel-bcd-ecole') }}" class="blog-title-link">{{ _("Logiciel BCD pour école primaire : comment choisir et équiper sa classe") }}</a>
+                        <p class="blog-excerpt">{{ _("Comparatif complet des logiciels BCD pour écoles primaires. Découvrez les critères essentiels : catalogage ISBN, scan code-barres, suivi des prêts et prise en main par les élèves.") }}</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> {{ _("7 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Guide BCD") }}</span>
                         </div>
-                        <p class="has-text-weight-semibold" style="color: hsl(0, 0%, 40%);">{{ _("Prochain article") }}</p>
-                        <p class="is-size-7 has-text-grey mt-2">{{ _("Nous préparons de nouveaux guides pratiques et sélections de livres.") }}</p>
+                        <a href="{{ url_for('main.blog_article', article_slug='logiciel-bcd-ecole') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="blog-card">
+                    <div class="blog-card-body">
+                        <span class="blog-tag tag-organisation">{{ _("Scan & Inventaire") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='application-scan-code-barre-livre') }}" class="blog-title-link">{{ _("Application scan code-barre pour livre d'école : cataloguer sans douchette") }}</a>
+                        <p class="blog-excerpt">{{ _("Comment scanner et inventorier les livres de votre classe en quelques secondes grâce à l'appareil photo de votre smartphone ou tablette, sans douchette ni saisie manuelle.") }}</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> {{ _("6 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Outils") }}</span>
+                        </div>
+                        <a href="{{ url_for('main.blog_article', article_slug='application-scan-code-barre-livre') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="blog-card">
+                    <div class="blog-card-body">
+                        <span class="blog-tag tag-pedagogie">{{ _("Suivi des Prêts") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='suivi-emprunts-livres-eleves') }}" class="blog-title-link">{{ _("Suivi des emprunts de livres par les élèves : méthodes, fiches et application") }}</a>
+                        <p class="blog-excerpt">{{ _("Comment organiser le prêt de livres de classe sans perdre d'ouvrages : comparez fiches bristol, tableaux Excel et gestion numérique en 1 clic.") }}</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> {{ _("8 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Pratique") }}</span>
+                        </div>
+                        <a href="{{ url_for('main.blog_article', article_slug='suivi-emprunts-livres-eleves') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>

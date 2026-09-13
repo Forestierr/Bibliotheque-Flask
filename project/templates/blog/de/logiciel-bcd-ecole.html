@@ -1,0 +1,249 @@
+<!-- templates/blog/de/logiciel-bcd-ecole.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}Schulbibliothek-Software für Grundschulen: Vergleich & Leitfaden 2026{% endblock %}
+{% block meta_description %}Vergleich von Bibliothekssoftware für Grundschulen: Wie Sie den Buchbestand Ihrer Schule einfach digitalisieren und die Ausleihe verwalten.{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ lang_url('de', external=True) }}"
+      },
+      "headline": {{ "Schulbibliothek-Software für Grundschulen: Vergleich & Leitfaden 2026"|tojson }},
+      "description": {{ "Vergleich von Bibliothekssoftware für Grundschulen: Wie Sie den Buchbestand Ihrer Schule einfach digitalisieren und die Ausleihe verwalten."|tojson }},
+      "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+      "author": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "url": "https://livresenclasse.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+        }
+      },
+      "inLanguage": "de",
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": {{ "Welche kostenlose Software eignet sich für eine Grundschulbibliothek?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "Livres en Classe bietet eine vollwertige kostenlose Version ohne Installation für bis zu 500 Bücher und 40 Schüler mit integriertem Kamera-Barcode-Scanner."|tojson }}
+          }
+        },
+        {
+          "@type": "Question",
+          "name": {{ "Benötigt man einen USB-Handscanner für die Schulbibliothek?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "Nein. Mit einer modernen Web-App wie Livres en Classe dient die Kamera Ihres Smartphones oder Tablets direkt als Scanner."|tojson }}
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Desktop Inhaltsverzeichnis (Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Herausforderungen der Schulbibliothek</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Software-Vergleich</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Vorteile von Cloud & Smartphone</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Schritt-für-Schritt Digitalisierung</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Häufige Fragen (FAQ)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hauptinhalt -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Startseite</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Schulbibliothek Software</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">Schulbibliothek-Software für Grundschulen: Vergleich & Leitfaden 2026</h1>
+                    <p class="subtitle is-5 has-text-grey">Lesezeit: 8 Min. | Vom Team von Livres en Classe</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    Eine gemeinsame <strong>Schulbibliothek</strong> oder Leseecke ist das Herzstück der Leseförderung an jeder Grundschule. Doch die Organisation im Schulalltag bringt oft Hürden mit sich: unleserliche Karteikarten, verlorene Bücher am Schuljahresende und veraltete Schul-PCs.
+                </p>
+                <p>
+                    Eine moderne, leichtgewichtige <strong>Schulbibliothek-Software</strong> spart Lehrkräften wertvolle Zeit und macht das Ausleihen für Kinder zum Kinderspiel. Erfahren Sie in unserem Praxisvergleich, welche Lösung sich für Ihre Schule am besten eignet.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Inhaltsverzeichnis -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Herausforderungen der Schulbibliothek</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Software-Vergleich</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Vorteile von Cloud & Smartphone</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Schritt-für-Schritt Digitalisierung</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Häufige Fragen (FAQ)</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Die besonderen Herausforderungen in der Grundschule</h2>
+                <p>
+                    In der Grundschule gibt es selten ausgebildete Vollzeit-Bibliothekare. Die Betreuung liegt meist bei engagierten Lehrkräften oder Eltern:
+                </p>
+                <ul>
+                    <li><strong>Altersunterschiede:</strong> Von Schulanfängern, die gerade Buchstaben lernen, bis zu Viertklässlern, die längere Kinderkrimis lesen.</li>
+                    <li><strong>Keine eigene IT-Abteilung:</strong> Schulen haben selten Zeit oder Budget für komplizierte Server-Installationen und Wartungsverträge.</li>
+                    <li><strong>Einfachheit entscheidet:</strong> Ein Ausleihvorgang darf im Unterrichtstrubel nicht länger als 5 Sekunden dauern.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Software-Vergleich für Schulbibliotheken</h2>
+                <p>
+                    Hier ein Überblick über gängige Lösungsansätze:
+                </p>
+
+                <table class="table is-fullwidth is-striped box">
+                    <thead>
+                        <tr>
+                            <th>Software-Lösung</th>
+                            <th>Stärken</th>
+                            <th>Nachteile</th>
+                            <th>Preis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Livres en Classe</strong></td>
+                            <td>100% webbasiert, ISBN-Kamera-Scan, intuitive Bedienung, funktioniert auf Handys & Tablets.</td>
+                            <td>Speziell für Klassen- und Grundschulbestände konzipiert.</td>
+                            <td><strong>Kostenlose Version</strong> / 30 CHF/Jahr (Premium)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Veraltete Desktop-Programme</strong></td>
+                            <td>Detaillierte bibliografische Felder.</td>
+                            <td>Altbackenes Design, Einzelplatz-Installation, Gefahr von Datenverlust bei PC-Defekt.</td>
+                            <td>Oft jährliche Lizenzgebühren</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Komplexe Open-Source-Systeme</strong></td>
+                            <td>Sehr mächtig für Universitäten und Stadtbibliotheken.</td>
+                            <td>Sehr steile Lernkurve, eigener Webserver und IT-Kenntnisse erforderlich.</td>
+                            <td>Software gratis, aber hohe Folgekosten für Hosting & Wartung</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Warum Cloud und Smartphone-Scan die beste Wahl sind</h2>
+                <p>
+                    Früher musste man einen festen PC in der Bibliothek aufstellen und teure USB-Handscanner anschaffen. Mit einer progressiven Web-App wie <strong>Livres en Classe</strong> geht das heute viel unkomplizierter:
+                </p>
+                <ul>
+                    <li><strong>Keine Installation nötig:</strong> Öffnen Sie die Anwendung einfach im Browser auf Laptops, iPads oder Tablets der Schule.</li>
+                    <li><strong>Scan direkt über die Kamera:</strong> Richten Sie Ihr Smartphone auf den ISBN-Barcode des Buches – Titel, Autor und Cover werden automatisch geladen.</li>
+                    <li><strong>Automatische Cloud-Sicherung:</strong> Keine Sorge vor defekten Festplatten: Ihr Katalog ist sicher online gespeichert.</li>
+                    <li><strong>Excel-Exporte mit 1 Klick:</strong> Laden Sie Bestandslisten und Ausleihstatistiken jederzeit herunter.</li>
+                </ul>
+
+                <div class="has-text-centered my-5">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded">Kostenlosen Schul-Katalog anlegen</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Schulbibliothek in einer Woche digitalisieren</h2>
+                <p>
+                    Mit einem klaren Vorgehen gelingt die Erfassung stressfrei:
+                </p>
+                <ol>
+                    <li><strong>Beschädigte Bücher aussortieren:</strong> Altes oder zerrissenes Material vor der Inventur aussortieren.</li>
+                    <li><strong>Gemeinsamer Scan-Nachmittag:</strong> Zwei Lehrkräfte können mit dem Kamera-Scan von <em>Livres en Classe</em> in einer Stunde über 400 Bücher erfassen.</li>
+                    <li><strong>Regale thematisch ordnen:</strong> Nutzen Sie Farbpunkte oder Themenkisten. Lesen Sie dazu unseren Leitfaden <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}">Wie Sie die Bücher Ihrer Klassenbibliothek ordnen</a>.</li>
+                    <li><strong>Kinder einbinden:</strong> Nutzen Sie unsere kostenlose <a href="{{ url_for('ressource.charte') }}">Lese-Charta</a> und belohnen Sie fleißige Leser mit der <a href="{{ url_for('ressource.diplome') }}">personalisierten Leseurkunde</a>.</li>
+                </ol>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Häufige Fragen (FAQ)</h2>
+
+                <h3>Welche kostenlose Software eignet sich für eine Grundschulbibliothek?</h3>
+                <p>
+                    <strong>Livres en Classe</strong> bietet eine vollwertige Gratis-Version für bis zu 500 Bücher und 40 Schüler mit schnellem Kamera-Barcode-Scan, ideal für Schulen ohne eigenes IT-Budget.
+                </p>
+
+                <h3>Benötigt man einen USB-Handscanner für die Schulbibliothek?</h3>
+                <p>
+                    Nein. Die integrierte Kamera-Scan-Funktion funktioniert direkt im Browser auf allen gängigen Smartphones (iPhone, Android) und Tablets (iPad).
+                </p>
+
+                <!-- Weiterführende Artikel -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 Weitere interessante Beiträge...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">PRAXIS-LEITFADEN</p>
+                                <p class="has-text-weight-bold has-text-dark">Der ultimative Leitfaden zur Erstellung einer effektiven Klassenbibliothek</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">ORGANISATION</p>
+                                <p class="has-text-weight-bold has-text-dark">Wie Sie die Bücher Ihrer Klassenbibliothek ordnen</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

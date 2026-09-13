@@ -7,6 +7,38 @@
 {% block title %}{{ _("Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques") }}{% endblock %}
 {% block meta_description %}{{ _("Quels livres proposer à un élève de CP ? Découvrez notre sélection de plus de 1300 mots classée par niveau de décodage et collections de premières lectures.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "headline": {{ _("Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques")|tojson }},
+  "description": {{ _("Quels livres proposer à un élève de CP ? Découvrez notre sélection de plus de 1300 mots classée par niveau de décodage et collections de premières lectures.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "{{ get_locale() }}",
+  "datePublished": "2024-09-15",
+  "dateModified": "2026-09-12"
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
@@ -170,8 +202,9 @@
                     Posséder ces livres est une chose, mais encore faut-il que les élèves se dirigent naturellement vers eux. Voici quelques astuces de professeur :
                 </p>
                 <ul>
-                    <li><strong>Mettre en valeur les couvertures :</strong> Présentez les livres de face. Utilisez des petits chevalets pour exposer le "Livre de la semaine".</li>
-                    <li><strong>La lecture offerte quotidienne :</strong> Prenez 5 minutes chaque jour pour lire le début d'un livre à haute voix. Arrêtez-vous au moment le plus intéressant. Succès garanti : les élèves se rueront sur le livre pour connaître la suite !</li>
+                    <li><strong>Mettre en valeur les couvertures :</strong> Présentez les livres de face. Utilisez des petits présentoirs et organisez vos étagères selon notre guide <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}">comment classer les livres en classe</a>.</li>
+                    <li><strong>La lecture offerte quotidienne :</strong> Prenez 5 minutes chaque jour pour lire le début d'un livre à haute voix. Arrêtez-vous au moment le plus palpitant : vos élèves se rueront dessus !</li>
+                    <li><strong>Fiches d'avis et recommandations :</strong> Donnez-leur la parole en imprimant nos <a href="{{ url_for('ressource.fiches_avis') }}">fiches d'avis de lecture pour enfants</a> ou notre <a href="{{ url_for('ressource.diplome') }}">diplôme de lecture</a> pour valider leurs premiers livres déchiffrés.</li>
                     <li><strong>Suivre l'activité de lecture :</strong> Utilisez un outil comme <a href="{{ url_for('main.index') }}">Livres en Classe</a> pour savoir quels sont les ouvrages les plus empruntés et ajuster votre catalogue.</li>
                 </ul>
 
