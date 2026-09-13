@@ -18,7 +18,11 @@ from flask_babel import gettext as _
 from flask_login import current_user, login_required
 
 from . import db
-from .config_plans import MAX_FREE_BOOKS, MAX_FREE_SCANS
+from .config_plans import (
+    MAX_FREE_BOOKS,
+    MAX_FREE_SCANS,
+    PRICE_YEARLY_AMOUNT,
+)
 from .models import Book, BookTags, Loan, Tags
 from .query import (
     get_book_actual_loan,
@@ -296,7 +300,13 @@ def check_title():
 @livre.route("/livre/scann", methods=["GET", "POST"])
 @login_required
 def livre_scann():
-    return render_template("livre/livre_scann.html")
+    if not current_user.is_premium:
+        current_user.check_and_reset_weekly_scans()
+    return render_template(
+        "livre/livre_scann.html",
+        max_scans=MAX_FREE_SCANS,
+        price_yearly=int(PRICE_YEARLY_AMOUNT),
+    )
 
 
 @livre.route("/livre/<id>/edit", methods=["GET", "POST"])
@@ -501,22 +511,21 @@ def livre_delete(id):
 @login_required
 def livre_exist(isbn):
     # Vérification du quota de scans pour les comptes gratuits
-    if (
-        not current_user.is_premium
-        and (current_user.free_scans_used or 0) >= MAX_FREE_SCANS
-    ):
-        return make_response(
-            jsonify(
-                {
-                    "error": "scan_limit_reached",
-                    "message": _(
-                        "Vous avez scanné %(max)s livres ! Passez Premium à 30.- CHF/an pour scanner en illimité.",
-                        max=MAX_FREE_SCANS,
-                    ),
-                }
-            ),
-            403,
-        )
+    if not current_user.is_premium:
+        current_user.check_and_reset_weekly_scans()
+        if (current_user.free_scans_used or 0) >= MAX_FREE_SCANS:
+            return make_response(
+                jsonify(
+                    {
+                        "error": "scan_limit_reached",
+                        "message": _(
+                            "Vous avez atteint votre quota de %(max)s scans gratuits pour cette semaine ! Vos scans seront réinitialisés dimanche à minuit, ou passez Premium pour scanner en illimité.",
+                            max=MAX_FREE_SCANS,
+                        ),
+                    }
+                ),
+                403,
+            )
 
     # Incrémentation du compteur de scans pour les utilisateurs en mode gratuit
     if not current_user.is_premium:

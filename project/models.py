@@ -2,7 +2,7 @@
 # look at the file docs/model.png
 
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from flask_login import UserMixin
 from itsdangerous import BadSignature, URLSafeTimedSerializer
@@ -18,6 +18,21 @@ class BookTags(db.Model):
     __tablename__ = "book_tags"
     book_id = db.Column(db.Integer, db.ForeignKey("book.id"), primary_key=True)
     tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), primary_key=True)
+
+
+def get_current_scan_period_start(now=None) -> datetime:
+    """
+    Retourne la date/heure de début de la période courante de scans :
+    chaque dimanche à 00:00:00 UTC (nuit du samedi au dimanche).
+    """
+    if now is None:
+        now = datetime.now(timezone.utc)
+    elif now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    days_since_sunday = (now.weekday() + 1) % 7
+    return (now - timedelta(days=days_since_sunday)).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
 
 
 class User(UserMixin, db.Model):
@@ -49,6 +64,60 @@ class User(UserMixin, db.Model):
     stripe_subscription_status = db.Column(db.String(30), nullable=True)
     stripe_price_id = db.Column(db.String(120), nullable=True)
     subscription_end_at = db.Column(db.DateTime, nullable=True)
+    last_scan_reset_at = db.Column(db.DateTime, nullable=True)
+
+    def check_and_reset_weekly_scans(self) -> bool:
+        """
+        Vérifie si le dimanche à 00:00:00 UTC le plus récent est postérieur à la dernière
+        réinitialisation de scans de l'utilisateur. Si oui, remet free_scans_used à 0.
+        Retourne True si une réinitialisation a été effectuée.
+        """
+        now = datetime.now(timezone.utc)
+        period_start = get_current_scan_period_start(now)
+
+        last_reset = self.last_scan_reset_at
+        if last_reset is not None and last_reset.tzinfo is None:
+            last_reset = last_reset.replace(tzinfo=timezone.utc)
+
+        if last_reset is None:
+            user_created = self.created_at
+            if user_created is not None and user_created.tzinfo is None:
+                user_created = user_created.replace(tzinfo=timezone.utc)
+
+            if user_created is not None and user_created < period_start:
+                self.free_scans_used = 0
+                self.last_scan_reset_at = now
+                try:
+                    db.session.commit()
+                except Exception:  # noqa: BLE001
+                    db.session.rollback()
+                return True
+            else:
+                self.last_scan_reset_at = user_created or now
+                try:
+                    db.session.commit()
+                except Exception:  # noqa: BLE001
+                    db.session.rollback()
+                return False
+
+        if last_reset < period_start:
+            self.free_scans_used = 0
+            self.last_scan_reset_at = now
+            try:
+                db.session.commit()
+            except Exception:  # noqa: BLE001
+                db.session.rollback()
+            return True
+        return False
+
+    @property
+    def weekly_scans_left(self) -> int:
+        """Nombre de scans gratuits restants pour la semaine courante."""
+        from .config_plans import MAX_FREE_SCANS
+
+        if self.is_premium:
+            return 999999
+        return max(0, MAX_FREE_SCANS - (self.free_scans_used or 0))
 
     @property
     def subscription_type(self) -> str | None:
@@ -117,6 +186,15 @@ class User(UserMixin, db.Model):
     def effective_plan(self) -> str:
         if self.plan == "founder":
             return "founder"
+        # Si abonnement premium avec date de fin échue -> free (sauf si en trial)
+        if self.plan == "premium" and self.subscription_end_at:
+            end_dt = (
+                self.subscription_end_at.replace(tzinfo=timezone.utc)
+                if self.subscription_end_at.tzinfo is None
+                else self.subscription_end_at
+            )
+            if datetime.now(timezone.utc) >= end_dt:
+                return "trial" if self.is_in_trial else "free"
         if self.plan == "premium" and self.stripe_subscription_status == "active":
             return "premium"
         # Abonnement résilié mais encore dans la période payée (cancel_at_period_end)
@@ -131,6 +209,15 @@ class User(UserMixin, db.Model):
     def is_premium(self) -> bool:
         if self.plan == "founder":
             return True
+        # Si abonnement premium avec date de fin échue -> False (sauf si en trial)
+        if self.plan == "premium" and self.subscription_end_at:
+            end_dt = (
+                self.subscription_end_at.replace(tzinfo=timezone.utc)
+                if self.subscription_end_at.tzinfo is None
+                else self.subscription_end_at
+            )
+            if datetime.now(timezone.utc) >= end_dt:
+                return self.is_in_trial
         # "past_due" : Stripe tente de relancer le paiement pendant 3–7 jours (dunning period).
         # On conserve l'accès pendant cette période pour ne pas couper l'enseignant au premier échec.
         if self.plan == "premium" and self.stripe_subscription_status in (

@@ -240,7 +240,7 @@
     {% if not current_user.is_premium %}
     <div class="has-text-centered mb-2">
         <span class="tag is-info is-light is-rounded has-text-weight-semibold" style="font-size: 0.85rem;">
-            <i class="fas fa-barcode mr-1"></i> {{ _("Scans offerts : %(used)s / 30", used=current_user.free_scans_used or 0) }}
+            <i class="fas fa-barcode mr-1"></i> {{ _("Scans cette semaine : %(used)s / %(max)s (remis à zéro dimanche à 00h00)", used=current_user.free_scans_used or 0, max=max_scans|default(30)) }}
         </span>
     </div>
     {% endif %}
@@ -377,14 +377,14 @@
                     <i class="fas fa-barcode"></i>
                 </div>
                 <p class="title is-5 mb-2" id="scanPaywallTitle">
-                    {{ _("Vous avez scanné 30 livres en un temps record !") }}
+                    {{ _("Vous avez utilisé vos %(max)s scans gratuits pour cette semaine !", max=max_scans) }}
                 </p>
                 <p class="is-size-6 has-text-grey mb-5" id="scanPaywallMessage">
-                    {{ _("Passez à l'offre Premium à 30.- CHF/an pour scanner les centaines de livres suivants en illimité.") }}
+                    {{ _("Votre quota de scans sera remis à zéro dimanche à 00h00. Vous pouvez aussi passer à l'offre Premium à %(price)s.- CHF/an pour scanner en illimité.", price=price_yearly) }}
                 </p>
                 <div class="buttons is-centered">
                     <a href="{{ url_for('subscription.tarifs') }}" class="button is-link is-rounded has-text-weight-bold">
-                        <span>{{ _("Passer Premium (30.- CHF/an)") }}</span>
+                        <span>{{ _("Passer Premium (%(price)s.- CHF/an)", price=price_yearly) }}</span>
                     </a>
                     <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-rounded">
                         <span>{{ _("Ajouter manuellement") }}</span>

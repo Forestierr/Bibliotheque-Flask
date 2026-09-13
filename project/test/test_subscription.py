@@ -8,9 +8,10 @@ import pytest
 from project import create_app, db
 from project.config_plans import (
     MAX_FREE_BOOKS,
+    MAX_FREE_SCANS,
     MAX_FREE_STUDENTS,
 )
-from project.models import Book, Student, User
+from project.models import Book, Student, User, get_current_scan_period_start
 
 
 @pytest.fixture
@@ -961,3 +962,351 @@ def test_canceling_user_display_in_tarifs_and_navbar(app, client):
         assert resp_dash.status_code == 200
         html_dash = resp_dash.get_data(as_text=True)
         assert "Premium jusqu'au" in html_dash
+
+
+def test_get_current_scan_period_start_calculation():
+    """Vérifie le calcul du début de période (dimanche à 00:00:00 UTC)."""
+    # Dimanche 13 sept 2026 à 14h30 -> Dimanche 13 sept 2026 à 00h00
+    dt_sunday = datetime(2026, 9, 13, 14, 30, 0, tzinfo=timezone.utc)
+    start = get_current_scan_period_start(dt_sunday)
+    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=timezone.utc)
+
+    # Samedi 19 sept 2026 à 23h59 -> Dimanche 13 sept 2026 à 00h00
+    dt_saturday = datetime(2026, 9, 19, 23, 59, 59, tzinfo=timezone.utc)
+    start = get_current_scan_period_start(dt_saturday)
+    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=timezone.utc)
+
+    # Dimanche 20 sept 2026 à 00h00 -> Dimanche 20 sept 2026 à 00h00 (nouveau cycle !)
+    dt_next_sunday = datetime(2026, 9, 20, 0, 0, 0, tzinfo=timezone.utc)
+    start = get_current_scan_period_start(dt_next_sunday)
+    assert start == datetime(2026, 9, 20, 0, 0, 0, tzinfo=timezone.utc)
+
+    # Mercredi 16 sept 2026 à 10h00 -> Dimanche 13 sept 2026 à 00h00
+    dt_wed = datetime(2026, 9, 16, 10, 0, 0, tzinfo=timezone.utc)
+    start = get_current_scan_period_start(dt_wed)
+    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=timezone.utc)
+
+
+def test_weekly_scans_left_property(app):
+    """Vérifie la propriété weekly_scans_left selon le plan et le nombre de scans utilisés."""
+    with app.app_context():
+        # Free user avec 10 scans utilisés -> 20 restants
+        user_free = User(plan="free", free_scans_used=10)
+        assert user_free.weekly_scans_left == MAX_FREE_SCANS - 10
+
+        # Free user ayant atteint le quota de 30 scans -> 0 restants
+        user_capped = User(plan="free", free_scans_used=MAX_FREE_SCANS)
+        assert user_capped.weekly_scans_left == 0
+
+        # Free user ayant dépassé le quota -> 0 restants
+        user_over = User(plan="free", free_scans_used=35)
+        assert user_over.weekly_scans_left == 0
+
+        # Utilisateur premium -> illimité
+        user_prem = User(
+            plan="premium",
+            stripe_subscription_status="active",
+            free_scans_used=100,
+        )
+        assert user_prem.weekly_scans_left == 999999
+
+        # Utilisateur fondateur -> illimité
+        user_founder = User(plan="founder", free_scans_used=100)
+        assert user_founder.weekly_scans_left == 999999
+
+
+def test_weekly_scan_quota_reset_after_sunday_midnight(client, app):
+    """Vérifie que le quota de scans hebdomadaires est réinitialisé après le passage du dimanche à minuit."""
+    now = datetime.now(timezone.utc)
+    period_start = get_current_scan_period_start(now)
+
+    with app.app_context():
+        # Utilisateur gratuit avec 30 scans utilisés, réinitialisé pour la dernière fois la semaine précédente
+        user = User(
+            id=106,
+            email="weekly_reset@test.com",
+            plan="free",
+            free_scans_used=30,
+            created_at=period_start - timedelta(days=10),
+            last_scan_reset_at=period_start - timedelta(days=2),
+            trial_ends_at=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    with app.app_context():
+        u = db.session.get(User, 106)
+        # La vérification de réinitialisation doit retourner True et remettre free_scans_used à 0
+        reset_occurred = u.check_and_reset_weekly_scans()
+        assert reset_occurred is True
+        assert u.free_scans_used == 0
+        assert u.last_scan_reset_at is not None
+        reset_at = (
+            u.last_scan_reset_at
+            if u.last_scan_reset_at.tzinfo
+            else u.last_scan_reset_at.replace(tzinfo=timezone.utc)
+        )
+        assert reset_at >= period_start
+
+    # Test via l'endpoint /livre/<isbn>/exist : le scan doit être autorisé car le quota est réinitialisé
+    with app.app_context():
+        u = db.session.get(User, 106)
+    with (
+        patch("flask_login.utils._get_user", return_value=u),
+        patch("project.livre.get_books_by_barcode", return_value=[]),
+        patch("project.livre.get_books_by_isbn", return_value=[MagicMock(id=1)]),
+    ):
+        resp = client.get("/livre/9781234567890/exist")
+        assert resp.status_code == 200
+        assert u.free_scans_used == 1
+
+
+def test_weekly_scan_no_reset_within_same_period(client, app):
+    """Vérifie que les scans ne sont PAS réinitialisés tant que l'on reste dans la même semaine."""
+    now = datetime.now(timezone.utc)
+    period_start = get_current_scan_period_start(now)
+
+    with app.app_context():
+        # Utilisateur gratuit qui a utilisé 30 scans pendant la période actuelle
+        user = User(
+            id=107,
+            email="no_reset@test.com",
+            plan="free",
+            free_scans_used=30,
+            created_at=period_start,
+            last_scan_reset_at=period_start + timedelta(minutes=5),
+            trial_ends_at=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    with app.app_context():
+        u = db.session.get(User, 107)
+        reset_occurred = u.check_and_reset_weekly_scans()
+        assert reset_occurred is False
+        assert u.free_scans_used == 30
+
+    with (
+        patch("flask_login.utils._get_user", return_value=u),
+        patch("project.livre.get_books_by_barcode", return_value=[]),
+        patch("project.livre.get_books_by_isbn", return_value=[MagicMock(id=1)]),
+    ):
+        resp = client.get("/livre/9781234567890/exist")
+        assert resp.status_code == 403
+        data = resp.get_json()
+        assert data["error"] == "scan_limit_reached"
+
+
+def test_reset_weekly_scans_script(app, monkeypatch, capsys):
+    """Vérifie le fonctionnement du script CLI scripts/reset_weekly_scans.py."""
+    import sys
+
+    from scripts.reset_weekly_scans import main as reset_main
+
+    now = datetime.now(timezone.utc)
+    period_start = get_current_scan_period_start(now)
+
+    with app.app_context():
+        # User 1 : éligible (scans=25, reset date dans la semaine précédente)
+        u1 = User(
+            id=108,
+            email="cli_u1@test.com",
+            plan="free",
+            free_scans_used=25,
+            created_at=period_start - timedelta(days=10),
+            last_scan_reset_at=period_start - timedelta(days=2),
+        )
+        # User 2 : non éligible (déjà réinitialisé cette semaine)
+        u2 = User(
+            id=109,
+            email="cli_u2@test.com",
+            plan="free",
+            free_scans_used=10,
+            created_at=period_start,
+            last_scan_reset_at=period_start + timedelta(hours=1),
+        )
+        # User 3 : éligible (scans=15, last_scan_reset_at is None, créé avant period_start)
+        u3 = User(
+            id=110,
+            email="cli_u3@test.com",
+            plan="free",
+            free_scans_used=15,
+            created_at=period_start - timedelta(days=15),
+            last_scan_reset_at=None,
+        )
+        db.session.add_all([u1, u2, u3])
+        db.session.commit()
+
+    # Test avec --dry-run
+    monkeypatch.setattr(sys, "argv", ["reset_weekly_scans.py", "--dry-run"])
+    with patch("scripts.reset_weekly_scans.create_app", return_value=app):
+        reset_main()
+
+    captured = capsys.readouterr()
+    assert "2 compte(s) concerné(s)" in captured.out
+    assert "Mode simulation" in captured.out
+
+    with app.app_context():
+        assert db.session.get(User, 108).free_scans_used == 25
+        assert db.session.get(User, 110).free_scans_used == 15
+
+    # Test exécution réelle
+    monkeypatch.setattr(sys, "argv", ["reset_weekly_scans.py"])
+    with patch("scripts.reset_weekly_scans.create_app", return_value=app):
+        reset_main()
+
+    captured_real = capsys.readouterr()
+    assert "2 compte(s) réinitialisé(s)" in captured_real.out
+
+    with app.app_context():
+        assert db.session.get(User, 108).free_scans_used == 0
+        assert db.session.get(User, 109).free_scans_used == 10
+        assert db.session.get(User, 110).free_scans_used == 0
+
+
+def test_scheduler_downgrade_expired_subscriptions(app):
+    """Vérifie la rétrogradation automatique des abonnements échus vers le plan gratuit par le scheduler."""
+    from project.scheduler import downgrade_expired_subscriptions
+
+    now = datetime.now(timezone.utc)
+
+    with app.app_context():
+        # User 1 : Premium dont la date de fin d'abonnement est dépassée -> doit être rétrogradé en free
+        u_expired = User(
+            id=201,
+            email="expired_sub@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now - timedelta(days=2),
+        )
+        # User 2 : Premium encore actif -> doit rester premium
+        u_active = User(
+            id=202,
+            email="active_sub@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now + timedelta(days=10),
+        )
+        # User 3 : Membre fondateur -> NE DOIT JAMAIS être rétrogradé
+        u_founder = User(
+            id=203,
+            email="founder_sub@test.com",
+            plan="founder",
+            subscription_end_at=now - timedelta(days=2),
+        )
+        # User 4 : Déjà en plan gratuit
+        u_free = User(
+            id=204,
+            email="free_sub@test.com",
+            plan="free",
+        )
+        db.session.add_all([u_expired, u_active, u_founder, u_free])
+        db.session.commit()
+
+    downgraded_count = downgrade_expired_subscriptions(app)
+    assert downgraded_count == 1
+
+    with app.app_context():
+        user_exp = db.session.get(User, 201)
+        assert user_exp.plan == "free"
+        assert user_exp.stripe_subscription_status == "canceled"
+        assert user_exp.subscription_end_at is None
+        assert user_exp.is_premium is False
+
+        user_act = db.session.get(User, 202)
+        assert user_act.plan == "premium"
+        assert user_act.stripe_subscription_status == "active"
+        assert user_act.subscription_end_at is not None
+        assert user_act.is_premium is True
+
+        user_fnd = db.session.get(User, 203)
+        assert user_fnd.plan == "founder"
+        assert user_fnd.is_premium is True
+
+
+def test_realtime_expired_subscription_check():
+    """Vérifie que User.is_premium et User.effective_plan détectent immédiatement l'expiration à la volée."""
+    now = datetime.now(timezone.utc)
+
+    # Utilisateur premium dont subscription_end_at est passée
+    user_expired = User(
+        email="realtime_expired@test.com",
+        plan="premium",
+        stripe_subscription_status="active",
+        subscription_end_at=now - timedelta(minutes=5),
+    )
+    assert user_expired.is_canceling is False
+    assert user_expired.is_premium is False
+    assert user_expired.effective_plan == "free"
+
+    # Utilisateur premium dont subscription_end_at est future
+    user_valid = User(
+        email="realtime_valid@test.com",
+        plan="premium",
+        stripe_subscription_status="active",
+        subscription_end_at=now + timedelta(days=5),
+    )
+    assert user_valid.is_canceling is True
+    assert user_valid.is_premium is True
+    assert user_valid.effective_plan == "premium"
+
+
+def test_scheduler_reset_weekly_scans(app):
+    """Vérifie la réinitialisation des scans par la fonction reset_weekly_scans du scheduler."""
+    from project.scheduler import reset_weekly_scans
+
+    now = datetime.now(timezone.utc)
+    period_start = get_current_scan_period_start(now)
+
+    with app.app_context():
+        u_reset = User(
+            id=205,
+            email="sched_reset@test.com",
+            plan="free",
+            free_scans_used=30,
+            created_at=period_start - timedelta(days=10),
+            last_scan_reset_at=period_start - timedelta(days=2),
+        )
+        u_keep = User(
+            id=206,
+            email="sched_keep@test.com",
+            plan="free",
+            free_scans_used=12,
+            created_at=period_start,
+            last_scan_reset_at=period_start + timedelta(hours=1),
+        )
+        db.session.add_all([u_reset, u_keep])
+        db.session.commit()
+
+    count = reset_weekly_scans(app)
+    assert count == 1
+
+    with app.app_context():
+        assert db.session.get(User, 205).free_scans_used == 0
+        assert db.session.get(User, 206).free_scans_used == 12
+
+
+def test_scheduler_multiworker_coordination(app, tmp_path):
+    """Vérifie le verrou inter-workers basé sur l'horodatage."""
+    from project.scheduler import _should_run_tasks
+
+    # Simuler instance_path avec tmp_path
+    app.instance_path = str(tmp_path)
+
+    # 1ère exécution -> True
+    assert _should_run_tasks(app, min_interval_seconds=600) is True
+
+    # 2ème exécution immédiate avec intervalle de 600s -> False (déjà exécuté)
+    assert _should_run_tasks(app, min_interval_seconds=600) is False
+
+    # Exécution avec intervalle de 0s -> True
+    assert _should_run_tasks(app, min_interval_seconds=0) is True
+
+
+def test_start_background_scheduler_disabled_in_testing(app):
+    """Vérifie que le scheduler d'arrière-plan ne démarre aucun thread lorsque TESTING=True."""
+    from project.scheduler import start_background_scheduler
+
+    assert app.config.get("TESTING") is True
+    thread = start_background_scheduler(app)
+    assert thread is None
