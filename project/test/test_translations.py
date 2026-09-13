@@ -174,7 +174,7 @@ def test_format_date_localization():
 
 
 def test_query_param_language_selection():
-    """Verify that ?lang= query parameter sets locale and persists into session."""
+    """Verify that dedicated language URLs and ?lang= query parameter set locale."""
     app = create_app(
         {
             "TESTING": True,
@@ -184,19 +184,17 @@ def test_query_param_language_selection():
     )
 
     with app.test_client() as client:
-        # Request with ?lang=en
-        res = client.get("/?lang=en")
+        # Request with dedicated URL /en/
+        res = client.get("/en/")
         assert res.status_code == 200
         html = res.data.decode("utf-8")
-        # On vérifie l'attribut lang= sans contraindre la balise <html> entière
-        # (des attributs supplémentaires comme data-theme peuvent être présents)
         assert 'lang="en"' in html
         assert "School Library Management Software" in html
         with client.session_transaction() as sess:
             assert sess.get("lang") == "en"
 
-        # Request with ?lang=de
-        res = client.get("/?lang=de")
+        # Request with dedicated URL /de/
+        res = client.get("/de/")
         assert res.status_code == 200
         html = res.data.decode("utf-8")
         assert 'lang="de"' in html
@@ -204,35 +202,140 @@ def test_query_param_language_selection():
         with client.session_transaction() as sess:
             assert sess.get("lang") == "de"
 
+        # Request with legacy query parameter ?lang=en (supported via alias in test mode)
+        res_param = client.get("/?lang=en")
+        assert res_param.status_code == 200
+
 
 def test_hreflang_and_canonical_tags():
-    """Verify that hreflang alternate tags and canonical link are correctly rendered."""
+    """Verify that hreflang alternate tags, canonical link, and og:locale are correctly rendered."""
     app = create_app(
         {
             "TESTING": True,
+            "SERVER_NAME": "livresenclasse.com",
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
             "SECRET_KEY": "test-key-for-translations",
         }
     )
 
     with app.test_client() as client:
-        res = client.get("/aide?lang=en")
+        # Check English page /en/aide
+        res = client.get("/en/aide")
         assert res.status_code == 200
         html = res.data.decode("utf-8")
 
-        # Check hreflang tags
-        assert '<link rel="alternate" hreflang="fr"' in html
-        assert '<link rel="alternate" hreflang="en"' in html
-        assert '<link rel="alternate" hreflang="de"' in html
-        assert '<link rel="alternate" hreflang="x-default"' in html
+        # Canonical points to self
+        assert (
+            '<link rel="canonical" href="http://livresenclasse.com/en/aide"' in html
+            or '<link rel="canonical" href="https://livresenclasse.com/en/aide"' in html
+        )
 
-        # Check canonical tag
-        assert '<link rel="canonical"' in html
-        assert "lang=en" in html
+        # Hreflang alternate tags for all 3 languages + x-default
+        assert (
+            'hreflang="fr" href="http://livresenclasse.com/fr/aide"' in html
+            or 'hreflang="fr" href="https://livresenclasse.com/fr/aide"' in html
+        )
+        assert (
+            'hreflang="en" href="http://livresenclasse.com/en/aide"' in html
+            or 'hreflang="en" href="https://livresenclasse.com/en/aide"' in html
+        )
+        assert (
+            'hreflang="de" href="http://livresenclasse.com/de/aide"' in html
+            or 'hreflang="de" href="https://livresenclasse.com/de/aide"' in html
+        )
+        assert (
+            'hreflang="x-default" href="http://livresenclasse.com/fr/aide"' in html
+            or 'hreflang="x-default" href="https://livresenclasse.com/fr/aide"' in html
+        )
+
+        # OpenGraph og:locale tags
+        assert '<meta property="og:locale" content="en_US"' in html
+        assert '<meta property="og:locale:alternate" content="fr_FR"' in html
+        assert '<meta property="og:locale:alternate" content="de_DE"' in html
+
+
+def test_hreflang_reciprocity():
+    """Verify strict hreflang reciprocity across all supported languages."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "SERVER_NAME": "livresenclasse.com",
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-translations",
+        }
+    )
+
+    pages = ["/tarifs", "/aide", "/apropos"]
+    langs = ["fr", "en", "de"]
+
+    with app.test_client() as client:
+        for page in pages:
+            for source_lang in langs:
+                res = client.get(f"/{source_lang}{page}")
+                assert res.status_code == 200, f"Failed for {source_lang}{page}"
+                html = res.data.decode("utf-8")
+
+                # Verify each language page lists all targets
+                for target_lang in langs:
+                    expected_target = f"/{target_lang}{page}"
+                    assert f'hreflang="{target_lang}"' in html, (
+                        f"Missing hreflang={target_lang} on {source_lang}{page}"
+                    )
+                    assert expected_target in html, (
+                        f"Missing {expected_target} in hreflang on {source_lang}{page}"
+                    )
+                # Verify x-default
+                assert 'hreflang="x-default"' in html
+                assert f"/fr{page}" in html
+
+
+def test_language_redirection_and_vary_header():
+    """Verify 302 temporary redirects for content negotiation, 301 for ?lang=, and Vary header."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "TEST_REDIRECTS": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-translations",
+        }
+    )
+
+    with app.test_client() as client:
+        # Default / redirects 302 to /fr/ with Vary: Accept-Language, Cookie
+        res_root = client.get("/")
+        assert res_root.status_code == 302
+        assert res_root.headers.get("Location") == "/fr/"
+        assert "Accept-Language" in res_root.headers.get("Vary", "")
+        assert "Cookie" in res_root.headers.get("Vary", "")
+
+        # Unprefixed /tarifs redirects 302 to /fr/tarifs with Vary
+        res_tarifs = client.get("/tarifs")
+        assert res_tarifs.status_code == 302
+        assert res_tarifs.headers.get("Location") == "/fr/tarifs"
+        assert "Accept-Language" in res_tarifs.headers.get("Vary", "")
+
+        # Accept-Language: en redirects 302 to /en/
+        res_en = client.get("/", headers={"Accept-Language": "en-US,en;q=0.9"})
+        assert res_en.status_code == 302
+        assert res_en.headers.get("Location") == "/en/"
+
+        # Accept-Language: de redirects 302 to /de/
+        res_de = client.get("/", headers={"Accept-Language": "de-DE,de;q=0.9"})
+        assert res_de.status_code == 302
+        assert res_de.headers.get("Location") == "/de/"
+
+        # Explicit ?lang=en triggers 301 permanent redirect
+        res_301 = client.get("/tarifs?lang=en")
+        assert res_301.status_code == 301
+        assert res_301.headers.get("Location") == "/en/tarifs"
+
+        # Unsupported language returns 404
+        res_404 = client.get("/es/tarifs")
+        assert res_404.status_code == 404
 
 
 def test_title_and_meta_tags_localized():
-    """Verify that <title> and <meta name='description'> adapt to language."""
+    """Verify that <title> and <meta name='description'> adapt to language on dedicated URLs."""
     app = create_app(
         {
             "TESTING": True,
@@ -242,27 +345,27 @@ def test_title_and_meta_tags_localized():
     )
 
     with app.test_client() as client:
-        # French default
-        res_fr = client.get("/aide?lang=fr")
+        # French /fr/aide
+        res_fr = client.get("/fr/aide")
         html_fr = res_fr.data.decode("utf-8")
         assert (
             "<title>Centre d&#39;aide | Livres en Classe</title>" in html_fr
             or "<title>Centre d'aide | Livres en Classe</title>" in html_fr
         )
 
-        # English
-        res_en = client.get("/aide?lang=en")
+        # English /en/aide
+        res_en = client.get("/en/aide")
         html_en = res_en.data.decode("utf-8")
         assert "<title>Help Center | Livres en Classe</title>" in html_en
 
-        # German
-        res_de = client.get("/aide?lang=de")
+        # German /de/aide
+        res_de = client.get("/de/aide")
         html_de = res_de.data.decode("utf-8")
         assert "<title>Hilfecenter | Livres en Classe</title>" in html_de
 
 
 def test_sitemap_multilingual_xml():
-    """Verify that sitemap.xml returns XML and contains xhtml:link alternates."""
+    """Verify that sitemap.xml returns XML and contains dedicated URLs and xhtml:link alternates."""
     app = create_app(
         {
             "TESTING": True,
@@ -281,7 +384,12 @@ def test_sitemap_multilingual_xml():
         assert '<xhtml:link rel="alternate" hreflang="en"' in xml
         assert '<xhtml:link rel="alternate" hreflang="de"' in xml
         assert '<xhtml:link rel="alternate" hreflang="x-default"' in xml
-        assert "https://livresenclasse.com/aide" in xml
+        assert "https://livresenclasse.com/fr/aide" in xml
+        assert "https://livresenclasse.com/en/aide" in xml
+        assert "https://livresenclasse.com/de/aide" in xml
+        assert "https://livresenclasse.com/fr/tarifs" in xml
+        assert "https://livresenclasse.com/en/tarifs" in xml
+        assert "https://livresenclasse.com/de/tarifs" in xml
 
 
 def test_llms_txt_mentions_languages():
@@ -302,10 +410,13 @@ def test_llms_txt_mentions_languages():
         assert "Français (fr)" in text
         assert "English (en)" in text
         assert "Deutsch (de)" in text
+        assert "https://livresenclasse.com/fr/" in text
+        assert "https://livresenclasse.com/en/" in text
+        assert "https://livresenclasse.com/de/" in text
 
 
 def test_navbar_language_dropdown_and_highlight():
-    """Verify that navbar displays compact language dropdown with active language highlighted."""
+    """Verify that navbar displays language links pointing to dedicated URLs with active language highlighted."""
     app = create_app(
         {
             "TESTING": True,
@@ -315,26 +426,33 @@ def test_navbar_language_dropdown_and_highlight():
     )
 
     with app.test_client() as client:
-        # Default French
-        res_fr = client.get("/")
+        # Default French /fr/
+        res_fr = client.get("/fr/")
         html_fr = res_fr.data.decode("utf-8")
         assert 'id="langDropdownBtn"' in html_fr
         assert '<span class="lang-btn-code">FR</span>' in html_fr
         assert 'class="lang-dropdown-item is-active"' in html_fr
+        assert 'href="/en/"' in html_fr
+        assert 'href="/de/"' in html_fr
 
-        # English
-        res_en = client.get("/?lang=en")
+        # English /en/tarifs
+        res_en = client.get("/en/tarifs")
         html_en = res_en.data.decode("utf-8")
         assert '<span class="lang-btn-code">EN</span>' in html_en
         assert 'class="lang-dropdown-item is-active"' in html_en
         assert "English" in html_en
+        # Verify language switcher links point directly to /fr/tarifs and /de/tarifs
+        assert 'href="/fr/tarifs"' in html_en
+        assert 'href="/de/tarifs"' in html_en
 
-        # German
-        res_de = client.get("/?lang=de")
+        # German /de/aide
+        res_de = client.get("/de/aide")
         html_de = res_de.data.decode("utf-8")
         assert '<span class="lang-btn-code">DE</span>' in html_de
         assert 'class="lang-dropdown-item is-active"' in html_de
         assert "Deutsch" in html_de
+        assert 'href="/fr/aide"' in html_de
+        assert 'href="/en/aide"' in html_de
 
 
 def test_dashboard_heatmap_localization():
@@ -450,3 +568,71 @@ def test_ressources_page_translations():
             assert expected in html, (
                 f"Missing '{expected}' in /ressources for language {lang}"
             )
+
+
+def test_scan_limit_reached_translations_and_dynamic_config():
+    """Verify that scan limit messages are translated into EN and DE and dynamically reflect MAX_FREE_SCANS."""
+    from project import db
+    from project.config_plans import MAX_FREE_SCANS
+    from project.models import User
+
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-translations",
+        }
+    )
+
+    with app.app_context():
+        db.create_all()
+        user = User(
+            id=999,
+            email="limit_scan@test.com",
+            plan="free",
+            free_scans_used=MAX_FREE_SCANS,
+            trial_ends_at=None,
+            is_verified=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    client = app.test_client()
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "999"
+
+    # 1. Test FR error message
+    res_fr = client.get("/fr/livre/9781234567890/exist")
+    assert res_fr.status_code == 403
+    data_fr = res_fr.get_json()
+    assert data_fr["error"] == "scan_limit_reached"
+    assert f"quota de {MAX_FREE_SCANS} scans gratuits" in data_fr["message"]
+    assert "dimanche à minuit" in data_fr["message"]
+
+    # 2. Test EN error message
+    res_en = client.get("/en/livre/9781234567890/exist")
+    assert res_en.status_code == 403
+    data_en = res_en.get_json()
+    assert data_en["error"] == "scan_limit_reached"
+    assert f"weekly quota of {MAX_FREE_SCANS} free scans" in data_en["message"]
+    assert "reset on Sunday at midnight" in data_en["message"]
+
+    # 3. Test DE error message
+    res_de = client.get("/de/livre/9781234567890/exist")
+    assert res_de.status_code == 403
+    data_de = res_de.get_json()
+    assert data_de["error"] == "scan_limit_reached"
+    assert (
+        f"wöchentliches Kontingent von {MAX_FREE_SCANS} kostenlosen Scans"
+        in data_de["message"]
+    )
+    assert "Sonntag um Mitternacht" in data_de["message"]
+
+    # 4. Test template /en/livre/scann renders modal with dynamic number and translated title
+    res_modal = client.get("/en/livre/scann")
+    assert res_modal.status_code == 200
+    html_modal = res_modal.get_data(as_text=True)
+    assert "Scan limit reached" in html_modal
+    assert (
+        f"You have used your {MAX_FREE_SCANS} free scans for this week!" in html_modal
+    )

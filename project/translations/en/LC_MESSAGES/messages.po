@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-09-12 19:51+0200\n"
+"POT-Creation-Date: 2026-09-13 19:25+0200\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: en\n"
@@ -31,12 +31,12 @@ msgstr "Give your feedback:"
 msgid "Signaler un problème :"
 msgstr "Report an issue:"
 
-#: project/auth.py:76 project/auth.py:147 project/templates/auth/login.html:159
-#: project/templates/auth/signup.html:265
+#: project/auth.py:76 project/auth.py:147 project/main.py:242
+#: project/templates/auth/login.html:158 project/templates/auth/signup.html:265
 msgid "Veuillez compléter le CAPTCHA."
 msgstr "Please complete the CAPTCHA."
 
-#: project/auth.py:85 project/auth.py:157
+#: project/auth.py:85 project/auth.py:157 project/main.py:251
 msgid "CAPTCHA invalide. Veuillez réessayer."
 msgstr "Invalid CAPTCHA. Please try again."
 
@@ -139,7 +139,7 @@ msgstr ""
 "existing students remain accessible. To add more, upgrade to Premium or "
 "delete an existing student."
 
-#: project/eleve.py:61 project/main.py:204
+#: project/eleve.py:61 project/main.py:257
 msgid "Veuillez remplir tous les champs."
 msgstr "Please fill in all fields."
 
@@ -155,11 +155,11 @@ msgstr "Unauthorized access."
 msgid "Emprunt introuvable."
 msgstr "Loan not found."
 
-#: project/livre.py:143
+#: project/livre.py:147
 msgid "Le livre que vous souhaitiez voir n'existe pas."
 msgstr "The book you were looking for does not exist."
 
-#: project/livre.py:178
+#: project/livre.py:182
 #, python-format
 msgid ""
 "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres"
@@ -170,56 +170,58 @@ msgstr ""
 "existing books remain accessible. To add more, upgrade to Premium or "
 "delete an existing book."
 
-#: project/livre.py:203
+#: project/livre.py:207
 msgid "Veuillez ajouter un titre."
 msgstr "Please enter a title."
 
-#: project/livre.py:248
+#: project/livre.py:252
 msgid "Le livre : "
 msgstr "The book: "
 
-#: project/livre.py:248
+#: project/livre.py:252
 msgid " a été ajouté à votre bibliothèque."
 msgstr " has been added to your library."
 
-#: project/livre.py:308
+#: project/livre.py:318
 msgid "Le livre que vous souhaitiez éditer n'existe pas."
 msgstr "The book you wanted to edit does not exist."
 
-#: project/livre.py:342
+#: project/livre.py:352
 msgid "Veuillez ajouter un titre au livre."
 msgstr "Please give the book a title."
 
-#: project/livre.py:430
+#: project/livre.py:440
 msgid "Le livre que vous souhaitiez dupliquer n'existe pas."
 msgstr "The book you wanted to duplicate does not exist."
 
-#: project/livre.py:465
+#: project/livre.py:475
 msgid "Le livre reste dans la bibliothèque."
 msgstr "The book stays in the library."
 
-#: project/livre.py:471
+#: project/livre.py:481
 msgid "L'élève n'existe pas."
 msgstr "The student does not exist."
 
-#: project/livre.py:495
+#: project/livre.py:505
 msgid "Le livre a été supprimé."
 msgstr "The book has been deleted."
 
-#: project/livre.py:513
+#: project/livre.py:522
 #, python-format
 msgid ""
-"Vous avez scanné %(max)s livres ! Passez Premium à 30.- CHF/an pour "
-"scanner en illimité."
+"Vous avez atteint votre quota de %(max)s scans gratuits pour cette "
+"semaine ! Vos scans seront réinitialisés dimanche à minuit, ou passez "
+"Premium pour scanner en illimité."
 msgstr ""
-"You have scanned %(max)s books! Upgrade to Premium for 30.- CHF/year for "
-"unlimited scanning."
+"You have reached your weekly quota of %(max)s free scans! Your scans will"
+" reset on Sunday at midnight, or upgrade to Premium for unlimited "
+"scanning."
 
-#: project/livre.py:556
+#: project/livre.py:565
 msgid "Tous les livres ont été supprimés."
 msgstr "All books have been deleted."
 
-#: project/main.py:226
+#: project/main.py:279
 msgid ""
 "Votre message a été envoyé avec succès. Vous avez reçu un email de "
 "confirmation."
@@ -227,37 +229,37 @@ msgstr ""
 "Your message has been sent successfully. A confirmation email has been "
 "sent to you."
 
-#: project/main.py:288
+#: project/main.py:345
 msgid "Veuillez renseigner l'objet et la description de votre retour."
 msgstr "Please provide the subject and description of your feedback."
 
-#: project/main.py:323
+#: project/main.py:380
 msgid "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 msgstr ""
 "Your feedback has been successfully submitted. Thank you for your "
 "valuable help!"
 
-#: project/main.py:379
+#: project/main.py:436
 msgid "Article non trouvé"
 msgstr "Article not found"
 
-#: project/main.py:389
+#: project/main.py:446
 msgid "Guide non trouvé"
 msgstr "Guide not found"
 
-#: project/ressource.py:156
+#: project/ressource.py:198
 msgid "Ressource non trouvée"
 msgstr "Resource not found"
 
-#: project/subscription.py:58
+#: project/subscription.py:59
 msgid "Cette fonctionnalité nécessite un abonnement Premium."
 msgstr "This feature requires a Premium subscription."
 
-#: project/subscription.py:65
+#: project/subscription.py:66
 msgid "Cette fonctionnalité est réservée aux membres Premium."
 msgstr "This feature is reserved for Premium members."
 
-#: project/subscription.py:118
+#: project/subscription.py:119
 msgid ""
 "Le service de paiement Stripe est en cours de configuration. Contactez "
 "l'administrateur."
@@ -265,18 +267,18 @@ msgstr ""
 "The Stripe payment service is currently being configured. Please contact "
 "the administrator."
 
-#: project/subscription.py:184
+#: project/subscription.py:185
 #, python-format
 msgid "Une erreur est survenue lors de l'accès au paiement : %(error)s"
 msgstr "An error occurred while accessing checkout: %(error)s"
 
-#: project/subscription.py:203
+#: project/subscription.py:204
 msgid "Aucun abonnement Stripe actif n'est associé à votre compte pour le moment."
 msgstr ""
 "No active Stripe subscription is associated with your account at this "
 "time."
 
-#: project/subscription.py:220
+#: project/subscription.py:221
 #, python-format
 msgid "Impossible d'accéder au portail de gestion : %(error)s"
 msgstr "Unable to access the customer portal: %(error)s"
@@ -293,289 +295,24 @@ msgstr ""
 "Guides, tutorials, and FAQ for using Livres en Classe: scan your books, "
 "manage your students, and make your first loans."
 
-#: project/templates/aide.html:11 project/templates/apropos.html:11
-#: project/templates/auth/login.html:11 project/templates/auth/login.html:58
-#: project/templates/auth/reset_password.html:10
-#: project/templates/auth/reset_password.html:46
-#: project/templates/auth/reset_password_request.html:10
-#: project/templates/auth/reset_password_request.html:46
-#: project/templates/auth/signup.html:11
-#: project/templates/blog/comment-classer-livres.html:11
-#: project/templates/blog/donner-envie-lire.html:11
-#: project/templates/blog/gestion-bibliotheque-classe.html:11
-#: project/templates/blog/index.html:11
-#: project/templates/blog/meilleurs-livres-cp.html:11
-#: project/templates/contact.html:11
-#: project/templates/enseignants/index.html:11
-#: project/templates/feedback.html:9 project/templates/index.html:80
-#: project/templates/mentions-legales.html:11
-#: project/templates/ressources/index.html:11
-#: project/templates/user/dashboard.html:9
-#: project/templates/user/reglage.html:10
-msgid "Ma Bibliothèque"
-msgstr "My Library"
-
-#: project/templates/aide.html:129
-msgid "Centre d'aide"
-msgstr "Help Center"
-
-#: project/templates/aide.html:130
-msgid "Trouvez rapidement les réponses à vos questions"
-msgstr "Quickly find answers to your questions"
-
-#: project/templates/aide.html:132
-msgid "Premiers pas"
-msgstr "Getting started"
-
-#: project/templates/aide.html:133 project/templates/user/dashboard.html:46
-msgid "Scanner"
-msgstr "Scan"
-
-#: project/templates/aide.html:134 project/templates/emprunt/emprunt.html:15
-#: project/templates/user/dashboard.html:91
-#: project/templates/utils/navbar.html:386
-msgid "Emprunts"
-msgstr "Loans"
-
-#: project/templates/aide.html:135
-msgid "FAQ"
-msgstr "FAQ"
-
-#: project/templates/aide.html:145
-msgid "Premiers pas — Débuter en 3 étapes"
-msgstr "Getting started — Start in 3 steps"
-
-#: project/templates/aide.html:150
-msgid "Ajoutez vos livres"
-msgstr "Add your books"
-
-#: project/templates/aide.html:152
-msgid ""
-"La méthode la plus rapide est de scanner le code-barres ISBN à l'aide de "
-"votre smartphone. L'application récupère automatiquement le titre, "
-"l'auteur et l'éditeur. Vous pouvez aussi cliquer sur Ajouter un livre "
-"pour saisir manuellement les informations."
-msgstr ""
-"The fastest method is to scan the ISBN barcode with your smartphone. The "
-"app automatically retrieves the title, author, and publisher. You can "
-"also click 'Add a book' to enter details manually."
-
-#: project/templates/aide.html:157 project/templates/livre/livre.html:32
-#: project/templates/livre/livre.html:44
-#: project/templates/livre/livre_scann.html:8
-#: project/templates/user/dashboard.html:113
-#: project/templates/user/dashboard.html:263
-msgid "Scanner un livre"
-msgstr "Scan a book"
-
-#: project/templates/aide.html:161
-msgid "Saisie manuelle"
-msgstr "Manual entry"
-
-#: project/templates/aide.html:170 project/templates/user/dashboard.html:122
-msgid "Ajoutez vos élèves"
-msgstr "Add your students"
-
-#: project/templates/aide.html:172
-msgid ""
-"Rendez-vous dans l'onglet Élèves et ajoutez vos élèves un par un avec "
-"leur nom et prénom."
-msgstr ""
-"Go to the Students tab and add your students one by one with their first "
-"and last name."
-
-#: project/templates/aide.html:176
-msgid "Gérer mes élèves"
-msgstr "Manage my students"
-
-#: project/templates/aide.html:184
-msgid "Effectuez votre premier prêt"
-msgstr "Make your first loan"
-
-#: project/templates/aide.html:186
-msgid ""
-"Sur la fiche d'un livre, cliquez sur Prêter ce livre, sélectionnez "
-"l'élève et confirmez. La date de retour est optionnelle."
-msgstr ""
-"On a book page, click 'Loan this book', select the student, and confirm. "
-"The return date is optional."
-
-#: project/templates/aide.html:190
-msgid "Voir les emprunts"
-msgstr "View loans"
-
-#: project/templates/aide.html:203
-msgid "Guide du scanner"
-msgstr "Scanner guide"
-
-#: project/templates/aide.html:204
-msgid ""
-"Le scanner utilise votre caméra pour lire le code-barres ISBN et "
-"récupérer les informations du livre automatiquement."
-msgstr ""
-"The scanner uses your camera to read the ISBN barcode and retrieve book "
-"information automatically."
-
-#: project/templates/aide.html:206
-msgid "Comment scanner un livre"
-msgstr "How to scan a book"
-
-#: project/templates/aide.html:211 project/templates/livre/livre_scann.html:344
-msgid "Retournez le livre"
-msgstr "Turn the book over"
-
-#: project/templates/aide.html:212
-msgid ""
-"Le code-barres ISBN se trouve au verso (4ème de couverture), généralement"
-" en bas à droite."
-msgstr "The ISBN barcode is on the back cover, usually at the bottom right."
-
-#: project/templates/aide.html:219
-msgid "Vérifiez que c'est bien un ISBN"
-msgstr "Make sure it is an ISBN"
-
-#: project/templates/aide.html:220
-msgid ""
-"Le code doit commencer par 978 ou 979 et faire 13 chiffres. Les autres "
-"codes-barres (prix, éditeur) ne fonctionnent pas."
-msgstr ""
-"The code must start with 978 or 979 and be 13 digits long. Other barcodes"
-" (price, publisher) do not work."
-
-#: project/templates/aide.html:227
-msgid "Positionnez votre caméra"
-msgstr "Position your camera"
-
-#: project/templates/aide.html:228
-msgid ""
-"Maintenez l'appareil à 15-20 cm du code, de face, bien aligné. Le scan se"
-" déclenche automatiquement en quelques secondes."
-msgstr ""
-"Hold the device 15-20 cm from the code, straight and well-aligned. The "
-"scan triggers automatically in seconds."
-
-#: project/templates/aide.html:234
-msgid "Astuces pour un meilleur scan :"
-msgstr "Tips for a better scan:"
-
-#: project/templates/aide.html:236
-msgid "Essayez le zoom 1x si le scan ne fonctionne pas en ultra-large (.5x)"
-msgstr "Try 1x zoom if scanning does not work in ultra-wide (.5x)"
-
-#: project/templates/aide.html:237
-msgid "Activez la torche si la pièce est sombre"
-msgstr "Turn on the flashlight if the room is dark"
-
-#: project/templates/aide.html:238 project/templates/aide.html:319
-msgid "Évitez les reflets : posez le livre à plat et filmez de dessus"
-msgstr "Avoid reflections: lay the book flat and scan from above"
-
-#: project/templates/aide.html:242
-msgid "Dépannage — La caméra ne s'ouvre pas"
-msgstr "Troubleshooting — Camera won't open"
-
-#: project/templates/aide.html:245
-msgid "Erreur : \"Impossible d'accéder à la caméra\""
-msgstr "Error: \"Unable to access camera\""
-
-#: project/templates/aide.html:247
-msgid ""
-"Autorisez la caméra dans les paramètres de votre navigateur (icône "
-"cadenas dans la barre d'adresse)"
-msgstr "Allow camera in your browser settings (lock icon in address bar)"
-
-#: project/templates/aide.html:248
-msgid "Vérifiez qu'aucune autre application n'utilise la caméra en même temps"
-msgstr "Check that no other app is using the camera at the same time"
-
-#: project/templates/aide.html:249
-msgid "Rechargez la page et autorisez lorsque le navigateur le demande"
-msgstr "Reload the page and allow access when prompted"
-
-#: project/templates/aide.html:250
-msgid ""
-"Sur iOS : utilisez Safari — Chrome sur iOS ne supporte pas toujours "
-"l'accès caméra"
-msgstr "On iOS: use Safari — Chrome on iOS does not always support camera access"
-
-#: project/templates/aide.html:257
-msgid "Ouvrir le scanner"
-msgstr "Open scanner"
-
-#: project/templates/aide.html:269
-msgid "Gérer les emprunts"
-msgstr "Manage loans"
-
-#: project/templates/aide.html:274
-msgid "Prêter un livre"
-msgstr "Loan a book"
-
-#: project/templates/aide.html:275
-msgid ""
-"Ouvrez la fiche du livre (onglet Livres), cliquez Prêter ce livre, "
-"sélectionnez l'élève et validez. L'emprunt apparaît immédiatement dans "
-"l'onglet Emprunts."
-msgstr ""
-"Open the book page (Books tab), click 'Loan this book', select the "
-"student, and submit. The loan appears immediately in the Loans tab."
-
-#: project/templates/aide.html:282
-msgid "Marquer un retour"
-msgstr "Mark as returned"
-
-#: project/templates/aide.html:283
-msgid ""
-"Dans l'onglet Emprunts, trouvez le prêt en cours et cliquez sur Retourné."
-" La date de retour est enregistrée automatiquement."
-msgstr ""
-"In the Loans tab, find the active loan and click 'Returned'. The return "
-"date is recorded automatically."
-
-#: project/templates/aide.html:290
-msgid "Suivre les statistiques"
-msgstr "Track statistics"
-
-#: project/templates/aide.html:291
-msgid ""
-"Le Dashboard affiche les livres les plus empruntés, les élèves les plus "
-"lecteurs, et un graphique de l'activité sur l'année."
-msgstr ""
-"The Dashboard displays most borrowed books, top reader students, and an "
-"activity chart over the year."
-
-#: project/templates/aide.html:303
-msgid "Questions fréquentes"
-msgstr "Frequently Asked Questions"
-
-#: project/templates/aide.html:309
+#: project/templates/aide.html:23 project/templates/aide.html:373
 msgid "Le scanner ne détecte pas le code-barres, pourquoi ?"
 msgstr "The scanner does not detect the barcode, why?"
 
-#: project/templates/aide.html:313
-msgid "Plusieurs raisons possibles :"
-msgstr "Several possible reasons:"
+#: project/templates/aide.html:26
+msgid ""
+"Vérifiez que le code commence par 978 ou 979 (ISBN), maintenez une "
+"distance de 15 à 25 cm, assurez-vous d'avoir assez de lumière et évitez "
+"les reflets."
+msgstr ""
+"Make sure the barcode starts with 978 or 979 (ISBN), hold the camera 15 "
+"to 25 cm away, ensure good lighting, and avoid glare."
 
-#: project/templates/aide.html:315
-msgid "Le code ne commence pas par 978 ou 979 — ce n'est pas un ISBN"
-msgstr "The code does not start with 978 or 979 — it is not an ISBN"
-
-#: project/templates/aide.html:316
-msgid "La distance est trop courte ou trop longue — essayez entre 15 et 25 cm"
-msgstr "The distance is too short or too long — try between 15 and 25 cm"
-
-#: project/templates/aide.html:317
-msgid "Trop peu de lumière — activez la torche"
-msgstr "Not enough light — turn on the flashlight"
-
-#: project/templates/aide.html:318
-msgid "Essayez le zoom 1x au lieu du .5x"
-msgstr "Try 1x zoom instead of .5x"
-
-#: project/templates/aide.html:326
+#: project/templates/aide.html:31 project/templates/aide.html:390
 msgid "Le livre scanné n'est pas trouvé dans la base de données ?"
 msgstr "The scanned book is not found in the database?"
 
-#: project/templates/aide.html:330
+#: project/templates/aide.html:34 project/templates/aide.html:394
 msgid ""
 "Certains livres anciens, autoédités ou très locaux ne sont pas dans la "
 "base Google Books. Dans ce cas, l'application vous redirige vers le "
@@ -586,11 +323,11 @@ msgstr ""
 "In this case, the app redirects you to manual entry with the ISBN pre-"
 "filled — simply complete the title and author."
 
-#: project/templates/aide.html:336
+#: project/templates/aide.html:39 project/templates/aide.html:400
 msgid "Puis-je utiliser l'application sur ordinateur ?"
 msgstr "Can I use the app on a computer?"
 
-#: project/templates/aide.html:340
+#: project/templates/aide.html:42 project/templates/aide.html:404
 msgid ""
 "Oui ! Toutes les fonctionnalités (sauf le scanner) fonctionnent "
 "parfaitement sur ordinateur. Pour scanner des livres, utilisez votre "
@@ -601,79 +338,35 @@ msgstr ""
 "scan books, use your smartphone or tablet. The app is a PWA: you can "
 "install it on your home screen."
 
-#: project/templates/aide.html:346
+#: project/templates/aide.html:47 project/templates/aide.html:410
 msgid "Comment installer l'application sur mon téléphone ?"
 msgstr "How do I install the app on my phone?"
 
-#: project/templates/aide.html:350
+#: project/templates/aide.html:50
 msgid ""
 "L'application est une PWA (Progressive Web App) : vous pouvez l'installer"
-" directement sur votre écran d'accueil, sans passer par un store."
+" directement sur votre écran d'accueil sans passer par un store "
+"d'applications, depuis Safari sur iOS ou Chrome sur Android."
 msgstr ""
-"The app is a PWA (Progressive Web App): you can install it directly on "
-"your home screen without an app store."
+"The application is a PWA (Progressive Web App): you can install it "
+"directly on your home screen without going through an app store, from "
+"Safari on iOS or Chrome on Android."
 
-#: project/templates/aide.html:351
-msgid "Sur iPhone / iPad (Safari) :"
-msgstr "On iPhone / iPad (Safari):"
-
-#: project/templates/aide.html:353
-msgid "Ouvrez le site dans Safari"
-msgstr "Open the site in Safari"
-
-#: project/templates/aide.html:354
-msgid "Appuyez sur l'icône de partage en bas de l'écran"
-msgstr "Tap the share icon at the bottom of the screen"
-
-#: project/templates/aide.html:355
-msgid "Faites défiler et appuyez sur Sur l'écran d'accueil"
-msgstr "Scroll and tap 'Add to Home Screen'"
-
-#: project/templates/aide.html:356
-msgid "Confirmez avec Ajouter"
-msgstr "Confirm with 'Add'"
-
-#: project/templates/aide.html:358
-msgid "Sur Android (Chrome) :"
-msgstr "On Android (Chrome):"
-
-#: project/templates/aide.html:360
-msgid "Ouvrez le site dans Chrome"
-msgstr "Open the site in Chrome"
-
-#: project/templates/aide.html:361
-msgid "Appuyez sur le menu (trois points) en haut à droite"
-msgstr "Tap the menu (three dots) in the top right"
-
-#: project/templates/aide.html:362
-msgid "Appuyez sur Installer l'application ou Ajouter à l'écran d'accueil"
-msgstr "Tap 'Install app' or 'Add to Home screen'"
-
-#: project/templates/aide.html:363
-msgid "Confirmez avec Installer"
-msgstr "Confirm with 'Install'"
-
-#: project/templates/aide.html:366
-msgid ""
-"Une fois installée, l'application s'ouvre comme une vraie app, sans barre"
-" de navigateur."
-msgstr "Once installed, the app opens like a real app without browser bars."
-
-#: project/templates/aide.html:373
+#: project/templates/aide.html:55 project/templates/aide.html:437
 msgid "Comment exporter mes données ?"
 msgstr "How do I export my data?"
 
-#: project/templates/aide.html:377
+#: project/templates/aide.html:58 project/templates/aide.html:441
 msgid ""
 "Vous pouvez exporter vos livres et emprunts au format Excel depuis les "
 "Réglages de votre compte."
 msgstr "You can export your books and loans to Excel from your Account Settings."
 
-#: project/templates/aide.html:383
+#: project/templates/aide.html:63 project/templates/aide.html:447
 msgid "Comment supprimer un livre ou un élève ?"
 msgstr "How do I delete a book or a student?"
 
-#: project/templates/aide.html:387
+#: project/templates/aide.html:66 project/templates/aide.html:451
 msgid ""
 "Ouvrez la fiche du livre ou de l'élève, puis utilisez le bouton Supprimer"
 " en bas de la page. Attention : supprimer un élève supprime aussi "
@@ -682,23 +375,368 @@ msgstr ""
 "Open the book or student details, then use the Delete button at the "
 "bottom. Note: deleting a student also removes their loan history."
 
-#: project/templates/aide.html:398
+#: project/templates/aide.html:75 project/templates/apropos.html:48
+#: project/templates/auth/login.html:11 project/templates/auth/login.html:58
+#: project/templates/auth/reset_password.html:10
+#: project/templates/auth/reset_password.html:46
+#: project/templates/auth/reset_password_request.html:10
+#: project/templates/auth/reset_password_request.html:46
+#: project/templates/auth/signup.html:11
+#: project/templates/blog/application-scan-code-barre-livre.html:76
+#: project/templates/blog/comment-classer-livres.html:43
+#: project/templates/blog/de/application-scan-code-barre-livre.html:68
+#: project/templates/blog/de/comment-classer-livres.html:43
+#: project/templates/blog/de/donner-envie-lire.html:43
+#: project/templates/blog/de/gestion-bibliotheque-classe.html:43
+#: project/templates/blog/de/logiciel-bcd-ecole.html:68
+#: project/templates/blog/de/meilleurs-livres-cp.html:43
+#: project/templates/blog/de/suivi-emprunts-livres-eleves.html:68
+#: project/templates/blog/donner-envie-lire.html:43
+#: project/templates/blog/en/application-scan-code-barre-livre.html:68
+#: project/templates/blog/en/comment-classer-livres.html:43
+#: project/templates/blog/en/donner-envie-lire.html:43
+#: project/templates/blog/en/gestion-bibliotheque-classe.html:43
+#: project/templates/blog/en/logiciel-bcd-ecole.html:68
+#: project/templates/blog/en/meilleurs-livres-cp.html:43
+#: project/templates/blog/en/suivi-emprunts-livres-eleves.html:68
+#: project/templates/blog/gestion-bibliotheque-classe.html:43
+#: project/templates/blog/index.html:30
+#: project/templates/blog/logiciel-bcd-ecole.html:68
+#: project/templates/blog/meilleurs-livres-cp.html:43
+#: project/templates/blog/suivi-emprunts-livres-eleves.html:68
+#: project/templates/contact.html:39
+#: project/templates/enseignants/index.html:32
+#: project/templates/feedback.html:9 project/templates/index.html:99
+#: project/templates/mentions-legales.html:27
+#: project/templates/ressources/index.html:30
+#: project/templates/user/dashboard.html:9
+#: project/templates/user/reglage.html:10
+msgid "Ma Bibliothèque"
+msgstr "My Library"
+
+#: project/templates/aide.html:193
+msgid "Centre d'aide"
+msgstr "Help Center"
+
+#: project/templates/aide.html:194
+msgid "Trouvez rapidement les réponses à vos questions"
+msgstr "Quickly find answers to your questions"
+
+#: project/templates/aide.html:196
+msgid "Premiers pas"
+msgstr "Getting started"
+
+#: project/templates/aide.html:197 project/templates/user/dashboard.html:46
+msgid "Scanner"
+msgstr "Scan"
+
+#: project/templates/aide.html:198 project/templates/emprunt/emprunt.html:15
+#: project/templates/user/dashboard.html:91
+#: project/templates/utils/navbar.html:386
+msgid "Emprunts"
+msgstr "Loans"
+
+#: project/templates/aide.html:199
+msgid "FAQ"
+msgstr "FAQ"
+
+#: project/templates/aide.html:209
+msgid "Premiers pas — Débuter en 3 étapes"
+msgstr "Getting started — Start in 3 steps"
+
+#: project/templates/aide.html:214
+msgid "Ajoutez vos livres"
+msgstr "Add your books"
+
+#: project/templates/aide.html:216
+msgid ""
+"La méthode la plus rapide est de scanner le code-barres ISBN à l'aide de "
+"votre smartphone. L'application récupère automatiquement le titre, "
+"l'auteur et l'éditeur. Vous pouvez aussi cliquer sur Ajouter un livre "
+"pour saisir manuellement les informations."
+msgstr ""
+"The fastest method is to scan the ISBN barcode with your smartphone. The "
+"app automatically retrieves the title, author, and publisher. You can "
+"also click 'Add a book' to enter details manually."
+
+#: project/templates/aide.html:221 project/templates/livre/livre.html:32
+#: project/templates/livre/livre.html:44
+#: project/templates/livre/livre_scann.html:8
+#: project/templates/user/dashboard.html:113
+#: project/templates/user/dashboard.html:263
+msgid "Scanner un livre"
+msgstr "Scan a book"
+
+#: project/templates/aide.html:225
+msgid "Saisie manuelle"
+msgstr "Manual entry"
+
+#: project/templates/aide.html:234 project/templates/user/dashboard.html:122
+msgid "Ajoutez vos élèves"
+msgstr "Add your students"
+
+#: project/templates/aide.html:236
+msgid ""
+"Rendez-vous dans l'onglet Élèves et ajoutez vos élèves un par un avec "
+"leur nom et prénom."
+msgstr ""
+"Go to the Students tab and add your students one by one with their first "
+"and last name."
+
+#: project/templates/aide.html:240
+msgid "Gérer mes élèves"
+msgstr "Manage my students"
+
+#: project/templates/aide.html:248
+msgid "Effectuez votre premier prêt"
+msgstr "Make your first loan"
+
+#: project/templates/aide.html:250
+msgid ""
+"Sur la fiche d'un livre, cliquez sur Prêter ce livre, sélectionnez "
+"l'élève et confirmez. La date de retour est optionnelle."
+msgstr ""
+"On a book page, click 'Loan this book', select the student, and confirm. "
+"The return date is optional."
+
+#: project/templates/aide.html:254
+msgid "Voir les emprunts"
+msgstr "View loans"
+
+#: project/templates/aide.html:267
+msgid "Guide du scanner"
+msgstr "Scanner guide"
+
+#: project/templates/aide.html:268
+msgid ""
+"Le scanner utilise votre caméra pour lire le code-barres ISBN et "
+"récupérer les informations du livre automatiquement."
+msgstr ""
+"The scanner uses your camera to read the ISBN barcode and retrieve book "
+"information automatically."
+
+#: project/templates/aide.html:270
+msgid "Comment scanner un livre"
+msgstr "How to scan a book"
+
+#: project/templates/aide.html:275 project/templates/livre/livre_scann.html:344
+msgid "Retournez le livre"
+msgstr "Turn the book over"
+
+#: project/templates/aide.html:276
+msgid ""
+"Le code-barres ISBN se trouve au verso (4ème de couverture), généralement"
+" en bas à droite."
+msgstr "The ISBN barcode is on the back cover, usually at the bottom right."
+
+#: project/templates/aide.html:283
+msgid "Vérifiez que c'est bien un ISBN"
+msgstr "Make sure it is an ISBN"
+
+#: project/templates/aide.html:284
+msgid ""
+"Le code doit commencer par 978 ou 979 et faire 13 chiffres. Les autres "
+"codes-barres (prix, éditeur) ne fonctionnent pas."
+msgstr ""
+"The code must start with 978 or 979 and be 13 digits long. Other barcodes"
+" (price, publisher) do not work."
+
+#: project/templates/aide.html:291
+msgid "Positionnez votre caméra"
+msgstr "Position your camera"
+
+#: project/templates/aide.html:292
+msgid ""
+"Maintenez l'appareil à 15-20 cm du code, de face, bien aligné. Le scan se"
+" déclenche automatiquement en quelques secondes."
+msgstr ""
+"Hold the device 15-20 cm from the code, straight and well-aligned. The "
+"scan triggers automatically in seconds."
+
+#: project/templates/aide.html:298
+msgid "Astuces pour un meilleur scan :"
+msgstr "Tips for a better scan:"
+
+#: project/templates/aide.html:300
+msgid "Essayez le zoom 1x si le scan ne fonctionne pas en ultra-large (.5x)"
+msgstr "Try 1x zoom if scanning does not work in ultra-wide (.5x)"
+
+#: project/templates/aide.html:301
+msgid "Activez la torche si la pièce est sombre"
+msgstr "Turn on the flashlight if the room is dark"
+
+#: project/templates/aide.html:302 project/templates/aide.html:383
+msgid "Évitez les reflets : posez le livre à plat et filmez de dessus"
+msgstr "Avoid reflections: lay the book flat and scan from above"
+
+#: project/templates/aide.html:306
+msgid "Dépannage — La caméra ne s'ouvre pas"
+msgstr "Troubleshooting — Camera won't open"
+
+#: project/templates/aide.html:309
+msgid "Erreur : \"Impossible d'accéder à la caméra\""
+msgstr "Error: \"Unable to access camera\""
+
+#: project/templates/aide.html:311
+msgid ""
+"Autorisez la caméra dans les paramètres de votre navigateur (icône "
+"cadenas dans la barre d'adresse)"
+msgstr "Allow camera in your browser settings (lock icon in address bar)"
+
+#: project/templates/aide.html:312
+msgid "Vérifiez qu'aucune autre application n'utilise la caméra en même temps"
+msgstr "Check that no other app is using the camera at the same time"
+
+#: project/templates/aide.html:313
+msgid "Rechargez la page et autorisez lorsque le navigateur le demande"
+msgstr "Reload the page and allow access when prompted"
+
+#: project/templates/aide.html:314
+msgid ""
+"Sur iOS : utilisez Safari — Chrome sur iOS ne supporte pas toujours "
+"l'accès caméra"
+msgstr "On iOS: use Safari — Chrome on iOS does not always support camera access"
+
+#: project/templates/aide.html:321
+msgid "Ouvrir le scanner"
+msgstr "Open scanner"
+
+#: project/templates/aide.html:333 project/templates/enseignants/index.html:157
+msgid "Gérer les emprunts"
+msgstr "Manage loans"
+
+#: project/templates/aide.html:338
+msgid "Prêter un livre"
+msgstr "Loan a book"
+
+#: project/templates/aide.html:339
+msgid ""
+"Ouvrez la fiche du livre (onglet Livres), cliquez Prêter ce livre, "
+"sélectionnez l'élève et validez. L'emprunt apparaît immédiatement dans "
+"l'onglet Emprunts."
+msgstr ""
+"Open the book page (Books tab), click 'Loan this book', select the "
+"student, and submit. The loan appears immediately in the Loans tab."
+
+#: project/templates/aide.html:346
+msgid "Marquer un retour"
+msgstr "Mark as returned"
+
+#: project/templates/aide.html:347
+msgid ""
+"Dans l'onglet Emprunts, trouvez le prêt en cours et cliquez sur Retourné."
+" La date de retour est enregistrée automatiquement."
+msgstr ""
+"In the Loans tab, find the active loan and click 'Returned'. The return "
+"date is recorded automatically."
+
+#: project/templates/aide.html:354
+msgid "Suivre les statistiques"
+msgstr "Track statistics"
+
+#: project/templates/aide.html:355
+msgid ""
+"Le Dashboard affiche les livres les plus empruntés, les élèves les plus "
+"lecteurs, et un graphique de l'activité sur l'année."
+msgstr ""
+"The Dashboard displays most borrowed books, top reader students, and an "
+"activity chart over the year."
+
+#: project/templates/aide.html:367
+msgid "Questions fréquentes"
+msgstr "Frequently Asked Questions"
+
+#: project/templates/aide.html:377
+msgid "Plusieurs raisons possibles :"
+msgstr "Several possible reasons:"
+
+#: project/templates/aide.html:379
+msgid "Le code ne commence pas par 978 ou 979 — ce n'est pas un ISBN"
+msgstr "The code does not start with 978 or 979 — it is not an ISBN"
+
+#: project/templates/aide.html:380
+msgid "La distance est trop courte ou trop longue — essayez entre 15 et 25 cm"
+msgstr "The distance is too short or too long — try between 15 and 25 cm"
+
+#: project/templates/aide.html:381
+msgid "Trop peu de lumière — activez la torche"
+msgstr "Not enough light — turn on the flashlight"
+
+#: project/templates/aide.html:382
+msgid "Essayez le zoom 1x au lieu du .5x"
+msgstr "Try 1x zoom instead of .5x"
+
+#: project/templates/aide.html:414
+msgid ""
+"L'application est une PWA (Progressive Web App) : vous pouvez l'installer"
+" directement sur votre écran d'accueil, sans passer par un store."
+msgstr ""
+"The app is a PWA (Progressive Web App): you can install it directly on "
+"your home screen without an app store."
+
+#: project/templates/aide.html:415
+msgid "Sur iPhone / iPad (Safari) :"
+msgstr "On iPhone / iPad (Safari):"
+
+#: project/templates/aide.html:417
+msgid "Ouvrez le site dans Safari"
+msgstr "Open the site in Safari"
+
+#: project/templates/aide.html:418
+msgid "Appuyez sur l'icône de partage en bas de l'écran"
+msgstr "Tap the share icon at the bottom of the screen"
+
+#: project/templates/aide.html:419
+msgid "Faites défiler et appuyez sur Sur l'écran d'accueil"
+msgstr "Scroll and tap 'Add to Home Screen'"
+
+#: project/templates/aide.html:420
+msgid "Confirmez avec Ajouter"
+msgstr "Confirm with 'Add'"
+
+#: project/templates/aide.html:422
+msgid "Sur Android (Chrome) :"
+msgstr "On Android (Chrome):"
+
+#: project/templates/aide.html:424
+msgid "Ouvrez le site dans Chrome"
+msgstr "Open the site in Chrome"
+
+#: project/templates/aide.html:425
+msgid "Appuyez sur le menu (trois points) en haut à droite"
+msgstr "Tap the menu (three dots) in the top right"
+
+#: project/templates/aide.html:426
+msgid "Appuyez sur Installer l'application ou Ajouter à l'écran d'accueil"
+msgstr "Tap 'Install app' or 'Add to Home screen'"
+
+#: project/templates/aide.html:427
+msgid "Confirmez avec Installer"
+msgstr "Confirm with 'Install'"
+
+#: project/templates/aide.html:430
+msgid ""
+"Une fois installée, l'application s'ouvre comme une vraie app, sans barre"
+" de navigateur."
+msgstr "Once installed, the app opens like a real app without browser bars."
+
+#: project/templates/aide.html:462
 msgid "Vous n'avez pas trouvé votre réponse ?"
 msgstr "Didn't find your answer?"
 
-#: project/templates/aide.html:400
+#: project/templates/aide.html:464
 msgid "Notre équipe répond au plus vite !"
 msgstr "Our team responds as quickly as possible!"
 
-#: project/templates/aide.html:403
+#: project/templates/aide.html:467
 msgid "Contacter le support"
 msgstr "Contact support"
 
-#: project/templates/apropos.html:7
+#: project/templates/apropos.html:7 project/templates/apropos.html:19
 msgid "À propos de Livres en Classe | Logiciel de gestion de bibliothèque"
 msgstr "About Livres en Classe | Classroom Library Management Software"
 
-#: project/templates/apropos.html:8
+#: project/templates/apropos.html:8 project/templates/apropos.html:20
 msgid ""
 "Découvrez Livres en Classe, la bibliothèque numérique pensée pour les "
 "enseignants. Application open-source développée par Robin Forestier."
@@ -706,15 +744,15 @@ msgstr ""
 "Discover Livres en Classe, the digital library designed for teachers. "
 "Open-source application developed by Robin Forestier."
 
-#: project/templates/apropos.html:19
+#: project/templates/apropos.html:56
 msgid "À propos de Livres en Classe"
 msgstr "About Livres en Classe"
 
-#: project/templates/apropos.html:20
+#: project/templates/apropos.html:57
 msgid "La bibliothèque numérique pensée pour les enseignants"
 msgstr "The digital library designed for teachers"
 
-#: project/templates/apropos.html:24
+#: project/templates/apropos.html:61
 msgid ""
 "est une application web qui aide les enseignants à gérer simplement la "
 "bibliothèque de leur classe."
@@ -722,7 +760,7 @@ msgstr ""
 "is a web application that helps teachers easily manage their classroom "
 "library."
 
-#: project/templates/apropos.html:28
+#: project/templates/apropos.html:65
 msgid ""
 "Que vous enseigniez en maternelle, en primaire ou au collège, il devient "
 "rapidement difficile de suivre les centaines de livres disponibles, les "
@@ -735,37 +773,37 @@ msgstr ""
 "become difficult. Livres en Classe centralizes everything into a simple, "
 "fast, and accessible interface from any device."
 
-#: project/templates/apropos.html:31
+#: project/templates/apropos.html:68
 msgid "Grâce à l'application, vous pouvez :"
 msgstr "With the application, you can:"
 
-#: project/templates/apropos.html:33
+#: project/templates/apropos.html:70
 msgid "Ajouter vos livres en quelques secondes grâce au scan du code ISBN."
 msgstr "Add your books in seconds thanks to ISBN barcode scanning."
 
-#: project/templates/apropos.html:34
+#: project/templates/apropos.html:71
 msgid "Organiser votre bibliothèque par auteur, collection, niveau ou thème."
 msgstr "Organize your library by author, series, reading level, or theme."
 
-#: project/templates/apropos.html:35
+#: project/templates/apropos.html:72
 msgid "Gérer les prêts et les retours des élèves."
 msgstr "Manage student loans and returns."
 
-#: project/templates/apropos.html:36
+#: project/templates/apropos.html:73
 msgid "Consulter l'historique des emprunts."
 msgstr "View loan history."
 
-#: project/templates/apropos.html:37
+#: project/templates/apropos.html:74
 msgid "Identifier les livres les plus lus."
 msgstr "Identify the most read books."
 
-#: project/templates/apropos.html:38
+#: project/templates/apropos.html:75
 msgid ""
 "Accéder à votre bibliothèque depuis un ordinateur, une tablette ou un "
 "smartphone."
 msgstr "Access your library from a computer, tablet, or smartphone."
 
-#: project/templates/apropos.html:43
+#: project/templates/apropos.html:80
 msgid ""
 "Notre objectif est simple : permettre aux enseignants de consacrer moins "
 "de temps à l'administration et davantage à la lecture et à "
@@ -774,15 +812,15 @@ msgstr ""
 "Our goal is simple: allow teachers to spend less time on administration "
 "and more on reading and supporting their students."
 
-#: project/templates/apropos.html:49
+#: project/templates/apropos.html:86
 msgid "Un projet open source"
 msgstr "An open source project"
 
-#: project/templates/apropos.html:51
+#: project/templates/apropos.html:88
 msgid "Livres en Classe est développé par"
 msgstr "Livres en Classe is developed by"
 
-#: project/templates/apropos.html:54
+#: project/templates/apropos.html:91
 msgid ""
 "Le projet est distribué sous licence MIT et son code source est "
 "disponible publiquement sur"
@@ -790,7 +828,7 @@ msgstr ""
 "The project is distributed under the MIT license and its source code is "
 "publicly available on"
 
-#: project/templates/apropos.html:54
+#: project/templates/apropos.html:91
 msgid ""
 "afin de favoriser la transparence, les contributions et l'amélioration "
 "continue de l'application."
@@ -798,11 +836,11 @@ msgstr ""
 "to promote transparency, contributions, and continuous improvement of the"
 " app."
 
-#: project/templates/apropos.html:59
+#: project/templates/apropos.html:96
 msgid "Notre ambition"
 msgstr "Our vision"
 
-#: project/templates/apropos.html:61
+#: project/templates/apropos.html:98
 msgid ""
 "Nous souhaitons faire de Livres en Classe la plateforme de référence pour"
 " la gestion des bibliothèques de classe."
@@ -810,7 +848,7 @@ msgstr ""
 "We want to make Livres en Classe the reference platform for classroom "
 "library management."
 
-#: project/templates/apropos.html:64
+#: project/templates/apropos.html:101
 msgid ""
 "Au-delà de l'application, nous développons progressivement un ensemble de"
 " ressources gratuites destinées aux enseignants : conseils, fiches "
@@ -821,15 +859,16 @@ msgstr ""
 "teachers: tips, practical sheets, reading ideas, pedagogical tools, and "
 "guides to foster reading pleasure at school."
 
-#: project/templates/apropos.html:68
+#: project/templates/apropos.html:105
 msgid "Découvrir l'application"
 msgstr "Discover the application"
 
-#: project/templates/apropos.html:69
+#: project/templates/apropos.html:106
 msgid "Nous contacter"
 msgstr "Contact us"
 
-#: project/templates/base.html:11 project/templates/base.html:14
+#: project/templates/base.html:11 project/templates/base.html:13
+#: project/templates/base.html:43
 msgid ""
 "Livres en Classe aide les enseignants à gérer facilement les livres de "
 "leur classe : catalogage, prêts, suivi des élèves et statistiques en "
@@ -838,25 +877,20 @@ msgstr ""
 "Livres en Classe helps teachers easily manage their classroom library: "
 "cataloging, loans, student tracking, and statistics in just a few clicks."
 
-#: project/templates/base.html:12
-msgid ""
-"gestion bibliothèque scolaire, logiciel bibliothèque école, prêt de "
-"livres en classe, bibliothèque de classe, gestion livres enseignants, "
-"bibliothèque enseignants, logiciel CDI primaire"
-msgstr ""
-"school library management, classroom library software, book lending in "
-"class, classroom library, teacher book management, teacher library, "
-"elementary school library software"
+#: project/templates/base.html:12 project/templates/base.html:14
+#: project/templates/index.html:9
+msgid "Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe"
+msgstr "Free Classroom Library Management Software | Livres en Classe"
 
-#: project/templates/base.html:13 project/templates/base.html:15
+#: project/templates/base.html:42
 msgid "Logiciel de gestion de bibliothèque scolaire | Livres en Classe"
 msgstr "School Library Management Software | Livres en Classe"
 
-#: project/templates/contact.html:7
+#: project/templates/contact.html:7 project/templates/contact.html:19
 msgid "Contact | Livres en Classe"
 msgstr "Contact | Livres en Classe"
 
-#: project/templates/contact.html:8
+#: project/templates/contact.html:8 project/templates/contact.html:20
 msgid ""
 "Contactez l'équipe de Livres en Classe pour toute question, suggestion ou"
 " demande d'assistance."
@@ -864,36 +898,48 @@ msgstr ""
 "Contact the Livres en Classe team with any questions, suggestions, or "
 "support requests."
 
-#: project/templates/contact.html:17 project/templates/utils/footer.html:31
+#: project/templates/contact.html:47 project/templates/utils/footer.html:31
 msgid "Contact"
 msgstr "Contact"
 
-#: project/templates/auth/signup.html:184 project/templates/contact.html:26
-#: project/templates/eleve/eleve_add.html:64
+#: project/templates/contact.html:50
+msgid "Une question, une suggestion ou besoin d'aide ? Écrivez-nous."
+msgstr "A question, suggestion, or need help? Write to us."
+
+#: project/templates/auth/signup.html:184 project/templates/contact.html:61
+#: project/templates/eleve/eleve_add.html:63
 msgid "Nom"
 msgstr "Name"
 
-#: project/templates/contact.html:32 project/templates/eleve/eleve_add.html:70
+#: project/templates/contact.html:69 project/templates/eleve/eleve_add.html:69
 msgid "Prénom"
 msgstr "First name"
 
-#: project/templates/auth/login.html:82
-#: project/templates/auth/reset_password_request.html:70
-#: project/templates/auth/signup.html:175 project/templates/contact.html:38
+#: project/templates/auth/login.html:81
+#: project/templates/auth/reset_password_request.html:69
+#: project/templates/auth/signup.html:175 project/templates/contact.html:77
 msgid "Email"
 msgstr "Email"
 
-#: project/templates/contact.html:44
+#: project/templates/contact.html:83
 msgid "Message"
 msgstr "Message"
 
-#: project/templates/contact.html:51
+#: project/templates/contact.html:97
 msgid "Envoyer"
 msgstr "Send"
 
-#: project/templates/error.html:26
+#: project/templates/error.html:18
+msgid "Illustration serveur"
+msgstr "Server illustration"
+
+#: project/templates/error.html:25
 msgid "Oups petite erreur ..."
 msgstr "Oops, something went wrong..."
+
+#: project/templates/error.html:34
+msgid "Illustration avertissement"
+msgstr "Warning illustration"
 
 #: project/templates/feedback.html:6 project/templates/feedback.html:18
 msgid "Donner votre avis & Signaler un problème"
@@ -975,371 +1021,31 @@ msgstr ""
 msgid "Transmettre mon retour"
 msgstr "Submit feedback"
 
-#: project/templates/index.html:195
-msgid "Le logiciel de gestion de bibliothèque pour les enseignants"
-msgstr "Classroom library management software for teachers"
-
-#: project/templates/index.html:196
+#: project/templates/index.html:10
 msgid ""
-"Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves et"
-" développez la lecture dans votre classe."
+"Découvrez Livres en Classe, le logiciel de gestion de bibliothèque de "
+"classe gratuit pour enseignants. Cataloguez vos livres par scan code-"
+"barres et suivez les emprunts des élèves."
 msgstr ""
-"Catalog your books, manage loans, track student reading, and foster "
-"literacy in your classroom."
+"Discover Livres en Classe, the free classroom library management software"
+" for teachers. Catalog books with barcode scanning and effortlessly track"
+" student loans."
 
-#: project/templates/index.html:199 project/templates/utils/navbar.html:564
-msgid "Essayer gratuitement"
-msgstr "Try for free"
-
-#: project/templates/index.html:208
-msgid "Élève lisant un livre dans la bibliothèque de classe"
-msgstr "Student reading a book in the classroom library"
-
-#: project/templates/index.html:218
-msgid "Pourquoi utiliser une bibliothèque de classe ?"
-msgstr "Why use a classroom library?"
-
-#: project/templates/index.html:222
-msgid "Gagnez du temps"
-msgstr "Save time"
-
-#: project/templates/index.html:223
+#: project/templates/index.html:24
+#: project/templates/subscription/tarifs.html:14
 msgid ""
-"Fini les cahiers brouillons. En quelques clics, enregistrez un prêt ou un"
-" retour. Retrouvez un livre instantanément."
+"Logiciel de gestion de bibliothèque pour les enseignants. Cataloguez vos "
+"livres, gérez les prêts, suivez les emprunts des élèves en quelques "
+"clics."
 msgstr ""
-"No more messy notebooks. In just a few clicks, record loans and returns. "
-"Find any book instantly."
+"Library management software for teachers. Catalog your books, manage "
+"loans, and track student borrowing in a few clicks."
 
-#: project/templates/index.html:227
-msgid "Suivez la progression"
-msgstr "Track progress"
-
-#: project/templates/index.html:228
-msgid ""
-"Analysez les habitudes de lecture de vos élèves. Voyez qui a lu quoi, et "
-"encouragez ceux qui lisent moins."
-msgstr ""
-"Analyze student reading habits. See who read what, and encourage "
-"reluctant readers."
-
-#: project/templates/index.html:232
-msgid "Mobile"
-msgstr "Mobile"
-
-#: project/templates/index.html:233
-msgid ""
-"Scannez directement avec votre téléphone, sans équipement coûteux. "
-"L'application vous suit partout dans la classe."
-msgstr ""
-"Scan directly with your phone without expensive hardware. The app goes "
-"everywhere with you in class."
-
-#: project/templates/index.html:240
-msgid "Une vue globale de votre bibliothèque scolaire"
-msgstr "A complete overview of your school library"
-
-#: project/templates/index.html:242
-msgid ""
-"Un tableau de bord complet pour gérer la bibliothèque de votre école "
-"primaire."
-msgstr "A complete dashboard to manage your primary school library."
-
-#: project/templates/index.html:243
-msgid ""
-"Suivez les tendances de prêt de livres et l'activité de vos élèves en un "
-"coup d'œil."
-msgstr "Track book lending trends and student activity at a glance."
-
-#: project/templates/index.html:251
-msgid "Tous les livres de la classe au même endroit"
-msgstr "All classroom books in one place"
-
-#: project/templates/index.html:253
-msgid ""
-"Scannez les codes-barres (ISBN) de vos livres pédagogiques pour les "
-"ajouter instantanément."
-msgstr "Scan barcodes (ISBN) of your educational books to add them instantly."
-
-#: project/templates/index.html:254
-msgid "La gestion de votre inventaire n'a jamais été aussi simple et rapide."
-msgstr "Managing your inventory has never been so simple and fast."
-
-#: project/templates/index.html:262
-msgid "Qui a lu quoi ? Suivez vos élèves"
-msgstr "Who read what? Track your students"
-
-#: project/templates/index.html:264
-msgid ""
-"Suivez le parcours de lecture de chaque élève. Consultez l'historique des"
-" emprunts."
-msgstr "Follow each student's reading journey. View their borrowing history."
-
-#: project/templates/index.html:265
-msgid ""
-"Idéal pour le suivi pédagogique des enseignants et l'encouragement à la "
-"lecture."
-msgstr "Ideal for pedagogical monitoring and encouraging reading."
-
-#: project/templates/index.html:274
-msgid "Une formule adaptée à votre classe"
-msgstr "A plan tailored to your classroom"
-
-#: project/templates/index.html:276
-msgid ""
-"Démarrez gratuitement pour équiper votre classe, ou passez au forfait "
-"Premium pour profiter d'un accès illimité."
-msgstr ""
-"Start for free to equip your classroom, or upgrade to Premium to enjoy "
-"unlimited access."
-
-#: project/templates/index.html:286 project/templates/user/dashboard.html:155
-#: project/templates/utils/navbar.html:371
-#: project/templates/utils/navbar.html:455
-msgid "Version Gratuite"
-msgstr "Free Version"
-
-#: project/templates/auth/signup.html:119 project/templates/index.html:287
-#, python-format
-msgid "100%% gratuit"
-msgstr "100%% free"
-
-#: project/templates/index.html:290
-msgid "Idéal pour débuter et équiper une classe sans débourser un centime."
-msgstr "Ideal to get started and equip a classroom without spending a dime."
-
-#: project/templates/index.html:295
-msgid "à vie"
-msgstr "for life"
-
-#: project/templates/index.html:301
-#: project/templates/subscription/tarifs.html:353
-msgid "élèves max"
-msgstr "max students"
-
-#: project/templates/auth/signup.html:129 project/templates/index.html:305
-msgid "livres au catalogue"
-msgstr "catalog books"
-
-#: project/templates/index.html:309
-msgid "scans code-barres par caméra"
-msgstr "barcode scans with camera"
-
-#: project/templates/auth/signup.html:133 project/templates/index.html:313
-msgid "mois d'historique des prêts"
-msgstr "months of loan history"
-
-#: project/templates/index.html:317
-msgid "Exports Excel & étiquettes de bacs réservés"
-msgstr "Excel exports & book bin labels reserved"
-
-#: project/templates/index.html:324
-msgid "Commencer gratuitement"
-msgstr "Start for free"
-
-#: project/templates/index.html:334
-msgid "Accès complet"
-msgstr "Full access"
-
-#: project/templates/index.html:339
-msgid "Abonnement Premium"
-msgstr "Premium Subscription"
-
-#: project/templates/index.html:340
-msgid "Dès 2.50 CHF/mois"
-msgstr "From 2.50 CHF/month"
-
-#: project/templates/index.html:343
-msgid "Pour une utilisation sans aucune limite et tous les outils pédagogiques."
-msgstr "For unlimited usage and all educational tools."
-
-#: project/templates/index.html:348
-msgid "an (ou 5.-/mois)"
-msgstr "year (or 5.-/month)"
-
-#: project/templates/index.html:354
-msgid "Élèves et livres illimités"
-msgstr "Unlimited students and books"
-
-#: project/templates/index.html:358
-msgid "Scans codes-barres illimités"
-msgstr "Unlimited barcode scans"
-
-#: project/templates/index.html:362
-msgid "Historique et archives illimitées"
-msgstr "Unlimited history and archives"
-
-#: project/templates/index.html:366
-msgid "Exports complets Excel pour vos bilans"
-msgstr "Full Excel exports for your reports"
-
-#: project/templates/index.html:370
-msgid "Planches d'étiquettes de bacs & codes-barres"
-msgstr "Bin label sheets & barcodes"
-
-#: project/templates/index.html:377
-msgid "Voir le détail des tarifs & offres"
-msgstr "View pricing & plan details"
-
-#: project/templates/index.html:388
-msgid "Consulter le comparatif détaillé de toutes les fonctionnalités"
-msgstr "View full detailed feature comparison"
-
-#: project/templates/index.html:395
-msgid "Ressources & Guides pour les Enseignants"
-msgstr "Resources & Guides for Teachers"
-
-#: project/templates/index.html:401
-msgid "Guides et Pédagogie"
-msgstr "Guides & Pedagogy"
-
-#: project/templates/index.html:403
-msgid ""
-"Accédez à nos fiches pratiques d'organisation pour votre classe : choix "
-"du classement (par couleur ou par genre), gestion des prêts physiques, et"
-" conseils pour animer le quart d'heure lecture."
-msgstr ""
-"Access our practical classroom organization guides: sorting systems (by "
-"color or genre), managing physical loans, and tips for daily reading "
-"routines."
-
-#: project/templates/index.html:408
-msgid "Consulter nos Guides"
-msgstr "Browse our Guides"
-
-#: project/templates/index.html:418
-msgid "Le Blog d'actualités"
-msgstr "The News Blog"
-
-#: project/templates/index.html:420
-msgid ""
-"Retrouvez nos sélections de livres jeunesse pour le CP, des conseils pour"
-" installer des bacs de lecture inspirants, et des astuces concrètes "
-"rédigées par des enseignants pour des enseignants."
-msgstr ""
-"Discover children's book selections, tips for setting up inviting book "
-"bins, and practical advice written by teachers for teachers."
-
-#: project/templates/index.html:425
-msgid "Lire le Blog"
-msgstr "Read the Blog"
-
-#: project/templates/index.html:435
-msgid "Toutes vos fonctionnalités"
-msgstr "All your features"
-
-#: project/templates/index.html:439
-msgid "Scan ISBN ultra rapide"
-msgstr "Ultra-fast ISBN scan"
-
-#: project/templates/index.html:440
-msgid ""
-"Ajoutez un livre en 2 secondes grâce à la caméra de votre smartphone. "
-"Titre et image récupérés automatiquement."
-msgstr ""
-"Add a book in 2 seconds using your smartphone camera. Title and cover are"
-" retrieved automatically."
-
-#: project/templates/index.html:441
-msgid "Gestion des prêts"
-msgstr "Loan management"
-
-#: project/templates/index.html:442
-msgid "Prêtez et récupérez des livres d'un simple clic pour un suivi rigoureux."
-msgstr "Loan and return books with a single click for accurate tracking."
-
-#: project/templates/index.html:443
-msgid "Historique des emprunts"
-msgstr "Loan history"
-
-#: project/templates/index.html:444
-msgid ""
-"Gardez une trace de tous les livres empruntés par chaque élève tout au "
-"long de l'année."
-msgstr ""
-"Keep track of all books borrowed by each student throughout the school "
-"year."
-
-#: project/templates/index.html:449
-msgid "Recherche instantanée"
-msgstr "Instant search"
-
-#: project/templates/index.html:450
-msgid ""
-"Retrouvez un livre ou un élève dans votre catalogue en une fraction de "
-"seconde grâce à notre moteur de recherche rapide."
-msgstr ""
-"Find any book or student in your catalog in a split second thanks to our "
-"fast search engine."
-
-#: project/templates/index.html:451
-msgid "Gestion des élèves"
-msgstr "Student management"
-
-#: project/templates/index.html:452
-msgid ""
-"Importez facilement votre liste de classe et créez des profils "
-"individuels."
-msgstr "Easily import your class list and create individual student profiles."
-
-#: project/templates/index.html:453
-msgid "Statistiques de lecture"
-msgstr "Reading statistics"
-
-#: project/templates/index.html:454
-msgid ""
-"Identifiez les livres pédagogiques les plus populaires et les élèves les "
-"plus assidus avec le tableau de bord interactif."
-msgstr ""
-"Identify the most popular educational books and most active readers with "
-"the interactive dashboard."
-
-#: project/templates/index.html:459 project/templates/index.html:536
-msgid "Créer ma bibliothèque"
-msgstr "Create my library"
-
-#: project/templates/index.html:465
-msgid "Livres en Classe vs. Excel"
-msgstr "Livres en Classe vs. Excel"
-
-#: project/templates/index.html:470
-#: project/templates/subscription/tarifs.html:345
-msgid "Fonctionnalité"
-msgstr "Feature"
-
-#: project/templates/index.html:471
-msgid "Excel / Papier"
-msgstr "Excel / Paper"
-
-#: project/templates/index.html:477
-msgid "Ajout de livre par code-barres"
-msgstr "Barcode book adding"
-
-#: project/templates/index.html:482
-msgid "Récupération auto de l'auteur et du titre"
-msgstr "Auto-fetch author and title"
-
-#: project/templates/index.html:487
-msgid "Consultable partout (Mobile / PC)"
-msgstr "Accessible everywhere (Mobile / PC)"
-
-#: project/templates/index.html:492
-msgid "Statistiques automatiques de lecture"
-msgstr "Automatic reading statistics"
-
-#: project/templates/index.html:497
-msgid "Recherche rapide et filtre instantané"
-msgstr "Fast search and instant filtering"
-
-#: project/templates/index.html:508
-msgid "Questions Fréquentes"
-msgstr "Frequently Asked Questions"
-
-#: project/templates/index.html:510
+#: project/templates/index.html:61 project/templates/index.html:635
 msgid "Comment gérer une bibliothèque de classe ?"
 msgstr "How to manage a classroom library?"
 
-#: project/templates/index.html:511
+#: project/templates/index.html:64 project/templates/index.html:636
 msgid ""
 "Livres en Classe vous permet de scanner le code-barres de vos livres, "
 "d'inscrire vos élèves et de suivre les emprunts en un clic depuis votre "
@@ -1350,11 +1056,11 @@ msgstr ""
 "track loans with one click from your dashboard. The fastest and most "
 "efficient way for teachers."
 
-#: project/templates/index.html:513
+#: project/templates/index.html:69 project/templates/index.html:638
 msgid "Est-ce un logiciel gratuit ?"
 msgstr "Is this software free?"
 
-#: project/templates/index.html:514
+#: project/templates/index.html:72 project/templates/index.html:639
 msgid ""
 "Oui, notre logiciel de gestion de bibliothèque scolaire est conçu pour "
 "être accessible aux enseignants avec des fonctionnalités entièrement "
@@ -1363,11 +1069,11 @@ msgstr ""
 "Yes, our school library software is designed to be accessible to teachers"
 " with free features to get started."
 
-#: project/templates/index.html:516
+#: project/templates/index.html:77 project/templates/index.html:641
 msgid "Peut-on scanner les ISBN ?"
 msgstr "Can we scan ISBNs?"
 
-#: project/templates/index.html:517
+#: project/templates/index.html:80 project/templates/index.html:642
 msgid ""
 "Oui, il suffit d'utiliser la caméra de votre smartphone, tablette ou "
 "ordinateur portable pour scanner les ISBN et importer automatiquement le "
@@ -1377,11 +1083,11 @@ msgstr ""
 "ISBNs and automatically import title, author, and book details into your "
 "catalog."
 
-#: project/templates/index.html:519
+#: project/templates/index.html:85 project/templates/index.html:644
 msgid "Est-ce compatible sur tablette et téléphone ?"
 msgstr "Is it compatible with tablets and phones?"
 
-#: project/templates/index.html:520
+#: project/templates/index.html:88 project/templates/index.html:645
 msgid ""
 "Absolument. L'interface est conçue pour tous les écrans. De plus, vous "
 "pouvez l'installer comme une véritable application sur Android ou iOS "
@@ -1391,11 +1097,464 @@ msgstr ""
 "install it as a real app on Android or iOS for even faster library "
 "management."
 
-#: project/templates/index.html:526
+#: project/templates/index.html:214
+msgid ""
+"Le logiciel de gestion de bibliothèque de classe gratuit pour les "
+"enseignants"
+msgstr "Free classroom library management software for teachers"
+
+#: project/templates/index.html:215
+msgid ""
+"Cataloguez vos livres par scan code-barres, gérez les prêts, suivez les "
+"emprunts des élèves et développez la lecture dans votre classe."
+msgstr ""
+"Catalog your books with barcode scanning, manage loans, track student "
+"borrowing, and inspire reading in your classroom."
+
+#: project/templates/index.html:218
+#: project/templates/ressources/fiches_avis.html:230
+#: project/templates/utils/navbar.html:564
+msgid "Essayer gratuitement"
+msgstr "Try for free"
+
+#: project/templates/index.html:227
+msgid "Élève lisant un livre dans la bibliothèque de classe"
+msgstr "Student reading a book in the classroom library"
+
+#: project/templates/index.html:237
+msgid "Pourquoi utiliser une bibliothèque de classe ?"
+msgstr "Why use a classroom library?"
+
+#: project/templates/index.html:241
+msgid "Gagnez du temps"
+msgstr "Save time"
+
+#: project/templates/index.html:242
+msgid ""
+"Fini les cahiers brouillons. En quelques clics, enregistrez un prêt ou un"
+" retour. Retrouvez un livre instantanément."
+msgstr ""
+"No more messy notebooks. In just a few clicks, record loans and returns. "
+"Find any book instantly."
+
+#: project/templates/index.html:246
+msgid "Suivez la progression"
+msgstr "Track progress"
+
+#: project/templates/index.html:247
+msgid ""
+"Analysez les habitudes de lecture de vos élèves. Voyez qui a lu quoi, et "
+"encouragez ceux qui lisent moins."
+msgstr ""
+"Analyze student reading habits. See who read what, and encourage "
+"reluctant readers."
+
+#: project/templates/index.html:251
+msgid "Mobile"
+msgstr "Mobile"
+
+#: project/templates/index.html:252
+msgid ""
+"Scannez directement avec votre téléphone, sans équipement coûteux. "
+"L'application vous suit partout dans la classe."
+msgstr ""
+"Scan directly with your phone without expensive hardware. The app goes "
+"everywhere with you in class."
+
+#: project/templates/index.html:259
+msgid "Une vue globale de votre bibliothèque scolaire"
+msgstr "A complete overview of your school library"
+
+#: project/templates/index.html:261
+msgid ""
+"Un tableau de bord complet pour gérer la bibliothèque de votre école "
+"primaire."
+msgstr "A complete dashboard to manage your primary school library."
+
+#: project/templates/index.html:262
+msgid ""
+"Suivez les tendances de prêt de livres et l'activité de vos élèves en un "
+"coup d'œil."
+msgstr "Track book lending trends and student activity at a glance."
+
+#: project/templates/index.html:270
+msgid "Tous les livres de la classe au même endroit"
+msgstr "All classroom books in one place"
+
+#: project/templates/index.html:272
+msgid ""
+"Scannez les codes-barres (ISBN) de vos livres pédagogiques pour les "
+"ajouter instantanément."
+msgstr "Scan barcodes (ISBN) of your educational books to add them instantly."
+
+#: project/templates/index.html:273
+msgid "La gestion de votre inventaire n'a jamais été aussi simple et rapide."
+msgstr "Managing your inventory has never been so simple and fast."
+
+#: project/templates/index.html:281
+msgid "Qui a lu quoi ? Suivez vos élèves"
+msgstr "Who read what? Track your students"
+
+#: project/templates/index.html:283
+msgid ""
+"Suivez le parcours de lecture de chaque élève. Consultez l'historique des"
+" emprunts."
+msgstr "Follow each student's reading journey. View their borrowing history."
+
+#: project/templates/index.html:284
+msgid ""
+"Idéal pour le suivi pédagogique des enseignants et l'encouragement à la "
+"lecture."
+msgstr "Ideal for pedagogical monitoring and encouraging reading."
+
+#: project/templates/index.html:293
+msgid "Une formule adaptée à votre classe"
+msgstr "A plan tailored to your classroom"
+
+#: project/templates/index.html:295
+msgid ""
+"Démarrez gratuitement pour équiper votre classe, ou passez au forfait "
+"Premium pour profiter d'un accès illimité."
+msgstr ""
+"Start for free to equip your classroom, or upgrade to Premium to enjoy "
+"unlimited access."
+
+#: project/templates/index.html:305 project/templates/user/dashboard.html:155
+#: project/templates/utils/navbar.html:371
+#: project/templates/utils/navbar.html:455
+msgid "Version Gratuite"
+msgstr "Free Version"
+
+#: project/templates/auth/signup.html:119 project/templates/index.html:306
+#, python-format
+msgid "100%% gratuit"
+msgstr "100%% free"
+
+#: project/templates/index.html:309
+msgid "Idéal pour débuter et équiper une classe sans débourser un centime."
+msgstr "Ideal to get started and equip a classroom without spending a dime."
+
+#: project/templates/index.html:314
+msgid "à vie"
+msgstr "for life"
+
+#: project/templates/index.html:320
+#: project/templates/subscription/tarifs.html:397
+msgid "élèves max"
+msgstr "max students"
+
+#: project/templates/auth/signup.html:129 project/templates/index.html:324
+msgid "livres au catalogue"
+msgstr "catalog books"
+
+#: project/templates/index.html:328
+msgid "scans code-barres par semaine"
+msgstr "barcode scans per week"
+
+#: project/templates/auth/signup.html:133 project/templates/index.html:332
+msgid "mois d'historique des prêts"
+msgstr "months of loan history"
+
+#: project/templates/index.html:336
+msgid "Exports Excel & étiquettes de bacs réservés"
+msgstr "Excel exports & book bin labels reserved"
+
+#: project/templates/index.html:343
+msgid "Commencer gratuitement"
+msgstr "Start for free"
+
+#: project/templates/index.html:353
+msgid "Accès complet"
+msgstr "Full access"
+
+#: project/templates/index.html:358
+msgid "Abonnement Premium"
+msgstr "Premium Subscription"
+
+#: project/templates/index.html:359
+msgid "Dès 2.50 CHF/mois"
+msgstr "From 2.50 CHF/month"
+
+#: project/templates/index.html:362
+msgid "Pour une utilisation sans aucune limite et tous les outils pédagogiques."
+msgstr "For unlimited usage and all educational tools."
+
+#: project/templates/index.html:367
+msgid "an (ou 5.-/mois)"
+msgstr "year (or 5.-/month)"
+
+#: project/templates/index.html:373
+msgid "Élèves et livres illimités"
+msgstr "Unlimited students and books"
+
+#: project/templates/index.html:377
+msgid "Scans codes-barres illimités"
+msgstr "Unlimited barcode scans"
+
+#: project/templates/index.html:381
+msgid "Historique et archives illimitées"
+msgstr "Unlimited history and archives"
+
+#: project/templates/index.html:385
+msgid "Exports complets Excel pour vos bilans"
+msgstr "Full Excel exports for your reports"
+
+#: project/templates/index.html:389
+msgid "Planches d'étiquettes de bacs & codes-barres"
+msgstr "Bin label sheets & barcodes"
+
+#: project/templates/index.html:396
+msgid "Voir le détail des tarifs & offres"
+msgstr "View pricing & plan details"
+
+#: project/templates/index.html:407
+msgid "Consulter le comparatif détaillé de toutes les fonctionnalités"
+msgstr "View full detailed feature comparison"
+
+#: project/templates/index.html:414
+msgid "Ressources & Guides pour les Enseignants"
+msgstr "Resources & Guides for Teachers"
+
+#: project/templates/index.html:420
+msgid "Guides et Pédagogie"
+msgstr "Guides & Pedagogy"
+
+#: project/templates/index.html:422
+msgid ""
+"Accédez à nos fiches pratiques d'organisation pour votre classe : choix "
+"du classement (par couleur ou par genre), gestion des prêts physiques, et"
+" conseils pour animer le quart d'heure lecture."
+msgstr ""
+"Access our practical classroom organization guides: sorting systems (by "
+"color or genre), managing physical loans, and tips for daily reading "
+"routines."
+
+#: project/templates/index.html:427
+msgid "Consulter nos Guides"
+msgstr "Browse our Guides"
+
+#: project/templates/index.html:437
+msgid "Le Blog d'actualités"
+msgstr "The News Blog"
+
+#: project/templates/index.html:439
+msgid ""
+"Retrouvez nos sélections de livres jeunesse pour le CP, des conseils pour"
+" installer des bacs de lecture inspirants, et des astuces concrètes "
+"rédigées par des enseignants pour des enseignants."
+msgstr ""
+"Discover children's book selections, tips for setting up inviting book "
+"bins, and practical advice written by teachers for teachers."
+
+#: project/templates/index.html:444
+msgid "Lire le Blog"
+msgstr "Read the Blog"
+
+#: project/templates/index.html:454
+msgid "Toutes vos fonctionnalités"
+msgstr "All your features"
+
+#: project/templates/index.html:458
+msgid "Scan ISBN ultra rapide"
+msgstr "Ultra-fast ISBN scan"
+
+#: project/templates/index.html:459
+msgid ""
+"Ajoutez un livre en 2 secondes grâce à la caméra de votre smartphone. "
+"Titre et image récupérés automatiquement."
+msgstr ""
+"Add a book in 2 seconds using your smartphone camera. Title and cover are"
+" retrieved automatically."
+
+#: project/templates/index.html:460
+msgid "Gestion des prêts"
+msgstr "Loan management"
+
+#: project/templates/index.html:461
+msgid "Prêtez et récupérez des livres d'un simple clic pour un suivi rigoureux."
+msgstr "Loan and return books with a single click for accurate tracking."
+
+#: project/templates/index.html:462
+msgid "Historique des emprunts"
+msgstr "Loan history"
+
+#: project/templates/index.html:463
+msgid ""
+"Gardez une trace de tous les livres empruntés par chaque élève tout au "
+"long de l'année."
+msgstr ""
+"Keep track of all books borrowed by each student throughout the school "
+"year."
+
+#: project/templates/index.html:468
+msgid "Recherche instantanée"
+msgstr "Instant search"
+
+#: project/templates/index.html:469
+msgid ""
+"Retrouvez un livre ou un élève dans votre catalogue en une fraction de "
+"seconde grâce à notre moteur de recherche rapide."
+msgstr ""
+"Find any book or student in your catalog in a split second thanks to our "
+"fast search engine."
+
+#: project/templates/index.html:470
+msgid "Gestion des élèves"
+msgstr "Student management"
+
+#: project/templates/index.html:471
+msgid ""
+"Importez facilement votre liste de classe et créez des profils "
+"individuels."
+msgstr "Easily import your class list and create individual student profiles."
+
+#: project/templates/index.html:472
+msgid "Statistiques de lecture"
+msgstr "Reading statistics"
+
+#: project/templates/index.html:473
+msgid ""
+"Identifiez les livres pédagogiques les plus populaires et les élèves les "
+"plus assidus avec le tableau de bord interactif."
+msgstr ""
+"Identify the most popular educational books and most active readers with "
+"the interactive dashboard."
+
+#: project/templates/index.html:478 project/templates/index.html:661
+#: project/templates/ressources/marque_pages.html:355
+msgid "Créer ma bibliothèque"
+msgstr "Create my library"
+
+#: project/templates/index.html:484
+msgid "Livres en Classe vs. Excel"
+msgstr "Livres en Classe vs. Excel"
+
+#: project/templates/index.html:489
+#: project/templates/subscription/tarifs.html:389
+msgid "Fonctionnalité"
+msgstr "Feature"
+
+#: project/templates/index.html:490
+msgid "Excel / Papier"
+msgstr "Excel / Paper"
+
+#: project/templates/index.html:496
+msgid "Ajout de livre par code-barres"
+msgstr "Barcode book adding"
+
+#: project/templates/index.html:501
+msgid "Récupération auto de l'auteur et du titre"
+msgstr "Auto-fetch author and title"
+
+#: project/templates/index.html:506
+msgid "Consultable partout (Mobile / PC)"
+msgstr "Accessible everywhere (Mobile / PC)"
+
+#: project/templates/index.html:511
+msgid "Statistiques automatiques de lecture"
+msgstr "Automatic reading statistics"
+
+#: project/templates/index.html:516
+msgid "Recherche rapide et filtre instantané"
+msgstr "Fast search and instant filtering"
+
+#: project/templates/index.html:528
+msgid "Ressources et guides pratiques pour votre classe"
+msgstr "Practical resources and guides for your classroom"
+
+#: project/templates/index.html:530
+msgid ""
+"Retrouvez nos méthodologies, nos sélections de lecture et nos outils "
+"imprimables gratuits pour animer votre bibliothèque scolaire."
+msgstr ""
+"Find our methodologies, reading selections, and free printable tools to "
+"bring your school library to life."
+
+#: project/templates/index.html:539
+msgid "Guides Enseignants"
+msgstr "Teacher Guides"
+
+#: project/templates/index.html:542
+msgid ""
+"Conseils d'aménagement, choix du mobilier et rituels d'autonomie pour "
+"structurer le coin lecture."
+msgstr ""
+"Layout tips, furniture choices, and reading routines to structure your "
+"reading corner."
+
+#: project/templates/index.html:547
+msgid "Guide complet de la bibliothèque"
+msgstr "Complete classroom library guide"
+
+#: project/templates/index.html:552
+msgid "Comment classer les livres ?"
+msgstr "How to organize books?"
+
+#: project/templates/index.html:558
+msgid "Explorer l'espace enseignants"
+msgstr "Explore the teachers area"
+
+#: project/templates/index.html:569
+msgid "Outils Imprimables"
+msgstr "Printable Tools"
+
+#: project/templates/index.html:572
+msgid ""
+"Générez en quelques clics des documents pédagogiques prêts à imprimer en "
+"PDF pour vos élèves."
+msgstr ""
+"Generate print-ready PDF educational materials for your students in a few"
+" clicks."
+
+#: project/templates/index.html:577
+msgid "Diplôme de lecture personnalisé"
+msgstr "Customizable reading certificate"
+
+#: project/templates/index.html:582
+msgid "Marque-pages d'emprunt et avis"
+msgstr "Checkout bookmarks and reviews"
+
+#: project/templates/index.html:587
+msgid "Charte du coin lecture"
+msgstr "Reading corner charter"
+
+#: project/templates/index.html:593
+msgid "Voir tous les outils gratuits"
+msgstr "View all free tools"
+
+#: project/templates/index.html:604
+msgid "Le Blog de la Classe"
+msgstr "The Classroom Blog"
+
+#: project/templates/index.html:607
+msgid ""
+"Sélections littéraires par cycle, rituels pour motiver les petits "
+"lecteurs et retours d'expérience."
+msgstr ""
+"Book selections by grade, routines to engage young readers, and teacher "
+"experiences."
+
+#: project/templates/index.html:612
+msgid "Comment donner envie de lire ?"
+msgstr "How to inspire a love of reading?"
+
+#: project/templates/index.html:617
+msgid "Les 10 meilleurs livres pour le CP"
+msgstr "Top 10 books for 1st grade"
+
+#: project/templates/index.html:623
+msgid "Découvrir tous les articles"
+msgstr "Discover all articles"
+
+#: project/templates/index.html:633
+msgid "Questions Fréquentes"
+msgstr "Frequently Asked Questions"
+
+#: project/templates/index.html:651
 msgid "Prêt à gérer votre bibliothèque scolaire ?"
 msgstr "Ready to manage your school library?"
 
-#: project/templates/index.html:527
+#: project/templates/index.html:652
 msgid ""
 "Installez l'application sur votre appareil pour un accès plus rapide, ou "
 "testez-la directement en ligne."
@@ -1403,60 +1562,62 @@ msgstr ""
 "Install the app on your device for faster access, or try it directly "
 "online."
 
-#: project/templates/index.html:533 project/templates/utils/app_install.html:13
+#: project/templates/index.html:658 project/templates/utils/app_install.html:13
 #: project/templates/utils/app_install.html:20
 msgid "Installer l'application"
 msgstr "Install the app"
 
 #: project/templates/mentions-legales.html:7
+#: project/templates/mentions-legales.html:19
 msgid "Mentions Légales | Livres en Classe"
 msgstr "Legal Notice | Livres en Classe"
 
 #: project/templates/mentions-legales.html:8
+#: project/templates/mentions-legales.html:20
 msgid "Mentions légales et politique de confidentialité de Livres en Classe."
 msgstr "Legal notice and privacy policy of Livres en Classe."
 
-#: project/templates/mentions-legales.html:17
+#: project/templates/mentions-legales.html:33
 msgid "Mentions Légales"
 msgstr "Legal Notice"
 
-#: project/templates/mentions-legales.html:22
+#: project/templates/mentions-legales.html:38
 msgid "Nos données"
 msgstr "Our details"
 
-#: project/templates/mentions-legales.html:36
+#: project/templates/mentions-legales.html:52
 msgid "1. CONDITIONS D'UTILISATION"
 msgstr "1. TERMS OF USE"
 
-#: project/templates/mentions-legales.html:51
+#: project/templates/mentions-legales.html:67
 msgid "2. UTILISATION EXCLUSIVEMENT PRIVÉE"
 msgstr "2. EXCLUSIVELY PRIVATE USE"
 
-#: project/templates/mentions-legales.html:84
+#: project/templates/mentions-legales.html:100
 msgid "3. SITE DE TIERS, LIENS"
 msgstr "3. THIRD-PARTY SITES, LINKS"
 
-#: project/templates/mentions-legales.html:99
+#: project/templates/mentions-legales.html:115
 msgid "4. UTILISATION ILLICITE OU INTERDITE"
 msgstr "4. UNLAWFUL OR PROHIBITED USE"
 
-#: project/templates/mentions-legales.html:112
+#: project/templates/mentions-legales.html:128
 msgid "5. FORUMS, MESSAGERIE, COMMUNAUTÉS..."
 msgstr "5. FORUMS, MESSAGING, COMMUNITIES..."
 
-#: project/templates/mentions-legales.html:200
+#: project/templates/mentions-legales.html:216
 msgid "6. LIMITATION DE LA RESPONSABILITÉ"
 msgstr "6. LIMITATION OF LIABILITY"
 
-#: project/templates/mentions-legales.html:216
+#: project/templates/mentions-legales.html:232
 msgid "7. RESTRICTION DE L'ACCÈS"
 msgstr "7. ACCESS RESTRICTION"
 
-#: project/templates/mentions-legales.html:228
+#: project/templates/mentions-legales.html:244
 msgid "8. ACCÈS AUX DONNÉES PERSONNELLES & CONFIDENTIALITÉ"
 msgstr "8. ACCESS TO PERSONAL DATA & PRIVACY"
 
-#: project/templates/mentions-legales.html:231
+#: project/templates/mentions-legales.html:247
 msgid ""
 "En vertu de la législation suisse sur la protection des données (LPD) et "
 "du RGPD le cas échéant, l'Utilisateur dispose d'un droit d'accès, de "
@@ -1476,19 +1637,19 @@ msgstr ""
 "operates in compliance with financial data protection regulations. To "
 "exercise your rights, you can contact us at livresenclasse@gmail.com."
 
-#: project/templates/mentions-legales.html:239
+#: project/templates/mentions-legales.html:255
 msgid "9. MODIFICATION DES PRÉSENTES CONDITIONS ET DISPOSITIONS"
 msgstr "9. AMENDMENT OF THESE TERMS AND CONDITIONS"
 
-#: project/templates/mentions-legales.html:252
+#: project/templates/mentions-legales.html:268
 msgid "10. PAIEMENT, ABONNEMENTS & CONDITIONS GÉNÉRALES DE VENTE (CGV)"
 msgstr "10. PAYMENT, SUBSCRIPTIONS & GENERAL TERMS OF SALE (GTS)"
 
-#: project/templates/mentions-legales.html:255
+#: project/templates/mentions-legales.html:271
 msgid "Partenaire de paiement et sécurité bancaire :"
 msgstr "Payment Partner and Banking Security:"
 
-#: project/templates/mentions-legales.html:256
+#: project/templates/mentions-legales.html:272
 msgid ""
 "Tous les paiements en ligne et abonnements récurrents sont opérés de "
 "manière chiffrée et sécurisée par notre prestataire agréé Stripe (Stripe "
@@ -1507,11 +1668,11 @@ msgstr ""
 "standards (PCI-DSS Level 1 certification). No banking details are "
 "collected, accessed, or stored on Livres en Classe servers."
 
-#: project/templates/mentions-legales.html:260
+#: project/templates/mentions-legales.html:276
 msgid "Tarifs et durée de l'engagement :"
 msgstr "Pricing and Commitment Duration:"
 
-#: project/templates/mentions-legales.html:261
+#: project/templates/mentions-legales.html:277
 msgid ""
 "Le service Livres en Classe propose une formule gratuite ainsi qu'un "
 "abonnement Premium disponible au tarif de 5.00 CHF par mois ou 30.00 CHF "
@@ -1530,11 +1691,11 @@ msgstr ""
 "canceled before the renewal date, subscriptions automatically renew for "
 "an identical duration."
 
-#: project/templates/mentions-legales.html:265
+#: project/templates/mentions-legales.html:281
 msgid "Politique d'annulation et résiliation :"
 msgstr "Cancellation and Termination Policy:"
 
-#: project/templates/mentions-legales.html:266
+#: project/templates/mentions-legales.html:282
 msgid ""
 "L'abonnement Premium peut être résilié à tout moment, en toute autonomie "
 "et sans frais, directement depuis les réglages de votre compte via le "
@@ -1548,11 +1709,11 @@ msgstr ""
 "period (monthly or yearly). You retain access to all Premium features "
 "until that expiration date."
 
-#: project/templates/mentions-legales.html:267
+#: project/templates/mentions-legales.html:283
 msgid "Politique de non-destruction des données :"
 msgstr "Data Preservation Guarantee:"
 
-#: project/templates/mentions-legales.html:268
+#: project/templates/mentions-legales.html:284
 msgid ""
 "À l'issue de la période d'abonnement, votre compte bascule "
 "automatiquement en formule gratuite. Aucune donnée n'est supprimée ni "
@@ -1565,11 +1726,11 @@ msgstr ""
 "students, and loan history remain accessible and usable; only adding new "
 "items beyond free plan limits is restricted."
 
-#: project/templates/mentions-legales.html:272
+#: project/templates/mentions-legales.html:288
 msgid "Politique de non-remboursement :"
 msgstr "No-Refund Policy:"
 
-#: project/templates/mentions-legales.html:273
+#: project/templates/mentions-legales.html:289
 msgid ""
 "Compte tenu de la fourniture immédiate d'un service numérique dès la "
 "validation de la commande et de la mise à disposition d'une formule "
@@ -1586,11 +1747,11 @@ msgstr ""
 " granted in the event of mid-term cancellation, early termination, or "
 "non-use of the service."
 
-#: project/templates/mentions-legales.html:277
+#: project/templates/mentions-legales.html:293
 msgid "Notifications d'abonnement et facturation par e-mail :"
 msgstr "Subscription and Billing Email Notifications:"
 
-#: project/templates/mentions-legales.html:278
+#: project/templates/mentions-legales.html:294
 msgid ""
 "L'adresse e-mail associée à votre compte est utilisée pour l'envoi des "
 "communications strictement nécessaires à la gestion de votre abonnement :"
@@ -1606,11 +1767,11 @@ msgstr ""
 "communications are of a contractual and transactional nature required for"
 " service execution."
 
-#: project/templates/mentions-legales.html:282
+#: project/templates/mentions-legales.html:298
 msgid "Contact & Facturation :"
 msgstr "Contact & Billing:"
 
-#: project/templates/mentions-legales.html:283
+#: project/templates/mentions-legales.html:299
 msgid ""
 "Pour toute question relative à votre abonnement, facturation ou demande "
 "d'assistance, vous pouvez nous écrire à livresenclasse@gmail.com."
@@ -1626,44 +1787,50 @@ msgstr "Login | Livres en Classe"
 msgid "Connectez-vous à votre espace enseignant Livres en Classe."
 msgstr "Log in to your Livres en Classe teacher space."
 
-#: project/templates/auth/login.html:69
-#: project/templates/auth/reset_password.html:57
-#: project/templates/auth/reset_password_request.html:57
+#: project/templates/auth/login.html:64
+#: project/templates/auth/reset_password.html:52
+#: project/templates/auth/reset_password_request.html:52
+msgid "Illustration d'un livre ouvert"
+msgstr "Illustration of an open book"
+
+#: project/templates/auth/login.html:68
+#: project/templates/auth/reset_password.html:56
+#: project/templates/auth/reset_password_request.html:56
 msgid "Gérez vos livres en toute simplicité."
 msgstr "Manage your books with ease."
 
-#: project/templates/auth/login.html:75
+#: project/templates/auth/login.html:74
 msgid "Connexion"
 msgstr "Log In"
 
-#: project/templates/auth/login.html:84
-#: project/templates/auth/reset_password_request.html:72
+#: project/templates/auth/login.html:83
+#: project/templates/auth/reset_password_request.html:71
 msgid "Votre email"
 msgstr "Your email"
 
-#: project/templates/auth/login.html:88
-#: project/templates/auth/reset_password.html:70
+#: project/templates/auth/login.html:87
+#: project/templates/auth/reset_password.html:69
 #: project/templates/auth/signup.html:193
 msgid "Mot de passe"
 msgstr "Password"
 
-#: project/templates/auth/login.html:90 project/templates/auth/signup.html:195
+#: project/templates/auth/login.html:89 project/templates/auth/signup.html:195
 msgid "Votre mot de passe"
 msgstr "Your password"
 
-#: project/templates/auth/login.html:96
+#: project/templates/auth/login.html:95
 msgid "Se souvenir de moi"
 msgstr "Remember me"
 
-#: project/templates/auth/login.html:105
-#: project/templates/auth/reset_password.html:87
-#: project/templates/auth/reset_password_request.html:81
+#: project/templates/auth/login.html:104
+#: project/templates/auth/reset_password.html:86
+#: project/templates/auth/reset_password_request.html:80
 #: project/templates/auth/signup.html:214
 #: project/templates/utils/navbar.html:561
 msgid "Se connecter"
 msgstr "Log In"
 
-#: project/templates/auth/login.html:109
+#: project/templates/auth/login.html:108
 msgid "Mot de passe oublié ?"
 msgstr "Forgot password?"
 
@@ -1671,23 +1838,23 @@ msgstr "Forgot password?"
 msgid "Modifier votre mot de passe | Livres en Classe"
 msgstr "Change your password | Livres en Classe"
 
-#: project/templates/auth/reset_password.html:63
+#: project/templates/auth/reset_password.html:62
 msgid "Modifier votre mot de passe"
 msgstr "Change your password"
 
-#: project/templates/auth/reset_password.html:72
+#: project/templates/auth/reset_password.html:71
 msgid "Votre nouveau mot de passe"
 msgstr "Your new password"
 
-#: project/templates/auth/reset_password.html:76
+#: project/templates/auth/reset_password.html:75
 msgid "Valider le mot de passe"
 msgstr "Confirm password"
 
-#: project/templates/auth/reset_password.html:78
+#: project/templates/auth/reset_password.html:77
 msgid "Confirmez votre nouveau mot de passe"
 msgstr "Confirm your new password"
 
-#: project/templates/auth/reset_password.html:82
+#: project/templates/auth/reset_password.html:81
 msgid "Modifier le mot de passe"
 msgstr "Change password"
 
@@ -1695,11 +1862,11 @@ msgstr "Change password"
 msgid "Réinitialiser votre mot de passe | Livres en Classe"
 msgstr "Reset your password | Livres en Classe"
 
-#: project/templates/auth/reset_password_request.html:63
+#: project/templates/auth/reset_password_request.html:62
 msgid "Réinitialiser votre mot de passe"
 msgstr "Reset your password"
 
-#: project/templates/auth/reset_password_request.html:76
+#: project/templates/auth/reset_password_request.html:75
 msgid "Modifier mon mot de passe"
 msgstr "Reset my password"
 
@@ -1740,8 +1907,8 @@ msgid "élèves gérés"
 msgstr "managed students"
 
 #: project/templates/auth/signup.html:137
-msgid "scans de codes-barres par caméra"
-msgstr "camera barcode scans"
+msgid "scans de codes-barres par semaine"
+msgstr "barcode scans per week"
 
 #: project/templates/auth/signup.html:143
 msgid "Besoin d'aller plus loin ? Un mode"
@@ -1878,8 +2045,8 @@ msgid "Souhaitez-vous réactiver la réception des nouveautés ?"
 msgstr "Would you like to re-enable receiving updates?"
 
 #: project/templates/auth/unsubscribe.html:114
-#: project/templates/subscription/tarifs.html:243
-#: project/templates/subscription/tarifs.html:318
+#: project/templates/subscription/tarifs.html:287
+#: project/templates/subscription/tarifs.html:362
 msgid "Réactiver mon abonnement"
 msgstr "Re-enable my subscription"
 
@@ -1900,10 +2067,20 @@ msgid "Retour à Livres en Classe"
 msgstr "Back to Livres en Classe"
 
 #: project/templates/blog/comment-classer-livres.html:7
+#: project/templates/blog/comment-classer-livres.html:19
+#: project/templates/blog/de/comment-classer-livres.html:7
+#: project/templates/blog/de/comment-classer-livres.html:19
+#: project/templates/blog/en/comment-classer-livres.html:7
+#: project/templates/blog/en/comment-classer-livres.html:19
 msgid "Comment classer les livres de sa bibliothèque de classe ?"
 msgstr "How to Classify Books in a Classroom Library?"
 
 #: project/templates/blog/comment-classer-livres.html:8
+#: project/templates/blog/comment-classer-livres.html:20
+#: project/templates/blog/de/comment-classer-livres.html:8
+#: project/templates/blog/de/comment-classer-livres.html:20
+#: project/templates/blog/en/comment-classer-livres.html:8
+#: project/templates/blog/en/comment-classer-livres.html:20
 msgid ""
 "Comment organiser les livres de sa classe ? Découvrez notre guide de "
 "classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de"
@@ -1913,11 +2090,21 @@ msgstr ""
 "classification guide: genres, themes, stickers, and school library "
 "management."
 
+#: project/templates/blog/de/donner-envie-lire.html:7
+#: project/templates/blog/de/donner-envie-lire.html:19
 #: project/templates/blog/donner-envie-lire.html:7
+#: project/templates/blog/donner-envie-lire.html:19
+#: project/templates/blog/en/donner-envie-lire.html:7
+#: project/templates/blog/en/donner-envie-lire.html:19
 msgid "Comment Donner Envie de Lire aux Élèves ? Astuces et Rituels"
 msgstr "How to Encourage Students to Read? Tips and Daily Routines"
 
+#: project/templates/blog/de/donner-envie-lire.html:8
+#: project/templates/blog/de/donner-envie-lire.html:20
 #: project/templates/blog/donner-envie-lire.html:8
+#: project/templates/blog/donner-envie-lire.html:20
+#: project/templates/blog/en/donner-envie-lire.html:8
+#: project/templates/blog/en/donner-envie-lire.html:20
 msgid ""
 "Comment susciter le plaisir de lire en classe ? Découvrez notre guide de "
 "plus de 1300 mots : quart d'heure lecture, rallye lecture, et rituels "
@@ -1926,11 +2113,21 @@ msgstr ""
 "How to spark the joy of reading in class? Discover our guide: reading "
 "quarter hour, reading rally, and pedagogical routines."
 
+#: project/templates/blog/de/gestion-bibliotheque-classe.html:7
+#: project/templates/blog/de/gestion-bibliotheque-classe.html:19
+#: project/templates/blog/en/gestion-bibliotheque-classe.html:7
+#: project/templates/blog/en/gestion-bibliotheque-classe.html:19
 #: project/templates/blog/gestion-bibliotheque-classe.html:7
+#: project/templates/blog/gestion-bibliotheque-classe.html:19
 msgid "Le Guide Ultime pour Créer une Bibliothèque de Classe Efficace"
 msgstr "The Ultimate Guide to Creating an Effective Classroom Library"
 
+#: project/templates/blog/de/gestion-bibliotheque-classe.html:8
+#: project/templates/blog/de/gestion-bibliotheque-classe.html:20
+#: project/templates/blog/en/gestion-bibliotheque-classe.html:8
+#: project/templates/blog/en/gestion-bibliotheque-classe.html:20
 #: project/templates/blog/gestion-bibliotheque-classe.html:8
+#: project/templates/blog/gestion-bibliotheque-classe.html:20
 msgid ""
 "Comment créer une bibliothèque de classe ? Découvrez notre guide complet "
 "de plus de 1500 mots : budget, sélection de livres, rangement et gestion "
@@ -1939,11 +2136,11 @@ msgstr ""
 "How to create a classroom library? Discover our complete guide: budget, "
 "book selection, shelving, and automated management."
 
-#: project/templates/blog/index.html:7
+#: project/templates/blog/index.html:7 project/templates/blog/index.html:15
 msgid "Le Blog des Enseignants | Livres en Classe"
 msgstr "Teachers' Blog | Livres en Classe"
 
-#: project/templates/blog/index.html:8
+#: project/templates/blog/index.html:8 project/templates/blog/index.html:16
 msgid ""
 "Conseils pratiques, sélections littéraires et stratégies pédagogiques "
 "pour les enseignants qui gèrent une bibliothèque de classe."
@@ -1951,23 +2148,23 @@ msgstr ""
 "Practical tips, book selections, and teaching strategies for educators "
 "managing a classroom library."
 
-#: project/templates/blog/index.html:109
+#: project/templates/blog/index.html:128
 msgid "Le Blog des Enseignants"
 msgstr "Teachers' Blog"
 
-#: project/templates/blog/index.html:110
+#: project/templates/blog/index.html:129
 msgid "Conseils, astuces et sélections littéraires pour votre classe"
 msgstr "Tips, advice, and literary selections for your classroom"
 
-#: project/templates/blog/index.html:119
+#: project/templates/blog/index.html:138
 msgid "Gestion de Bibliothèque"
 msgstr "Library Management"
 
-#: project/templates/blog/index.html:120
+#: project/templates/blog/index.html:139
 msgid "Comment créer une bibliothèque de classe ?"
 msgstr "How to create a classroom library?"
 
-#: project/templates/blog/index.html:122
+#: project/templates/blog/index.html:141
 msgid ""
 "Découvrez les étapes clés pour mettre en place une bibliothèque efficace "
 "dans votre classe : choisir les premiers livres, organiser les étagères, "
@@ -1977,27 +2174,27 @@ msgstr ""
 "selecting first books, organizing shelves, setting borrowing rules, and "
 "engaging students in management."
 
-#: project/templates/blog/index.html:125
+#: project/templates/blog/index.html:144
 msgid "5 min de lecture"
 msgstr "5 min read"
 
-#: project/templates/blog/index.html:126
+#: project/templates/blog/index.html:145
 msgid "Guide pratique"
 msgstr "Practical guide"
 
-#: project/templates/blog/index.html:129
+#: project/templates/blog/index.html:148
 msgid "Lire l'article"
 msgstr "Read article"
 
-#: project/templates/blog/index.html:140
+#: project/templates/blog/index.html:159
 msgid "Sélection Littéraire"
 msgstr "Book Selection"
 
-#: project/templates/blog/index.html:141
+#: project/templates/blog/index.html:160
 msgid "Les meilleurs livres pour le CP"
 msgstr "Best books for beginner readers"
 
-#: project/templates/blog/index.html:142
+#: project/templates/blog/index.html:161
 msgid ""
 "Notre sélection de romans et d'albums parfaitement adaptés pour les "
 "lecteurs débutants en cycle 2. Des titres choisis pour leur accessibilité"
@@ -2006,28 +2203,29 @@ msgstr ""
 "Our selection of novels and picture books perfectly suited for beginner "
 "readers. Titles chosen for readability and engagement."
 
-#: project/templates/blog/index.html:144
+#: project/templates/blog/index.html:163
 msgid "4 min"
 msgstr "4 min"
 
-#: project/templates/blog/index.html:145
+#: project/templates/blog/index.html:164
 msgid "Cycle 2"
 msgstr "Early Primary"
 
-#: project/templates/blog/index.html:147 project/templates/blog/index.html:162
-#: project/templates/blog/index.html:177
+#: project/templates/blog/index.html:166 project/templates/blog/index.html:181
+#: project/templates/blog/index.html:196 project/templates/blog/index.html:211
+#: project/templates/blog/index.html:226 project/templates/blog/index.html:241
 msgid "Lire"
 msgstr "Read"
 
-#: project/templates/blog/index.html:155
+#: project/templates/blog/index.html:174
 msgid "Organisation"
 msgstr "Organization"
 
-#: project/templates/blog/index.html:156
+#: project/templates/blog/index.html:175
 msgid "Comment classer les livres de sa classe ?"
 msgstr "How to organize classroom books?"
 
-#: project/templates/blog/index.html:157
+#: project/templates/blog/index.html:176
 msgid ""
 "Code couleur, par auteur, par niveau ou par genre littéraire ? Découvrez "
 "les différentes méthodes de classement et leurs avantages selon l'âge de "
@@ -2036,23 +2234,25 @@ msgstr ""
 "Color codes, by author, by level, or by genre? Discover different "
 "classification methods and benefits based on your students' age."
 
-#: project/templates/blog/index.html:159
+#: project/templates/blog/index.html:178
 msgid "3 min"
 msgstr "3 min"
 
-#: project/templates/blog/index.html:160
+#: project/templates/blog/index.html:179
+#: project/templates/enseignants/index.html:146
 msgid "Méthodologie"
 msgstr "Methodology"
 
-#: project/templates/blog/index.html:170
+#: project/templates/blog/index.html:189
+#: project/templates/enseignants/index.html:187
 msgid "Pédagogie"
 msgstr "Pedagogy"
 
-#: project/templates/blog/index.html:171
+#: project/templates/blog/index.html:190
 msgid "Comment donner envie de lire à ses élèves ?"
 msgstr "How to inspire students to read?"
 
-#: project/templates/blog/index.html:172
+#: project/templates/blog/index.html:191
 msgid ""
 "Rituels quotidiens, rallye lecture, présentations de livres entre "
 "élèves... Des stratégies concrètes pour ancrer le plaisir de lire dans le"
@@ -2061,27 +2261,107 @@ msgstr ""
 "Daily routines, reading challenges, student book talks... Concrete "
 "strategies to foster reading joy in your classroom every day."
 
-#: project/templates/blog/index.html:174
+#: project/templates/blog/index.html:193 project/templates/blog/index.html:223
 msgid "6 min"
 msgstr "6 min"
 
-#: project/templates/blog/index.html:175
+#: project/templates/blog/index.html:194
 msgid "Motivation"
 msgstr "Motivation"
 
-#: project/templates/blog/index.html:188
-msgid "Prochain article"
-msgstr "Upcoming article"
+#: project/templates/blog/index.html:204
+msgid "Logiciel BCD"
+msgstr "School Library Software"
 
-#: project/templates/blog/index.html:189
-msgid "Nous préparons de nouveaux guides pratiques et sélections de livres."
-msgstr "We are preparing new practical guides and book selections."
+#: project/templates/blog/index.html:205
+msgid "Logiciel BCD pour école primaire : comment choisir et équiper sa classe"
+msgstr ""
+"School Library Software for Primary Schools: How to Choose the Best "
+"Solution"
 
+#: project/templates/blog/index.html:206
+msgid ""
+"Comparatif complet des logiciels BCD pour écoles primaires. Découvrez les"
+" critères essentiels : catalogage ISBN, scan code-barres, suivi des prêts"
+" et prise en main par les élèves."
+msgstr ""
+"Complete comparison of primary school library software. Discover key "
+"features: ISBN cataloging, barcode scanning, student loan tracking, and "
+"intuitive interface."
+
+#: project/templates/blog/index.html:208
+msgid "7 min"
+msgstr "7 min"
+
+#: project/templates/blog/index.html:209
+msgid "Guide BCD"
+msgstr "Library Guide"
+
+#: project/templates/blog/index.html:219
+msgid "Scan & Inventaire"
+msgstr "Scan & Inventory"
+
+#: project/templates/blog/index.html:220
+msgid "Application scan code-barre pour livre d'école : cataloguer sans douchette"
+msgstr ""
+"Barcode Scanning App for Classroom Books: Catalog Without a Handheld "
+"Scanner"
+
+#: project/templates/blog/index.html:221
+msgid ""
+"Comment scanner et inventorier les livres de votre classe en quelques "
+"secondes grâce à l'appareil photo de votre smartphone ou tablette, sans "
+"douchette ni saisie manuelle."
+msgstr ""
+"How to scan and inventory your classroom books in seconds using your "
+"smartphone or tablet camera, with no handheld scanner or manual typing "
+"required."
+
+#: project/templates/blog/index.html:224
+msgid "Outils"
+msgstr "Tools"
+
+#: project/templates/blog/index.html:234
+msgid "Suivi des Prêts"
+msgstr "Loan Tracking"
+
+#: project/templates/blog/index.html:235
+msgid ""
+"Suivi des emprunts de livres par les élèves : méthodes, fiches et "
+"application"
+msgstr "Tracking Student Book Loans: Methods, Cards, and Digital App"
+
+#: project/templates/blog/index.html:236
+msgid ""
+"Comment organiser le prêt de livres de classe sans perdre d'ouvrages : "
+"comparez fiches bristol, tableaux Excel et gestion numérique en 1 clic."
+msgstr ""
+"How to organize classroom book lending without losing books: compare "
+"index cards, spreadsheets, and 1-click digital checkout."
+
+#: project/templates/blog/index.html:238
+msgid "8 min"
+msgstr "8 min"
+
+#: project/templates/blog/index.html:239
+msgid "Pratique"
+msgstr "Practical"
+
+#: project/templates/blog/de/meilleurs-livres-cp.html:7
+#: project/templates/blog/de/meilleurs-livres-cp.html:19
+#: project/templates/blog/en/meilleurs-livres-cp.html:7
+#: project/templates/blog/en/meilleurs-livres-cp.html:19
 #: project/templates/blog/meilleurs-livres-cp.html:7
+#: project/templates/blog/meilleurs-livres-cp.html:19
 msgid "Les Meilleurs Livres pour le CP : Sélection et Conseils Pédagogiques"
 msgstr "The Best Books for 1st Grade: Selection and Pedagogical Advice"
 
+#: project/templates/blog/de/meilleurs-livres-cp.html:8
+#: project/templates/blog/de/meilleurs-livres-cp.html:20
+#: project/templates/blog/en/meilleurs-livres-cp.html:8
+#: project/templates/blog/en/meilleurs-livres-cp.html:20
 #: project/templates/blog/meilleurs-livres-cp.html:8
+#: project/templates/blog/meilleurs-livres-cp.html:20
 msgid ""
 "Quels livres proposer à un élève de CP ? Découvrez notre sélection de "
 "plus de 1300 mots classée par niveau de décodage et collections de "
@@ -2089,6 +2369,14 @@ msgid ""
 msgstr ""
 "Which books to offer to a 1st grader? Discover our curated selection "
 "categorized by decoding level and early reader collections."
+
+#: project/templates/components/feature_section.html:12
+msgid "Aperçu de l'application"
+msgstr "App preview"
+
+#: project/templates/components/feature_section.html:14
+msgid "Version mobile"
+msgstr "Mobile version"
 
 #: project/templates/components/stats_counter.html:7
 msgid "Professeures"
@@ -2148,30 +2436,39 @@ msgstr "button"
 msgid "ci-dessus."
 msgstr "above."
 
-#: project/templates/eleve/eleve.html:54
+#: project/templates/eleve/eleve.html:43
+msgid "Illustration d'un livre"
+msgstr "Illustration of a book"
+
+#: project/templates/eleve/eleve.html:53
 msgid "Rechercher un élève"
 msgstr "Search for a student"
 
-#: project/templates/eleve/eleve_add.html:47
+#: project/templates/eleve/eleve_add.html:42
+#: project/templates/eleve/eleve_info.html:116
+msgid "Illustration élève"
+msgstr "Student illustration"
+
+#: project/templates/eleve/eleve_add.html:46
 msgid "Ajoute un nouveau lecteur à ta bibliothèque, c'est le moment !"
 msgstr "Add a new reader to your library, now is the time!"
 
-#: project/templates/eleve/eleve_add.html:55
+#: project/templates/eleve/eleve_add.html:54
 msgid "Nouvel·le élève"
 msgstr "New student"
 
-#: project/templates/eleve/eleve_add.html:62
+#: project/templates/eleve/eleve_add.html:61
 msgid "Nom de l'élève"
 msgstr "Student's last name"
 
-#: project/templates/eleve/eleve_add.html:68
+#: project/templates/eleve/eleve_add.html:67
 msgid "Prénom de l'élève"
 msgstr "Student's first name"
 
-#: project/templates/eleve/eleve_add.html:79
+#: project/templates/eleve/eleve_add.html:78
 #: project/templates/eleve/eleve_info.html:63
-#: project/templates/eleve/eleve_info.html:159
-#: project/templates/eleve/eleve_info.html:206
+#: project/templates/eleve/eleve_info.html:158
+#: project/templates/eleve/eleve_info.html:205
 #: project/templates/livre/livre_ajout.html:117
 #: project/templates/livre/livre_edit.html:127
 #: project/templates/livre/livre_edit.html:154
@@ -2184,7 +2481,7 @@ msgstr "Student's first name"
 msgid "Annuler"
 msgstr "Cancel"
 
-#: project/templates/eleve/eleve_add.html:82
+#: project/templates/eleve/eleve_add.html:81
 #: project/templates/user/dashboard.html:71
 msgid "Ajouter"
 msgstr "Add"
@@ -2210,21 +2507,21 @@ msgid "Livre actuellement emprunté"
 msgstr "Book currently on loan"
 
 #: project/templates/eleve/eleve_info.html:49
-#: project/templates/eleve/eleve_info.html:145
+#: project/templates/eleve/eleve_info.html:144
 #: project/templates/livre/livre_info.html:81
 #: project/templates/livre/livre_info.html:161
 msgid "Supprimer l'emprunt ?"
 msgstr "Delete loan?"
 
 #: project/templates/eleve/eleve_info.html:59
-#: project/templates/eleve/eleve_info.html:155
+#: project/templates/eleve/eleve_info.html:154
 #: project/templates/livre/livre_info.html:91
 #: project/templates/livre/livre_info.html:171
 msgid "Supprimer l'emprunt"
 msgstr "Delete loan"
 
 #: project/templates/eleve/eleve_info.html:84
-#: project/templates/eleve/eleve_info.html:175
+#: project/templates/eleve/eleve_info.html:174
 #: project/templates/emprunt/emprunt_list.html:40
 #: project/templates/livre/livre_info.html:104
 msgid "Emprunté le"
@@ -2238,20 +2535,20 @@ msgstr "is not currently reading any books."
 msgid "Pour lui assigner un livre, rendez-vous sur la page d'un livre."
 msgstr "To assign a book, go to a book's page."
 
-#: project/templates/eleve/eleve_info.html:130
+#: project/templates/eleve/eleve_info.html:129
 msgid "Livres empruntés précédemment"
 msgstr "Books previously borrowed"
 
-#: project/templates/eleve/eleve_info.html:130
+#: project/templates/eleve/eleve_info.html:129
 msgid "Livre emprunté précédemment"
 msgstr "Book previously borrowed"
 
-#: project/templates/eleve/eleve_info.html:192
+#: project/templates/eleve/eleve_info.html:191
 msgid "Supprimer l'élève ?"
 msgstr "Delete student?"
 
-#: project/templates/eleve/eleve_info.html:202
-#: project/templates/eleve/eleve_info.html:218
+#: project/templates/eleve/eleve_info.html:201
+#: project/templates/eleve/eleve_info.html:217
 msgid "Supprimer l'élève"
 msgstr "Delete student"
 
@@ -2401,15 +2698,20 @@ msgid ""
 "un élève."
 msgstr "To loan a book, go to the book's page and assign it to a student."
 
-#: project/templates/emprunt/emprunt.html:45
+#: project/templates/emprunt/emprunt.html:34
+#: project/templates/livre/livre.html:51
+msgid "Illustration livre"
+msgstr "Book illustration"
+
+#: project/templates/emprunt/emprunt.html:44
 msgid "Rechercher un emprunt"
 msgstr "Search for a loan"
 
-#: project/templates/emprunt/emprunt.html:54
+#: project/templates/emprunt/emprunt.html:53
 msgid "Tout"
 msgstr "All"
 
-#: project/templates/emprunt/emprunt.html:55
+#: project/templates/emprunt/emprunt.html:54
 msgid "Actifs"
 msgstr "Active"
 
@@ -2437,10 +2739,12 @@ msgid "Découvrir les offres Premium"
 msgstr "Discover Premium plans"
 
 #: project/templates/enseignants/index.html:7
+#: project/templates/enseignants/index.html:19
 msgid "Espace Enseignants : Guides et Outils de Bibliothèque | Livres en Classe"
 msgstr "Teachers Area: Library Guides and Tools | Livres en Classe"
 
 #: project/templates/enseignants/index.html:8
+#: project/templates/enseignants/index.html:20
 msgid ""
 "Accédez à notre sélection de guides pratiques, de fiches d'organisation "
 "de bibliothèque et d'outils numériques pour les enseignants du primaire "
@@ -2448,6 +2752,163 @@ msgid ""
 msgstr ""
 "Access our selection of practical guides, library organization sheets, "
 "and digital tools for primary and middle school teachers."
+
+#: project/templates/enseignants/index.html:127
+msgid "Espace Enseignants"
+msgstr "Teachers Area"
+
+#: project/templates/enseignants/index.html:128
+msgid "Ressources, guides pédagogiques et outils de classe"
+msgstr "Resources, pedagogical guides, and classroom tools"
+
+#: project/templates/enseignants/index.html:130
+msgid ""
+"Retrouvez tout ce dont vous avez besoin pour structurer le coin lecture "
+"de votre classe, cataloguer vos livres et encourager l'autonomie de vos "
+"élèves au quotidien."
+msgstr ""
+"Find everything you need to organize your classroom reading corner, "
+"catalog your books, and foster your students' daily reading autonomy."
+
+#: project/templates/enseignants/index.html:145
+msgid "Gérer la Bibliothèque"
+msgstr "Manage the Library"
+
+#: project/templates/enseignants/index.html:151
+msgid ""
+"Des conseils pratiques pour trier, classer et organiser vos étagères sans"
+" que cela ne devienne un casse-tête."
+msgstr ""
+"Practical advice for sorting, classifying, and organizing your shelves "
+"effortlessly."
+
+#: project/templates/enseignants/index.html:159
+msgid "Mettre en place un système de prêt numérique efficace avec vos élèves."
+msgstr "Set up an efficient digital loan system with your students."
+
+#: project/templates/enseignants/index.html:163
+msgid "Classer et étiqueter"
+msgstr "Classify and label"
+
+#: project/templates/enseignants/index.html:165
+msgid ""
+"Utiliser le code couleur, les genres ou les thèmes pour faciliter le "
+"rangement."
+msgstr "Use color codes, genres, or themes to make shelf organization easy."
+
+#: project/templates/enseignants/index.html:169
+msgid "Sélectionner ses livres"
+msgstr "Selecting books"
+
+#: project/templates/enseignants/index.html:171
+msgid ""
+"Notre sélection de livres adaptés au cycle 2 pour enrichir votre "
+"bibliothèque."
+msgstr "Our selection of books tailored for early readers to enrich your library."
+
+#: project/templates/enseignants/index.html:186
+msgid "Encourager la Lecture"
+msgstr "Encourage Reading"
+
+#: project/templates/enseignants/index.html:192
+msgid ""
+"Des rituels et animations testés en classe pour susciter l'intérêt de "
+"tous les élèves, même les moins lecteurs."
+msgstr ""
+"Classroom-tested reading routines and activities to engage all students, "
+"even reluctant readers."
+
+#: project/templates/enseignants/index.html:198
+msgid "Donner envie de lire"
+msgstr "Inspiring a love of reading"
+
+#: project/templates/enseignants/index.html:200
+msgid "Rituels de lecture plaisir et gestion des présentations d'élèves."
+msgstr "Reading-for-pleasure routines and student book presentations."
+
+#: project/templates/enseignants/index.html:204
+msgid "Le Rallye Lecture"
+msgstr "Reading Challenge / Rally"
+
+#: project/templates/enseignants/index.html:206
+msgid "Comment mettre en place un défi lecture motivant et bienveillant."
+msgstr "How to set up an engaging and supportive classroom reading challenge."
+
+#: project/templates/enseignants/index.html:210
+msgid "La lecture à haute voix"
+msgstr "Read-aloud sessions"
+
+#: project/templates/enseignants/index.html:212
+msgid ""
+"Conseils pour pratiquer la lecture offerte et développer l'imaginaire de "
+"vos élèves."
+msgstr "Tips for dedicated teacher read-alouds to spark students' imagination."
+
+#: project/templates/enseignants/index.html:227
+msgid "Outils Numériques"
+msgstr "Digital Tools"
+
+#: project/templates/enseignants/index.html:228
+msgid "Technologie"
+msgstr "Technology"
+
+#: project/templates/enseignants/index.html:233
+msgid ""
+"Des générateurs et applications en ligne recommandés par nos soins pour "
+"équiper votre classe en quelques clics."
+msgstr ""
+"Recommended online generators and applications to equip your classroom in"
+" just a few clicks."
+
+#: project/templates/enseignants/index.html:241
+msgid "Notre application gratuite pour scanner vos ISBN et prêter vos livres."
+msgstr "Our free app to scan ISBN barcodes and manage your classroom book loans."
+
+#: project/templates/enseignants/index.html:245
+msgid "Ressources & Outils imprimables"
+msgstr "Printable Resources & Tools"
+
+#: project/templates/enseignants/index.html:247
+msgid ""
+"Diplômes, marque-pages, affiches, étiquettes et liens vérifiés pour "
+"enseignants."
+msgstr ""
+"Reading certificates, bookmarks, posters, bin labels, and verified "
+"teacher resources."
+
+#: project/templates/enseignants/index.html:251
+msgid "Guide de l'application"
+msgstr "App User Guide"
+
+#: project/templates/enseignants/index.html:253
+msgid ""
+"Comment utiliser Livres en Classe pour gérer emprunts et catalogue "
+"numérique."
+msgstr "How to use Livres en Classe to manage loans and your digital book catalog."
+
+#: project/templates/enseignants/index.html:257
+msgid "Comparatif Excel vs Application"
+msgstr "Excel vs. App Comparison"
+
+#: project/templates/enseignants/index.html:259
+msgid "Pourquoi abandonner les tableurs pour la gestion de vos livres scolaires."
+msgstr "Why you should switch from spreadsheets to manage your classroom books."
+
+#: project/templates/enseignants/index.html:272
+msgid "Besoin d'un outil de suivi pour vos élèves ?"
+msgstr "Need a tracking tool for your students?"
+
+#: project/templates/enseignants/index.html:274
+msgid ""
+"Gérez les prêts de livres, inscrivez vos classes et visualisez les "
+"statistiques de lecture globale en quelques clics."
+msgstr ""
+"Manage book loans, register your classes, and view comprehensive reading "
+"statistics in a few clicks."
+
+#: project/templates/enseignants/index.html:279
+msgid "Créer mon espace"
+msgstr "Create my account"
 
 #: project/templates/livre/livre.html:9
 #: project/templates/livre/livre_info.html:8
@@ -2476,7 +2937,7 @@ msgstr "To add a book, click on the button"
 msgid "ou"
 msgstr "or"
 
-#: project/templates/livre/livre.html:62
+#: project/templates/livre/livre.html:61
 msgid "Rechercher un livre"
 msgstr "Search for a book"
 
@@ -2606,7 +3067,7 @@ msgid "Titre :"
 msgstr "Title:"
 
 #: project/templates/livre/livre_info.html:35
-#: project/templates/ressources/fiches_avis.html:59
+#: project/templates/ressources/fiches_avis.html:88
 msgid "Auteur :"
 msgstr "Author:"
 
@@ -2667,8 +3128,8 @@ msgstr "Available"
 
 #: project/templates/livre/livre_scann.html:243
 #, python-format
-msgid "Scans offerts : %(used)s / 30"
-msgstr "Free scans: %(used)s / 30"
+msgid "Scans cette semaine : %(used)s / %(max)s (remis à zéro dimanche à 00h00)"
+msgstr "Scans this week: %(used)s / %(max)s (resets Sunday at 00:00)"
 
 #: project/templates/livre/livre_scann.html:285
 msgid "Centrez le code-barres dans ce cadre"
@@ -2780,20 +3241,24 @@ msgid "Limite de scans atteinte"
 msgstr "Scan limit reached"
 
 #: project/templates/livre/livre_scann.html:380
-msgid "Vous avez scanné 30 livres en un temps record !"
-msgstr "You scanned 30 books in record time!"
+#, python-format
+msgid "Vous avez utilisé vos %(max)s scans gratuits pour cette semaine !"
+msgstr "You have used your %(max)s free scans for this week!"
 
 #: project/templates/livre/livre_scann.html:383
+#, python-format
 msgid ""
-"Passez à l'offre Premium à 30.- CHF/an pour scanner les centaines de "
-"livres suivants en illimité."
+"Votre quota de scans sera remis à zéro dimanche à 00h00. Vous pouvez "
+"aussi passer à l'offre Premium à %(price)s.- CHF/an pour scanner en "
+"illimité."
 msgstr ""
-"Upgrade to Premium for 30.- CHF/year to scan hundreds more books without "
-"limits."
+"Your scan quota will reset on Sunday at 00:00. You can also upgrade to "
+"Premium for %(price)s CHF/year for unlimited scanning."
 
 #: project/templates/livre/livre_scann.html:387
-msgid "Passer Premium (30.- CHF/an)"
-msgstr "Upgrade to Premium (30.- CHF/year)"
+#, python-format
+msgid "Passer Premium (%(price)s.- CHF/an)"
+msgstr "Upgrade to Premium (%(price)s CHF/year)"
 
 #: project/templates/livre/livre_scann.html:390
 msgid "Ajouter manuellement"
@@ -2812,7 +3277,7 @@ msgid "Studio de Ressources"
 msgstr "Resource Studio"
 
 #: project/templates/ressources/base_editor.html:31
-#: project/templates/ressources/index.html:188
+#: project/templates/ressources/index.html:207
 msgid "Toutes les ressources"
 msgstr "All resources"
 
@@ -2836,20 +3301,20 @@ msgstr "Fit to screen"
 msgid "Imprimer / Enregistrer en PDF"
 msgstr "Print / Save as PDF"
 
-#: project/templates/ressources/base_editor.html:67
-#: project/templates/ressources/base_editor.html:83
+#: project/templates/ressources/base_editor.html:68
+#: project/templates/ressources/base_editor.html:84
 msgid "Voir l'aperçu du document ci-dessous"
 msgstr "View document preview below"
 
-#: project/templates/ressources/base_editor.html:77
+#: project/templates/ressources/base_editor.html:78
 msgid "Réinitialiser les valeurs par défaut"
 msgstr "Reset to default values"
 
-#: project/templates/ressources/base_editor.html:90
+#: project/templates/ressources/base_editor.html:91
 msgid "Aperçu A4 en direct"
 msgstr "Live A4 Preview"
 
-#: project/templates/ressources/base_editor.html:94
+#: project/templates/ressources/base_editor.html:95
 msgid "Haut de page"
 msgstr "Top of page"
 
@@ -2859,9 +3324,9 @@ msgstr "Reading Bingo / Challenge"
 
 #: project/templates/ressources/bingo.html:12
 #: project/templates/ressources/charte.html:12
-#: project/templates/ressources/diplome.html:13
-#: project/templates/ressources/fiches_avis.html:12
-#: project/templates/ressources/marque_pages.html:12
+#: project/templates/ressources/diplome.html:42
+#: project/templates/ressources/fiches_avis.html:41
+#: project/templates/ressources/marque_pages.html:41
 #: project/templates/ressources/passeport.html:13
 msgid "Style & Thème"
 msgstr "Style & Theme"
@@ -2872,14 +3337,14 @@ msgstr "Mystery Purple"
 
 #: project/templates/ressources/bingo.html:16
 #: project/templates/ressources/charte.html:15
-#: project/templates/ressources/diplome.html:17
-#: project/templates/ressources/fiches_avis.html:17
-#: project/templates/ressources/marque_pages.html:15
+#: project/templates/ressources/diplome.html:46
+#: project/templates/ressources/fiches_avis.html:46
+#: project/templates/ressources/marque_pages.html:44
 msgid "Bleu Écolier"
 msgstr "School Blue"
 
 #: project/templates/ressources/bingo.html:17
-#: project/templates/ressources/marque_pages.html:16
+#: project/templates/ressources/marque_pages.html:45
 msgid "Vert Nature"
 msgstr "Nature Green"
 
@@ -2892,8 +3357,8 @@ msgid "Corail Aventure"
 msgstr "Adventure Coral"
 
 #: project/templates/ressources/bingo.html:20
-#: project/templates/ressources/fiches_avis.html:20
-#: project/templates/ressources/marque_pages.html:20
+#: project/templates/ressources/fiches_avis.html:49
+#: project/templates/ressources/marque_pages.html:49
 #: project/templates/ressources/passeport.html:20
 msgid "Noir & Blanc (Éco)"
 msgstr "Black & White (Eco)"
@@ -3022,7 +3487,7 @@ msgid "Signature du maître / de la maîtresse :"
 msgstr "Teacher's signature:"
 
 #: project/templates/ressources/charte.html:5
-#: project/templates/ressources/index.html:234
+#: project/templates/ressources/index.html:253
 msgid "Charte du Coin Lecture"
 msgstr "Reading Corner Charter"
 
@@ -3202,207 +3667,392 @@ msgstr "Format: CODE | TITLE (CODE 128 standard)"
 msgid "Carte de Lecteur"
 msgstr "Reader Card"
 
-#: project/templates/ressources/diplome.html:5
+#: project/templates/ressources/diplome.html:3
+msgid "Diplôme de lecture à imprimer pour élèves (A4 gratuit) | Livres en Classe"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:4
+msgid ""
+"Générez et imprimez un diplôme de lecture personnalisé pour votre classe "
+": champion de lecture, rallye lecture, 5, 10 ou 20 livres lus. "
+"Entièrement gratuit."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:34
 msgid "Diplôme de Lecture"
 msgstr "Reading Diploma"
 
-#: project/templates/ressources/diplome.html:16
-#: project/templates/ressources/fiches_avis.html:16
+#: project/templates/ressources/diplome.html:45
+#: project/templates/ressources/fiches_avis.html:45
 msgid "Or Prestige"
 msgstr "Prestige Gold"
 
-#: project/templates/ressources/diplome.html:18
+#: project/templates/ressources/diplome.html:47
 msgid "Vert Aventure"
 msgstr "Adventure Green"
 
-#: project/templates/ressources/diplome.html:19
+#: project/templates/ressources/diplome.html:48
 msgid "Violet Magique"
 msgstr "Magic Purple"
 
-#: project/templates/ressources/diplome.html:20
-#: project/templates/ressources/marque_pages.html:19
+#: project/templates/ressources/diplome.html:49
+#: project/templates/ressources/marque_pages.html:48
 msgid "Corail Vif"
 msgstr "Vibrant Coral"
 
-#: project/templates/ressources/diplome.html:21
+#: project/templates/ressources/diplome.html:50
 msgid "Noir & Blanc (À colorier)"
 msgstr "Black & White (To color)"
 
-#: project/templates/ressources/diplome.html:29
-#: project/templates/ressources/diplome.html:88
+#: project/templates/ressources/diplome.html:58
+#: project/templates/ressources/diplome.html:117
 msgid "Élèves de mon compte"
 msgstr "Students from my account"
 
-#: project/templates/ressources/diplome.html:37
+#: project/templates/ressources/diplome.html:66
 msgid "Élève individuel"
 msgstr "Individual student"
 
-#: project/templates/ressources/diplome.html:41
+#: project/templates/ressources/diplome.html:70
 msgid "Toute la classe"
 msgstr "Whole class"
 
-#: project/templates/ressources/diplome.html:48
+#: project/templates/ressources/diplome.html:77
 msgid "Sélectionner dans ma classe"
 msgstr "Select from my class"
 
-#: project/templates/ressources/diplome.html:52
+#: project/templates/ressources/diplome.html:81
 msgid "Saisie libre / Autre élève"
 msgstr "Freeform entry / Other student"
 
-#: project/templates/ressources/diplome.html:55
+#: project/templates/ressources/diplome.html:84
 #: project/templates/user/dashboard.html:281
 msgid "livres lus"
 msgstr "books read"
 
-#: project/templates/ressources/diplome.html:55
+#: project/templates/ressources/diplome.html:84
 msgid "livre lu"
 msgstr "book read"
 
-#: project/templates/ressources/diplome.html:68
+#: project/templates/ressources/diplome.html:97
 msgid "Élève précédent"
 msgstr "Previous student"
 
-#: project/templates/ressources/diplome.html:70
+#: project/templates/ressources/diplome.html:99
 msgid "Précédent"
 msgstr "Previous"
 
-#: project/templates/ressources/diplome.html:72
+#: project/templates/ressources/diplome.html:101
 msgid "Élève suivant"
 msgstr "Next student"
 
-#: project/templates/ressources/diplome.html:73
+#: project/templates/ressources/diplome.html:102
 msgid "Suivant"
 msgstr "Next"
 
-#: project/templates/ressources/diplome.html:81
+#: project/templates/ressources/diplome.html:110
 msgid "Diplômes générés pour chacun des"
 msgstr "Diplomas generated for each of the"
 
-#: project/templates/ressources/diplome.html:81
+#: project/templates/ressources/diplome.html:110
 msgid "élèves"
 msgstr "students"
 
-#: project/templates/ressources/diplome.html:81
+#: project/templates/ressources/diplome.html:110
 msgid "avec leurs statistiques de lecture individuelles."
 msgstr "with their individual reading statistics."
 
-#: project/templates/ressources/diplome.html:91
+#: project/templates/ressources/diplome.html:120
 msgid "Vous n'avez pas encore d'élèves enregistrés dans votre classe."
 msgstr "You do not have any students registered in your class yet."
 
-#: project/templates/ressources/diplome.html:95
+#: project/templates/ressources/diplome.html:124
 msgid "Ajouter des élèves"
 msgstr "Add students"
 
-#: project/templates/ressources/diplome.html:102
+#: project/templates/ressources/diplome.html:131
 msgid "Élèves de votre classe"
 msgstr "Students of your class"
 
-#: project/templates/ressources/diplome.html:105
+#: project/templates/ressources/diplome.html:134
 msgid ""
 "Connectez-vous pour sélectionner automatiquement vos élèves et leurs "
 "statistiques de lecture."
 msgstr "Log in to automatically select your students and their reading statistics."
 
-#: project/templates/ressources/diplome.html:109
+#: project/templates/ressources/diplome.html:138
 msgid "Se connecter à mon compte"
 msgstr "Log in to my account"
 
-#: project/templates/ressources/diplome.html:117
+#: project/templates/ressources/diplome.html:146
 msgid "Informations du diplôme"
 msgstr "Diploma information"
 
-#: project/templates/ressources/diplome.html:121
+#: project/templates/ressources/diplome.html:150
 msgid "Titre du diplôme"
 msgstr "Diploma title"
 
-#: project/templates/ressources/diplome.html:123
-#: project/templates/ressources/diplome.html:184
-#: project/templates/ressources/diplome.html:221
+#: project/templates/ressources/diplome.html:152
+#: project/templates/ressources/diplome.html:213
+#: project/templates/ressources/diplome.html:250
 msgid "DIPLÔME DE LECTURE"
 msgstr "READING DIPLOMA"
 
-#: project/templates/ressources/diplome.html:128
+#: project/templates/ressources/diplome.html:157
 msgid "Sous-titre / Mention"
 msgstr "Subtitle / Citation"
 
-#: project/templates/ressources/diplome.html:130
-#: project/templates/ressources/diplome.html:185
-#: project/templates/ressources/diplome.html:222
+#: project/templates/ressources/diplome.html:159
+#: project/templates/ressources/diplome.html:214
+#: project/templates/ressources/diplome.html:251
 msgid "Décerné avec toutes les félicitations de la classe à"
 msgstr "Awarded with warm congratulations of the class to"
 
-#: project/templates/ressources/diplome.html:135
+#: project/templates/ressources/diplome.html:164
 msgid "Prénom & Nom de l'élève"
 msgstr "Student first & last name"
 
-#: project/templates/ressources/diplome.html:135
+#: project/templates/ressources/diplome.html:164
 msgid "saisie libre ou base"
 msgstr "freeform or from database"
 
-#: project/templates/ressources/diplome.html:137
+#: project/templates/ressources/diplome.html:166
 msgid "Ex: Thomas Dubois"
 msgstr "E.g.: Alex Smith"
 
-#: project/templates/ressources/diplome.html:137
-#: project/templates/ressources/diplome.html:191
+#: project/templates/ressources/diplome.html:166
+#: project/templates/ressources/diplome.html:220
 msgid "Thomas Dubois"
 msgstr "Alex Smith"
 
-#: project/templates/ressources/diplome.html:142
+#: project/templates/ressources/diplome.html:171
 msgid "Motif / Réalisation"
 msgstr "Reason / Achievement"
 
-#: project/templates/ressources/diplome.html:144
-#: project/templates/ressources/diplome.html:193
-#: project/templates/ressources/diplome.html:228
-#: project/templates/ressources/diplome.html:268
+#: project/templates/ressources/diplome.html:173
+#: project/templates/ressources/diplome.html:222
+#: project/templates/ressources/diplome.html:257
+#: project/templates/ressources/diplome.html:440
 msgid "pour avoir franchi avec brio le palier de"
 msgstr "for brilliantly reaching the milestone of"
 
-#: project/templates/ressources/diplome.html:144
-#: project/templates/ressources/diplome.html:193
-#: project/templates/ressources/diplome.html:228
-#: project/templates/ressources/diplome.html:268
+#: project/templates/ressources/diplome.html:173
+#: project/templates/ressources/diplome.html:222
+#: project/templates/ressources/diplome.html:257
+#: project/templates/ressources/diplome.html:440
 msgid "livres lus dans la bibliothèque de classe !"
 msgstr "books read in the classroom library!"
 
-#: project/templates/ressources/diplome.html:144
-#: project/templates/ressources/diplome.html:193
-#: project/templates/ressources/diplome.html:230
-#: project/templates/ressources/diplome.html:270
+#: project/templates/ressources/diplome.html:173
+#: project/templates/ressources/diplome.html:222
+#: project/templates/ressources/diplome.html:259
+#: project/templates/ressources/diplome.html:442
 msgid ""
 "pour sa curiosité, son autonomie et son engagement dans ses lectures de "
 "classe."
 msgstr "for curiosity, independence, and dedication in classroom reading."
 
-#: project/templates/ressources/diplome.html:149
+#: project/templates/ressources/diplome.html:178
 #: project/templates/ressources/passeport.html:31
 msgid "École / Classe"
 msgstr "School / Class"
 
-#: project/templates/ressources/diplome.html:151
-#: project/templates/ressources/diplome.html:199
-#: project/templates/ressources/diplome.html:236
+#: project/templates/ressources/diplome.html:180
+#: project/templates/ressources/diplome.html:228
+#: project/templates/ressources/diplome.html:265
 msgid "Classe de CM1-B"
 msgstr "Class 4B"
 
-#: project/templates/ressources/diplome.html:158
+#: project/templates/ressources/diplome.html:187
 msgid "Date"
 msgstr "Date"
 
-#: project/templates/ressources/diplome.html:166
+#: project/templates/ressources/diplome.html:195
 msgid "Enseignant(e)"
 msgstr "Teacher"
 
-#: project/templates/ressources/diplome.html:168
-#: project/templates/ressources/diplome.html:206
-#: project/templates/ressources/diplome.html:242
+#: project/templates/ressources/diplome.html:197
+#: project/templates/ressources/diplome.html:235
+#: project/templates/ressources/diplome.html:271
 msgid "L'enseignant(e)"
 msgstr "The teacher"
 
+#: project/templates/ressources/diplome.html:292
+#, fuzzy
+msgid "Visuel Pinterest Diplôme de lecture à imprimer"
+msgstr "Print a reading diploma"
+
+#: project/templates/ressources/diplome.html:295
+msgid ""
+"Diplôme de lecture à imprimer gratuit (A4 paysage). Champion de lecture "
+"et rallye lecture."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:303
+msgid "Sauvegardez ce diplôme pour votre classe"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:306
+msgid ""
+"Épinglez ce modèle sur votre tableau Pinterest pour célébrer les progrès "
+"de vos élèves en fin de trimestre, de période ou lors d'un rallye "
+"lecture."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:316
+#: project/templates/ressources/fiches_avis.html:149
+#: project/templates/ressources/marque_pages.html:283
+msgid "Épingler sur Pinterest"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:320
+#: project/templates/ressources/fiches_avis.html:153
+#: project/templates/ressources/marque_pages.html:287
+#, fuzzy
+msgid "Imprimer directement"
+msgstr "Print a reading diploma"
+
+#: project/templates/ressources/diplome.html:330
+msgid "Comment valoriser la lecture avec un diplôme officiel en classe ?"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:333
+msgid ""
+"La reconnaissance des réussites est un levier puissant pour susciter et "
+"entretenir le plaisir de lire en école primaire (Cycles 2 et 3). Ce "
+"diplôme de lecture gratuit au format A4 paysage a été conçu pour "
+"gratifier aussi bien les grands dévoreurs de livres que les lecteurs "
+"débutants qui franchissent leurs premiers paliers d'autonomie."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:340
+msgid "1. Les paliers d'effort"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:343
+msgid ""
+"Plutôt qu'un classement compétitif, fixez des paliers atteignables pour "
+"chaque profil d'élève : 5 livres pour débuter, 10 livres, puis 20 livres."
+" Chaque palier franchi donne lieu à une remise officielle."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:350
+#, fuzzy
+msgid "2. Les rallyes lecture"
+msgstr "Reading Challenge / Rally"
+
+#: project/templates/ressources/diplome.html:353
+msgid ""
+"En fin de période scolaire ou lors de la clôture d'un rallye thématique "
+"(contes, romans policiers, BD), remettez ce diplôme signé par "
+"l'enseignant et la direction de l'école."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:360
+msgid "3. Le mode coloriage N&B"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:363
+msgid ""
+"Le thème « Noir & Blanc » permet une impression économique tout en "
+"confiant à l'élève le soin de mettre en couleurs sa propre bordure et sa "
+"médaille de champion."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:369
+msgid "Conseils pour l'impression de vos diplômes"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:371
+#, fuzzy
+msgid "Papier recommandé"
+msgstr "Recommended to:"
+
+#: project/templates/ressources/diplome.html:371
+msgid ""
+"Utilisez un papier blanc épais couché mat ou bristol de 200 à 250 g/m² "
+"pour conférer au document un aspect officiel et solennel."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:372
+#, fuzzy
+msgid "Orientation"
+msgstr "Organization"
+
+#: project/templates/ressources/diplome.html:372
+msgid ""
+"Le document est configuré en A4 paysage avec des marges d'impression "
+"intégrées. Choisissez « Ajuster à la page » ou échelle normale dans la "
+"boîte de dialogue de votre imprimante."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:373
+msgid "Génération groupée"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:373
+msgid ""
+"Si vous possédez un compte Livres en Classe, connectez-vous pour générer "
+"en 1 clic les diplômes pré-remplis de tous les élèves avec leur nombre "
+"exact de livres lus."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:382
+#, fuzzy
+msgid "Suivi automatique des emprunts"
+msgstr "Loan history"
+
+#: project/templates/ressources/diplome.html:385
+msgid "Comptez automatiquement les livres lus par chaque élève"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:388
+msgid ""
+"Livres en Classe enregistre chaque retour d'emprunt et calcule en temps "
+"réel le nombre de livres lus par élève. Générez vos bilans de lecture "
+"trimestriels et diplômes en un instant."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:398
+#, fuzzy
+msgid "Découvrir gratuitement"
+msgstr "Start for free"
+
+#: project/templates/ressources/diplome.html:401
+msgid "Sans carte bancaire • Prêt pour votre classe"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:409
+#, fuzzy
+msgid "Questions fréquentes sur les diplômes de lecture"
+msgstr "Print a reading diploma"
+
+#: project/templates/ressources/diplome.html:412
+msgid "Puis-je modifier le texte du diplôme ?"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:413
+msgid ""
+"Absolument. Vous pouvez cliquer sur n'importe quel texte du diplôme pour "
+"le modifier directement à l'écran ou utiliser les champs dans le panneau "
+"latéral gauche."
+msgstr ""
+
+#: project/templates/ressources/diplome.html:417
+msgid ""
+"Comment imprimer les diplômes pour toute ma classe sans ressaisir les "
+"prénoms ?"
+msgstr ""
+
+#: project/templates/ressources/diplome.html:418
+msgid ""
+"Si vous avez créé votre classe sur Livres en Classe (gratuit), le mode « "
+"Toute la classe » apparaît automatiquement et génère une planche complète"
+" prête à imprimer avec tous les noms et compteurs de lecture."
+msgstr ""
+
 #: project/templates/ressources/etiquettes.html:5
-#: project/templates/ressources/index.html:268
+#: project/templates/ressources/index.html:287
 msgid "Étiquettes de Genres & Bacs"
 msgstr "Genre & Bin Labels"
 
@@ -3438,64 +4088,218 @@ msgstr ""
 "💡 You can click directly on any text or title on the A4 sheet to edit it "
 "before printing."
 
-#: project/templates/ressources/fiches_avis.html:5
+#: project/templates/ressources/fiches_avis.html:3
+#, fuzzy
+msgid "Fiches coup de cœur et avis de lecture à imprimer (A4) | Livres en Classe"
+msgstr "Customizable & Printable Resources | Livres en Classe"
+
+#: project/templates/ressources/fiches_avis.html:4
+msgid ""
+"4 fiches de recommandation de lecture par page A4 pour l'école primaire :"
+" fanions coup de cœur, étoiles et avis à glisser dans les livres. Gratuit"
+" et modifiable."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:34
 msgid "Fiches Coup de Cœur & Fanions"
 msgstr "Book Review Bookmarks & Pennants"
 
-#: project/templates/ressources/fiches_avis.html:15
+#: project/templates/ressources/fiches_avis.html:44
 msgid "Corail Coup de Cœur"
 msgstr "Favorite Coral"
 
-#: project/templates/ressources/fiches_avis.html:18
+#: project/templates/ressources/fiches_avis.html:47
 msgid "Vert Forêt"
 msgstr "Forest Green"
 
-#: project/templates/ressources/fiches_avis.html:19
+#: project/templates/ressources/fiches_avis.html:48
 msgid "Violet Passion"
 msgstr "Passion Violet"
 
-#: project/templates/ressources/fiches_avis.html:27
+#: project/templates/ressources/fiches_avis.html:56
 msgid "En-tête des fiches"
 msgstr "Card header"
 
-#: project/templates/ressources/fiches_avis.html:30
+#: project/templates/ressources/fiches_avis.html:59
 msgid "Titre du fanion"
 msgstr "Pennant title"
 
-#: project/templates/ressources/fiches_avis.html:32
-#: project/templates/ressources/fiches_avis.html:44
+#: project/templates/ressources/fiches_avis.html:61
+#: project/templates/ressources/fiches_avis.html:73
 msgid "COUP DE CŒUR DE LECTEUR"
 msgstr "READER'S FAVORITE PICK"
 
-#: project/templates/ressources/fiches_avis.html:46
+#: project/templates/ressources/fiches_avis.html:75
 msgid "Conseil et partage entre camarades"
 msgstr "Recommendation and sharing among classmates"
 
-#: project/templates/ressources/fiches_avis.html:51
+#: project/templates/ressources/fiches_avis.html:80
 msgid "Conseillé par :"
 msgstr "Recommended by:"
 
-#: project/templates/ressources/fiches_avis.html:55
+#: project/templates/ressources/fiches_avis.html:84
 msgid "Titre du livre :"
 msgstr "Book title:"
 
-#: project/templates/ressources/fiches_avis.html:65
+#: project/templates/ressources/fiches_avis.html:94
 msgid "Note :"
 msgstr "Rating:"
 
-#: project/templates/ressources/fiches_avis.html:71
+#: project/templates/ressources/fiches_avis.html:100
 msgid "Ce qui m'a plu dans cette histoire :"
 msgstr "What I loved about this story:"
 
-#: project/templates/ressources/fiches_avis.html:80
+#: project/templates/ressources/fiches_avis.html:109
 msgid "À insérer dans le livre pour laisser dépasser l'onglet en rayon."
 msgstr "Insert into the book leaving the tab protruding on the shelf."
 
+#: project/templates/ressources/fiches_avis.html:125
+msgid "Visuel Pinterest Fiches coup de cœur à imprimer"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:128
+msgid ""
+"Fiches coup de cœur et avis de lecture à imprimer gratuits pour la classe"
+" (A4). Fanions de recommandation de livres entre élèves."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:136
+#, fuzzy
+msgid "Sauvegardez ces fiches pour votre classe"
+msgstr "Practical resources and guides for your classroom"
+
+#: project/templates/ressources/fiches_avis.html:139
+msgid ""
+"Épinglez cette idée sur Pinterest pour aménager un coin lecture "
+"interactif où les élèves recommandent leurs livres préférés à leurs "
+"camarades."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:163
+msgid "Comment animer les recommandations littéraires entre élèves ?"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:166
+msgid ""
+"La recommandation par les pairs est l'un des moyens les plus efficaces "
+"pour déclencher l'envie de lire chez un enfant. Ces fiches « Coup de cœur"
+" » se découpent en fanions verticaux que l'élève glisse directement à "
+"l'intérieur du livre qu'il a adoré."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:173
+msgid "1. Le fanion visible en rayon"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:176
+msgid ""
+"L'en-tête du fanion dépasse de la tranche du livre rangé dans le bac ou "
+"l'étagère, attirant instantanément le regard des camarades en quête "
+"d'inspiration."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:183
+msgid "2. Travailler l'argumentation"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:186
+msgid ""
+"En formulant en deux ou trois lignes « Pourquoi j'ai adoré cette histoire"
+" », l'élève exerce sa capacité d'analyse et de synthèse sans la lourdeur "
+"d'une fiche de lecture classique."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:193
+#, fuzzy
+msgid "3. Créer une dynamique de classe"
+msgstr "How to create a classroom library?"
+
+#: project/templates/ressources/fiches_avis.html:196
+msgid ""
+"Instaurez un rituel hebdomadaire de « minute critique » où les élèves "
+"présentent brièvement leur fanion avant de le glisser dans l'ouvrage."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:202
+#, fuzzy
+msgid "Conseils d'impression et d'utilisation"
+msgstr "1. TERMS OF USE"
+
+#: project/templates/ressources/fiches_avis.html:204
+msgid "Papier rigide"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:204
+msgid ""
+"Imprimez sur du bristol de 160 à 210 g/m² pour que les fanions tiennent "
+"bien droits une fois glissés entre les pages."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:205
+#, fuzzy
+msgid "Massicotage"
+msgstr "Message"
+
+#: project/templates/ressources/fiches_avis.html:205
+msgid ""
+"Les traits de coupe grisés permettent de découper 4 fiches identiques en "
+"deux coups de massicot."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:214
+msgid "Quels sont les livres préférés de vos élèves ?"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:217
+msgid "Identifiez les plus gros succès de votre classe"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:220
+msgid ""
+"Grâce au suivi informatisé de Livres en Classe, découvrez en un coup "
+"d'œil le top des livres les plus empruntés et les genres plébiscités par "
+"vos élèves pour orienter vos futurs achats."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:233
+msgid "Création de compte en 30 secondes"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:241
+msgid "Questions fréquentes sur les fiches coup de cœur"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:244
+#, fuzzy
+msgid "Puis-je changer le titre « Coup de cœur » ?"
+msgstr "“Favorite Pick” Cards"
+
+#: project/templates/ressources/fiches_avis.html:245
+msgid ""
+"Oui, vous pouvez saisir « Mon conseil de lecture », « Livre à ne pas "
+"manquer ! » ou tout autre texte adapté à votre projet dans la colonne de "
+"gauche."
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:249
+msgid "Faut-il plastifier ces fiches ?"
+msgstr ""
+
+#: project/templates/ressources/fiches_avis.html:250
+msgid ""
+"Si vous souhaitez que chaque élève conserve son avis ou que l'avis reste "
+"attaché définitivement au livre, le papier simple ou bristol suffit. Pour"
+" un usage réutilisable, une plastification fine avec feutre effaçable est"
+" possible."
+msgstr ""
+
 #: project/templates/ressources/index.html:7
+#: project/templates/ressources/index.html:15
 msgid "Ressources personnalisables & imprimables | Livres en Classe"
 msgstr "Customizable & Printable Resources | Livres en Classe"
 
 #: project/templates/ressources/index.html:8
+#: project/templates/ressources/index.html:16
 msgid ""
 "Outils gratuits et personnalisables pour enseignants : diplômes de "
 "lecture, marque-pages, charte de classe, bingo lecture, étiquettes de "
@@ -3505,11 +4309,11 @@ msgstr ""
 "classroom charter, reading bingo, bin labels, and ready-to-print "
 "barcodes."
 
-#: project/templates/ressources/index.html:179
+#: project/templates/ressources/index.html:198
 msgid "Outils et Ressources pour la Classe"
 msgstr "Classroom Tools and Resources"
 
-#: project/templates/ressources/index.html:182
+#: project/templates/ressources/index.html:201
 msgid ""
 "Personnalisez vos affiches, diplômes, marque-pages et étiquettes en "
 "ligne, puis imprimez-les directement au format A4."
@@ -3517,27 +4321,27 @@ msgstr ""
 "Customize your posters, diplomas, bookmarks, and labels online, then "
 "print them directly in A4 format."
 
-#: project/templates/ressources/index.html:189
+#: project/templates/ressources/index.html:208
 msgid "Motivation & Diplômes"
 msgstr "Motivation & Diplomas"
 
-#: project/templates/ressources/index.html:190
+#: project/templates/ressources/index.html:209
 msgid "Organisation & Bacs"
 msgstr "Organization & Bins"
 
-#: project/templates/ressources/index.html:191
+#: project/templates/ressources/index.html:210
 msgid "Rituels & Prêts"
 msgstr "Routines & Loans"
 
-#: project/templates/ressources/index.html:200
+#: project/templates/ressources/index.html:219
 msgid "A4 Paysage"
 msgstr "A4 Landscape"
 
-#: project/templates/ressources/index.html:204
+#: project/templates/ressources/index.html:223
 msgid "Diplômes de Lecture"
 msgstr "Reading Diplomas"
 
-#: project/templates/ressources/index.html:205
+#: project/templates/ressources/index.html:224
 msgid ""
 "Valorisez les progrès et paliers franchis (5, 10, 20 livres). Remplissage"
 " libre ou connecté aux statistiques de vos élèves."
@@ -3545,26 +4349,26 @@ msgstr ""
 "Celebrate progress and reading milestones (5, 10, 20 books). Freeform "
 "entry or connected to your students' statistics."
 
-#: project/templates/ressources/index.html:207
-#: project/templates/ressources/index.html:222
-#: project/templates/ressources/index.html:237
-#: project/templates/ressources/index.html:252
-#: project/templates/ressources/index.html:272
-#: project/templates/ressources/index.html:293
-#: project/templates/ressources/index.html:313
-#: project/templates/ressources/index.html:334
+#: project/templates/ressources/index.html:226
+#: project/templates/ressources/index.html:241
+#: project/templates/ressources/index.html:256
+#: project/templates/ressources/index.html:271
+#: project/templates/ressources/index.html:291
+#: project/templates/ressources/index.html:312
+#: project/templates/ressources/index.html:332
+#: project/templates/ressources/index.html:353
 msgid "Personnaliser et imprimer"
 msgstr "Customize and print"
 
-#: project/templates/ressources/index.html:215
+#: project/templates/ressources/index.html:234
 msgid "4 par page"
 msgstr "4 per page"
 
-#: project/templates/ressources/index.html:219
+#: project/templates/ressources/index.html:238
 msgid "Marque-pages d'emprunt"
 msgstr "Loan Bookmarks"
 
-#: project/templates/ressources/index.html:220
+#: project/templates/ressources/index.html:239
 msgid ""
 "Suivi des dates de prêt au recto et fiche d'avis avec étoiles à colorier "
 "au verso. Formats pliables ou prêts à massicoter."
@@ -3572,11 +4376,11 @@ msgstr ""
 "Track loan dates on the front and book review with stars to color on the "
 "back. Foldable or cut-ready formats."
 
-#: project/templates/ressources/index.html:230
+#: project/templates/ressources/index.html:249
 msgid "Affiche A4 / A3"
 msgstr "A4 / A3 Poster"
 
-#: project/templates/ressources/index.html:235
+#: project/templates/ressources/index.html:254
 msgid ""
 "Les règles essentielles pour préserver les livres et le calme. Versions "
 "couleur ou noir & blanc avec contrat de signatures."
@@ -3584,15 +4388,15 @@ msgstr ""
 "Essential rules for taking care of books and maintaining quiet. Color or "
 "black & white versions with signature agreement."
 
-#: project/templates/ressources/index.html:245
+#: project/templates/ressources/index.html:264
 msgid "Grille A4"
 msgstr "A4 Grid"
 
-#: project/templates/ressources/index.html:249
+#: project/templates/ressources/index.html:268
 msgid "Défi Lecture"
 msgstr "Reading Challenge"
 
-#: project/templates/ressources/index.html:250
+#: project/templates/ressources/index.html:269
 msgid ""
 "Une grille de 16 situations de lecture variées pour stimuler la "
 "régularité pendant les vacances scolaires ou un rallye."
@@ -3600,13 +4404,13 @@ msgstr ""
 "A grid of 16 varied reading situations to encourage regular reading "
 "during school vacations or a reading rally."
 
-#: project/templates/ressources/index.html:261
+#: project/templates/ressources/index.html:280
 msgid "Bacs & Cotes"
 msgstr "Bins & Spines"
 
-#: project/templates/ressources/index.html:263
-#: project/templates/ressources/index.html:304
-#: project/templates/subscription/tarifs.html:347
+#: project/templates/ressources/index.html:282
+#: project/templates/ressources/index.html:323
+#: project/templates/subscription/tarifs.html:391
 #: project/templates/user/reglage.html:505
 #: project/templates/user/reglage.html:535
 #: project/templates/user/reglage.html:565
@@ -3616,7 +4420,7 @@ msgstr "Bins & Spines"
 msgid "Premium"
 msgstr "Premium"
 
-#: project/templates/ressources/index.html:269
+#: project/templates/ressources/index.html:288
 msgid ""
 "Grandes étiquettes visuelles pour bacs ou bandes de cotes pour tranches. "
 "Compatible avec les tags personnalisés de votre compte."
@@ -3624,20 +4428,20 @@ msgstr ""
 "Large visual labels for bins or spine label strips. Compatible with your "
 "account's custom tags."
 
-#: project/templates/ressources/index.html:277
-#: project/templates/ressources/index.html:318
+#: project/templates/ressources/index.html:296
+#: project/templates/ressources/index.html:337
 msgid "Personnaliser (Premium)"
 msgstr "Customize (Premium)"
 
-#: project/templates/ressources/index.html:286
+#: project/templates/ressources/index.html:305
 msgid "Fanions"
 msgstr "Pennants"
 
-#: project/templates/ressources/index.html:290
+#: project/templates/ressources/index.html:309
 msgid "Fiches « Coup de cœur »"
 msgstr "“Favorite Pick” Cards"
 
-#: project/templates/ressources/index.html:291
+#: project/templates/ressources/index.html:310
 msgid ""
 "Fanions cartonnés à glisser dans les livres pour encourager les conseils "
 "et recommandations spontanées entre élèves."
@@ -3645,15 +4449,15 @@ msgstr ""
 "Cardstock pennants to slip into books to encourage spontaneous "
 "recommendations between students."
 
-#: project/templates/ressources/index.html:302
+#: project/templates/ressources/index.html:321
 msgid "Vectoriel"
 msgstr "Vector"
 
-#: project/templates/ressources/index.html:309
+#: project/templates/ressources/index.html:328
 msgid "Planches de Codes-Barres"
 msgstr "Barcode Sheets"
 
-#: project/templates/ressources/index.html:310
+#: project/templates/ressources/index.html:329
 msgid ""
 "Génération vectorielle de codes-barres Code 128 pour étiqueter vos livres"
 " sans ISBN ou créer des cartes de prêt pour vos élèves."
@@ -3661,16 +4465,16 @@ msgstr ""
 "Vector generation of Code 128 barcodes to label books without ISBN or "
 "create loan cards for your students."
 
-#: project/templates/ressources/index.html:327
+#: project/templates/ressources/index.html:346
 msgid "Livret A5"
 msgstr "A5 Booklet"
 
-#: project/templates/ressources/index.html:331
+#: project/templates/ressources/index.html:350
 #: project/templates/ressources/passeport.html:5
 msgid "Passeport de Lecture"
 msgstr "Reading Passport"
 
-#: project/templates/ressources/index.html:332
+#: project/templates/ressources/index.html:351
 msgid ""
 "Livret pliable A5 : page de profil, suivi des genres littéraires "
 "découverts et fiches synthétiques des lectures de l'année."
@@ -3678,11 +4482,11 @@ msgstr ""
 "Foldable A5 booklet: profile page, tracking of discovered literary "
 "genres, and summary logs of the year's reading."
 
-#: project/templates/ressources/index.html:344
+#: project/templates/ressources/index.html:363
 msgid "Ressources documentaires recommandées"
 msgstr "Recommended Documentary Resources"
 
-#: project/templates/ressources/index.html:345
+#: project/templates/ressources/index.html:364
 msgid ""
 "Une sélection de portails institutionnels et d'outils gratuits pour "
 "approfondir la gestion de votre bibliothèque de classe."
@@ -3690,11 +4494,11 @@ msgstr ""
 "A selection of official portals and free tools to enhance your classroom "
 "library management."
 
-#: project/templates/ressources/index.html:350
+#: project/templates/ressources/index.html:369
 msgid "Eduscol — Lire et écrire au cycle 2"
 msgstr "Eduscol — Reading and Writing in Primary Education"
 
-#: project/templates/ressources/index.html:351
+#: project/templates/ressources/index.html:370
 msgid ""
 "La ressource officielle de l'Éducation nationale sur l'apprentissage de "
 "la lecture au CP et CE1."
@@ -3702,15 +4506,15 @@ msgstr ""
 "The official French Ministry of Education resource on reading instruction"
 " for early elementary grades."
 
-#: project/templates/ressources/index.html:353
+#: project/templates/ressources/index.html:372
 msgid "Consulter Eduscol"
 msgstr "Visit Eduscol"
 
-#: project/templates/ressources/index.html:360
+#: project/templates/ressources/index.html:379
 msgid "BNF — Littérature jeunesse"
 msgstr "BnF — Children's Literature"
 
-#: project/templates/ressources/index.html:361
+#: project/templates/ressources/index.html:380
 msgid ""
 "Le portail de la Bibliothèque nationale de France : sélections et "
 "bibliographies par tranche d'âge."
@@ -3718,15 +4522,15 @@ msgstr ""
 "The National Library of France portal: curated selections and reading "
 "lists by age group."
 
-#: project/templates/ressources/index.html:363
+#: project/templates/ressources/index.html:382
 msgid "Consulter la BNF"
 msgstr "Visit BnF"
 
-#: project/templates/ressources/index.html:370
+#: project/templates/ressources/index.html:389
 msgid "Réseau Canopé — Bibliothèque de classe"
 msgstr "Canopé Network — Classroom Library"
 
-#: project/templates/ressources/index.html:371
+#: project/templates/ressources/index.html:390
 msgid ""
 "Fiches conseils et repères méthodologiques pour aménager un coin lecture "
 "en école primaire."
@@ -3734,15 +4538,15 @@ msgstr ""
 "Advice sheets and pedagogical guidelines for setting up a reading corner "
 "in elementary school."
 
-#: project/templates/ressources/index.html:373
+#: project/templates/ressources/index.html:392
 msgid "Consulter Canopé"
 msgstr "Visit Canopé"
 
-#: project/templates/ressources/index.html:380
+#: project/templates/ressources/index.html:399
 msgid "Ricochet — Base de données jeunesse"
 msgstr "Ricochet — Children's Book Database"
 
-#: project/templates/ressources/index.html:381
+#: project/templates/ressources/index.html:400
 msgid ""
 "Base de recherche collaborative pour trouver des ouvrages jeunesse par "
 "niveau, thème ou genre."
@@ -3750,15 +4554,15 @@ msgstr ""
 "Collaborative search database to discover children's books by reading "
 "level, theme, or genre."
 
-#: project/templates/ressources/index.html:383
+#: project/templates/ressources/index.html:402
 msgid "Consulter Ricochet"
 msgstr "Visit Ricochet"
 
-#: project/templates/ressources/index.html:433
+#: project/templates/ressources/index.html:452
 msgid "Outil réservé aux membres Premium"
 msgstr "Tool reserved for Premium members"
 
-#: project/templates/ressources/index.html:439
+#: project/templates/ressources/index.html:458
 msgid ""
 "La génération personnalisée d'étiquettes pour bacs et cotes ainsi que les"
 " planches de codes-barres vectoriels sont réservées aux abonnés Premium "
@@ -3767,7 +4571,7 @@ msgstr ""
 "Custom bin and spine label generation, as well as vector barcode sheets, "
 "are reserved for Premium subscribers and Founder members."
 
-#: project/templates/ressources/index.html:442
+#: project/templates/ressources/index.html:461
 msgid ""
 "Étiquetez votre classe et vos livres en quelques clics pour faciliter les"
 " prêts et l'autonomie de vos élèves."
@@ -3775,132 +4579,302 @@ msgstr ""
 "Label your classroom and books in a few clicks to facilitate loans and "
 "student autonomy."
 
-#: project/templates/ressources/index.html:446
+#: project/templates/ressources/index.html:465
 #: project/templates/user/reglage.html:798
 msgid "Fermer"
 msgstr "Close"
 
-#: project/templates/ressources/index.html:449
+#: project/templates/ressources/index.html:468
 #: project/templates/user/reglage.html:801
 msgid "Découvrir les offres Premium (dès 5.- CHF/mois)"
 msgstr "Discover Premium plans (from 5.- CHF/month)"
 
-#: project/templates/ressources/marque_pages.html:5
+#: project/templates/ressources/marque_pages.html:3
+msgid ""
+"Marque-pages à imprimer gratuits pour l'école primaire (A4) | Livres en "
+"Classe"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:4
+msgid ""
+"Générez et imprimez 4 marque-pages par feuille A4 : fiche d'emprunt au "
+"recto, avis lecteur et étoiles au verso. Outil personnalisable et "
+"entièrement gratuit."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:34
 msgid "Marque-pages Emprunt & Avis"
 msgstr "Loan & Review Bookmarks"
 
-#: project/templates/ressources/marque_pages.html:17
+#: project/templates/ressources/marque_pages.html:46
 msgid "Jaune Soleil"
 msgstr "Sunny Yellow"
 
-#: project/templates/ressources/marque_pages.html:18
+#: project/templates/ressources/marque_pages.html:47
 msgid "Violet Poétique"
 msgstr "Poetic Violet"
 
-#: project/templates/ressources/marque_pages.html:27
+#: project/templates/ressources/marque_pages.html:56
 msgid "Mode d'impression"
 msgstr "Print mode"
 
-#: project/templates/ressources/marque_pages.html:33
+#: project/templates/ressources/marque_pages.html:62
 msgid "Pliable (Recto & Verso côte à côte)"
 msgstr "Foldable (Front & Back side by side)"
 
-#: project/templates/ressources/marque_pages.html:35
+#: project/templates/ressources/marque_pages.html:64
 msgid "Imprime sur 1 seule face : pliez en deux et collez."
 msgstr "Print on 1 side only: fold in half and glue."
 
-#: project/templates/ressources/marque_pages.html:40
+#: project/templates/ressources/marque_pages.html:69
 msgid "Planche 4 Rectos (Suivi des prêts)"
 msgstr "Sheet with 4 Fronts (Loan tracking)"
 
-#: project/templates/ressources/marque_pages.html:46
+#: project/templates/ressources/marque_pages.html:75
 msgid "Planche 4 Versos (Avis & Étoiles)"
 msgstr "Sheet with 4 Backs (Reviews & Stars)"
 
-#: project/templates/ressources/marque_pages.html:55
+#: project/templates/ressources/marque_pages.html:84
 msgid "Personnalisation"
 msgstr "Customization"
 
-#: project/templates/ressources/marque_pages.html:59
+#: project/templates/ressources/marque_pages.html:88
 msgid "Appartient à la classe de"
 msgstr "Property of class"
 
-#: project/templates/ressources/marque_pages.html:61
-#: project/templates/ressources/marque_pages.html:87
-#: project/templates/ressources/marque_pages.html:155
+#: project/templates/ressources/marque_pages.html:90
+#: project/templates/ressources/marque_pages.html:116
+#: project/templates/ressources/marque_pages.html:184
 msgid "la classe de CM1-B"
 msgstr "Class 4B"
 
-#: project/templates/ressources/marque_pages.html:66
+#: project/templates/ressources/marque_pages.html:95
 msgid "Amorce de l'avis critique"
 msgstr "Review prompt"
 
-#: project/templates/ressources/marque_pages.html:68
-#: project/templates/ressources/marque_pages.html:136
-#: project/templates/ressources/marque_pages.html:204
+#: project/templates/ressources/marque_pages.html:97
+#: project/templates/ressources/marque_pages.html:165
+#: project/templates/ressources/marque_pages.html:233
 msgid "J'ai aimé ce livre parce que :"
 msgstr "I liked this book because:"
 
-#: project/templates/ressources/marque_pages.html:73
+#: project/templates/ressources/marque_pages.html:102
 msgid "Message d'encouragement"
 msgstr "Encouragement message"
 
-#: project/templates/ressources/marque_pages.html:75
-#: project/templates/ressources/marque_pages.html:118
-#: project/templates/ressources/marque_pages.html:186
+#: project/templates/ressources/marque_pages.html:104
+#: project/templates/ressources/marque_pages.html:147
+#: project/templates/ressources/marque_pages.html:215
 msgid "Prends soin de moi et rapporte-moi à l'école !"
 msgstr "Take care of me and bring me back to school!"
 
-#: project/templates/ressources/marque_pages.html:86
-#: project/templates/ressources/marque_pages.html:154
+#: project/templates/ressources/marque_pages.html:115
+#: project/templates/ressources/marque_pages.html:183
 msgid "FICHE D'EMPRUNT"
 msgstr "LOAN RECORD"
 
-#: project/templates/ressources/marque_pages.html:87
-#: project/templates/ressources/marque_pages.html:155
-#: project/templates/ressources/marque_pages.html:225
+#: project/templates/ressources/marque_pages.html:116
+#: project/templates/ressources/marque_pages.html:184
+#: project/templates/ressources/marque_pages.html:392
 msgid "Bibliothèque de"
 msgstr "Library of"
 
-#: project/templates/ressources/marque_pages.html:91
-#: project/templates/ressources/marque_pages.html:159
+#: project/templates/ressources/marque_pages.html:120
+#: project/templates/ressources/marque_pages.html:188
 msgid "Nom de l'emprunteur :"
 msgstr "Borrower's name:"
 
-#: project/templates/ressources/marque_pages.html:96
-#: project/templates/ressources/marque_pages.html:164
+#: project/templates/ressources/marque_pages.html:125
+#: project/templates/ressources/marque_pages.html:193
 msgid "Dates de circulation :"
 msgstr "Lending dates:"
 
-#: project/templates/ressources/marque_pages.html:100
-#: project/templates/ressources/marque_pages.html:168
+#: project/templates/ressources/marque_pages.html:129
+#: project/templates/ressources/marque_pages.html:197
 msgid "Date prêt"
 msgstr "Loan date"
 
-#: project/templates/ressources/marque_pages.html:101
-#: project/templates/ressources/marque_pages.html:169
+#: project/templates/ressources/marque_pages.html:130
+#: project/templates/ressources/marque_pages.html:198
 msgid "Date retour"
 msgstr "Return date"
 
-#: project/templates/ressources/marque_pages.html:125
-#: project/templates/ressources/marque_pages.html:193
+#: project/templates/ressources/marque_pages.html:154
+#: project/templates/ressources/marque_pages.html:222
 msgid "AVIS DE LECTURE"
 msgstr "BOOK REVIEW"
 
-#: project/templates/ressources/marque_pages.html:126
-#: project/templates/ressources/marque_pages.html:194
+#: project/templates/ressources/marque_pages.html:155
+#: project/templates/ressources/marque_pages.html:223
 msgid "Partage ton impression"
 msgstr "Share your impression"
 
-#: project/templates/ressources/marque_pages.html:130
-#: project/templates/ressources/marque_pages.html:198
+#: project/templates/ressources/marque_pages.html:159
+#: project/templates/ressources/marque_pages.html:227
 msgid "Note du livre :"
 msgstr "Book rating:"
 
-#: project/templates/ressources/marque_pages.html:146
-#: project/templates/ressources/marque_pages.html:214
+#: project/templates/ressources/marque_pages.html:175
+#: project/templates/ressources/marque_pages.html:243
 msgid "Recommandé à :"
 msgstr "Recommended to:"
+
+#: project/templates/ressources/marque_pages.html:259
+msgid "Visuel Pinterest Marque-pages à imprimer"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:262
+msgid ""
+"Marque-pages à imprimer gratuits pour la classe (A4). Suivi des prêts et "
+"avis critique."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:270
+#, fuzzy
+msgid "Sauvegardez cette ressource pour votre classe"
+msgstr "Classroom Tools and Resources"
+
+#: project/templates/ressources/marque_pages.html:273
+msgid ""
+"Épinglez ces marque-pages sur votre tableau Pinterest dédié à la "
+"bibliothèque de classe ou au coin lecture pour les retrouver à tout "
+"moment."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:297
+#, fuzzy
+msgid "Comment utiliser ces marque-pages dans votre bibliothèque de classe ?"
+msgstr "How to Classify Books in a Classroom Library?"
+
+#: project/templates/ressources/marque_pages.html:300
+msgid ""
+"La circulation des livres dans une classe ou une BCD d'école primaire "
+"requiert à la fois simplicité et rigueur. Ces marque-pages à imprimer au "
+"format A4 sont conçus pour allier le suivi pratique des emprunts à une "
+"véritable démarche pédagogique de lecteur."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:307
+msgid "1. Responsabiliser avec la fiche d'emprunt"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:310
+msgid ""
+"Au recto, le tableau de dates permet à l'élève d'inscrire la date "
+"d'emprunt et la date de retour prévue. Glissé dans le livre, le marque-"
+"page rend visible en un coup d'œil l'état du prêt sans nécessiter de "
+"manipuler un cahier d'enregistrement."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:317
+msgid "2. Développer le regard critique de lecteur"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:320
+msgid ""
+"Au verso, l'élève note son appréciation en coloriant les étoiles (de 1 à "
+"5) et rédige une courte phrase argumentée. C'est un support parfait pour "
+"animer un quart d'heure lecture, un rallye lecture ou des conseils "
+"littéraires entre pairs."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:326
+msgid "Conseils d'impression et de façonnage"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:328
+#, fuzzy
+msgid "Choix du papier"
+msgstr "Excel / Paper"
+
+#: project/templates/ressources/marque_pages.html:328
+msgid ""
+"Pour une tenue optimale tout au long de l'année scolaire, nous vous "
+"conseillons d'imprimer sur du papier épais de 160 g/m² ou 200 g/m² (type "
+"bristol)."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:329
+msgid "Option pliable en 2"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:329
+msgid ""
+"Le mode « Pliable » place le recto et le verso côte à côte. Imprimez sur "
+"une face simple, pliez le long de la ligne centrale et collez les deux "
+"faces pour obtenir un marque-page rigide."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:330
+msgid "Option plastification"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:330
+msgid ""
+"En plastifiant vos marque-pages avec des pochettes de 80 à 100 microns, "
+"vos élèves peuvent utiliser des feutres effaçables à sec pour réutiliser "
+"le même marque-page toute l'année."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:339
+#, fuzzy
+msgid "Pour les enseignants organisés"
+msgstr "Explore the teachers area"
+
+#: project/templates/ressources/marque_pages.html:342
+msgid "Passez à la gestion de classe numérique en 1 scan"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:345
+msgid ""
+"Fini les livres égarés et les listes manuelles ! Avec Livres en Classe, "
+"cataloguez vos ouvrages en scannant simplement leur code-barres avec "
+"votre smartphone, enregistrez les prêts d'élèves en 2 secondes et accédez"
+" à vos statistiques de lecture."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:358
+msgid "Essai gratuit 30 jours sans carte bancaire"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:366
+#, fuzzy
+msgid "Questions fréquentes sur les marque-pages"
+msgstr "Frequently Asked Questions"
+
+#: project/templates/ressources/marque_pages.html:369
+msgid "Ces marque-pages sont-ils réellement gratuits ?"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:370
+msgid ""
+"Oui, totalement. Vous pouvez personnaliser le texte de votre classe, "
+"choisir votre couleur et imprimer autant d'exemplaires que nécessaire "
+"sans aucun compte ni paiement."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:374
+msgid "Pour quels niveaux scolaires ces marque-pages sont-ils adaptés ?"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:375
+msgid ""
+"Ils conviennent parfaitement du CP au CM2 (Cycles 2 et 3), ainsi qu'aux "
+"classes de SEGPA et aux CDI de collège. Pour les CP en début d'année, "
+"privilégiez le coloriage d'étoiles ; dès le CE1, les élèves peuvent "
+"rédiger leur propre avis."
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:379
+msgid "Puis-je modifier le texte du marque-page avant d'imprimer ?"
+msgstr ""
+
+#: project/templates/ressources/marque_pages.html:380
+msgid ""
+"Oui. Dans la barre latérale du studio en haut de page, vous pouvez "
+"modifier le nom de votre classe, la phrase d'amorce de l'avis et le "
+"message de responsabilisation."
+msgstr ""
 
 #: project/templates/ressources/passeport.html:16
 msgid "Bleu Marine"
@@ -4045,7 +5019,7 @@ msgid ""
 msgstr "Activate full, unlimited access to all features for your classroom."
 
 #: project/templates/subscription/paiement.html:156
-#: project/templates/subscription/tarifs.html:140
+#: project/templates/subscription/tarifs.html:184
 msgid "Vous êtes Membre Fondateur à vie"
 msgstr "You are a Lifetime Founder Member"
 
@@ -4074,9 +5048,9 @@ msgstr ""
 " invoices at any time."
 
 #: project/templates/subscription/paiement.html:180
-#: project/templates/subscription/tarifs.html:173
-#: project/templates/subscription/tarifs.html:247
-#: project/templates/subscription/tarifs.html:322
+#: project/templates/subscription/tarifs.html:217
+#: project/templates/subscription/tarifs.html:291
+#: project/templates/subscription/tarifs.html:366
 msgid "Gérer mon abonnement"
 msgstr "Manage my subscription"
 
@@ -4085,13 +5059,13 @@ msgid "1. Choisissez votre fréquence de paiement"
 msgstr "1. Choose your billing frequency"
 
 #: project/templates/subscription/paiement.html:203
-#: project/templates/subscription/tarifs.html:265
+#: project/templates/subscription/tarifs.html:309
 #, python-format
 msgid "Économisez 50%%"
 msgstr "Save 50%%"
 
 #: project/templates/subscription/paiement.html:206
-#: project/templates/subscription/tarifs.html:268
+#: project/templates/subscription/tarifs.html:312
 msgid "Annuel"
 msgstr "Annual"
 
@@ -4104,13 +5078,13 @@ msgstr "The recommended choice for school, cancel at any time"
 #: project/templates/subscription/paiement.html:288
 #: project/templates/subscription/paiement.html:440
 #: project/templates/subscription/paiement.html:448
-#: project/templates/subscription/tarifs.html:204
-#: project/templates/subscription/tarifs.html:273
+#: project/templates/subscription/tarifs.html:248
+#: project/templates/subscription/tarifs.html:317
 msgid "TTC"
 msgstr "incl. VAT"
 
 #: project/templates/subscription/paiement.html:211
-#: project/templates/subscription/tarifs.html:273
+#: project/templates/subscription/tarifs.html:317
 msgid "an"
 msgstr "year"
 
@@ -4119,7 +5093,7 @@ msgid "soit 2.50 CHF par mois"
 msgstr "that's 2.50 CHF per month"
 
 #: project/templates/subscription/paiement.html:226
-#: project/templates/subscription/tarifs.html:199
+#: project/templates/subscription/tarifs.html:243
 msgid "Mensuel"
 msgstr "Monthly"
 
@@ -4128,7 +5102,7 @@ msgid "Sans engagement, résiliation en 1 clic à tout moment"
 msgstr "No commitment, 1-click cancellation at any time"
 
 #: project/templates/subscription/paiement.html:231
-#: project/templates/subscription/tarifs.html:204
+#: project/templates/subscription/tarifs.html:248
 msgid "mois"
 msgstr "month"
 
@@ -4267,7 +5241,7 @@ msgstr "All your features are unlocked immediately."
 
 #: project/templates/subscription/paiement.html:354
 #: project/templates/subscription/paiement.html:378
-#: project/templates/subscription/tarifs.html:397
+#: project/templates/subscription/tarifs.html:441
 msgid "Résiliation libre et sans frais"
 msgstr "Free cancellation with no fees"
 
@@ -4293,7 +5267,7 @@ msgid "← Revenir au comparatif complet des offres"
 msgstr "← Back to plans and pricing comparison"
 
 #: project/templates/subscription/paiement.html:381
-#: project/templates/subscription/tarifs.html:400
+#: project/templates/subscription/tarifs.html:444
 msgid ""
 "Résiliez à tout moment en 1 clic depuis vos réglages. Aucun frais caché "
 "ni pénalité : vous conservez vos accès complets jusqu'au terme de votre "
@@ -4303,12 +5277,12 @@ msgstr ""
 "penalties: you retain full access until the end of your billing cycle."
 
 #: project/templates/subscription/paiement.html:389
-#: project/templates/subscription/tarifs.html:408
+#: project/templates/subscription/tarifs.html:452
 msgid "Que se passe-t-il si je résilie ?"
 msgstr "What happens if I cancel?"
 
 #: project/templates/subscription/paiement.html:392
-#: project/templates/subscription/tarifs.html:411
+#: project/templates/subscription/tarifs.html:455
 msgid ""
 "Toutes vos données (élèves, livres, historique) restent intégralement "
 "conservées et utilisables pour gérer vos prêts du quotidien. Seul l'ajout"
@@ -4319,12 +5293,12 @@ msgstr ""
 " is paused."
 
 #: project/templates/subscription/paiement.html:400
-#: project/templates/subscription/tarifs.html:419
+#: project/templates/subscription/tarifs.html:463
 msgid "Puis-je utiliser un code de réduction ?"
 msgstr "Can I use a discount coupon?"
 
 #: project/templates/subscription/paiement.html:403
-#: project/templates/subscription/tarifs.html:422
+#: project/templates/subscription/tarifs.html:466
 msgid ""
 "Oui ! Si votre école, votre canton ou une promotion vous a fourni un code"
 " avantage, saisissez-le simplement lors du paiement sécurisé sur Stripe."
@@ -4333,13 +5307,13 @@ msgstr ""
 "simply enter it during secure checkout on Stripe."
 
 #: project/templates/subscription/paiement.html:413
-#: project/templates/subscription/tarifs.html:432
+#: project/templates/subscription/tarifs.html:476
 #, python-format
 msgid "Paiement 100%% sécurisé par carte bancaire via Stripe."
 msgstr "100%% secure payment by credit card via Stripe."
 
 #: project/templates/subscription/paiement.html:414
-#: project/templates/subscription/tarifs.html:433
+#: project/templates/subscription/tarifs.html:477
 msgid ""
 "Tarifs nets en Francs Suisses (CHF) toutes taxes comprises (TTC), sans "
 "engagement contraignant ni frais cachés."
@@ -4348,7 +5322,7 @@ msgstr ""
 "binding commitment or hidden fees."
 
 #: project/templates/subscription/paiement.html:418
-#: project/templates/subscription/tarifs.html:437
+#: project/templates/subscription/tarifs.html:481
 msgid "Consulter nos Conditions Générales de Vente (CGV) & Mentions Légales"
 msgstr "View our General Terms of Sale (GTS) & Legal Notice"
 
@@ -4416,16 +5390,27 @@ msgstr ""
 "Discover Livres en Classe plans and pricing for teachers: free version "
 "and Premium subscription at 30.- CHF/year."
 
-#: project/templates/subscription/tarifs.html:9
+#: project/templates/subscription/tarifs.html:29
+#: project/templates/subscription/tarifs.html:390
+msgid "Gratuit (Free)"
+msgstr "Free"
+
+#: project/templates/subscription/tarifs.html:38
+#: project/templates/subscription/tarifs.html:370
+#: project/templates/subscription/tarifs.html:375
+msgid "Souscrire pour 30.- CHF / an"
+msgstr "Subscribe for 30.- CHF / year"
+
+#: project/templates/subscription/tarifs.html:53
 #: project/templates/utils/navbar.html:505
 msgid "Tarifs"
 msgstr "Pricing"
 
-#: project/templates/subscription/tarifs.html:121
+#: project/templates/subscription/tarifs.html:165
 msgid "Un tarif simple et transparent"
 msgstr "Simple and transparent pricing"
 
-#: project/templates/subscription/tarifs.html:125
+#: project/templates/subscription/tarifs.html:169
 msgid ""
 "30 jours d'accès complet offert sans engagement, puis une formule conçue "
 "pour s'adapter à votre budget d'école."
@@ -4433,13 +5418,13 @@ msgstr ""
 "30 days of free full access with no obligation, then a plan designed to "
 "fit your school budget."
 
-#: project/templates/subscription/tarifs.html:127
+#: project/templates/subscription/tarifs.html:171
 msgid ""
 "Une formule simple et transparente conçue pour s'adapter à votre budget "
 "d'école."
 msgstr "A simple and transparent plan designed to fit your school budget."
 
-#: project/templates/subscription/tarifs.html:142
+#: project/templates/subscription/tarifs.html:186
 msgid ""
 "En tant qu'utilisateur historique, vous bénéficiez d'un accès illimité et"
 " gratuit permanent à l'ensemble des fonctionnalités présentes et futures."
@@ -4448,12 +5433,12 @@ msgstr ""
 "As an early adopter, you enjoy lifetime unlimited and free access to all "
 "current and future features. You will never be asked for a subscription."
 
-#: project/templates/subscription/tarifs.html:151
+#: project/templates/subscription/tarifs.html:195
 #: project/templates/user/reglage.html:309
 msgid "Résiliation programmée : accès Premium maintenu"
 msgstr "Cancellation scheduled: Premium access maintained"
 
-#: project/templates/subscription/tarifs.html:155
+#: project/templates/subscription/tarifs.html:199
 #, python-format
 msgid ""
 "Votre abonnement ne sera pas renouvelé, mais vous conservez tous vos "
@@ -4466,7 +5451,7 @@ msgstr ""
 "will automatically switch to the free plan without deleting any books, "
 "students, or loans."
 
-#: project/templates/subscription/tarifs.html:157
+#: project/templates/subscription/tarifs.html:201
 msgid ""
 "Votre demande de résiliation a bien été prise en compte. Vous continuez à"
 " profiter de l'ensemble des fonctionnalités Premium sans interruption "
@@ -4479,21 +5464,21 @@ msgstr ""
 "period. After this date, your account will automatically switch to the "
 "free plan without deleting any books, students, or loans."
 
-#: project/templates/subscription/tarifs.html:165
+#: project/templates/subscription/tarifs.html:209
 msgid "Votre abonnement Premium est actif"
 msgstr "Your Premium subscription is active"
 
-#: project/templates/subscription/tarifs.html:166
+#: project/templates/subscription/tarifs.html:210
 msgid ""
 "Vous bénéficiez d'un accès illimité à toutes les fonctionnalités de "
 "Livres en Classe."
 msgstr "You have unlimited access to all features of Livres en Classe."
 
-#: project/templates/subscription/tarifs.html:183
+#: project/templates/subscription/tarifs.html:227
 msgid "Vous profitez de l'essai gratuit Premium"
 msgstr "You are currently on the Premium free trial"
 
-#: project/templates/subscription/tarifs.html:186
+#: project/templates/subscription/tarifs.html:230
 #, python-format
 msgid ""
 "Il vous reste %(days)s jours d'accès complet offert. Vous pouvez "
@@ -4503,141 +5488,132 @@ msgstr ""
 "You have %(days)s days of free full access remaining. You can subscribe "
 "today to continue without interruption."
 
-#: project/templates/subscription/tarifs.html:200
+#: project/templates/subscription/tarifs.html:244
 msgid "Sans engagement, résiliable à tout moment"
 msgstr "No commitment, cancel at any time"
 
-#: project/templates/subscription/tarifs.html:206
+#: project/templates/subscription/tarifs.html:250
 msgid "Facturé chaque mois, résiliation en 1 clic sans frais cachés"
 msgstr "Billed monthly, 1-click cancellation with no hidden fees"
 
-#: project/templates/subscription/tarifs.html:211
-#: project/templates/subscription/tarifs.html:282
+#: project/templates/subscription/tarifs.html:255
+#: project/templates/subscription/tarifs.html:326
 msgid "Élèves illimités"
 msgstr "Unlimited students"
 
-#: project/templates/subscription/tarifs.html:215
-#: project/templates/subscription/tarifs.html:286
+#: project/templates/subscription/tarifs.html:259
+#: project/templates/subscription/tarifs.html:330
 msgid "Livres illimités"
 msgstr "Unlimited books"
 
-#: project/templates/subscription/tarifs.html:219
-#: project/templates/subscription/tarifs.html:290
+#: project/templates/subscription/tarifs.html:263
+#: project/templates/subscription/tarifs.html:334
 msgid "Scans code-barres illimités"
 msgstr "Unlimited barcode scans"
 
-#: project/templates/subscription/tarifs.html:223
-#: project/templates/subscription/tarifs.html:294
+#: project/templates/subscription/tarifs.html:267
+#: project/templates/subscription/tarifs.html:338
 msgid "Historique complet des prêts"
 msgstr "Full loan history"
 
-#: project/templates/subscription/tarifs.html:227
-#: project/templates/subscription/tarifs.html:298
+#: project/templates/subscription/tarifs.html:271
+#: project/templates/subscription/tarifs.html:342
 msgid "Exports complets Excel"
 msgstr "Full Excel exports"
 
-#: project/templates/subscription/tarifs.html:231
-#: project/templates/subscription/tarifs.html:302
+#: project/templates/subscription/tarifs.html:275
+#: project/templates/subscription/tarifs.html:346
 msgid "Étiquettes & codes-barres imprimables"
 msgstr "Printable labels & barcodes"
 
-#: project/templates/subscription/tarifs.html:238
-#: project/templates/subscription/tarifs.html:313
+#: project/templates/subscription/tarifs.html:282
+#: project/templates/subscription/tarifs.html:357
 msgid "Inclus à vie (Fondateur)"
 msgstr "Included for life (Founder)"
 
-#: project/templates/subscription/tarifs.html:251
-#: project/templates/subscription/tarifs.html:256
+#: project/templates/subscription/tarifs.html:295
+#: project/templates/subscription/tarifs.html:300
 msgid "Choisir la formule mensuelle"
 msgstr "Choose monthly plan"
 
-#: project/templates/subscription/tarifs.html:269
+#: project/templates/subscription/tarifs.html:313
 msgid "La formule idéale pour l'année scolaire, résiliable à tout moment"
 msgstr "The ideal plan for the school year, cancel at any time"
 
-#: project/templates/subscription/tarifs.html:276
+#: project/templates/subscription/tarifs.html:320
 msgid "Soit seulement 2.50 CHF par mois"
 msgstr "Just 2.50 CHF per month"
 
-#: project/templates/subscription/tarifs.html:306
+#: project/templates/subscription/tarifs.html:350
 msgid "Support prioritaire par e-mail"
 msgstr "Priority email support"
 
-#: project/templates/subscription/tarifs.html:326
-#: project/templates/subscription/tarifs.html:331
-msgid "Souscrire pour 30.- CHF / an"
-msgstr "Subscribe for 30.- CHF / year"
-
-#: project/templates/subscription/tarifs.html:340
+#: project/templates/subscription/tarifs.html:384
 msgid "Comparatif des fonctionnalités"
 msgstr "Feature comparison"
 
-#: project/templates/subscription/tarifs.html:346
-msgid "Gratuit (Free)"
-msgstr "Free"
-
-#: project/templates/subscription/tarifs.html:352
+#: project/templates/subscription/tarifs.html:396
 msgid "Nombre d'élèves"
 msgstr "Number of students"
 
-#: project/templates/subscription/tarifs.html:354
-#: project/templates/subscription/tarifs.html:359
-#: project/templates/subscription/tarifs.html:364
+#: project/templates/subscription/tarifs.html:398
+#: project/templates/subscription/tarifs.html:403
+#: project/templates/subscription/tarifs.html:408
 msgid "Illimité"
 msgstr "Unlimited"
 
-#: project/templates/subscription/tarifs.html:357
+#: project/templates/subscription/tarifs.html:401
 msgid "Nombre de livres"
 msgstr "Number of books"
 
-#: project/templates/subscription/tarifs.html:358
+#: project/templates/subscription/tarifs.html:402
 msgid "livres max"
 msgstr "books max"
 
-#: project/templates/subscription/tarifs.html:362
+#: project/templates/subscription/tarifs.html:406
 msgid "Scanner code-barres par caméra"
 msgstr "Camera barcode scanner"
 
-#: project/templates/subscription/tarifs.html:363
-msgid "scans d'essai"
-msgstr "trial scans"
+#: project/templates/subscription/tarifs.html:407
+msgid "scans / semaine"
+msgstr "scans / week"
 
-#: project/templates/subscription/tarifs.html:367
+#: project/templates/subscription/tarifs.html:411
 #: project/templates/user/reglage.html:592
 msgid "Historique des prêts"
 msgstr "Loan history"
 
-#: project/templates/subscription/tarifs.html:368
+#: project/templates/subscription/tarifs.html:412
 msgid "derniers mois"
 msgstr "recent months"
 
-#: project/templates/subscription/tarifs.html:369
+#: project/templates/subscription/tarifs.html:413
 msgid "Archives illimitées"
 msgstr "Unlimited archives"
 
-#: project/templates/subscription/tarifs.html:372
+#: project/templates/subscription/tarifs.html:416
 msgid "Téléchargement & Exports Excel"
 msgstr "Downloads & Excel exports"
 
-#: project/templates/subscription/tarifs.html:373
-#: project/templates/subscription/tarifs.html:378
+#: project/templates/subscription/tarifs.html:417
+#: project/templates/subscription/tarifs.html:422
 msgid "Non"
 msgstr "No"
 
-#: project/templates/subscription/tarifs.html:374
-#: project/templates/subscription/tarifs.html:379
+#: project/templates/subscription/tarifs.html:418
+#: project/templates/subscription/tarifs.html:423
 msgid "Oui"
 msgstr "Yes"
 
-#: project/templates/subscription/tarifs.html:377
+#: project/templates/subscription/tarifs.html:421
 msgid "Planches d'étiquettes & codes-barres"
 msgstr "Label sheets & barcodes"
 
-#: project/templates/subscription/tarifs.html:382
+#: project/templates/subscription/tarifs.html:426
 msgid "Codes de réduction / bons d'école"
 msgstr "Discount codes / school vouchers"
 
-#: project/templates/subscription/tarifs.html:384
+#: project/templates/subscription/tarifs.html:428
 msgid "Acceptés sur Stripe"
 msgstr "Accepted on Stripe"
 
@@ -4737,8 +5713,12 @@ msgid "Augmenter la limite"
 msgstr "Increase limit"
 
 #: project/templates/user/dashboard.html:215
-msgid "Scans offerts"
-msgstr "Free scans"
+msgid "Remis à zéro chaque dimanche à 00h00"
+msgstr "Resets every Sunday at 00:00"
+
+#: project/templates/user/dashboard.html:215
+msgid "Scans cette semaine"
+msgstr "Scans this week"
 
 #: project/templates/user/dashboard.html:219
 msgid "Débloquer scans illimités"
@@ -4971,12 +5951,13 @@ msgstr ""
 "without any limits."
 
 #: project/templates/user/reglage.html:346
+#, python-format
 msgid ""
-"Vous utilisez la version gratuite (jusqu'à 40 élèves, 500 livres et 30 "
-"scans codes-barres)."
+"Vous utilisez la version gratuite (jusqu'à %(students)s élèves, %(books)s"
+" livres et %(scans)s scans codes-barres par semaine)."
 msgstr ""
-"You are using the free version (up to 40 students, 500 books, and 30 "
-"barcode scans)."
+"You are using the free version (up to %(students)s students, %(books)s "
+"books, and %(scans)s barcode scans per week)."
 
 #: project/templates/user/reglage.html:359
 msgid "Réactiver ou modifier mon abonnement"
@@ -5384,6 +6365,10 @@ msgstr "Legal Notice"
 #: project/templates/utils/footer.html:37
 msgid "Plan du site"
 msgstr "Sitemap"
+
+#: project/templates/utils/navbar.html:329
+msgid "Logo Livres en Classe"
+msgstr "Livres en Classe Logo"
 
 #: project/templates/utils/navbar.html:359
 msgid "Résiliation en cours"
@@ -6637,4 +7622,60 @@ msgstr "No book found"
 
 #~ msgid "Résiliation programmée au %(date)s"
 #~ msgstr "Cancellation scheduled for %(date)s"
+
+#~ msgid ""
+#~ "gestion bibliothèque scolaire, logiciel "
+#~ "bibliothèque école, prêt de livres en"
+#~ " classe, bibliothèque de classe, gestion"
+#~ " livres enseignants, bibliothèque enseignants,"
+#~ " logiciel CDI primaire"
+#~ msgstr ""
+#~ "school library management, classroom library"
+#~ " software, book lending in class, "
+#~ "classroom library, teacher book management,"
+#~ " teacher library, elementary school library"
+#~ " software"
+
+#~ msgid "Prochain article"
+#~ msgstr "Upcoming article"
+
+#~ msgid "Nous préparons de nouveaux guides pratiques et sélections de livres."
+#~ msgstr "We are preparing new practical guides and book selections."
+
+#~ msgid ""
+#~ "Vous avez scanné %(max)s livres ! "
+#~ "Passez Premium à 30.- CHF/an pour "
+#~ "scanner en illimité."
+#~ msgstr ""
+#~ "You have scanned %(max)s books! Upgrade"
+#~ " to Premium for 30.- CHF/year for "
+#~ "unlimited scanning."
+
+#~ msgid "Scans offerts : %(used)s / 30"
+#~ msgstr "Free scans: %(used)s / 30"
+
+#~ msgid "Vous avez scanné 30 livres en un temps record !"
+#~ msgstr "You scanned 30 books in record time!"
+
+#~ msgid ""
+#~ "Passez à l'offre Premium à 30.- "
+#~ "CHF/an pour scanner les centaines de "
+#~ "livres suivants en illimité."
+#~ msgstr ""
+#~ "Upgrade to Premium for 30.- CHF/year "
+#~ "to scan hundreds more books without "
+#~ "limits."
+
+#~ msgid "Scans offerts"
+#~ msgstr "Free scans"
+
+#~ msgid "Vous avez utilisé vos 30 scans gratuits pour cette semaine !"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Votre quota de scans sera remis à"
+#~ " zéro dimanche à 00h00. Vous pouvez"
+#~ " aussi passer à l'offre Premium à "
+#~ "30.- CHF/an pour scanner en illimité."
+#~ msgstr ""
 
