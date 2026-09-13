@@ -209,14 +209,14 @@
           <progress class="progress is-small {% if n_students >= max_students %}is-danger{% elif (n_students / max_students) >= (warning_percent / 100) %}is-warning{% else %}is-link{% endif %}" value="{{ n_students }}" max="{{ max_students }}" style="height: 6px;"></progress>
         </div>
 
-        <!-- Jauge Scans offerts -->
+        <!-- Jauge Scans hebdomadaires -->
         <div class="column is-4">
           <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
-            <span class="is-size-7 has-text-grey">{{ _("Scans offerts") }}</span>
+            <span class="is-size-7 has-text-grey" title="{{ _('Remis à zéro chaque dimanche à 00h00') }}">{{ _("Scans cette semaine") }}</span>
             <span class="is-size-7 has-text-weight-semibold">
               {{ current_user.free_scans_used or 0 }} / {{ max_scans }}
               {% if ((current_user.free_scans_used or 0) / max_scans) >= (warning_percent / 100) %}
-                <a href="{{ url_for('subscription.tarifs') }}" class="has-text-warning-dark ml-1" title="{{ _('Débloquer scans illimités') }}"><i class="fas fa-arrow-up"></i></a>
+                <a href="{{ url_for('subscription.tarifs') }}" class="has-text-warning-dark ml-1" title="{{ _('Débloquer scans illimités') }}"></a>
               {% endif %}
             </span>
           </div>

@@ -13,7 +13,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from flask import render_template, url_for
-from project import create_app, db
+
+from project import create_app
 from project.email import send_html_email
 from project.models import User
 
@@ -36,9 +37,7 @@ def main():
 
     app = create_app()
     with app.app_context():
-        founders = (
-            User.query.filter_by(plan="founder").order_by(User.id.asc()).all()
-        )
+        founders = User.query.filter_by(plan="founder").order_by(User.id.asc()).all()
 
         print(
             f"=== Annonce Membres Fondateurs ({len(founders)} compte(s) trouvé(s)) ==="
@@ -79,7 +78,7 @@ def main():
                 )
                 sent += 1
                 print(f"[OK] Email envoyé à {u.email}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 print(f"[ERREUR] Échec d'envoi à {u.email} : {e}")
 
         print(f"\nTerminé : {sent}/{len(founders)} e-mail(s) envoyé(s).")

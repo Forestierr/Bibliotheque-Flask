@@ -134,7 +134,7 @@
                         </li>
                         <li class="benefit-item">
                             <span class="icon"><i class="fas fa-check"></i></span>
-                            <span><strong>{{ max_scans|default(30) }}</strong> {{ _("scans de codes-barres par caméra") }}</span>
+                            <span><strong>{{ max_scans|default(30) }}</strong> {{ _("scans de codes-barres par semaine") }}</span>
                         </li>
                     </ul>
 
@@ -169,7 +169,7 @@
 
                     {% include "utils/flash_message.html" %}
 
-                    <form method="POST" action="/signup" id="signupForm">
+                    <form method="POST" action="{{ url_for('auth.signup_post') }}" id="signupForm">
                         {% include 'utils/csrf.html' %}
                         <div class="field mb-3">
                             <label class="label is-small">{{ _("Email") }}</label>

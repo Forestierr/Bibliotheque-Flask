@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from flask import render_template, url_for
+
 from project import create_app, db
 from project.email import send_html_email
 from project.models import User
@@ -45,9 +46,7 @@ def main():
             User.trial_reminder_sent.is_(False),
         ).all()
 
-        print(
-            f"=== Rappels de fin d'essai ({len(candidates)} compte(s) ciblé(s)) ==="
-        )
+        print(f"=== Rappels de fin d'essai ({len(candidates)} compte(s) ciblé(s)) ===")
         for u in candidates:
             print(
                 f"  - ID: {u.id} | Email: {u.email} | Fin d'essai: {u.trial_ends_at} (reste {u.trial_days_left}j)"
@@ -75,7 +74,7 @@ def main():
                 u.trial_reminder_sent = True
                 sent += 1
                 print(f"[OK] Rappel envoyé à {u.email}")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 print(f"[ERREUR] Échec d'envoi à {u.email} : {e}")
 
         db.session.commit()

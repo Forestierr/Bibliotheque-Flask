@@ -7,6 +7,70 @@
 {% block title %}{{ _("Centre d'aide | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Guides, tutoriels et FAQ pour utiliser Livres en Classe : scanner vos livres, gérer vos élèves et effectuer vos premiers prêts.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "inLanguage": "{{ get_locale() }}",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": {{ _("Le scanner ne détecte pas le code-barres, pourquoi ?")|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ _("Vérifiez que le code commence par 978 ou 979 (ISBN), maintenez une distance de 15 à 25 cm, assurez-vous d'avoir assez de lumière et évitez les reflets.")|tojson }}
+      }
+    },
+    {
+      "@type": "Question",
+      "name": {{ _("Le livre scanné n'est pas trouvé dans la base de données ?")|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ _("Certains livres anciens, autoédités ou très locaux ne sont pas dans la base Google Books. Dans ce cas, l'application vous redirige vers le formulaire de saisie manuelle avec l'ISBN pré-rempli — il vous suffit de compléter le titre et l'auteur.")|tojson }}
+      }
+    },
+    {
+      "@type": "Question",
+      "name": {{ _("Puis-je utiliser l'application sur ordinateur ?")|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ _("Oui ! Toutes les fonctionnalités (sauf le scanner) fonctionnent parfaitement sur ordinateur. Pour scanner des livres, utilisez votre smartphone ou tablette. L'application est progressive (PWA) : vous pouvez l'installer sur l'écran d'accueil de votre téléphone.")|tojson }}
+      }
+    },
+    {
+      "@type": "Question",
+      "name": {{ _("Comment installer l'application sur mon téléphone ?")|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ _("L'application est une PWA (Progressive Web App) : vous pouvez l'installer directement sur votre écran d'accueil sans passer par un store d'applications, depuis Safari sur iOS ou Chrome sur Android.")|tojson }}
+      }
+    },
+    {
+      "@type": "Question",
+      "name": {{ _("Comment exporter mes données ?")|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ _("Vous pouvez exporter vos livres et emprunts au format Excel depuis les Réglages de votre compte.")|tojson }}
+      }
+    },
+    {
+      "@type": "Question",
+      "name": {{ _("Comment supprimer un livre ou un élève ?")|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ _("Ouvrez la fiche du livre ou de l'élève, puis utilisez le bouton Supprimer en bas de la page. Attention : supprimer un élève supprime aussi l'historique de ses emprunts.")|tojson }}
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}

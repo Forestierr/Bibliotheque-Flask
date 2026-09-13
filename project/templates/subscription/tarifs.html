@@ -5,6 +5,50 @@
 {% block title %}{{ _("Tarifs & Abonnements | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Découvrez les offres et tarifs de Livres en Classe pour les enseignants : version gratuite et abonnement Premium à 30.- CHF/an.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Livres en Classe",
+  "description": {{ _("Logiciel de gestion de bibliothèque pour les enseignants. Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves en quelques clics.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "brand": {
+    "@type": "Brand",
+    "name": "Livres en Classe"
+  },
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "CHF",
+    "lowPrice": "0",
+    "highPrice": "30",
+    "offerCount": "2",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": {{ _("Gratuit (Free)")|tojson }},
+        "price": "0",
+        "priceCurrency": "CHF",
+        "category": "Free Tier",
+        "url": "{{ lang_url(get_locale(), external=True) }}",
+        "availability": "https://schema.org/InStock"
+      },
+      {
+        "@type": "Offer",
+        "name": {{ _("Souscrire pour 30.- CHF / an")|tojson }},
+        "price": "30",
+        "priceCurrency": "CHF",
+        "category": "Annual Subscription",
+        "url": "{{ lang_url(get_locale(), external=True) }}",
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2030-12-31"
+      }
+    ]
+  }
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Tarifs")) }}
 {% endblock %}
@@ -360,7 +404,7 @@
                         </tr>
                         <tr>
                             <td><strong>{{ _("Scanner code-barres par caméra") }}</strong></td>
-                            <td class="has-text-centered">{{ max_scans }} {{ _("scans d'essai") }}</td>
+                            <td class="has-text-centered">{{ max_scans }} {{ _("scans / semaine") }}</td>
                             <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Illimité") }}</td>
                         </tr>
                         <tr>

@@ -16,7 +16,7 @@
     {% include "utils/flash_message.html" %}
 
     <div class="content">
-        <form action="/livre/{{ book.id }}/edit" method="post">
+        <form action="{{ url_for('livre.livre_edit', id=book.id) }}" method="post">
     {% include 'utils/csrf.html' %}
             <div class="field">
                 <label class="label" for="title">{{ _("Titre") }}</label>
@@ -140,7 +140,7 @@
                     <p class="modal-card-title">{{ _("Supprimer le livre") }}</p>
                 </header>
                 <footer class="modal-card-foot">
-                    <form action="/livre/{{ book.id }}/delete" method="POST" style="display:inline;">
+                    <form action="{{ url_for('livre.livre_delete', id=book.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="button is-normal is-danger is-responsive">
                             <div class="icon-text">

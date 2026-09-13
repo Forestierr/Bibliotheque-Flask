@@ -16,13 +16,13 @@
     {% include 'utils/flash_message.html' %}
 
     <div class="content">
-        <form action="/livre/ajout" method="post">
+        <form action="{{ url_for('livre.livre_ajout') }}" method="post">
     {% include 'utils/csrf.html' %}
             <div class="field">
                 <label class="label" for="title">{{ _("Titre") }}</label>
                 <div class="control">
                     <input class="input" type="text" name="title" id="title" required {% if book.title %}value="{{ book.title }}"{% endif %}
-                        hx-post="/livre/check-title"
+                        hx-post="{{ url_for('livre.check_title') }}"
                         hx-trigger="load, keyup changed delay:500ms"
                         hx-target="#title-error"
                         hx-swap="innerHTML">

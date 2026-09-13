@@ -39,8 +39,7 @@
                 <div class="column is-narrow">
                     <figure class="image is-128x128">
                         <img src="{{ url_for('static',filename='/image/kid.png') }}"
-                        href="https://www.flaticon.com/free-stickers/reading"
-                         alt="Reading stickers created by Stickers - Flaticon">
+                             alt="{{ _('Illustration élève') }}">
                     </figure>
                 </div>
                 <div class="column">
@@ -56,7 +55,7 @@
 
                 {% include "utils/flash_message.html" %}
 
-                <form method="POST" action="/eleve/ajout">
+                <form method="POST" action="{{ url_for('eleve.ajouter_eleve') }}">
     {% include 'utils/csrf.html' %}
                     <div class="field">
                         <label class="label">{{ _("Nom de l'élève") }}</label>

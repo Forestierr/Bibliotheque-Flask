@@ -343,7 +343,7 @@
                             {% elif user.is_premium %}
                                 {{ _("Votre abonnement Premium est actif. Vous disposez de toutes les fonctionnalités sans aucune limite.") }}
                             {% else %}
-                                {{ _("Vous utilisez la version gratuite (jusqu'à 40 élèves, 500 livres et 30 scans codes-barres).") }}
+                                {{ _("Vous utilisez la version gratuite (jusqu'à %(students)s élèves, %(books)s livres et %(scans)s scans codes-barres par semaine).", students=max_students, books=max_books, scans=max_scans) }}
                             {% endif %}
                         </p>
                     </div>

@@ -264,7 +264,7 @@ def test_signup_page_displays_free_plan_and_quotas(client):
     assert "10" in html
     assert "mois d'historique des prêts" in html
     assert "30" in html
-    assert "scans de codes-barres par caméra" in html
+    assert "scans de codes-barres par semaine" in html
 
     # Vérification de l'existence du mode Premium
     assert "Premium avec accès illimité" in html
@@ -334,4 +334,3 @@ def test_signup_retains_email_and_name_on_failure(client, app):
         html = response.get_data(as_text=True)
         assert 'value="existant@ecole.ch"' in html
         assert 'value="Mme Dupont"' in html
-

@@ -802,4 +802,3 @@ def test_admin_emails_filter_by_plan(mock_thread, client, app):
     res = client.get(f"/admin/emails?duplicate_id={camp_id}&tab=compose")
     assert res.status_code == 200
     assert b'id="targetPlanInput" value="premium"' in res.data
-

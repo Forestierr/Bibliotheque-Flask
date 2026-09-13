@@ -31,8 +31,7 @@
                         <a href="{{ url_for('livre.livre_db') }}">
                             <figure class="image is-64x64">
                                 <img src="{{ url_for('static',filename='/image/book_3.png') }}"
-                                     href="https://www.flaticon.com/free-stickers/reading"
-                                     alt="Literature stickers created by Stickers - Flaticon">
+                                     alt="{{ _('Illustration livre') }}">
                             </figure>
                         </a>
                     </div>
@@ -42,12 +41,12 @@
     {% else %}
         <div class="columns is-mobile">
             <div class="column">
-                {{ search_bar(_("Rechercher un emprunt"), True, "/emprunt/search-preview", "/emprunt/search") }}
+                {{ search_bar(_("Rechercher un emprunt"), True, url_for("emprunt.search_preview"), url_for("emprunt.search")) }}
             </div>
             <div class="column is-narrow has-text-right">
                 <div class="select is-rounded">
                     <select class="button" name="active_loan"
-                        hx-post="/emprunt/search"
+                        hx-post="{{ url_for('emprunt.search') }}"
                         hx-trigger="change"
                         hx-target="#search_list"
                         hx-include="[name='search'], [name='n_results'], [name='sort']">

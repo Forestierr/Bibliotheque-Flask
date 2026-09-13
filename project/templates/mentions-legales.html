@@ -7,6 +7,22 @@
 {% block title %}{{ _("Mentions Légales | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Mentions légales et politique de confidentialité de Livres en Classe.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "name": {{ _("Mentions Légales | Livres en Classe")|tojson }},
+  "description": {{ _("Mentions légales et politique de confidentialité de Livres en Classe.")|tojson }},
+  "inLanguage": "{{ get_locale() }}"
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}

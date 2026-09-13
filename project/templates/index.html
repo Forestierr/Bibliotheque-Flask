@@ -6,6 +6,9 @@
 
 {% extends "base.html" %}
 
+{% block title %}{{ _("Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Découvrez Livres en Classe, le logiciel de gestion de bibliothèque de classe gratuit pour enseignants. Cataloguez vos livres par scan code-barres et suivez les emprunts des élèves.") }}{% endblock %}
+
 {% block head_extra %}
 <script type="application/ld+json">
 {
@@ -14,59 +17,75 @@
     {
       "@type": "SoftwareApplication",
       "name": "Livres en Classe",
-      "operatingSystem": "Web, Android, iOS",
+      "url": "https://livresenclasse.com/{{ get_locale() }}/",
+      "operatingSystem": "Web, Android, iOS, Windows, macOS",
       "applicationCategory": "EducationalApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "EUR"
-      },
-      "description": "Logiciel de gestion de bibliothèque pour les enseignants. Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves en quelques clics."
+      "inLanguage": "{{ get_locale() }}",
+      "description": {{ _("Logiciel de gestion de bibliothèque pour les enseignants. Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves en quelques clics.")|tojson }},
+      "offers": [
+        {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "CHF",
+          "category": "Free Plan"
+        },
+        {
+          "@type": "Offer",
+          "price": "30",
+          "priceCurrency": "CHF",
+          "category": "Premium Plan",
+          "priceValidUntil": "2030-12-31"
+        }
+      ]
     },
     {
       "@type": "Organization",
       "name": "Livres en Classe",
-      "url": "https://votre-site.com",
-      "logo": "https://votre-site.com/static/image/icons/logo-w-512x512.png"
+      "url": "https://livresenclasse.com",
+      "logo": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+      "sameAs": [
+        "https://github.com/Forestierr/Bibliotheque-Flask"
+      ]
     },
     {
       "@type": "WebSite",
       "name": "Livres en Classe",
-      "url": "https://votre-site.com"
+      "url": "https://livresenclasse.com",
+      "inLanguage": "{{ get_locale() }}"
     },
     {
       "@type": "FAQPage",
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Comment gérer une bibliothèque de classe ?",
+          "name": {{ _("Comment gérer une bibliothèque de classe ?")|tojson }},
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Livres en Classe vous permet de scanner le code-barres de vos livres, d'inscrire vos élèves et de suivre les emprunts en un clic."
+            "text": {{ _("Livres en Classe vous permet de scanner le code-barres de vos livres, d'inscrire vos élèves et de suivre les emprunts en un clic depuis votre tableau de bord. C'est la méthode la plus rapide et la plus efficace pour les enseignants.")|tojson }}
           }
         },
         {
           "@type": "Question",
-          "name": "Est-ce un logiciel gratuit ?",
+          "name": {{ _("Est-ce un logiciel gratuit ?")|tojson }},
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Oui, notre logiciel de gestion de bibliothèque scolaire est entièrement gratuit pour les enseignants."
+            "text": {{ _("Oui, notre logiciel de gestion de bibliothèque scolaire est conçu pour être accessible aux enseignants avec des fonctionnalités entièrement gratuites pour débuter.")|tojson }}
           }
         },
         {
           "@type": "Question",
-          "name": "Peut-on scanner les ISBN ?",
+          "name": {{ _("Peut-on scanner les ISBN ?")|tojson }},
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Oui, il suffit d'utiliser la caméra de votre smartphone ou de votre tablette pour scanner les ISBN et importer automatiquement les informations du livre."
+            "text": {{ _("Oui, il suffit d'utiliser la caméra de votre smartphone, tablette ou ordinateur portable pour scanner les ISBN et importer automatiquement le titre, l'auteur et des informations du livre dans votre catalogue.")|tojson }}
           }
         },
         {
           "@type": "Question",
-          "name": "Est-ce compatible sur tablette et téléphone ?",
+          "name": {{ _("Est-ce compatible sur tablette et téléphone ?")|tojson }},
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Absolument. Vous pouvez l'installer comme une application (PWA) sur Android ou iOS pour une gestion simplifiée de votre CDI primaire ou bibliothèque de classe."
+            "text": {{ _("Absolument. L'interface est conçue pour tous les écrans. De plus, vous pouvez l'installer comme une véritable application sur Android ou iOS pour une gestion encore plus rapide de votre bibliothèque.")|tojson }}
           }
         }
       ]
@@ -192,8 +211,8 @@
         <!-- Hero Section -->
         <div class="section columns is-multiline is-centered is-vcentered" style="padding-top: 1rem;">
             <div class="column">
-                <h1 class="title is-1 hero-title">{{ _("Le logiciel de gestion de bibliothèque pour les enseignants") }}</h1>
-                <h2 class="subtitle is-3 hero-subtitle" style="margin-top: 1.5rem;">{{ _("Cataloguez vos livres, gérez les prêts, suivez les emprunts des élèves et développez la lecture dans votre classe.") }}</h2>
+                <h1 class="title is-1 hero-title">{{ _("Le logiciel de gestion de bibliothèque de classe gratuit pour les enseignants") }}</h1>
+                <h2 class="subtitle is-3 hero-subtitle" style="margin-top: 1.5rem;">{{ _("Cataloguez vos livres par scan code-barres, gérez les prêts, suivez les emprunts des élèves et développez la lecture dans votre classe.") }}</h2>
                 <div class="hero-cta-box" style="margin-top: 2.5rem;">
                     <a href="{{ url_for('auth.signup') }}" class="button is-large is-link is-rounded hero-cta-btn">
                         <span>{{ _("Essayer gratuitement") }}</span>
@@ -306,7 +325,7 @@
                                 </li>
                                 <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
                                     <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
-                                    <span><strong>{{ max_scans|default(30) }}</strong> {{ _("scans code-barres par caméra") }}</span>
+                                    <span><strong>{{ max_scans|default(30) }}</strong> {{ _("scans code-barres par semaine") }}</span>
                                 </li>
                                 <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
                                     <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
@@ -500,6 +519,112 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Ressources & Guides Pédagogiques (Maillage interne SEO) -->
+        <div class="section block" id="ressources-guides" style="margin-top: 4rem;">
+            <div class="has-text-centered mb-6">
+                <h2 class="title is-2">{{ _("Ressources et guides pratiques pour votre classe") }}</h2>
+                <p class="subtitle is-4 mt-3" style="color: hsl(0, 0%, 40%); max-width: 750px; margin: 0 auto;">
+                    {{ _("Retrouvez nos méthodologies, nos sélections de lecture et nos outils imprimables gratuits pour animer votre bibliothèque scolaire.") }}
+                </p>
+            </div>
+            <div class="columns is-multiline">
+                <!-- Carte 1 : Guides Enseignants -->
+                <div class="column is-4">
+                    <div class="box" style="height: 100%; border-radius: 14px; display: flex; flex-direction: column; border: 1px solid hsl(0, 0%, 92%); box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+                        <div class="is-flex is-align-items-center mb-3">
+                            <span class="icon is-large has-text-link mr-2"><i class="fas fa-2x fa-chalkboard-teacher"></i></span>
+                            <h3 class="title is-4 mb-0" style="font-weight: 700;">{{ _("Guides Enseignants") }}</h3>
+                        </div>
+                        <p class="has-text-grey mb-4" style="line-height: 1.5; flex-grow: 1;">
+                            {{ _("Conseils d'aménagement, choix du mobilier et rituels d'autonomie pour structurer le coin lecture.") }}
+                        </p>
+                        <ul style="list-style: none; margin-left: 0; padding-left: 0;" class="mb-4">
+                            <li class="mb-2">
+                                <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="has-text-link has-text-weight-semibold">
+                                    <i class="fas fa-chevron-right is-size-7 mr-2"></i>{{ _("Guide complet de la bibliothèque") }}
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="has-text-link has-text-weight-semibold">
+                                    <i class="fas fa-chevron-right is-size-7 mr-2"></i>{{ _("Comment classer les livres ?") }}
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="pt-3" style="border-top: 1px solid hsl(0, 0%, 95%);">
+                            <a href="{{ url_for('main.enseignants_index') }}" class="has-text-link has-text-weight-bold">
+                                {{ _("Explorer l'espace enseignants") }} &rarr;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 2 : Ressources Imprimables -->
+                <div class="column is-4">
+                    <div class="box" style="height: 100%; border-radius: 14px; display: flex; flex-direction: column; border: 1px solid hsl(0, 0%, 92%); box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+                        <div class="is-flex is-align-items-center mb-3">
+                            <span class="icon is-large has-text-success mr-2"><i class="fas fa-2x fa-award"></i></span>
+                            <h3 class="title is-4 mb-0" style="font-weight: 700;">{{ _("Outils Imprimables") }}</h3>
+                        </div>
+                        <p class="has-text-grey mb-4" style="line-height: 1.5; flex-grow: 1;">
+                            {{ _("Générez en quelques clics des documents pédagogiques prêts à imprimer en PDF pour vos élèves.") }}
+                        </p>
+                        <ul style="list-style: none; margin-left: 0; padding-left: 0;" class="mb-4">
+                            <li class="mb-2">
+                                <a href="{{ url_for('ressource.diplome') }}" class="has-text-success-dark has-text-weight-semibold">
+                                    <i class="fas fa-chevron-right is-size-7 mr-2"></i>{{ _("Diplôme de lecture personnalisé") }}
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="{{ url_for('ressource.marque_pages') }}" class="has-text-success-dark has-text-weight-semibold">
+                                    <i class="fas fa-chevron-right is-size-7 mr-2"></i>{{ _("Marque-pages d'emprunt et avis") }}
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="{{ url_for('ressource.charte') }}" class="has-text-success-dark has-text-weight-semibold">
+                                    <i class="fas fa-chevron-right is-size-7 mr-2"></i>{{ _("Charte du coin lecture") }}
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="pt-3" style="border-top: 1px solid hsl(0, 0%, 95%);">
+                            <a href="{{ url_for('ressource.index') }}" class="has-text-success-dark has-text-weight-bold">
+                                {{ _("Voir tous les outils gratuits") }} &rarr;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carte 3 : Le Blog -->
+                <div class="column is-4">
+                    <div class="box" style="height: 100%; border-radius: 14px; display: flex; flex-direction: column; border: 1px solid hsl(0, 0%, 92%); box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+                        <div class="is-flex is-align-items-center mb-3">
+                            <span class="icon is-large has-text-warning-dark mr-2"><i class="fas fa-2x fa-book-reader"></i></span>
+                            <h3 class="title is-4 mb-0" style="font-weight: 700;">{{ _("Le Blog de la Classe") }}</h3>
+                        </div>
+                        <p class="has-text-grey mb-4" style="line-height: 1.5; flex-grow: 1;">
+                            {{ _("Sélections littéraires par cycle, rituels pour motiver les petits lecteurs et retours d'expérience.") }}
+                        </p>
+                        <ul style="list-style: none; margin-left: 0; padding-left: 0;" class="mb-4">
+                            <li class="mb-2">
+                                <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="has-text-warning-dark has-text-weight-semibold">
+                                    <i class="fas fa-chevron-right is-size-7 mr-2"></i>{{ _("Comment donner envie de lire ?") }}
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="has-text-warning-dark has-text-weight-semibold">
+                                    <i class="fas fa-chevron-right is-size-7 mr-2"></i>{{ _("Les 10 meilleurs livres pour le CP") }}
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="pt-3" style="border-top: 1px solid hsl(0, 0%, 95%);">
+                            <a href="{{ url_for('main.blog_index') }}" class="has-text-warning-dark has-text-weight-bold">
+                                {{ _("Découvrir tous les articles") }} &rarr;
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

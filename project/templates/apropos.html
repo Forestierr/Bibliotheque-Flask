@@ -7,6 +7,43 @@
 {% block title %}{{ _("À propos de Livres en Classe | Logiciel de gestion de bibliothèque") }}{% endblock %}
 {% block meta_description %}{{ _("Découvrez Livres en Classe, la bibliothèque numérique pensée pour les enseignants. Application open-source développée par Robin Forestier.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "name": {{ _("À propos de Livres en Classe | Logiciel de gestion de bibliothèque")|tojson }},
+  "description": {{ _("Découvrez Livres en Classe, la bibliothèque numérique pensée pour les enseignants. Application open-source développée par Robin Forestier.")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
+  "mainEntity": {
+    "@type": "SoftwareApplication",
+    "name": "Livres en Classe",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web, Android, iOS, Windows, macOS",
+    "author": {
+      "@type": "Person",
+      "name": "Robin Forestier",
+      "url": "https://github.com/Forestierr"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Livres en Classe",
+      "url": "https://livresenclasse.com",
+      "logo": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    },
+    "license": "https://opensource.org/licenses/MIT",
+    "sameAs": [
+      "https://github.com/Forestierr/Bibliotheque-Flask"
+    ]
+  }
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
