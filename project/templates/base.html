@@ -9,52 +9,66 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="description" content="{% block meta_description %}{{ _("Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.") }}{% endblock %}"/>
-    <meta name="keywords" content="{% block meta_keywords %}{{ _("gestion bibliothèque scolaire, logiciel bibliothèque école, prêt de livres en classe, bibliothèque de classe, gestion livres enseignants, bibliothèque enseignants, logiciel CDI primaire") }}{% endblock %}"/>
-    <meta property="og:title" content="{% block og_title %}{{ _("Logiciel de gestion de bibliothèque scolaire | Livres en Classe") }}{% endblock %}"/>
+    <meta property="og:title" content="{% block og_title %}{{ _("Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe") }}{% endblock %}"/>
     <meta property="og:description" content="{% block og_description %}{{ _("Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.") }}{% endblock %}"/>
-    <title>{% block title %}{{ _("Logiciel de gestion de bibliothèque scolaire | Livres en Classe") }}{% endblock %}</title>
+    <title>{% block title %}{{ _("Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe") }}{% endblock %}</title>
 
     <!-- SEO & Multilingual Alternates -->
     {% block canonical %}
-    <link rel="canonical" href="{{ request.base_url }}{% if get_locale() in ['en', 'de'] %}?lang={{ get_locale() }}{% endif %}" />
+    <link rel="canonical" href="{{ lang_url(get_locale(), external=True) }}" />
     {% endblock %}
     {% block hreflang %}
-    <link rel="alternate" hreflang="fr" href="{{ request.base_url }}?lang=fr" />
-    <link rel="alternate" hreflang="en" href="{{ request.base_url }}?lang=en" />
-    <link rel="alternate" hreflang="de" href="{{ request.base_url }}?lang=de" />
-    <link rel="alternate" hreflang="x-default" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="fr" href="{{ lang_url('fr', external=True) }}" />
+    <link rel="alternate" hreflang="en" href="{{ lang_url('en', external=True) }}" />
+    <link rel="alternate" hreflang="de" href="{{ lang_url('de', external=True) }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ lang_url('fr', external=True) }}" />
     {% endblock %}
+    <meta property="og:locale" content="{{ get_og_locale() }}" />
+    {% for alt_locale in get_og_locale_alternates() %}
+    <meta property="og:locale:alternate" content="{{ alt_locale }}" />
+    {% endfor %}
+    <meta property="og:site_name" content="Livres en Classe" />
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}" />
+    <meta property="og:url" content="{{ lang_url(get_locale(), external=True) }}" />
+    <meta property="og:image" content="{% block og_image %}https://livresenclasse.com/static/image/icons/logo-w-512x512.png{% endblock %}" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Livres en Classe" />
+    <!-- Pinterest -->
+    <meta name="p:domain_verify" content="d26b1ad48dabe4dc60e46e0197aaa9e1"/>
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="{% block twitter_card %}summary_large_image{% endblock %}" />
+    <meta name="twitter:title" content="{% block twitter_title %}{{ _("Logiciel de gestion de bibliothèque scolaire | Livres en Classe") }}{% endblock %}" />
+    <meta name="twitter:description" content="{% block twitter_description %}{{ _("Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.") }}{% endblock %}" />
+    <meta name="twitter:image" content="{% block twitter_image %}https://livresenclasse.com/static/image/icons/logo-w-512x512.png{% endblock %}" />
+
+    <!-- Performance: Preconnect & DNS-Prefetch -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="https://kit.fontawesome.com" />
+    <link rel="dns-prefetch" href="https://js.hcaptcha.com" />
 
     {% block head_extra %}{% endblock %}
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Android -->
-    <meta name="theme-color" content="#ffffffff"/>
+    <!-- Mobile & PWA Theme Colors -->
+    <meta name="theme-color" content="#ffffff"/>
     <meta name="mobile-web-app-capable" content="yes"/>
 
-    <!-- iOS -->
-    <meta name="apple-mobile-web-app-title" content="Application Title">
+    <!-- iOS Web App -->
+    <meta name="apple-mobile-web-app-title" content="Livres en Classe">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-    <!-- Windows  -->
-    <meta name="msapplication-navbutton-color" content="red">
-    <meta name="msapplication-TileColor" content="red">
-    <meta name="msapplication-TileImage" content="ms-icon-144x144.png">
-    <meta name="msapplication-config" content="browserconfig.xml">
-
-    <!-- Pinned Sites  -->
-    <meta name="application-name" content="Application Name">
-    <meta name="msapplication-tooltip" content="Tooltip Text">
+    <!-- Windows Tiles -->
+    <meta name="msapplication-navbutton-color" content="#3273dc">
+    <meta name="msapplication-TileColor" content="#3273dc">
+    <meta name="msapplication-TileImage" content="/static/image/icons/logo-w-512x512.png">
+    <meta name="application-name" content="Livres en Classe">
     <meta name="msapplication-starturl" content="/">
-
-    <!-- Tap highlighting  -->
-    <meta name="msapplication-tap-highlight" content="no">
-
-    <!-- UC Mobile Browser  -->
-    <meta name="full-screen" content="yes">
-    <meta name="browsermode" content="application">
 
     <!-- Main Link Tags -->
     <link rel="icon" type="image/png" href="/static/image/icons/favicon-96x96.png" sizes="96x96" />
@@ -62,9 +76,6 @@
     <link rel="icon" type="image/png" href="/static/image/icons/logo-w-512x512.png" sizes="512x512" />
     <link rel="shortcut icon" href="/static/image/icons/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/static/image/icons/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Ma Bibliothèque" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
     <link rel="stylesheet" href="/static/css/style.css" />
 

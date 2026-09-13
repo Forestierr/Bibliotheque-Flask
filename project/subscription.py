@@ -36,6 +36,7 @@ from .models import User
 logger = logging.getLogger(__name__)
 
 subscription = Blueprint("subscription", __name__)
+webhook_bp = Blueprint("webhook", __name__)
 
 
 def premium_required(f):
@@ -264,6 +265,7 @@ def cancel():
     return render_template("subscription/cancel.html")
 
 
+@webhook_bp.route("/webhook/stripe", methods=["POST"])
 @subscription.route("/webhook/stripe", methods=["POST"])
 @csrf.exempt
 def stripe_webhook():
@@ -481,7 +483,9 @@ def _handle_subscription_deleted(sub):
                     )
                     logger.info("Email de résiliation envoyé à %s", user_email)
                 except Exception as e:  # noqa: BLE001
-                    logger.warning("Impossible d'envoyer l'email de résiliation : %s", e)
+                    logger.warning(
+                        "Impossible d'envoyer l'email de résiliation : %s", e
+                    )
 
         threading.Thread(target=_send_cancellation_email, daemon=True).start()
 
@@ -515,6 +519,8 @@ def _handle_invoice_payment_failed(invoice):
                     )
                     logger.info("Email d'échec de paiement envoyé à %s", user_email)
                 except Exception as e:  # noqa: BLE001
-                    logger.warning("Impossible d'envoyer l'email d'échec de paiement : %s", e)
+                    logger.warning(
+                        "Impossible d'envoyer l'email d'échec de paiement : %s", e
+                    )
 
         threading.Thread(target=_send_payment_failed_email, daemon=True).start()

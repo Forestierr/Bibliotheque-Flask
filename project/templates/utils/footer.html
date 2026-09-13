@@ -19,9 +19,9 @@
         </div>
         <div class="column">
             <h5 class="title is-6 mb-2">{{ _("Produit") }}</h5>
-            <a href="/#fonctionnalites" class="has-text-grey">{{ _("Fonctionnalités") }}</a><br/>
-            <a href="/#comparatif" class="has-text-grey">{{ _("Comparatif Excel") }}</a><br/>
-            <a href="/#faq" class="has-text-grey">FAQ</a><br/>
+            <a href="{{ url_for('main.index') }}#fonctionnalites" class="has-text-grey">{{ _("Fonctionnalités") }}</a><br/>
+            <a href="{{ url_for('main.index') }}#comparatif" class="has-text-grey">{{ _("Comparatif Excel") }}</a><br/>
+            <a href="{{ url_for('main.index') }}#faq" class="has-text-grey">FAQ</a><br/>
         </div>
         <div class="column">
             <h5 class="title is-6 mb-2">{{ _("Ressources") }}</h5>

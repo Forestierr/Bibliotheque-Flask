@@ -9,6 +9,7 @@ def app():
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
         }
     )
 
@@ -108,3 +109,87 @@ def test_mentions_legales_payment_and_cancellation_terms(client):
         # Notifications par email
         assert "e-mail" in html or "email" in html
         assert "gestion de votre abonnement" in html or "factures et reçus" in html
+
+
+def test_contact_page_get_unauthenticated(client):
+    """Vérifie que la page contact est accessible publiquement sans authentification."""
+    res = client.get("/contact")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Contact" in html
+    assert 'name="name"' in html
+    assert 'name="firstname"' in html
+    assert 'name="email"' in html
+    assert 'name="message"' in html
+    assert '"@type": "ContactPage"' in html
+
+
+def test_contact_page_post_success(client, monkeypatch):
+    """Vérifie l'envoi d'un message de contact valide sans captcha configuré."""
+    monkeypatch.setenv("HCAPTCHA_SECRET_KEY", "")
+    sent_emails = []
+
+    def mock_send_email_to_me(subject, body):
+        sent_emails.append((subject, body))
+
+    def mock_send_email_confirmation(name, firstname, email):
+        sent_emails.append(("confirmation", f"{name} {firstname} {email}"))
+
+    monkeypatch.setattr("project.main.send_email_to_me", mock_send_email_to_me)
+    monkeypatch.setattr(
+        "project.main.send_email_confirmation", mock_send_email_confirmation
+    )
+
+    res = client.post(
+        "/fr/contact",
+        data={
+            "name": "Dupont",
+            "firstname": "Claire",
+            "email": "claire@ecole.fr",
+            "message": "Bonjour, super application !",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    assert len(sent_emails) == 2
+    html = res.get_data(as_text=True)
+    assert "Votre message a été envoyé avec succès" in html
+
+
+def test_contact_page_post_missing_fields(client, monkeypatch):
+    """Vérifie le rejet si un champ est manquant."""
+    monkeypatch.setenv("HCAPTCHA_SECRET_KEY", "")
+    res = client.post(
+        "/fr/contact",
+        data={
+            "name": "Dupont",
+            "firstname": "",
+            "email": "claire@ecole.fr",
+            "message": "",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Veuillez remplir tous les champs." in html
+
+
+def test_contact_page_post_captcha_validation(client, monkeypatch):
+    """Vérifie le comportement lorsque hCaptcha est activé."""
+
+    monkeypatch.setenv("HCAPTCHA_SECRET_KEY", "dummy_secret")
+
+    # Sans token captcha -> rejet
+    res = client.post(
+        "/fr/contact",
+        data={
+            "name": "Dupont",
+            "firstname": "Claire",
+            "email": "claire@ecole.fr",
+            "message": "Test",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Veuillez compléter le CAPTCHA." in html

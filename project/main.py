@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from threading import Thread
 
 import jinja2
+import requests
 from flask import (
     Blueprint,
     Response,
@@ -49,6 +50,7 @@ from .query import (
 )
 
 main = Blueprint("main", __name__)
+core = Blueprint("core", __name__)
 
 
 @main.route("/set-lang/<lang>")
@@ -61,14 +63,35 @@ def set_language(lang):
         if current_user.is_authenticated:
             current_user.preferred_language = lang
             db.session.commit()
-    return redirect(request.referrer or url_for("main.index"))
+    ref = request.referrer
+    if ref:
+        from urllib.parse import urlparse, urlunparse
+
+        parsed = urlparse(ref)
+        if parsed.netloc == request.host or not parsed.netloc:
+            parts = parsed.path.strip("/").split("/")
+            if parts and parts[0] in LANGUAGES:
+                parts[0] = lang
+                new_path = "/" + "/".join(parts)
+            else:
+                new_path = f"/{lang}{parsed.path}"
+            return redirect(
+                urlunparse(
+                    (
+                        parsed.scheme,
+                        parsed.netloc,
+                        new_path,
+                        parsed.params,
+                        parsed.query,
+                        parsed.fragment,
+                    )
+                )
+            )
+    return redirect(url_for("main.index", lang_code=lang))
 
 
 @main.route("/")
 def index():
-    if current_user.is_authenticated:
-        return redirect(url_for("main.dashboard"))
-
     infos = get_app_infos()
 
     return render_template(
@@ -86,6 +109,9 @@ def index():
 @main.route("/dashboard")
 @login_required
 def dashboard():
+    if not current_user.is_premium:
+        current_user.check_and_reset_weekly_scans()
+
     n_books = get_books_count(current_user.id)
     n_students = get_students_count(current_user.id)
     n_loans = get_loans_count(current_user.id)
@@ -150,6 +176,8 @@ def dashboard():
     )
 
 
+@core.route("/sitemap.xml")
+@core.route("/sitemap")
 @main.route("/sitemap.xml")
 @main.route("/sitemap")
 def sitemap():
@@ -160,6 +188,10 @@ def sitemap():
     )
 
 
+@core.route("/robots.txt")
+@core.route("/robot.txt")
+@core.route("/robots")
+@core.route("/robot")
 @main.route("/robots.txt")
 @main.route("/robot.txt")
 @main.route("/robots")
@@ -172,6 +204,8 @@ def robots():
     )
 
 
+@core.route("/llms.txt")
+@core.route("/llms")
 @main.route("/llms.txt")
 @main.route("/llms")
 def llms():
@@ -182,6 +216,7 @@ def llms():
     )
 
 
+@core.route("/favicon.ico")
 @main.route("/favicon.ico")
 def favicon():
     return send_from_directory(
@@ -192,13 +227,31 @@ def favicon():
 
 
 @main.route("/contact", methods=["GET", "POST"])
-@login_required
 def contact():
     if request.method == "POST":
         name = request.form.get("name")
         firstname = request.form.get("firstname")
         email = request.form.get("email")
         message = request.form.get("message")
+
+        # Vérification hCaptcha (ignorée si la clé secrète n'est pas configurée)
+        hcaptcha_secret = os.getenv("HCAPTCHA_SECRET_KEY", "")
+        if hcaptcha_secret:
+            captcha_token = request.form.get("h-captcha-response", "")
+            if not captcha_token:
+                flash(_("Veuillez compléter le CAPTCHA."), "error")
+                return redirect(url_for("main.contact"))
+            try:
+                r = requests.post(
+                    "https://api.hcaptcha.com/siteverify",
+                    data={"secret": hcaptcha_secret, "response": captcha_token},
+                    timeout=5,
+                )
+                if not r.json().get("success"):
+                    flash(_("CAPTCHA invalide. Veuillez réessayer."), "error")
+                    return redirect(url_for("main.contact"))
+            except Exception:  # noqa: BLE001, S110
+                pass
 
         if not name or not firstname or not email or not message:
             flash(_("Veuillez remplir tous les champs."), "danger")
@@ -230,9 +283,13 @@ def contact():
 
         return redirect(url_for("main.contact"))
 
-    user = get_user(current_user.id)
+    user = get_user(current_user.id) if current_user.is_authenticated else None
 
-    return render_template("contact.html", user=user)
+    return render_template(
+        "contact.html",
+        user=user,
+        hcaptcha_site_key=os.getenv("HCAPTCHA_SITE_KEY", ""),
+    )
 
 
 def send_feedback_notification(user, feedback_obj):
@@ -341,14 +398,14 @@ def mentions_legales():
     return render_template("mentions-legales.html")
 
 
-@main.route("/apropos")
 @main.route("/about")
+@main.route("/apropos")
 def apropos():
     return render_template("apropos.html")
 
 
-@main.route("/aide")
 @main.route("/help")
+@main.route("/aide")
 def aide():
     return render_template("aide.html")
 
@@ -401,16 +458,19 @@ def page_not_found(e):
 
 
 # PWA code
+@core.route("/manifest.json")
 @main.route("/manifest.json")
 def serve_manifest():
     return send_file("manifest.json", mimetype="application/manifest+json")
 
 
+@core.route("/sw.js")
 @main.route("/sw.js")
 def serve_sw():
     return send_file("static/javascript/sw.js", mimetype="application/javascript")
 
 
+@core.route("/api/student_books_read")
 @main.route("/api/student_books_read")
 @login_required
 def api_student_books_read():
@@ -432,6 +492,8 @@ TRACKING_PIXEL_PNG = (
 )
 
 
+@core.route("/email/track/<token>.png", methods=["GET", "HEAD"])
+@core.route("/email/track/<token>", methods=["GET", "HEAD"])
 @main.route("/email/track/<token>.png", methods=["GET", "HEAD"])
 @main.route("/email/track/<token>", methods=["GET", "HEAD"])
 def email_track(token):
