@@ -13,6 +13,54 @@
 {% endblock %}
 
 {% block admin_content %}
+<style>
+  /* Conteneur de la carte du tableau */
+  .admin-users-card {
+    padding: 0 !important;
+    position: relative;
+  }
+
+  /* Préservation stricte du défilement latéral du tableau sur tous les écrans */
+  .admin-users-card .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  /* Ligne du tableau */
+  .user-row {
+    transition: background-color 0.15s ease;
+  }
+  .user-row.has-dropdown-open {
+    background-color: #f8fafc;
+  }
+
+  /* Style soigné pour le menu des actions */
+  .admin-actions-dropdown-content {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 6px;
+    background: #ffffff;
+  }
+  .admin-actions-dropdown-content .dropdown-item {
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .admin-actions-dropdown-content .dropdown-item:hover {
+    background-color: #f8fafc;
+  }
+
+  /* La modale d'édition doit impérativement rester au-dessus de tout */
+  #modalEditPlan {
+    z-index: 99999 !important;
+  }
+</style>
+
 <!-- Barre de Recherche et Filtres -->
 <div class="admin-card mb-4" style="padding: 1.25rem;">
   <div class="columns is-variable is-2 is-multiline">
@@ -70,7 +118,7 @@
 </div>
 
 <!-- Tableau des Utilisateurs -->
-<div class="admin-card" style="padding: 0;">
+<div class="admin-card admin-users-card">
   <div class="table-container mb-0">
     <table class="table is-fullwidth is-hoverable" id="usersTable" style="margin-bottom: 0;">
       <thead>
@@ -154,7 +202,7 @@
           </td>
 
           <td style="padding: 1rem; vertical-align: middle;">
-            <span class="tag {% if (u.free_scans_used or 0) >= 30 and not u.is_premium %}is-danger is-light{% else %}is-light{% endif %} is-rounded" title="Scans de codes-barres utilisés">
+            <span class="tag {% if (u.free_scans_used or 0) >= 30 and not u.is_premium %}is-danger is-light{% else %}is-light{% endif %} is-rounded" title="Scans de codes-barres cette semaine (remis à zéro dimanche à 00h00)">
               {{ u.free_scans_used or 0 }}/30
             </span>
           </td>
@@ -181,14 +229,14 @@
 
           <td style="padding: 1rem; vertical-align: middle; text-align: right;">
             <!-- Menu Dropdown 3 Points -->
-            <div class="dropdown is-right is-hoverable">
+            <div class="dropdown is-right">
               <div class="dropdown-trigger">
                 <button class="button is-small is-white is-rounded" aria-haspopup="true" aria-controls="dropdown-menu-{{ u.id }}" title="Actions">
                   <span class="icon"><i class="fas fa-ellipsis-v"></i></span>
                 </button>
               </div>
               <div class="dropdown-menu" id="dropdown-menu-{{ u.id }}" role="menu" style="min-width: 200px;">
-                <div class="dropdown-content has-text-left" style="box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px;">
+                <div class="dropdown-content has-text-left admin-actions-dropdown-content">
                   <a class="dropdown-item" onclick="openPlanModal('{{ u.id }}', '{{ u.email }}', '{{ u.plan }}', '{{ u.free_scans_used or 0 }}', '{{ u.trial_days_left if u.is_in_trial else 0 }}')">
                     <span class="icon is-small has-text-warning"><i class="fas fa-crown mr-2"></i></span>
                     <span>Modifier formule / quotas</span>
@@ -278,7 +326,7 @@
         <div class="field mt-4">
           <label class="checkbox is-size-7">
             <input type="checkbox" name="reset_scans" value="1">
-            <strong>Réinitialiser le compteur de scans</strong> (actuellement : <span id="modalScansCount">0</span>/30)
+            <strong>Réinitialiser le compteur de scans</strong> (actuellement : <span id="modalScansCount">0</span>/30 cette semaine)
           </label>
         </div>
       </section>
@@ -348,6 +396,13 @@
   });
 
   function openPlanModal(userId, email, plan, scans, trialDays) {
+    // Fermer les dropdowns ouverts
+    document.querySelectorAll('.user-row .dropdown.is-active').forEach(d => {
+      d.classList.remove('is-active');
+      const r = d.closest('.user-row');
+      if (r) r.classList.remove('has-dropdown-open');
+    });
+
     document.getElementById('modalPlanUserEmail').textContent = email;
     document.getElementById('selectPlan').value = plan;
     document.getElementById('modalScansCount').textContent = scans;
@@ -361,7 +416,148 @@
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closePlanModal();
+    if (e.key === 'Escape') {
+      closePlanModal();
+      document.querySelectorAll('.user-row .dropdown.is-active').forEach(d => {
+        d.classList.remove('is-active');
+        const r = d.closest('.user-row');
+        if (r) r.classList.remove('has-dropdown-open');
+      });
+    }
+  });
+
+  // Gestion fluide et intelligente des dropdowns d'actions (position: fixed détaché du conteneur scrollable)
+  function setupActionDropdowns() {
+    const dropdowns = document.querySelectorAll('.user-row .dropdown');
+
+    function closeMenu(dropdown) {
+      const menu = dropdown.querySelector('.dropdown-menu');
+      if (menu) {
+        menu.style.position = '';
+        menu.style.top = '';
+        menu.style.bottom = '';
+        menu.style.left = '';
+        menu.style.right = '';
+        menu.style.zIndex = '';
+        menu.style.display = '';
+      }
+      dropdown.classList.remove('is-active');
+      const row = dropdown.closest('.user-row');
+      if (row) row.classList.remove('has-dropdown-open');
+    }
+
+    function closeAllMenus() {
+      dropdowns.forEach(d => closeMenu(d));
+    }
+
+    function openMenu(dropdown) {
+      const triggerBtn = dropdown.querySelector('.dropdown-trigger button');
+      const menu = dropdown.querySelector('.dropdown-menu');
+      if (!triggerBtn || !menu) return;
+
+      // Fermer tous les autres d'abord
+      dropdowns.forEach(d => {
+        if (d !== dropdown) closeMenu(d);
+      });
+
+      const rect = triggerBtn.getBoundingClientRect();
+      const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+      // Afficher temporairement pour mesurer les dimensions réelles
+      menu.style.display = 'block';
+      menu.style.visibility = 'hidden';
+      menu.style.position = 'fixed';
+      const menuHeight = menu.offsetHeight || 220;
+      menu.style.visibility = '';
+
+      const spaceBelow = windowHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      menu.style.zIndex = '1050';
+
+      // Orientation verticale : vers le haut si pas assez de place en bas
+      if (spaceBelow < menuHeight && spaceAbove > spaceBelow) {
+        menu.style.top = 'auto';
+        menu.style.bottom = `${Math.round(windowHeight - rect.top + 4)}px`;
+      } else {
+        menu.style.top = `${Math.round(rect.bottom + 4)}px`;
+        menu.style.bottom = 'auto';
+      }
+
+      // Alignement horizontal : aligné sur le bord droit du bouton
+      const rightOffset = windowWidth - rect.right;
+      menu.style.right = `${Math.max(8, Math.round(rightOffset))}px`;
+      menu.style.left = 'auto';
+
+      dropdown.classList.add('is-active');
+      const row = dropdown.closest('.user-row');
+      if (row) row.classList.add('has-dropdown-open');
+    }
+
+    dropdowns.forEach(dropdown => {
+      const triggerBtn = dropdown.querySelector('.dropdown-trigger button');
+      const menu = dropdown.querySelector('.dropdown-menu');
+      let hoverTimeout = null;
+
+      // Au survol du bouton
+      dropdown.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+        openMenu(dropdown);
+      });
+
+      dropdown.addEventListener('mouseleave', () => {
+        hoverTimeout = setTimeout(() => {
+          closeMenu(dropdown);
+        }, 180);
+      });
+
+      // Maintien ouvert quand la souris est sur le menu (position: fixed)
+      if (menu) {
+        menu.addEventListener('mouseenter', () => {
+          clearTimeout(hoverTimeout);
+        });
+        menu.addEventListener('mouseleave', () => {
+          hoverTimeout = setTimeout(() => {
+            closeMenu(dropdown);
+          }, 180);
+        });
+      }
+
+      // Au clic (support mobile, tablettes et clics directs)
+      if (triggerBtn) {
+        triggerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          clearTimeout(hoverTimeout);
+          if (dropdown.classList.contains('is-active')) {
+            closeMenu(dropdown);
+          } else {
+            openMenu(dropdown);
+          }
+        });
+      }
+    });
+
+    // Clic en dehors pour refermer
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown') && !e.target.closest('.dropdown-menu')) {
+        closeAllMenus();
+      }
+    });
+
+    // Défilement du tableau (scroll latéral) ou de la page : refermer proprement
+    const tableContainer = document.querySelector('.admin-users-card .table-container');
+    if (tableContainer) {
+      tableContainer.addEventListener('scroll', closeAllMenus, { passive: true });
+    }
+    window.addEventListener('scroll', closeAllMenus, { passive: true });
+    window.addEventListener('resize', closeAllMenus, { passive: true });
+  }
+
+  // Initialisation dès le chargement de la page
+  document.addEventListener('DOMContentLoaded', () => {
+    setupActionDropdowns();
   });
 </script>
 {% endblock %}

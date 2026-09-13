@@ -267,6 +267,40 @@
   </div>
 </div>
 
+<!-- Graphique 3: Flux des Abonnements & Résiliations (Diverging Bar Chart) -->
+<div class="columns is-multiline mb-5">
+  <div class="column is-12">
+    <div class="admin-card">
+      <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap mb-4" style="gap: 0.75rem;">
+        <div>
+          <h3 class="title is-6 mb-1" style="font-weight: 700; color: #1e293b;">
+            <span class="icon is-small mr-2" style="color: #3b82f6;"><i class="fas fa-exchange-alt"></i></span>
+            Flux des Abonnements & Résiliations (6 derniers mois)
+          </h3>
+          <p class="is-size-7 has-text-grey">Nouveaux abonnements premium (en haut) vs Résiliations (en bas)</p>
+        </div>
+        <div class="tags has-addons mb-0">
+          <span class="tag is-rounded is-small has-text-weight-semibold" style="background: rgba(0, 184, 156, 0.12); color: #008774;">
+            +{{ sub_flow_stats.total_new }} abonnement(s)
+          </span>
+          <span class="tag is-rounded is-small has-text-weight-semibold" style="background: rgba(239, 68, 68, 0.12); color: #dc2626;">
+            -{{ sub_flow_stats.total_cancels }} résiliation(s)
+          </span>
+          <span class="tag is-rounded is-small has-text-weight-bold" style="background: rgba(59, 130, 246, 0.12); color: #2563eb;">
+            Solde net : {% if sub_flow_stats.net_flow > 0 %}+{% endif %}{{ sub_flow_stats.net_flow }}
+          </span>
+          <span class="tag is-rounded is-small is-light has-text-grey has-text-weight-medium">
+            Rétention : {{ sub_flow_stats.retention_rate }}% &bull; Churn : {{ sub_flow_stats.churn_rate }}%
+          </span>
+        </div>
+      </div>
+      <div style="position: relative; height: 260px; width: 100%;">
+        <canvas id="subFlowChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- SECTION CROISSANCE & UTILISATEURS -->
 <div class="mb-3 mt-5">
   <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
@@ -699,6 +733,124 @@ document.addEventListener('DOMContentLoaded', () => {
               label: function(context) {
                 if (!hasSubs) return ' Aucun abonnement payant pour le moment';
                 return ` ${context.label} : ${context.parsed} actif(s)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // 5. Graphique Flux Abonnements / Résiliations (Diverging Bar Chart)
+  const subFlowCtx = document.getElementById('subFlowChart');
+  if (subFlowCtx) {
+    const subsData = {{ subs_chart_data | tojson | safe }};
+    const cancelsData = {{ cancels_chart_data | tojson | safe }};
+
+    new Chart(subFlowCtx, {
+      type: 'bar',
+      data: {
+        labels: {{ revenue_chart_labels | tojson | safe }},
+        datasets: [
+          {
+            label: 'Nouveaux abonnements (+)',
+            data: subsData,
+            backgroundColor: '#00b89c',
+            hoverBackgroundColor: '#008774',
+            borderRadius: { topLeft: 6, topRight: 6, bottomLeft: 0, bottomRight: 0 },
+            maxBarThickness: 38,
+          },
+          {
+            label: 'Résiliations (-)',
+            data: cancelsData,
+            backgroundColor: '#ef4444',
+            hoverBackgroundColor: '#dc2626',
+            borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 6, bottomRight: 6 },
+            maxBarThickness: 38,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            align: 'end',
+            labels: {
+              boxWidth: 12,
+              boxHeight: 12,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              color: '#64748b',
+              font: { size: 12 }
+            }
+          },
+          tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 12,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                const val = context.parsed.y;
+                if (context.datasetIndex === 0) {
+                  return ` Nouveaux abonnements : +${val}`;
+                } else {
+                  return ` Résiliations : -${Math.abs(val)}`;
+                }
+              },
+              footer: function(tooltipItems) {
+                let subs = 0;
+                let cancels = 0;
+                tooltipItems.forEach(item => {
+                  if (item.datasetIndex === 0) subs = item.parsed.y;
+                  if (item.datasetIndex === 1) cancels = Math.abs(item.parsed.y);
+                });
+                const net = subs - cancels;
+                const sign = net > 0 ? '+' : '';
+                return `Solde net : ${sign}${net}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true,
+            grid: { display: false },
+            ticks: {
+              color: '#94a3b8',
+              font: { size: 11 }
+            }
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              stepSize: 1,
+              precision: 0,
+              color: '#94a3b8',
+              font: { size: 11 },
+              callback: function(value) {
+                if (value > 0) return '+' + value;
+                return value;
+              }
+            },
+            grid: {
+              color: function(context) {
+                if (context.tick && context.tick.value === 0) {
+                  return '#64748b';
+                }
+                return '#f1f5f9';
+              },
+              lineWidth: function(context) {
+                if (context.tick && context.tick.value === 0) {
+                  return 1.5;
+                }
+                return 1;
               }
             }
           }

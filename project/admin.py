@@ -143,6 +143,8 @@ def index():
         f"{month_names_fr[m]} {str(y)[2:]}" for (y, m) in revenue_slots
     ]
     revenue_by_slot = {s: 0.0 for s in revenue_slots}
+    subs_by_slot = {s: 0 for s in revenue_slots}
+    cancels_by_slot = {s: 0 for s in revenue_slots}
 
     if stripe_key:
         try:
@@ -167,6 +169,21 @@ def index():
                 else:
                     monthly_subs_count += 1
                     monthly_mrr += amount
+
+            # Flux complet des abonnements et résiliations via Stripe
+            all_subs = stripe.Subscription.list(status="all", limit=100)
+            for s in all_subs.data:
+                if getattr(s, "created", None):
+                    c_dt = datetime.fromtimestamp(s.created, tz=timezone.utc)
+                    slot_c = (c_dt.year, c_dt.month)
+                    if slot_c in subs_by_slot:
+                        subs_by_slot[slot_c] += 1
+                c_ts = getattr(s, "canceled_at", None) or getattr(s, "ended_at", None)
+                if c_ts:
+                    e_dt = datetime.fromtimestamp(c_ts, tz=timezone.utc)
+                    slot_e = (e_dt.year, e_dt.month)
+                    if slot_e in cancels_by_slot:
+                        cancels_by_slot[slot_e] += 1
 
             # Invoices payées pour l'historique de revenus
             invoices = stripe.Invoice.list(status="paid", limit=100)
@@ -207,11 +224,58 @@ def index():
                 monthly_mrr + (yearly_mrr * 12.0), 2
             )
 
+    # Fallback pour le flux abonnements / résiliations depuis la base locale si Stripe non connecté
+    if not stripe_connected or (
+        sum(subs_by_slot.values()) == 0 and sum(cancels_by_slot.values()) == 0
+    ):
+        for u in User.query.all():
+            if (u.plan in ("premium", "founder") or u.stripe_price_id) and u.created_at:
+                u_c = (
+                    u.created_at.replace(tzinfo=timezone.utc)
+                    if u.created_at.tzinfo is None
+                    else u.created_at
+                )
+                slot_c = (u_c.year, u_c.month)
+                if slot_c in subs_by_slot:
+                    subs_by_slot[slot_c] += 1
+            if u.subscription_end_at or u.stripe_subscription_status == "canceled":
+                end_dt = u.subscription_end_at or u.created_at
+                if end_dt:
+                    u_e = (
+                        end_dt.replace(tzinfo=timezone.utc)
+                        if end_dt.tzinfo is None
+                        else end_dt
+                    )
+                    slot_e = (u_e.year, u_e.month)
+                    if slot_e in cancels_by_slot:
+                        cancels_by_slot[slot_e] += 1
+
     total_mrr = round(monthly_mrr + yearly_mrr, 2)
     total_arr = round(total_mrr * 12.0, 2)
     total_revenue_collected = round(total_revenue_collected, 2)
     revenue_chart_data = [round(revenue_by_slot[s], 2) for s in revenue_slots]
     active_subscriptions_count = monthly_subs_count + yearly_subs_count
+
+    # Calculs du flux d'abonnements et de résiliations
+    subs_chart_data = [subs_by_slot[s] for s in revenue_slots]
+    cancels_chart_data = [-cancels_by_slot[s] for s in revenue_slots]
+    total_new_subs = sum(subs_by_slot.values())
+    total_cancels = sum(cancels_by_slot.values())
+    net_subs_flow = total_new_subs - total_cancels
+    churn_rate = (
+        round((total_cancels / (active_subscriptions_count + total_cancels) * 100), 1)
+        if (active_subscriptions_count + total_cancels) > 0
+        else 0.0
+    )
+    retention_rate = round(max(0.0, 100.0 - churn_rate), 1)
+
+    sub_flow_stats = {
+        "total_new": total_new_subs,
+        "total_cancels": total_cancels,
+        "net_flow": net_subs_flow,
+        "churn_rate": churn_rate,
+        "retention_rate": retention_rate,
+    }
 
     financial_stats = {
         "mrr": total_mrr,
@@ -268,6 +332,9 @@ def index():
         subscriptions_type_distribution=subscriptions_type_distribution,
         revenue_chart_labels=revenue_chart_labels,
         revenue_chart_data=revenue_chart_data,
+        sub_flow_stats=sub_flow_stats,
+        subs_chart_data=subs_chart_data,
+        cancels_chart_data=cancels_chart_data,
         active_page="dashboard",
     )
 
@@ -685,8 +752,7 @@ def emails():
     lang_keys = ["all", "fr", "en", "de"]
 
     counts_matrix = {
-        t: {p: {l: 0 for l in lang_keys} for p in plan_keys}
-        for t in target_keys
+        t: {p: {l: 0 for l in lang_keys} for p in plan_keys} for t in target_keys
     }
 
     subscribed_users = 0
@@ -892,9 +958,7 @@ def emails():
             return redirect(url_for("admin.emails"))
 
         # 1. Create NewsletterCampaign record
-        campaign_target = (
-            f"{target}:{target_plan}" if target_plan != "all" else target
-        )
+        campaign_target = f"{target}:{target_plan}" if target_plan != "all" else target
         campaign = NewsletterCampaign(
             subject=subject,
             content=message_content,

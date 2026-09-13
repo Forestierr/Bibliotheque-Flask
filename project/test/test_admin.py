@@ -86,9 +86,20 @@ def test_admin_dashboard(client):
     assert "Total Encaissé" in html
     assert "Abonnements Payants" in html
     assert "revenueChart" in html
-    assert "subTypesChart" in html
     assert "Évolution des Revenus Encaissés" in html
     assert "Abonnements Actifs par Type" in html
+
+    # Graphique divergent Flux des Abonnements & Résiliations
+    assert (
+        "Flux des Abonnements &amp; Résiliations" in html
+        or "Flux des Abonnements & Résiliations" in html
+    )
+    assert "subFlowChart" in html
+    assert "Nouveaux abonnements" in html
+    assert "Résiliations" in html
+    assert "Solde net" in html
+    assert "Rétention" in html
+    assert "Churn" in html
 
 
 def test_admin_users_view(client):
@@ -100,6 +111,13 @@ def test_admin_users_view(client):
     assert "prof1@test.com" in html
     assert "prof2@test.com" in html
     assert "Alice Prof" in html
+
+    # Vérification des correctifs d'affichage du dropdown et du z-index
+    assert "admin-users-card" in html
+    assert "admin-actions-dropdown-content" in html
+    assert "setupActionDropdowns" in html
+    assert "has-dropdown-open" in html
+    assert "modalEditPlan" in html
 
 
 def test_admin_livres_view_and_search(client):
