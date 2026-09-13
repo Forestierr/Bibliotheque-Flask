@@ -7,6 +7,25 @@
 {% block title %}{{ _("Ressources personnalisables & imprimables | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Outils gratuits et personnalisables pour enseignants : diplômes de lecture, marque-pages, charte de classe, bingo lecture, étiquettes de bacs et codes-barres prêts à imprimer.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ _("Ressources personnalisables & imprimables | Livres en Classe")|tojson }},
+  "description": {{ _("Outils gratuits et personnalisables pour enseignants : diplômes de lecture, marque-pages, charte de classe, bingo lecture, étiquettes de bacs et codes-barres prêts à imprimer.")|tojson }},
+  "url": "{{ lang_url(get_locale(), external=True) }}",
+  "inLanguage": "{{ get_locale() }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com",
+    "logo": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+  }
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
@@ -203,7 +222,7 @@
                     </div>
                     <h2 class="studio-title">{{ _("Diplômes de Lecture") }}</h2>
                     <p class="studio-desc">{{ _("Valorisez les progrès et paliers franchis (5, 10, 20 livres). Remplissage libre ou connecté aux statistiques de vos élèves.") }}</p>
-                    <a href="{{ url_for('ressource.diplome') }}" class="button is-link is-light studio-btn">
+                    <a href="{{ url_for('ressource.diplome_de_lecture_a_imprimer') }}" class="button is-link is-light studio-btn">
                         {{ _("Personnaliser et imprimer") }}
                     </a>
                 </div>
@@ -218,7 +237,7 @@
                     </div>
                     <h2 class="studio-title">{{ _("Marque-pages d'emprunt") }}</h2>
                     <p class="studio-desc">{{ _("Suivi des dates de prêt au recto et fiche d'avis avec étoiles à colorier au verso. Formats pliables ou prêts à massicoter.") }}</p>
-                    <a href="{{ url_for('ressource.marque_pages') }}" class="button is-link is-light studio-btn">
+                    <a href="{{ url_for('ressource.marque_pages_a_imprimer') }}" class="button is-link is-light studio-btn">
                         {{ _("Personnaliser et imprimer") }}
                     </a>
                 </div>
@@ -233,7 +252,7 @@
                     </div>
                     <h2 class="studio-title">{{ _("Charte du Coin Lecture") }}</h2>
                     <p class="studio-desc">{{ _("Les règles essentielles pour préserver les livres et le calme. Versions couleur ou noir & blanc avec contrat de signatures.") }}</p>
-                    <a href="{{ url_for('ressource.charte') }}" class="button is-link is-light studio-btn">
+                    <a href="{{ url_for('ressource.charte_coin_lecture_a_imprimer') }}" class="button is-link is-light studio-btn">
                         {{ _("Personnaliser et imprimer") }}
                     </a>
                 </div>
@@ -248,7 +267,7 @@
                     </div>
                     <h2 class="studio-title">{{ _("Défi Lecture") }}</h2>
                     <p class="studio-desc">{{ _("Une grille de 16 situations de lecture variées pour stimuler la régularité pendant les vacances scolaires ou un rallye.") }}</p>
-                    <a href="{{ url_for('ressource.bingo') }}" class="button is-link is-light studio-btn">
+                    <a href="{{ url_for('ressource.defi_lecture_bingo_a_imprimer') }}" class="button is-link is-light studio-btn">
                         {{ _("Personnaliser et imprimer") }}
                     </a>
                 </div>
@@ -289,7 +308,7 @@
                     </div>
                     <h2 class="studio-title">{{ _("Fiches « Coup de cœur »") }}</h2>
                     <p class="studio-desc">{{ _("Fanions cartonnés à glisser dans les livres pour encourager les conseils et recommandations spontanées entre élèves.") }}</p>
-                    <a href="{{ url_for('ressource.fiches_avis') }}" class="button is-link is-light studio-btn">
+                    <a href="{{ url_for('ressource.fiche_de_lecture_a_imprimer') }}" class="button is-link is-light studio-btn">
                         {{ _("Personnaliser et imprimer") }}
                     </a>
                 </div>
@@ -330,7 +349,7 @@
                     </div>
                     <h2 class="studio-title">{{ _("Passeport de Lecture") }}</h2>
                     <p class="studio-desc">{{ _("Livret pliable A5 : page de profil, suivi des genres littéraires découverts et fiches synthétiques des lectures de l'année.") }}</p>
-                    <a href="{{ url_for('ressource.passeport') }}" class="button is-link is-light studio-btn">
+                    <a href="{{ url_for('ressource.passeport_de_lecture_a_imprimer') }}" class="button is-link is-light studio-btn">
                         {{ _("Personnaliser et imprimer") }}
                     </a>
                 </div>

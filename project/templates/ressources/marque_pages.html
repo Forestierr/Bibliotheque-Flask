@@ -1,6 +1,35 @@
-<!-- templates/ressources/marque_pages.html -->
-
 {% extends "ressources/base_editor.html" %}
+
+{% block title %}{{ _("Marque-pages à imprimer gratuits pour l'école primaire (A4) | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Générez et imprimez 4 marque-pages par feuille A4 : fiche d'emprunt au recto, avis lecteur et étoiles au verso. Outil personnalisable et entièrement gratuit.") }}{% endblock %}
+{% block ressource_id %}marque-pages-a-imprimer{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/marque-pages-a-imprimer" />
+<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/marque-pages-a-imprimer" />
+{% endblock %}
+
+{% block head_extra %}
+{{ super() }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Marque-pages de lecture à imprimer pour l'école primaire",
+  "description": "Fiche de suivi d'emprunt et fiche d'avis critique de lecture pour la bibliothèque de classe et rallye lecture.",
+  "learningResourceType": "Printable Resource",
+  "educationalLevel": "Cycles 2 et 3 (CP, CE1, CE2, CM1, CM2)",
+  "inLanguage": "fr",
+  "isAccessibleForFree": true,
+  "url": "https://livresenclasse.com/fr/ressources/marque-pages-a-imprimer",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+{% endblock %}
 
 {% block studio_title %}{{ _("Marque-pages Emprunt & Avis") }}{% endblock %}
 {% block sheet_orientation %}portrait{% endblock %}
@@ -218,6 +247,144 @@
 </div>
 {% endblock %}
 
+{% block studio_extra_content %}
+<section class="section py-6" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Encart Partage Pinterest & Sauvegarde -->
+        <div class="box mb-6" style="border-radius: 16px; border: 1px solid #fed7aa; background: #fffaf5; padding: 2rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-3 has-text-centered">
+                    <img src="{{ url_for('static', filename='image/pinterest/marque-pages-a-imprimer.png') }}" 
+                         alt="{{ _('Visuel Pinterest Marque-pages à imprimer') }}" 
+                         style="max-height: 220px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;"
+                         data-pin-media="https://livresenclasse.com/static/image/pinterest/marque-pages-a-imprimer.png"
+                         data-pin-description="{{ _('Marque-pages à imprimer gratuits pour la classe (A4). Suivi des prêts et avis critique.') }}"
+                         onclick="openPinterestShare('marque-pages')">
+                </div>
+                <div class="column is-9">
+                    <span class="tag is-danger is-light has-text-weight-bold mb-2">
+                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                    </span>
+                    <h3 class="title is-4 mb-2" style="color: #9a3412;">
+                        {{ _("Sauvegardez cette ressource pour votre classe") }}
+                    </h3>
+                    <p class="subtitle is-6 has-text-grey mb-4">
+                        {{ _("Épinglez ces marque-pages sur votre tableau Pinterest dédié à la bibliothèque de classe ou au coin lecture pour les retrouver à tout moment.") }}
+                    </p>
+                    <div class="buttons">
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ 'https://livresenclasse.com/fr/ressources/marque-pages-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=lead_magnets&mtm_content=marque_pages'|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/marque-pages-a-imprimer.png'|urlencode }}&description={{ 'Marque-pages à imprimer gratuits pour la classe (A4). Suivi des prêts de livres et fiche d avis avec étoiles à colorier. Idéal bibliothèque de classe, BCD et rallye lecture ! #TeamPE #Cycle2 #Cycle3'|urlencode }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           id="pin-button-mp"
+                           class="button is-danger is-rounded has-text-weight-bold"
+                           onclick="trackPinterestClick('marque-pages-a-imprimer')">
+                            <span class="icon"><i class="fab fa-pinterest"></i></span>
+                            <span>{{ _("Épingler sur Pinterest") }}</span>
+                        </a>
+                        <button type="button" class="button is-link is-light is-rounded has-text-weight-semibold" onclick="triggerStudioPrint()">
+                            <span class="icon"><i class="fas fa-print"></i></span>
+                            <span>{{ _("Imprimer directement") }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide Pédagogique -->
+        <div class="content mb-6">
+            <h2 class="title is-3" style="color: #1e293b;">
+                {{ _("Comment utiliser ces marque-pages dans votre bibliothèque de classe ?") }}
+            </h2>
+            <p>
+                {{ _("La circulation des livres dans une classe ou une BCD d'école primaire requiert à la fois simplicité et rigueur. Ces marque-pages à imprimer au format A4 sont conçus pour allier le suivi pratique des emprunts à une véritable démarche pédagogique de lecteur.") }}
+            </p>
+
+            <div class="columns is-multiline my-4">
+                <div class="column is-6">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-link">
+                            <i class="fas fa-calendar-check mr-2"></i>{{ _("1. Responsabiliser avec la fiche d'emprunt") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Au recto, le tableau de dates permet à l'élève d'inscrire la date d'emprunt et la date de retour prévue. Glissé dans le livre, le marque-page rend visible en un coup d'œil l'état du prêt sans nécessiter de manipuler un cahier d'enregistrement.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-6">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-success">
+                            <i class="fas fa-star mr-2"></i>{{ _("2. Développer le regard critique de lecteur") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Au verso, l'élève note son appréciation en coloriant les étoiles (de 1 à 5) et rédige une courte phrase argumentée. C'est un support parfait pour animer un quart d'heure lecture, un rallye lecture ou des conseils littéraires entre pairs.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="title is-4 mt-5" style="color: #1e293b;">{{ _("Conseils d'impression et de façonnage") }}</h3>
+            <ul>
+                <li><strong>{{ _("Choix du papier") }} :</strong> {{ _("Pour une tenue optimale tout au long de l'année scolaire, nous vous conseillons d'imprimer sur du papier épais de 160 g/m² ou 200 g/m² (type bristol).") }}</li>
+                <li><strong>{{ _("Option pliable en 2") }} :</strong> {{ _("Le mode « Pliable » place le recto et le verso côte à côte. Imprimez sur une face simple, pliez le long de la ligne centrale et collez les deux faces pour obtenir un marque-page rigide.") }}</li>
+                <li><strong>{{ _("Option plastification") }} :</strong> {{ _("En plastifiant vos marque-pages avec des pochettes de 80 à 100 microns, vos élèves peuvent utiliser des feutres effaçables à sec pour réutiliser le même marque-page toute l'année.") }}</li>
+            </ul>
+        </div>
+
+        <!-- Passerelle vers le logiciel Livres en Classe (Lead Magnet CTA) -->
+        <div class="box my-6" style="border-radius: 16px; background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%); color: white; padding: 2.5rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <span class="tag is-warning is-light has-text-weight-bold mb-2">
+                        <i class="fas fa-magic mr-1"></i> {{ _("Pour les enseignants organisés") }}
+                    </span>
+                    <h3 class="title is-3 has-text-white mb-2">
+                        {{ _("Passez à la gestion de classe numérique en 1 scan") }}
+                    </h3>
+                    <p class="is-size-6" style="opacity: 0.95; line-height: 1.6;">
+                        {{ _("Fini les livres égarés et les listes manuelles ! Avec Livres en Classe, cataloguez vos ouvrages en scannant simplement leur code-barres avec votre smartphone, enregistrez les prêts d'élèves en 2 secondes et accédez à vos statistiques de lecture.") }}
+                    </p>
+                </div>
+                <div class="column is-4 has-text-centered">
+                    <a href="{{ url_for('auth.signup') }}" 
+                       id="cta-logiciel-mp"
+                       class="button is-warning is-medium is-rounded has-text-weight-bold"
+                       style="box-shadow: 0 4px 14px rgba(0,0,0,0.25);"
+                       onclick="trackCtaLogiciel('depuis-marque-pages')">
+                        <span class="icon"><i class="fas fa-rocket"></i></span>
+                        <span>{{ _("Créer ma bibliothèque") }}</span>
+                    </a>
+                    <p class="is-size-7 mt-2" style="opacity: 0.85;">
+                        {{ _("Essai gratuit 30 jours sans carte bancaire") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Pédagogique -->
+        <div class="content mt-6">
+            <h3 class="title is-4" style="color: #1e293b;">{{ _("Questions fréquentes sur les marque-pages") }}</h3>
+            
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Ces marque-pages sont-ils réellement gratuits ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Oui, totalement. Vous pouvez personnaliser le texte de votre classe, choisir votre couleur et imprimer autant d'exemplaires que nécessaire sans aucun compte ni paiement.") }}</p>
+            </div>
+
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Pour quels niveaux scolaires ces marque-pages sont-ils adaptés ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Ils conviennent parfaitement du CP au CM2 (Cycles 2 et 3), ainsi qu'aux classes de SEGPA et aux CDI de collège. Pour les CP en début d'année, privilégiez le coloriage d'étoiles ; dès le CE1, les élèves peuvent rédiger leur propre avis.") }}</p>
+            </div>
+
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Puis-je modifier le texte du marque-page avant d'imprimer ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Oui. Dans la barre latérale du studio en haut de page, vous pouvez modifier le nom de votre classe, la phrase d'amorce de l'avis et le message de responsabilisation.") }}</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
 {% block extra_scripts %}
 <script>
 function updateClassOwner(val) {
@@ -244,20 +411,42 @@ function switchLayoutMode(mode) {
     const col4 = document.querySelector('.mp-col-4');
 
     if (mode === 'full-recto') {
-        // Rendre toutes les colonnes en Recto
         document.querySelectorAll('.marque-page-card').forEach((card, idx) => {
             card.innerHTML = document.querySelector('.mp-col-1').innerHTML;
         });
     } else if (mode === 'full-verso') {
-        // Rendre toutes les colonnes en Verso
         const versoContent = document.querySelector('.mp-col-2').innerHTML;
         document.querySelectorAll('.marque-page-card').forEach((card) => {
             card.innerHTML = versoContent;
         });
     } else {
-        // Mode foldable : reload pour disposition alternée
         window.location.reload();
     }
+}
+
+function trackPinterestClick(resourceName) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Ressources', 'Clic_Pinterest', resourceName]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function trackCtaLogiciel(source) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Conversion', 'CTA_Logiciel', source]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function openPinterestShare(resource) {
+    const btn = document.getElementById('pin-button-mp');
+    if (btn) btn.click();
 }
 </script>
 {% endblock %}

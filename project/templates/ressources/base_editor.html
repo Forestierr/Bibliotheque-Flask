@@ -50,12 +50,13 @@
             </div>
 
             <!-- Bouton d'impression principal -->
-            <button type="button" class="button is-link is-rounded has-text-weight-bold" onclick="window.print()">
+            <button type="button" class="button is-link is-rounded has-text-weight-bold" id="print-button" onclick="triggerStudioPrint()">
                 <span class="icon"><i class="fas fa-print"></i></span>
                 <span>{{ _("Imprimer / Enregistrer en PDF") }}</span>
             </button>
         </div>
     </div>
+    <div id="studioRessourceTracker" data-ressource-id="{% block ressource_id %}ressource{% endblock %}" style="display:none;"></div>
 
     <!-- Corps de travail : Panneau de personnalisation + Prévisualisation A4 -->
     <div class="studio-body">
@@ -103,6 +104,27 @@
         </main>
     </div>
 </div>
+
+<!-- Section éditoriale Lead Magnet, SEO & Partage (masquée à l'impression) -->
+<div class="no-print">
+    {% block studio_extra_content %}
+    {% endblock %}
+</div>
+
+<script>
+function triggerStudioPrint() {
+    try {
+        if (typeof _paq !== 'undefined') {
+            var el = document.getElementById('studioRessourceTracker');
+            var resId = el ? el.getAttribute('data-ressource-id') : 'ressource';
+            _paq.push(['trackEvent', 'Ressources', 'Impression', resId]);
+        }
+    } catch (e) {
+        console.error("Matomo tracking error:", e);
+    }
+    window.print();
+}
+</script>
 
 <script src="{{ url_for('static', filename='javascript/ressources_editor.js') }}"></script>
 {% block extra_scripts %}{% endblock %}

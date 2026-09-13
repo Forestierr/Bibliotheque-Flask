@@ -1,6 +1,35 @@
-<!-- templates/ressources/fiches_avis.html -->
-
 {% extends "ressources/base_editor.html" %}
+
+{% block title %}{{ _("Fiches coup de cœur et avis de lecture à imprimer (A4) | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("4 fiches de recommandation de lecture par page A4 pour l'école primaire : fanions coup de cœur, étoiles et avis à glisser dans les livres. Gratuit et modifiable.") }}{% endblock %}
+{% block ressource_id %}fiche-de-lecture-a-imprimer{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer" />
+<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer" />
+{% endblock %}
+
+{% block head_extra %}
+{{ super() }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Fiches coup de cœur et avis de lecture à imprimer",
+  "description": "Fiches fanions de recommandation littéraire entre élèves pour coin bibliothèque et BCD.",
+  "learningResourceType": "Printable Resource",
+  "educationalLevel": "École primaire (CP, CE1, CE2, CM1, CM2)",
+  "inLanguage": "fr",
+  "isAccessibleForFree": true,
+  "url": "https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+{% endblock %}
 
 {% block studio_title %}{{ _("Fiches Coup de Cœur & Fanions") }}{% endblock %}
 {% block sheet_orientation %}portrait{% endblock %}
@@ -84,12 +113,179 @@
 </div>
 {% endblock %}
 
+{% block studio_extra_content %}
+<section class="section py-6" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Encart Partage Pinterest & Sauvegarde -->
+        <div class="box mb-6" style="border-radius: 16px; border: 1px solid #fecdd3; background: #fff1f2; padding: 2rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-3 has-text-centered">
+                    <img src="{{ url_for('static', filename='image/pinterest/fiche-de-lecture-a-imprimer.png') }}" 
+                         alt="{{ _('Visuel Pinterest Fiches coup de cœur à imprimer') }}" 
+                         style="max-height: 220px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;"
+                         data-pin-media="https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png"
+                         data-pin-description="{{ _('Fiches coup de cœur et avis de lecture à imprimer gratuits pour la classe (A4). Fanions de recommandation de livres entre élèves.') }}"
+                         onclick="openPinterestShare('fiche-avis')">
+                </div>
+                <div class="column is-9">
+                    <span class="tag is-danger is-light has-text-weight-bold mb-2">
+                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                    </span>
+                    <h3 class="title is-4 mb-2" style="color: #9f1239;">
+                        {{ _("Sauvegardez ces fiches pour votre classe") }}
+                    </h3>
+                    <p class="subtitle is-6 has-text-grey mb-4">
+                        {{ _("Épinglez cette idée sur Pinterest pour aménager un coin lecture interactif où les élèves recommandent leurs livres préférés à leurs camarades.") }}
+                    </p>
+                    <div class="buttons">
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ 'https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=lead_magnets&mtm_content=fiche_lecture'|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png'|urlencode }}&description={{ 'Fiches coup de cœur et avis de lecture à imprimer gratuits pour la classe (A4). Fanions de recommandation de livres entre élèves pour le coin bibliothèque et la BCD ! #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           id="pin-button-fa"
+                           class="button is-danger is-rounded has-text-weight-bold"
+                           onclick="trackPinterestClick('fiche-de-lecture-a-imprimer')">
+                            <span class="icon"><i class="fab fa-pinterest"></i></span>
+                            <span>{{ _("Épingler sur Pinterest") }}</span>
+                        </a>
+                        <button type="button" class="button is-link is-light is-rounded has-text-weight-semibold" onclick="triggerStudioPrint()">
+                            <span class="icon"><i class="fas fa-print"></i></span>
+                            <span>{{ _("Imprimer directement") }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide Pédagogique -->
+        <div class="content mb-6">
+            <h2 class="title is-3" style="color: #1e293b;">
+                {{ _("Comment animer les recommandations littéraires entre élèves ?") }}
+            </h2>
+            <p>
+                {{ _("La recommandation par les pairs est l'un des moyens les plus efficaces pour déclencher l'envie de lire chez un enfant. Ces fiches « Coup de cœur » se découpent en fanions verticaux que l'élève glisse directement à l'intérieur du livre qu'il a adoré.") }}
+            </p>
+
+            <div class="columns is-multiline my-4">
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-danger">
+                            <i class="fas fa-bookmark mr-2"></i>{{ _("1. Le fanion visible en rayon") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("L'en-tête du fanion dépasse de la tranche du livre rangé dans le bac ou l'étagère, attirant instantanément le regard des camarades en quête d'inspiration.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-warning-dark">
+                            <i class="fas fa-pencil-alt mr-2"></i>{{ _("2. Travailler l'argumentation") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("En formulant en deux ou trois lignes « Pourquoi j'ai adoré cette histoire », l'élève exerce sa capacité d'analyse et de synthèse sans la lourdeur d'une fiche de lecture classique.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-link">
+                            <i class="fas fa-users mr-2"></i>{{ _("3. Créer une dynamique de classe") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Instaurez un rituel hebdomadaire de « minute critique » où les élèves présentent brièvement leur fanion avant de le glisser dans l'ouvrage.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="title is-4 mt-5" style="color: #1e293b;">{{ _("Conseils d'impression et d'utilisation") }}</h3>
+            <ul>
+                <li><strong>{{ _("Papier rigide") }} :</strong> {{ _("Imprimez sur du bristol de 160 à 210 g/m² pour que les fanions tiennent bien droits une fois glissés entre les pages.") }}</li>
+                <li><strong>{{ _("Massicotage") }} :</strong> {{ _("Les traits de coupe grisés permettent de découper 4 fiches identiques en deux coups de massicot.") }}</li>
+            </ul>
+        </div>
+
+        <!-- Passerelle vers le logiciel Livres en Classe (Lead Magnet CTA) -->
+        <div class="box my-6" style="border-radius: 16px; background: linear-gradient(135deg, #881337 0%, #be123c 100%); color: white; padding: 2.5rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <span class="tag is-warning is-light has-text-weight-bold mb-2">
+                        <i class="fas fa-heart mr-1"></i> {{ _("Quels sont les livres préférés de vos élèves ?") }}
+                    </span>
+                    <h3 class="title is-3 has-text-white mb-2">
+                        {{ _("Identifiez les plus gros succès de votre classe") }}
+                    </h3>
+                    <p class="is-size-6" style="opacity: 0.95; line-height: 1.6;">
+                        {{ _("Grâce au suivi informatisé de Livres en Classe, découvrez en un coup d'œil le top des livres les plus empruntés et les genres plébiscités par vos élèves pour orienter vos futurs achats.") }}
+                    </p>
+                </div>
+                <div class="column is-4 has-text-centered">
+                    <a href="{{ url_for('auth.signup') }}" 
+                       id="cta-logiciel-fa"
+                       class="button is-warning is-medium is-rounded has-text-weight-bold"
+                       style="box-shadow: 0 4px 14px rgba(0,0,0,0.25);"
+                       onclick="trackCtaLogiciel('depuis-fiches-avis')">
+                        <span class="icon"><i class="fas fa-sparkles"></i></span>
+                        <span>{{ _("Essayer gratuitement") }}</span>
+                    </a>
+                    <p class="is-size-7 mt-2" style="opacity: 0.85;">
+                        {{ _("Création de compte en 30 secondes") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Pédagogique -->
+        <div class="content mt-6">
+            <h3 class="title is-4" style="color: #1e293b;">{{ _("Questions fréquentes sur les fiches coup de cœur") }}</h3>
+            
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Puis-je changer le titre « Coup de cœur » ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Oui, vous pouvez saisir « Mon conseil de lecture », « Livre à ne pas manquer ! » ou tout autre texte adapté à votre projet dans la colonne de gauche.") }}</p>
+            </div>
+
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Faut-il plastifier ces fiches ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Si vous souhaitez que chaque élève conserve son avis ou que l'avis reste attaché définitivement au livre, le papier simple ou bristol suffit. Pour un usage réutilisable, une plastification fine avec feutre effaçable est possible.") }}</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
 {% block extra_scripts %}
 <script>
 function updateFicheTitles(val) {
     document.querySelectorAll('.fiche-title-text').forEach(el => {
         el.textContent = val;
     });
+}
+
+function trackPinterestClick(resourceName) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Ressources', 'Clic_Pinterest', resourceName]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function trackCtaLogiciel(source) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Conversion', 'CTA_Logiciel', source]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function openPinterestShare(resource) {
+    const btn = document.getElementById('pin-button-fa');
+    if (btn) btn.click();
 }
 </script>
 {% endblock %}
