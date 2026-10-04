@@ -1,6 +1,8 @@
 # livre.py
+import logging
 import math
 import os
+import re
 from datetime import datetime, timezone
 
 import requests
@@ -45,6 +47,7 @@ from .query import (
 )
 
 livre = Blueprint("livre", __name__)
+logger = logging.getLogger(__name__)
 
 
 @livre.route("/livre")
@@ -111,31 +114,116 @@ def livre_db():
     )
 
 
-def get_book_from_api(isbn):
-    # get api key from the environnement
+def get_book_from_google_api(isbn):
     api_key = os.getenv("GOOGLE_BOOK_API_KEY")
-    url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&printType=books&orderBy=relevance&maxResults=1&key={api_key}"
-    response = requests.get(url)
-    data = response.json()
+    url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}"
+    if api_key:
+        url += f"&key={api_key}"
 
-    if data.get("totalItems", 0) > 0:
-        book = data["items"][0]["volumeInfo"]
-        title = book.get("title", None)
-        authors = ", ".join(book.get("authors", []))
-        editor = book.get("publisher", None)
-        year = book.get("publishedDate", None)
-        type = book.get("subtitle", None)
+    headers = {"User-Agent": "Bibliotheque-Flask/1.0"}
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        if isinstance(data, dict) and data.get("totalItems", 0) > 0:
+            items = data.get("items")
+            if items and isinstance(items, list) and isinstance(items[0], dict):
+                book = items[0].get("volumeInfo", {})
+                title = book.get("title", None)
+                authors = ", ".join(book.get("authors", []))
+                editor = book.get("publisher", None)
+                raw_year = book.get("publishedDate", None)
+                year = None
+                if raw_year:
+                    match = re.search(r"\b(19\d\d|20\d\d)\b", str(raw_year))
+                    year = match.group(1) if match else raw_year
+                type = book.get("subtitle", None)
 
-        return {
-            "title": title,
-            "authors": authors,
-            "editor": editor,
-            "year": year,
-            "type": type,
-            "isbn": isbn,
-        }
-    else:
-        return None
+                return {
+                    "title": title,
+                    "authors": authors,
+                    "editor": editor,
+                    "year": year,
+                    "type": type,
+                    "isbn": isbn,
+                }
+    except (requests.RequestException, ValueError) as e:
+        logger.warning(
+            "Erreur lors de la récupération des données de l'API Google Books pour l'ISBN %s : %s",
+            isbn,
+            e,
+        )
+    return None
+
+
+def get_book_from_open_library(isbn):
+    url = (
+        f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data"
+    )
+    contact_email = os.getenv("CONTACT_EMAIL") or os.getenv("MAIL_USERNAME")
+    user_agent = (
+        f"Bibliotheque-Flask/1.0 ({contact_email})"
+        if contact_email
+        else "Bibliotheque-Flask/1.0"
+    )
+    headers = {"User-Agent": user_agent}
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        key = f"ISBN:{isbn}"
+        if isinstance(data, dict) and key in data:
+            book = data[key]
+            title = book.get("title", None)
+            authors = ", ".join(
+                a.get("name", "")
+                for a in book.get("authors", [])
+                if isinstance(a, dict) and a.get("name")
+            )
+            publishers = ", ".join(
+                p.get("name", "")
+                for p in book.get("publishers", [])
+                if isinstance(p, dict) and p.get("name")
+            )
+            raw_year = book.get("publish_date", None)
+            year = None
+            if raw_year:
+                match = re.search(r"\b(19\d\d|20\d\d)\b", str(raw_year))
+                year = match.group(1) if match else raw_year
+            type = book.get("subtitle", None)
+
+            return {
+                "title": title,
+                "authors": authors,
+                "editor": publishers,
+                "year": year,
+                "type": type,
+                "isbn": isbn,
+            }
+    except (requests.RequestException, ValueError) as e:
+        logger.warning(
+            "Erreur lors de la récupération des données de l'API Open Library pour l'ISBN %s : %s",
+            isbn,
+            e,
+        )
+    return None
+
+
+def get_book_from_api(isbn):
+    # Nettoyage de l'ISBN (suppression des tirets et espaces)
+    clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper()) if isbn else isbn
+
+    # 1. Tentative avec Google Books API
+    book = get_book_from_google_api(clean_isbn)
+    if book:
+        return book
+
+    # 2. Fallback avec Open Library API
+    book = get_book_from_open_library(clean_isbn)
+    if book:
+        return book
+
+    return None
 
 
 @livre.route("/livre/<id>")
