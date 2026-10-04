@@ -1,4 +1,5 @@
 # livre.py
+import logging
 import math
 import os
 from datetime import datetime, timezone
@@ -40,6 +41,7 @@ from .query import (
 )
 
 livre = Blueprint("livre", __name__)
+logger = logging.getLogger(__name__)
 
 
 @livre.route("/livre")
@@ -109,28 +111,41 @@ def livre_db():
 def get_book_from_api(isbn):
     # get api key from the environnement
     api_key = os.getenv("GOOGLE_BOOK_API_KEY")
-    url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&printType=books&orderBy=relevance&maxResults=1&key={api_key}"
-    response = requests.get(url)
-    data = response.json()
+    url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&printType=books&orderBy=relevance&maxResults=1"
+    if api_key:
+        url += f"&key={api_key}"
 
-    if data.get("totalItems", 0) > 0:
-        book = data["items"][0]["volumeInfo"]
-        title = book.get("title", None)
-        authors = ", ".join(book.get("authors", []))
-        editor = book.get("publisher", None)
-        year = book.get("publishedDate", None)
-        type = book.get("subtitle", None)
-
-        return {
-            "title": title,
-            "authors": authors,
-            "editor": editor,
-            "year": year,
-            "type": type,
-            "isbn": isbn,
-        }
-    else:
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+    except (requests.RequestException, ValueError) as e:
+        logger.warning(
+            "Erreur lors de la récupération des données de l'API Google Books pour l'ISBN %s : %s",
+            isbn,
+            e,
+        )
         return None
+
+    if isinstance(data, dict) and data.get("totalItems", 0) > 0:
+        items = data.get("items")
+        if items and isinstance(items, list) and isinstance(items[0], dict):
+            book = items[0].get("volumeInfo", {})
+            title = book.get("title", None)
+            authors = ", ".join(book.get("authors", []))
+            editor = book.get("publisher", None)
+            year = book.get("publishedDate", None)
+            type = book.get("subtitle", None)
+
+            return {
+                "title": title,
+                "authors": authors,
+                "editor": editor,
+                "year": year,
+                "type": type,
+                "isbn": isbn,
+            }
+    return None
 
 
 @livre.route("/livre/<id>")
