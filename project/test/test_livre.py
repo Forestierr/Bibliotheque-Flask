@@ -69,8 +69,9 @@ def test_get_book_from_api_timeout(mock_get):
     mock_get.side_effect = requests.Timeout("Connection timed out")
     result = get_book_from_api("9782800127279")
     assert result is None
-    mock_get.assert_called_once()
-    assert mock_get.call_args[1].get("timeout") == 5
+    assert mock_get.call_count == 2
+    for call_obj in mock_get.call_args_list:
+        assert call_obj[1].get("timeout") == 5
 
 
 @patch("project.livre.requests.get")
@@ -97,8 +98,8 @@ def test_get_book_from_api_with_api_key(mock_get):
     mock_get.return_value = mock_response
     result = get_book_from_api("9782800127279")
     assert result is None
-    called_url = mock_get.call_args[0][0]
-    assert "&key=test-key" in called_url
+    google_url = mock_get.call_args_list[0][0][0]
+    assert "&key=test-key" in google_url
 
 
 @patch.dict("os.environ", {}, clear=True)
@@ -109,8 +110,33 @@ def test_get_book_from_api_without_api_key(mock_get):
     mock_get.return_value = mock_response
     result = get_book_from_api("9782800127279")
     assert result is None
-    called_url = mock_get.call_args[0][0]
-    assert "&key=" not in called_url
+    google_url = mock_get.call_args_list[0][0][0]
+    assert "&key=" not in google_url
+
+
+@patch("project.livre.requests.get")
+def test_get_book_from_api_open_library_fallback(mock_get):
+    google_response = MagicMock()
+    google_response.json.return_value = {"totalItems": 0}
+
+    ol_response = MagicMock()
+    ol_response.json.return_value = {
+        "ISBN:9782253168522": {
+            "title": "Steve Jobs",
+            "authors": [{"name": "Walter Isaacson"}],
+            "publishers": [{"name": "Librairie générale française"}],
+            "publish_date": "2012",
+        }
+    }
+    mock_get.side_effect = [google_response, ol_response]
+
+    result = get_book_from_api("9782253168522")
+    assert result is not None
+    assert result["title"] == "Steve Jobs"
+    assert result["authors"] == "Walter Isaacson"
+    assert result["editor"] == "Librairie générale française"
+    assert result["year"] == "2012"
+    assert result["isbn"] == "9782253168522"
 
 
 # Test d'accès à la page principale des livres
