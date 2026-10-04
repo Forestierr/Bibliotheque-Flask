@@ -114,6 +114,7 @@ def test_get_book_from_api_without_api_key(mock_get):
     assert "&key=" not in google_url
 
 
+@patch.dict("os.environ", {"CONTACT_EMAIL": "contact@example.org"})
 @patch("project.livre.requests.get")
 def test_get_book_from_api_open_library_fallback(mock_get):
     google_response = MagicMock()
@@ -139,8 +140,9 @@ def test_get_book_from_api_open_library_fallback(mock_get):
     assert result["isbn"] == "9782253168522"
     ol_call_headers = mock_get.call_args_list[1][1].get("headers", {})
     assert "User-Agent" in ol_call_headers
-    assert "Bibliotheque-Flask" in ol_call_headers["User-Agent"]
-    assert "@" in ol_call_headers["User-Agent"]
+    assert (
+        ol_call_headers["User-Agent"] == "Bibliotheque-Flask/1.0 (contact@example.org)"
+    )
 
 
 # Test d'accès à la page principale des livres

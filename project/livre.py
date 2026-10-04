@@ -155,11 +155,13 @@ def get_book_from_open_library(isbn):
     url = (
         f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data"
     )
-    contact_email = (
-        os.getenv("CONTACT_EMAIL")
-        or os.getenv("MAIL_USERNAME")
+    contact_email = os.getenv("CONTACT_EMAIL") or os.getenv("MAIL_USERNAME")
+    user_agent = (
+        f"Bibliotheque-Flask/1.0 ({contact_email})"
+        if contact_email
+        else "Bibliotheque-Flask/1.0"
     )
-    headers = {"User-Agent": f"Bibliotheque-Flask/1.0 ({contact_email})"}
+    headers = {"User-Agent": user_agent}
     try:
         response = requests.get(url, headers=headers, timeout=5)
         response.raise_for_status()
