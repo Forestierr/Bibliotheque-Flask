@@ -158,7 +158,6 @@ def get_book_from_open_library(isbn):
     contact_email = (
         os.getenv("CONTACT_EMAIL")
         or os.getenv("MAIL_USERNAME")
-        or "contact@livresenclasse.fr"
     )
     headers = {"User-Agent": f"Bibliotheque-Flask/1.0 ({contact_email})"}
     try:
