@@ -155,7 +155,12 @@ def get_book_from_open_library(isbn):
     url = (
         f"https://openlibrary.org/api/books?bibkeys=ISBN:{isbn}&format=json&jscmd=data"
     )
-    headers = {"User-Agent": "Bibliotheque-Flask/1.0"}
+    contact_email = (
+        os.getenv("CONTACT_EMAIL")
+        or os.getenv("MAIL_USERNAME")
+        or "contact@livresenclasse.fr"
+    )
+    headers = {"User-Agent": f"Bibliotheque-Flask/1.0 ({contact_email})"}
     try:
         response = requests.get(url, headers=headers, timeout=5)
         response.raise_for_status()

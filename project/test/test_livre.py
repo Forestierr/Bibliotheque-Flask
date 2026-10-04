@@ -137,6 +137,10 @@ def test_get_book_from_api_open_library_fallback(mock_get):
     assert result["editor"] == "Librairie générale française"
     assert result["year"] == "2012"
     assert result["isbn"] == "9782253168522"
+    ol_call_headers = mock_get.call_args_list[1][1].get("headers", {})
+    assert "User-Agent" in ol_call_headers
+    assert "Bibliotheque-Flask" in ol_call_headers["User-Agent"]
+    assert "@" in ol_call_headers["User-Agent"]
 
 
 # Test d'accès à la page principale des livres
