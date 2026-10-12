@@ -8,6 +8,7 @@ services:
     command: gunicorn -w 4 -b 0.0.0.0:5602 wsgi:app
     environment:
       - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_ENV=production
     restart: always
     volumes:
         - .:/app

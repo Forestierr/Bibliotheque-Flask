@@ -72,7 +72,14 @@ def create_app(test_config=None):
     app.config["MAIL_USE_TLS"] = False
     app.config["MAIL_USE_SSL"] = True
 
-    # Configuration de la durée des sessions
+    # Configuration de la durée et sécurité des sessions / cookies
+    is_prod = os.getenv("FLASK_ENV") == "production"
+    app.config["SESSION_COOKIE_SECURE"] = is_prod
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["REMEMBER_COOKIE_SECURE"] = is_prod
+    app.config["REMEMBER_COOKIE_HTTPONLY"] = True
+    app.config["REMEMBER_COOKIE_SAMESITE"] = "Lax"
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
     app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=30)
     app.config["REMEMBER_COOKIE_REFRESH_EACH_REQUEST"] = True
@@ -197,9 +204,18 @@ def create_app(test_config=None):
         User,
     )
 
-    # create database
-    with app.app_context():
-        db.create_all()
+    # Initialisation de la base de données :
+    # En test ou en développement local, db.create_all() garantit l'existence des tables.
+    # En production (Gunicorn / multi-workers), cette étape est ignorée car les tables
+    # sont créées et migrées en amont via Alembic (flask db upgrade).
+    is_production = (
+        os.getenv("FLASK_ENV") == "production"
+        or os.getenv("ENV") == "production"
+        or os.getenv("SKIP_DB_CREATE_ALL", "false").lower() in ("true", "1", "yes")
+    )
+    if app.config.get("TESTING") or not is_production:
+        with app.app_context():
+            db.create_all()
 
     # Nettoyage quotidien des comptes non vérifiés (max 1x/jour)
     _last_cleanup = {"ts": None}

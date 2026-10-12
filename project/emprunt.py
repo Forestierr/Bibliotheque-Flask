@@ -153,7 +153,6 @@ def search(page=1):
         request.form.get("n_results") if request.form.get("n_results") else 20
     )
     page = request.form.get("page") if request.form.get("page") else page
-    print(request.form.get("active_loan"))
     only_active_loans = request.form.get("active_loan") == "1"
 
     n_books_by_page = int(n_books_by_page)

@@ -1310,3 +1310,69 @@ def test_start_background_scheduler_disabled_in_testing(app):
     assert app.config.get("TESTING") is True
     thread = start_background_scheduler(app)
     assert thread is None
+
+
+def test_book_duplication_quota_enforcement(client, app):
+    """Vérifie le blocage de la duplication d'un livre à 500 livres pour un compte gratuit."""
+    with app.app_context():
+        user = User(id=112, email="dup_books@test.com", plan="free", trial_ends_at=None)
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(id=112, is_authenticated=True, is_premium=False)
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.livre.get_books_count", return_value=MAX_FREE_BOOKS),
+    ):
+        resp = client.get(
+            "/livre/1/duplique",
+            follow_redirects=False,
+        )
+        assert resp.status_code == 302
+        assert "/tarifs" in resp.headers.get("Location", "")
+
+
+def test_subscription_type_property():
+    """Vérifie la robustesse de subscription_type face aux Price IDs Stripe et variables d'environnement."""
+    # Compte non premium -> None
+    free_user = User(plan="free", stripe_price_id="yearly")
+    assert free_user.subscription_type is None
+
+    # Compte premium sans stripe_price_id -> fallback 'monthly'
+    prem_user = User(plan="premium", stripe_price_id=None)
+    assert prem_user.subscription_type == "monthly"
+
+    # Compte premium avec alias explicites
+    assert User(plan="premium", stripe_price_id="yearly").subscription_type == "yearly"
+    assert (
+        User(plan="premium", stripe_price_id="monthly").subscription_type == "monthly"
+    )
+    assert User(plan="premium", stripe_price_id="ANNUAL").subscription_type == "yearly"
+
+    # Compte premium avec variable d'environnement configurée
+    with patch.dict(
+        "os.environ",
+        {
+            "STRIPE_PRICE_ID_YEARLY": "price_prod_annual_123",
+            "STRIPE_PRICE_ID_MONTHLY": "price_prod_mensuel_456",
+        },
+    ):
+        assert (
+            User(
+                plan="premium", stripe_price_id="price_prod_annual_123"
+            ).subscription_type
+            == "yearly"
+        )
+        assert (
+            User(
+                plan="premium", stripe_price_id="price_prod_mensuel_456"
+            ).subscription_type
+            == "monthly"
+        )
+        # ID Stripe inconnu avec chaîne aléatoire contenant 'year' -> ne doit PAS être un faux positif
+        assert (
+            User(
+                plan="premium", stripe_price_id="price_1NxyzYearRandom"
+            ).subscription_type
+            == "monthly"
+        )

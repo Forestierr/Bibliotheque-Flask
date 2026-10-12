@@ -206,10 +206,7 @@ def index():
     ):
         premium_db_users = User.query.filter_by(plan="premium").all()
         for u in premium_db_users:
-            if u.stripe_price_id and (
-                "year" in u.stripe_price_id.lower()
-                or u.stripe_price_id == os.getenv("STRIPE_PRICE_ID_YEARLY")
-            ):
+            if u.subscription_type == "yearly":
                 yearly_subs_count += 1
             else:
                 monthly_subs_count += 1

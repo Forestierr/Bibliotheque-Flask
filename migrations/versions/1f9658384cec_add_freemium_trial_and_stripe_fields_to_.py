@@ -58,9 +58,9 @@ def upgrade():
             unique=False,
         )
 
-    # Attribution du statut Fondateur exclusif aux utilisateurs historiques existants
+    # Attribution du statut Fondateur exclusif à tous les utilisateurs historiques existants
     op.execute(
-        "UPDATE user SET plan = 'founder' WHERE created_at <= '2026-09-12 00:00:00'"
+        "UPDATE user SET plan = 'founder' WHERE plan = 'free' OR plan IS NULL"
     )
 
     # ### end Alembic commands ###

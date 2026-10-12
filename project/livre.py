@@ -522,6 +522,17 @@ def livre_edit(id):
 @livre.route("/livre/<id>/duplique", methods=["GET"])
 @login_required
 def livre_duplique(id):
+    # Vérification du quota pour les utilisateurs en plan gratuit
+    if not current_user.is_premium:
+        current_count = get_books_count(current_user.id)
+        if current_count >= MAX_FREE_BOOKS:
+            msg = _(
+                "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres existants restent utilisables. Pour en ajouter d'autres, passez Premium ou supprimez un livre existant.",
+                max=MAX_FREE_BOOKS,
+            )
+            flash(msg, "warning")
+            return redirect(url_for("subscription.tarifs"))
+
     book = get_book_by_id(current_user.id, id)
 
     if not book:

@@ -320,7 +320,7 @@ $(function() {
             if (check === code[code.length - 1] || check === parseInt(code[code.length - 1])) {
                 //console.log("Code valide : " + code);
 
-                fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${ code }&printType=books&orderBy=relevance&maxResults=1&key=AIzaSyDu1_-0yGIVA_CoTyaDbX1ltVgPPDqNsZk`)
+                fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${ code }&printType=books&orderBy=relevance&maxResults=1`)
                 .then(response => response.json())
                     .then(data => {
                         console.log(data);

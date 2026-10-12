@@ -125,10 +125,37 @@ class User(UserMixin, db.Model):
         if self.plan != "premium":
             return None
         if self.stripe_price_id:
-            if "year" in self.stripe_price_id.lower():
+            val = self.stripe_price_id.strip()
+
+            # 1. Correspondance avec les variables d'environnement configurées
+            yearly_prices = {
+                os.getenv("STRIPE_PRICE_ID_YEARLY"),
+                os.getenv("STRIPE_PRICE_YEARLY"),
+            } - {None, ""}
+            monthly_prices = {
+                os.getenv("STRIPE_PRICE_ID_MONTHLY"),
+                os.getenv("STRIPE_PRICE_MONTHLY"),
+            } - {None, ""}
+
+            if val in yearly_prices:
                 return "yearly"
-            if "month" in self.stripe_price_id.lower():
+            if val in monthly_prices:
                 return "monthly"
+
+            # 2. Valeurs explicites (provenant des métadonnées de checkout ou tests : 'yearly', 'monthly', etc.)
+            val_lower = val.lower()
+            if val_lower in ("yearly", "year", "annual", "annuel"):
+                return "yearly"
+            if val_lower in ("monthly", "month", "mensuel"):
+                return "monthly"
+
+            # 3. Heuristique pour libellés contenant 'year'/'month' mais sans faux-positifs sur ID Stripe (price_...)
+            if not val_lower.startswith("price_"):
+                if "year" in val_lower:
+                    return "yearly"
+                if "month" in val_lower:
+                    return "monthly"
+
         return "monthly"
 
     @property
