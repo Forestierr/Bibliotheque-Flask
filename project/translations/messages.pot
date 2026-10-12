@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-13 19:25+0200\n"
+"POT-Creation-Date: 2026-10-12 23:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: project/admin.py:631
+#: project/admin.py:695
 msgid "Pour vous désabonner :"
 msgstr ""
 
-#: project/admin.py:632
+#: project/admin.py:696
 msgid "Donner votre avis :"
 msgstr ""
 
-#: project/admin.py:633
+#: project/admin.py:697
 msgid "Signaler un problème :"
 msgstr ""
 
@@ -148,11 +148,11 @@ msgstr ""
 msgid "Emprunt introuvable."
 msgstr ""
 
-#: project/livre.py:147
+#: project/livre.py:235
 msgid "Le livre que vous souhaitiez voir n'existe pas."
 msgstr ""
 
-#: project/livre.py:182
+#: project/livre.py:270 project/livre.py:530
 #, python-format
 msgid ""
 "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres"
@@ -160,43 +160,43 @@ msgid ""
 "ou supprimez un livre existant."
 msgstr ""
 
-#: project/livre.py:207
+#: project/livre.py:295
 msgid "Veuillez ajouter un titre."
 msgstr ""
 
-#: project/livre.py:252
+#: project/livre.py:340
 msgid "Le livre : "
 msgstr ""
 
-#: project/livre.py:252
+#: project/livre.py:340
 msgid " a été ajouté à votre bibliothèque."
 msgstr ""
 
-#: project/livre.py:318
+#: project/livre.py:406
 msgid "Le livre que vous souhaitiez éditer n'existe pas."
 msgstr ""
 
-#: project/livre.py:352
+#: project/livre.py:440
 msgid "Veuillez ajouter un titre au livre."
 msgstr ""
 
-#: project/livre.py:440
+#: project/livre.py:539
 msgid "Le livre que vous souhaitiez dupliquer n'existe pas."
 msgstr ""
 
-#: project/livre.py:475
+#: project/livre.py:574
 msgid "Le livre reste dans la bibliothèque."
 msgstr ""
 
-#: project/livre.py:481
+#: project/livre.py:580
 msgid "L'élève n'existe pas."
 msgstr ""
 
-#: project/livre.py:505
+#: project/livre.py:604
 msgid "Le livre a été supprimé."
 msgstr ""
 
-#: project/livre.py:522
+#: project/livre.py:621
 #, python-format
 msgid ""
 "Vous avez atteint votre quota de %(max)s scans gratuits pour cette "
@@ -204,7 +204,7 @@ msgid ""
 "Premium pour scanner en illimité."
 msgstr ""
 
-#: project/livre.py:565
+#: project/livre.py:664
 msgid "Tous les livres ont été supprimés."
 msgstr ""
 
@@ -230,7 +230,7 @@ msgstr ""
 msgid "Guide non trouvé"
 msgstr ""
 
-#: project/ressource.py:198
+#: project/ressource.py:206
 msgid "Ressource non trouvée"
 msgstr ""
 
@@ -682,7 +682,7 @@ msgstr ""
 #: project/templates/apropos.html:8 project/templates/apropos.html:20
 msgid ""
 "Découvrez Livres en Classe, la bibliothèque numérique pensée pour les "
-"enseignants. Application open-source développée par Robin Forestier."
+"enseignants. Application développée par Robin Forestier."
 msgstr ""
 
 #: project/templates/apropos.html:56
@@ -746,7 +746,7 @@ msgid ""
 msgstr ""
 
 #: project/templates/apropos.html:86
-msgid "Un projet open source"
+msgid "Code source disponible"
 msgstr ""
 
 #: project/templates/apropos.html:88
@@ -755,8 +755,8 @@ msgstr ""
 
 #: project/templates/apropos.html:91
 msgid ""
-"Le projet est distribué sous licence MIT et son code source est "
-"disponible publiquement sur"
+"Le projet est distribué sous licence PolyForm Noncommercial 1.0.0 et son "
+"code source est disponible publiquement sur"
 msgstr ""
 
 #: project/templates/apropos.html:91
@@ -1449,42 +1449,199 @@ msgid "Mentions Légales"
 msgstr ""
 
 #: project/templates/mentions-legales.html:38
-msgid "Nos données"
+msgid "Informations légales & Contact"
+msgstr ""
+
+#: project/templates/mentions-legales.html:41
+msgid "Éditeur du service :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:42
+msgid "Contact e-mail :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:43
+msgid "Dépôt GitHub :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:44
+msgid "Localisation :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:44
+msgid "Canton de Vaud, Suisse"
 msgstr ""
 
 #: project/templates/mentions-legales.html:52
-msgid "1. CONDITIONS D'UTILISATION"
+msgid "1. CONDITIONS GÉNÉRALES D'UTILISATION"
 msgstr ""
 
-#: project/templates/mentions-legales.html:67
-msgid "2. UTILISATION EXCLUSIVEMENT PRIVÉE"
+#: project/templates/mentions-legales.html:55
+msgid ""
+"Le présent site web et ses services associés sont proposés sous réserve "
+"de votre acceptation pleine et entière des présentes conditions générales"
+" d'utilisation. En accédant au service, en créant un compte ou en "
+"naviguant sur le site, l'Utilisateur reconnaît avoir pris connaissance "
+"des présentes conditions et s'engage à les respecter sans réserve."
 msgstr ""
 
-#: project/templates/mentions-legales.html:100
-msgid "3. SITE DE TIERS, LIENS"
+#: project/templates/mentions-legales.html:63
+msgid "2. PROPRIÉTÉ INTELLECTUELLE & LICENCE DU CODE SOURCE"
 msgstr ""
 
-#: project/templates/mentions-legales.html:115
-msgid "4. UTILISATION ILLICITE OU INTERDITE"
+#: project/templates/mentions-legales.html:66
+msgid ""
+"L'application Livres en Classe, ses contenus, son architecture et son "
+"code source sont protégés par les lois relatives à la propriété "
+"intellectuelle et le droit d'auteur (Copyright 2024-2026 Robin "
+"Forestier)."
 msgstr ""
 
-#: project/templates/mentions-legales.html:128
-msgid "5. FORUMS, MESSAGERIE, COMMUNAUTÉS..."
+#: project/templates/mentions-legales.html:69
+msgid ""
+"Le code source de l'application est mis à disposition publiquement sous "
+"licence PolyForm Noncommercial License 1.0.0. Cette licence autorise "
+"toute personne physique ou morale à consulter, exécuter, modifier et "
+"redistribuer le logiciel exclusivement à des fins non commerciales, "
+"personnelles ou éducatives (notamment pour les enseignants et "
+"établissements scolaires)."
 msgstr ""
 
-#: project/templates/mentions-legales.html:216
-msgid "6. LIMITATION DE LA RESPONSABILITÉ"
+#: project/templates/mentions-legales.html:72
+msgid ""
+"Toute exploitation commerciale, monétisation, revente, hébergement payant"
+" ou utilisation concurrente du logiciel ou de ses dérivés est strictement"
+" interdite sans autorisation écrite préalable et expresse du titulaire "
+"des droits."
 msgstr ""
 
-#: project/templates/mentions-legales.html:232
-msgid "7. RESTRICTION DE L'ACCÈS"
+#: project/templates/mentions-legales.html:75
+msgid ""
+"Le logiciel est fourni « tel quel », sans garantie d'aucune sorte. En "
+"aucun cas l'auteur ou le titulaire des droits ne peut être tenu "
+"responsable des dommages directs ou indirects découlant de l'utilisation "
+"du logiciel."
 msgstr ""
 
-#: project/templates/mentions-legales.html:244
+#: project/templates/mentions-legales.html:79
+msgid "Consulter le texte complet de la licence PolyForm Noncommercial 1.0.0"
+msgstr ""
+
+#: project/templates/mentions-legales.html:88
+msgid "3. LIENS HYPERTEXTES ET SITES TIERS"
+msgstr ""
+
+#: project/templates/mentions-legales.html:91
+msgid ""
+"Ce site peut contenir des liens hypertextes renvoyant vers des sites "
+"internet ou des ressources externes tiers (notamment des éditeurs, des "
+"APIs publiques ou des services partenaires). Nous n'exerçons aucun "
+"contrôle sur le contenu, le fonctionnement ou les politiques de "
+"confidentialité de ces sites tiers. En conséquence, nous déclinons toute "
+"responsabilité quant aux contenus, publicités, produits ou services "
+"disponibles sur ou à partir de ces sites externes. L'inclusion d'un lien "
+"ne constitue en aucun cas une validation ou une recommandation de son "
+"contenu."
+msgstr ""
+
+#: project/templates/mentions-legales.html:99
+msgid "4. UTILISATION LICITE ET RESPONSABILITÉ DE L'UTILISATEUR"
+msgstr ""
+
+#: project/templates/mentions-legales.html:102
+msgid ""
+"L'Utilisateur s'engage à utiliser le site et l'ensemble de ses "
+"fonctionnalités conformément aux lois et réglementations en vigueur en "
+"Suisse et dans son pays de résidence, ainsi qu'aux présentes conditions. "
+"Il est strictement interdit d'utiliser la plateforme à des fins "
+"illicites, diffamatoires, frauduleuses, ou de nature à porter atteinte "
+"aux droits de tiers ou à la sécurité des systèmes d'information."
+msgstr ""
+
+#: project/templates/mentions-legales.html:110
+msgid "5. ESPACES INTERACTIFS ET RÈGLES DE CONDUITE"
+msgstr ""
+
+#: project/templates/mentions-legales.html:113
+msgid ""
+"Dans le cadre de l'utilisation des formulaires de contact, de retour "
+"d'expérience ou de toute fonctionnalité interactive mise à disposition "
+"sur la plateforme, l'Utilisateur s'engage à :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:116
+msgid ""
+"Ne pas publier, transmettre ou diffuser de messages haineux, "
+"diffamatoires, menaçants, obscènes ou contraires à l'ordre public."
+msgstr ""
+
+#: project/templates/mentions-legales.html:117
+msgid ""
+"Ne pas télécharger ni transmettre de fichiers contenant des virus "
+"informatiques, des logiciels malveillants ou des scripts susceptibles "
+"d'altérer le bon fonctionnement du service."
+msgstr ""
+
+#: project/templates/mentions-legales.html:118
+msgid ""
+"Ne pas usurper l'identité d'un tiers ni fournir d'informations "
+"délibérément inexactes lors de son inscription."
+msgstr ""
+
+#: project/templates/mentions-legales.html:119
+msgid ""
+"Respecter la confidentialité et les droits de propriété intellectuelle "
+"d'autrui."
+msgstr ""
+
+#: project/templates/mentions-legales.html:122
+msgid ""
+"Nous nous réservons le droit de supprimer tout contenu contrevenant à ces"
+" règles et de suspendre l'accès de l'utilisateur concerné sans préavis."
+msgstr ""
+
+#: project/templates/mentions-legales.html:130
+msgid "6. LIMITATION DE RESPONSABILITÉ"
+msgstr ""
+
+#: project/templates/mentions-legales.html:133
+msgid ""
+"Les fonctionnalités et informations de Livres en Classe sont fournies "
+"avec soin afin d'accompagner au mieux les enseignants. Toutefois, le "
+"service est fourni « en l'état ». Nous ne pouvons garantir une "
+"disponibilité continue et ininterrompue de la plateforme, ni l'absence "
+"absolue d'anomalies techniques ou d'inexactitudes dans les fiches "
+"bibliographiques issues d'APIs externes."
+msgstr ""
+
+#: project/templates/mentions-legales.html:136
+msgid ""
+"Dans les limites permises par la législation applicable, notre "
+"responsabilité ne saurait être engagée en cas de perte indirecte de "
+"données, d'interruption temporaire d'activité ou de tout dommage "
+"résultant de l'utilisation ou de l'impossibilité d'utiliser le service."
+msgstr ""
+
+#: project/templates/mentions-legales.html:144
+msgid "7. DISPONIBILITÉ DU SERVICE ET RESTRICTION D'ACCÈS"
+msgstr ""
+
+#: project/templates/mentions-legales.html:147
+msgid ""
+"Nous nous réservons le droit d'interrompre temporairement l'accès au site"
+" ou à certaines fonctionnalités pour des raisons de maintenance, de mise "
+"à jour ou d'amélioration technique, sans que cette interruption ne puisse"
+" ouvrir droit à une indemnisation. Nous nous réservons également le droit"
+" de restreindre ou de résilier unilatéralement l'accès au compte d'un "
+"utilisateur en cas de violation grave ou répétée des présentes conditions"
+" d'utilisation."
+msgstr ""
+
+#: project/templates/mentions-legales.html:155
 msgid "8. ACCÈS AUX DONNÉES PERSONNELLES & CONFIDENTIALITÉ"
 msgstr ""
 
-#: project/templates/mentions-legales.html:247
+#: project/templates/mentions-legales.html:158
 msgid ""
 "En vertu de la législation suisse sur la protection des données (LPD) et "
 "du RGPD le cas échéant, l'Utilisateur dispose d'un droit d'accès, de "
@@ -1497,19 +1654,36 @@ msgid ""
 "droits, vous pouvez nous écrire à livresenclasse@gmail.com."
 msgstr ""
 
-#: project/templates/mentions-legales.html:255
-msgid "9. MODIFICATION DES PRÉSENTES CONDITIONS ET DISPOSITIONS"
+#: project/templates/mentions-legales.html:166
+msgid "9. MODIFICATION DES CONDITIONS ET FOR JURIDIQUE"
 msgstr ""
 
-#: project/templates/mentions-legales.html:268
+#: project/templates/mentions-legales.html:169
+msgid ""
+"Nous nous réservons le droit de modifier les présentes conditions à tout "
+"moment afin de les adapter aux évolutions du service ou aux modifications"
+" législatives. La version à jour est consultable en permanence sur cette "
+"page."
+msgstr ""
+
+#: project/templates/mentions-legales.html:172
+msgid ""
+"Les présentes conditions générales d'utilisation sont régies et "
+"interprétées conformément au droit suisse. En cas de litige relatif à "
+"leur validité, leur interprétation ou leur exécution, et à défaut de "
+"résolution amiable, les tribunaux compétents du canton de Vaud (Suisse) "
+"sont seuls compétents, sous réserve d'un for légal impératif."
+msgstr ""
+
+#: project/templates/mentions-legales.html:180
 msgid "10. PAIEMENT, ABONNEMENTS & CONDITIONS GÉNÉRALES DE VENTE (CGV)"
 msgstr ""
 
-#: project/templates/mentions-legales.html:271
+#: project/templates/mentions-legales.html:183
 msgid "Partenaire de paiement et sécurité bancaire :"
 msgstr ""
 
-#: project/templates/mentions-legales.html:272
+#: project/templates/mentions-legales.html:184
 msgid ""
 "Tous les paiements en ligne et abonnements récurrents sont opérés de "
 "manière chiffrée et sécurisée par notre prestataire agréé Stripe (Stripe "
@@ -1521,11 +1695,11 @@ msgid ""
 "stockée sur les serveurs de Livres en Classe."
 msgstr ""
 
-#: project/templates/mentions-legales.html:276
+#: project/templates/mentions-legales.html:188
 msgid "Tarifs et durée de l'engagement :"
 msgstr ""
 
-#: project/templates/mentions-legales.html:277
+#: project/templates/mentions-legales.html:189
 msgid ""
 "Le service Livres en Classe propose une formule gratuite ainsi qu'un "
 "abonnement Premium disponible au tarif de 5.00 CHF par mois ou 30.00 CHF "
@@ -1537,11 +1711,11 @@ msgid ""
 "identique."
 msgstr ""
 
-#: project/templates/mentions-legales.html:281
+#: project/templates/mentions-legales.html:193
 msgid "Politique d'annulation et résiliation :"
 msgstr ""
 
-#: project/templates/mentions-legales.html:282
+#: project/templates/mentions-legales.html:194
 msgid ""
 "L'abonnement Premium peut être résilié à tout moment, en toute autonomie "
 "et sans frais, directement depuis les réglages de votre compte via le "
@@ -1550,11 +1724,11 @@ msgid ""
 " à l'ensemble des fonctionnalités Premium jusqu'à cette date d'échéance."
 msgstr ""
 
-#: project/templates/mentions-legales.html:283
+#: project/templates/mentions-legales.html:195
 msgid "Politique de non-destruction des données :"
 msgstr ""
 
-#: project/templates/mentions-legales.html:284
+#: project/templates/mentions-legales.html:196
 msgid ""
 "À l'issue de la période d'abonnement, votre compte bascule "
 "automatiquement en formule gratuite. Aucune donnée n'est supprimée ni "
@@ -1563,11 +1737,11 @@ msgid ""
 "gratuits est limité."
 msgstr ""
 
-#: project/templates/mentions-legales.html:288
+#: project/templates/mentions-legales.html:200
 msgid "Politique de non-remboursement :"
 msgstr ""
 
-#: project/templates/mentions-legales.html:289
+#: project/templates/mentions-legales.html:201
 msgid ""
 "Compte tenu de la fourniture immédiate d'un service numérique dès la "
 "validation de la commande et de la mise à disposition d'une formule "
@@ -1578,11 +1752,11 @@ msgid ""
 "d'interruption anticipée ou de non-utilisation du service."
 msgstr ""
 
-#: project/templates/mentions-legales.html:293
+#: project/templates/mentions-legales.html:205
 msgid "Notifications d'abonnement et facturation par e-mail :"
 msgstr ""
 
-#: project/templates/mentions-legales.html:294
+#: project/templates/mentions-legales.html:206
 msgid ""
 "L'adresse e-mail associée à votre compte est utilisée pour l'envoi des "
 "communications strictement nécessaires à la gestion de votre abonnement :"
@@ -1592,11 +1766,11 @@ msgid ""
 "contractuel et transactionnel nécessaire à l'exécution du service."
 msgstr ""
 
-#: project/templates/mentions-legales.html:298
+#: project/templates/mentions-legales.html:210
 msgid "Contact & Facturation :"
 msgstr ""
 
-#: project/templates/mentions-legales.html:299
+#: project/templates/mentions-legales.html:211
 msgid ""
 "Pour toute question relative à votre abonnement, facturation ou demande "
 "d'assistance, vous pouvez nous écrire à livresenclasse@gmail.com."

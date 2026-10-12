@@ -5,7 +5,7 @@
 {% extends "base.html" %}
 
 {% block title %}{{ _("À propos de Livres en Classe | Logiciel de gestion de bibliothèque") }}{% endblock %}
-{% block meta_description %}{{ _("Découvrez Livres en Classe, la bibliothèque numérique pensée pour les enseignants. Application open-source développée par Robin Forestier.") }}{% endblock %}
+{% block meta_description %}{{ _("Découvrez Livres en Classe, la bibliothèque numérique pensée pour les enseignants. Application développée par Robin Forestier.") }}{% endblock %}
 
 {% block head_extra %}
 <script type="application/ld+json">
@@ -17,7 +17,7 @@
     "@id": "{{ lang_url(get_locale(), external=True) }}"
   },
   "name": {{ _("À propos de Livres en Classe | Logiciel de gestion de bibliothèque")|tojson }},
-  "description": {{ _("Découvrez Livres en Classe, la bibliothèque numérique pensée pour les enseignants. Application open-source développée par Robin Forestier.")|tojson }},
+  "description": {{ _("Découvrez Livres en Classe, la bibliothèque numérique pensée pour les enseignants. Application développée par Robin Forestier.")|tojson }},
   "inLanguage": "{{ get_locale() }}",
   "mainEntity": {
     "@type": "SoftwareApplication",
@@ -35,7 +35,7 @@
       "url": "https://livresenclasse.com",
       "logo": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
     },
-    "license": "https://opensource.org/licenses/MIT",
+    "license": "https://polyformproject.org/licenses/noncommercial/1.0.0",
     "sameAs": [
       "https://github.com/Forestierr/Bibliotheque-Flask"
     ]
@@ -83,12 +83,12 @@
 
                 <hr class="my-6">
 
-                <h3 class="title is-3">{{ _("Un projet open source") }}</h3>
+                <h3 class="title is-3">{{ _("Code source disponible") }}</h3>
                 <p>
                     {{ _("Livres en Classe est développé par") }} <strong>Robin Forestier</strong>.
                 </p>
                 <p>
-                    {{ _("Le projet est distribué sous licence MIT et son code source est disponible publiquement sur") }} <a href="https://github.com/Forestierr/Bibliotheque-Flask" target="_blank">GitHub</a> {{ _("afin de favoriser la transparence, les contributions et l'amélioration continue de l'application.") }}
+                    {{ _("Le projet est distribué sous licence PolyForm Noncommercial 1.0.0 et son code source est disponible publiquement sur") }} <a href="https://github.com/Forestierr/Bibliotheque-Flask" target="_blank">GitHub</a> {{ _("afin de favoriser la transparence, les contributions et l'amélioration continue de l'application.") }}
                 </p>
 
                 <hr class="my-6">

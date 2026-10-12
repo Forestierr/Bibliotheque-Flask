@@ -225,7 +225,10 @@ _The **User** is a professor._
 
 ## License
 
-This project is licensed under the MIT licence - see the [LICENSE](LICENSE.md) file for more details.
+This project is licensed under the **[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)** (Source-Available) - see the [LICENSE.md](LICENSE.md) file for details.
+
+- **Permitted**: Personal, educational (teachers, schools), academic research, and noncommercial contributions.
+- **Prohibited**: Commercial exploitation, monetization, resale, or competing paid SaaS hosting without prior written authorization.
 
 ##
 

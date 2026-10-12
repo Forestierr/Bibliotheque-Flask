@@ -279,5 +279,8 @@ _**User** est un professeur._
 
 ## Licence
 
-Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE.md) pour plus de détails.
+Ce projet est sous licence **[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)** (Source-Available) - voir le fichier [LICENSE.md](LICENSE.md) pour plus de détails.
+
+- **Autorisé** : Utilisation personnelle, pédagogique, éducative (enseignants, écoles), recherche et contributions non commerciales.
+- **Interdit** : Toute exploitation commerciale, monétisation, revente ou hébergement SaaS payant concurrent sans autorisation écrite préalable.
 
