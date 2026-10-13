@@ -46,8 +46,10 @@
     <!-- Performance: Preconnect & DNS-Prefetch -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin />
+    <link rel="preconnect" href="https://ka-f.fontawesome.com" crossorigin />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
     <link rel="dns-prefetch" href="https://kit.fontawesome.com" />
+    <link rel="dns-prefetch" href="https://ka-f.fontawesome.com" />
     <link rel="dns-prefetch" href="https://js.hcaptcha.com" />
 
     {% block head_extra %}{% endblock %}
@@ -81,12 +83,12 @@
 
     <!-- Manifest -->
     <link rel="manifest" href="/manifest.json">
-    <script src="{{ url_for('static', filename='/javascript/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascript/app.js') }}" defer></script>
 
     <!-- Bulma & Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.4/css/bulma.min.css"/>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <script src="https://kit.fontawesome.com/222094ca6a.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+    <script src="https://kit.fontawesome.com/222094ca6a.js" crossorigin="anonymous" defer></script>
 
     <!-- Custom CSS -->
     <style media="screen">
@@ -111,7 +113,7 @@
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
   (function() {
-    var u="//stats.rob1forest.com/";
+    var u="https://stats.rob1forest.com/";
     _paq.push(['setTrackerUrl', u+'matomo.php']);
     _paq.push(['setSiteId', '1']);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];

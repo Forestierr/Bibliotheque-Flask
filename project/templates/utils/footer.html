@@ -2,39 +2,39 @@
 <footer class="footer m-auto is-hidden-touch" style="padding: 1rem 1rem 1rem; background-color: #fff">
     <div class="columns">
         <div class="column is-two-thirds">
-            <h4 class="bd-footer-title has-text-weight-medium has-text-left">
+            <p class="bd-footer-title has-text-weight-medium has-text-left">
                 <strong>Ma Bibliotheque</strong> {{ _("par") }}
-                <a href="https://github.com/Forestierr" class="has-text-grey">Forestierr</a>.
-            </h4>
+                <a href="https://github.com/Forestierr" class="has-text-grey-dark">Forestierr</a>.
+            </p>
             <p class="bd-footer-link has-text-left">
                 {{ _("Le code source est sous licence") }}
-                <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer" class="has-text-grey">
+                <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer" class="has-text-grey-dark">
                     PolyForm Noncommercial 1.0.0
                 </a>
                 . {{ _("Le contenu du site est sous licence") }}
-                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="has-text-grey">
+                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="has-text-grey-dark">
                     CC BY NC SA 4.0
                 </a>.
             </p>
         </div>
         <div class="column">
-            <h5 class="title is-6 mb-2">{{ _("Produit") }}</h5>
-            <a href="{{ url_for('main.index') }}#fonctionnalites" class="has-text-grey">{{ _("Fonctionnalités") }}</a><br/>
-            <a href="{{ url_for('main.index') }}#comparatif" class="has-text-grey">{{ _("Comparatif Excel") }}</a><br/>
-            <a href="{{ url_for('main.index') }}#faq" class="has-text-grey">FAQ</a><br/>
+            <p class="has-text-weight-bold mb-2">{{ _("Produit") }}</p>
+            <a href="{{ url_for('main.index') }}#fonctionnalites" class="has-text-grey-dark">{{ _("Fonctionnalités") }}</a><br/>
+            <a href="{{ url_for('main.index') }}#comparatif" class="has-text-grey-dark">{{ _("Comparatif Excel") }}</a><br/>
+            <a href="{{ url_for('main.index') }}#faq" class="has-text-grey-dark">FAQ</a><br/>
         </div>
         <div class="column">
-            <h5 class="title is-6 mb-2">{{ _("Ressources") }}</h5>
-            <a href="{{ url_for('main.blog_index') }}" class="has-text-grey">Blog</a><br/>
-            <a href="{{ url_for('ressource.index') }}" class="has-text-grey">{{ _("Ressources gratuites") }}</a><br/>
-            <a href="{{ url_for('main.enseignants_index') }}" class="has-text-grey">{{ _("Guides enseignants") }}</a><br/>
-            <a href="{{ url_for('main.contact') }}" class="has-text-grey">{{ _("Contact") }}</a><br/>
-            <a href="{{ url_for('main.apropos') }}" class="has-text-grey">{{ _("A propos") }}</a>
+            <p class="has-text-weight-bold mb-2">{{ _("Ressources") }}</p>
+            <a href="{{ url_for('main.blog_index') }}" class="has-text-grey-dark">Blog</a><br/>
+            <a href="{{ url_for('ressource.index') }}" class="has-text-grey-dark">{{ _("Ressources gratuites") }}</a><br/>
+            <a href="{{ url_for('main.enseignants_index') }}" class="has-text-grey-dark">{{ _("Guides enseignants") }}</a><br/>
+            <a href="{{ url_for('main.contact') }}" class="has-text-grey-dark">{{ _("Contact") }}</a><br/>
+            <a href="{{ url_for('main.apropos') }}" class="has-text-grey-dark">{{ _("A propos") }}</a>
         </div>
         <div class="column">
-            <h5 class="title is-6 mb-2">{{ _("Légal") }}</h5>
-            <a href="{{ url_for('main.mentions_legales') }}" class="has-text-grey">{{ _("Mentions légales") }}</a><br/>
-            <a href="{{ url_for('main.sitemap') }}" class="has-text-grey">{{ _("Plan du site") }}</a>
+            <p class="has-text-weight-bold mb-2">{{ _("Légal") }}</p>
+            <a href="{{ url_for('main.mentions_legales') }}" class="has-text-grey-dark">{{ _("Mentions légales") }}</a><br/>
+            <a href="{{ url_for('main.sitemap') }}" class="has-text-grey-dark">{{ _("Plan du site") }}</a>
         </div>
     </div>
 </footer>

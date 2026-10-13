@@ -223,8 +223,9 @@
             <div class="column is-hidden-touch is-3-desktop is-2-widescreen is-2-fullhd">
                 <a href="{{ url_for('eleve.eleve_db') }}">
                     <figure class="image is-256x256">
-                        <img src="{{ url_for('static',filename='/image/boy.png') }}"
-                         alt="{{ _('Élève lisant un livre dans la bibliothèque de classe') }}">
+                        <img src="{{ url_for('static', filename='image/boy.png') }}"
+                             width="256" height="256"
+                             alt="{{ _('Élève lisant un livre dans la bibliothèque de classe') }}">
                     </figure>
                 </a>
             </div>
@@ -261,8 +262,8 @@
                 _("Un tableau de bord complet pour gérer la bibliothèque de votre école primaire."),
                 _("Suivez les tendances de prêt de livres et l'activité de vos élèves en un coup d'œil.")
             ],
-            desktop_img_url=url_for('static',filename='/image/screenshots/dashboard_1.webp'),
-            mobile_img_url=url_for('static',filename='/image/screenshots/dashboard_phone.webp')
+            desktop_img_url=url_for('static', filename='image/screenshots/dashboard_1.webp'),
+            mobile_img_url=url_for('static', filename='image/screenshots/dashboard_phone.webp')
         ) }}
 
         <!-- Livres -->
@@ -272,8 +273,8 @@
                 _("Scannez les codes-barres (ISBN) de vos livres pédagogiques pour les ajouter instantanément."),
                 _("La gestion de votre inventaire n'a jamais été aussi simple et rapide.")
             ],
-            desktop_img_url=url_for('static',filename='/image/screenshots/livre_1.webp'),
-            mobile_img_url=url_for('static',filename='/image/screenshots/livre_phone.webp')
+            desktop_img_url=url_for('static', filename='image/screenshots/livre_1.webp'),
+            mobile_img_url=url_for('static', filename='image/screenshots/livre_phone.webp')
         ) }}
 
         <!-- Elèves -->
@@ -283,8 +284,8 @@
                 _("Suivez le parcours de lecture de chaque élève. Consultez l'historique des emprunts."),
                 _("Idéal pour le suivi pédagogique des enseignants et l'encouragement à la lecture.")
             ],
-            desktop_img_url=url_for('static',filename='/image/screenshots/eleve_1.webp'),
-            mobile_img_url=url_for('static',filename='/image/screenshots/eleve_phone.webp')
+            desktop_img_url=url_for('static', filename='image/screenshots/eleve_1.webp'),
+            mobile_img_url=url_for('static', filename='image/screenshots/eleve_phone.webp')
         ) }}
 
         <!-- Comparatif Gratuit vs Premium -->

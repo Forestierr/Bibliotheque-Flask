@@ -326,7 +326,7 @@
 <nav class="navbar is-fixed-top custom-navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="{% if current_user.is_authenticated %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}" style="background-color: transparent !important;">
-            <img src="/static/image/icons/favicon-96x96.png" alt="{{ _('Logo Livres en Classe') }}" style="max-height: 2.2rem; margin-right: 0.5rem;"/>
+            <img src="/static/image/icons/favicon-96x96.png" width="35" height="35" alt="{{ _('Logo Livres en Classe') }}" style="max-height: 2.2rem; width: auto; margin-right: 0.5rem;"/>
             <span class="navbar-logo-text">{{ titre }}</span>
         </a>
 
@@ -432,7 +432,7 @@
                     <button class="avatar-btn" id="avatarBtn" aria-label="{{ _('Menu utilisateur') }}" aria-haspopup="true" aria-expanded="false">
                         {{ current_user.name[0]|upper if current_user.name else '?' }}
                     </button>
-                    <div class="avatar-dropdown" id="avatarDropdown" role="menu">
+                    <div class="avatar-dropdown" id="avatarDropdown">
                         <div class="avatar-dropdown-header">
                             <div class="avatar-dropdown-name">{{ current_user.name }}</div>
                             <div style="margin-top: 4px;">
@@ -457,19 +457,19 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <a href="{{ url_for('subscription.tarifs') }}" class="avatar-dropdown-item" role="menuitem">
+                        <a href="{{ url_for('subscription.tarifs') }}" class="avatar-dropdown-item">
                             <span class="icon"><i class="fas fa-tag"></i></span>
                             {{ _('Tarifs & Abonnements') }}
                         </a>
-                        <a href="{{ url_for('main.aide') }}" class="avatar-dropdown-item" role="menuitem">
+                        <a href="{{ url_for('main.aide') }}" class="avatar-dropdown-item">
                             <span class="icon"><i class="fas fa-question-circle"></i></span>
                             {{ _('Aide') }}
                         </a>
-                        <a href="{{ url_for('main.feedback') }}" class="avatar-dropdown-item" role="menuitem">
+                        <a href="{{ url_for('main.feedback') }}" class="avatar-dropdown-item">
                             <span class="icon"><i class="fas fa-comment-alt"></i></span>
                             {{ _('Avis & Bugs') }}
                         </a>
-                        <a href="{{ url_for('auth.reglage') }}" class="avatar-dropdown-item" role="menuitem">
+                        <a href="{{ url_for('auth.reglage') }}" class="avatar-dropdown-item">
                             <span class="icon"><i class="fas fa-cog"></i></span>
                             {{ _('Réglages') }}
                         </a>
@@ -490,7 +490,7 @@
                             </div>
                         </div>
                         <div class="avatar-dropdown-divider"></div>
-                        <a href="{{ url_for('auth.logout') }}" class="avatar-dropdown-item logout" role="menuitem">
+                        <a href="{{ url_for('auth.logout') }}" class="avatar-dropdown-item logout">
                             <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
                             {{ _('Déconnexion') }}
                         </a>
@@ -522,18 +522,18 @@
                     <span class="lang-btn-code">{% if current_lang == 'en' %}EN{% elif current_lang == 'de' %}DE{% else %}FR{% endif %}</span>
                     <i class="fas fa-chevron-down lang-btn-chevron"></i>
                 </button>
-                <div class="lang-dropdown" id="langDropdown" role="menu">
-                    <a href="{{ lang_url('fr') }}" class="lang-dropdown-item {% if current_lang == 'fr' %}is-active{% endif %}" role="menuitem">
+                <div class="lang-dropdown" id="langDropdown">
+                    <a href="{{ lang_url('fr') }}" class="lang-dropdown-item {% if current_lang == 'fr' %}is-active{% endif %}">
                         <span class="lang-item-flag">🇫🇷</span>
                         <span class="lang-item-label">Français</span>
                         {% if current_lang == 'fr' %}<span class="lang-item-check"><i class="fas fa-check"></i></span>{% endif %}
                     </a>
-                    <a href="{{ lang_url('en') }}" class="lang-dropdown-item {% if current_lang == 'en' %}is-active{% endif %}" role="menuitem">
+                    <a href="{{ lang_url('en') }}" class="lang-dropdown-item {% if current_lang == 'en' %}is-active{% endif %}">
                         <span class="lang-item-flag">🇬🇧</span>
                         <span class="lang-item-label">English</span>
                         {% if current_lang == 'en' %}<span class="lang-item-check"><i class="fas fa-check"></i></span>{% endif %}
                     </a>
-                    <a href="{{ lang_url('de') }}" class="lang-dropdown-item {% if current_lang == 'de' %}is-active{% endif %}" role="menuitem">
+                    <a href="{{ lang_url('de') }}" class="lang-dropdown-item {% if current_lang == 'de' %}is-active{% endif %}">
                         <span class="lang-item-flag">🇩🇪</span>
                         <span class="lang-item-label">Deutsch</span>
                         {% if current_lang == 'de' %}<span class="lang-item-check"><i class="fas fa-check"></i></span>{% endif %}

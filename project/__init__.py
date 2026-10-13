@@ -392,6 +392,17 @@ def create_app(test_config=None):
                 methods=rule.methods,
             )
 
+    @app.after_request
+    def set_security_headers(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        if os.getenv("FLASK_ENV") == "production":
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
+        return response
+
     # Démarre le thread de maintenance serveur en arrière-plan (hors mode test)
     if not app.config.get("TESTING"):
         from .scheduler import start_background_scheduler

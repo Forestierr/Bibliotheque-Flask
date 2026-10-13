@@ -9,9 +9,9 @@
     </div>
     <div class="container is-fluid">
         <figure class="images is-fullwidth" style="position: relative;">
-            <img src="{{ desktop_img_url }}" alt="{{ _('Aperçu de l\'application') }} - {{ title }}" class="feature-desktop-img">
+            <img src="{{ desktop_img_url }}" width="1136" height="752" loading="lazy" alt="{{ _('Aperçu de l\'application') }} - {{ title }}" class="feature-desktop-img">
             {% if mobile_img_url %}
-            <img src="{{ mobile_img_url }}" alt="{{ _('Version mobile') }} - {{ title }}" class="feature-mobile-img"
+            <img src="{{ mobile_img_url }}" width="260" height="520" loading="lazy" alt="{{ _('Version mobile') }} - {{ title }}" class="feature-mobile-img"
                 style="position: absolute; bottom: 0; right: 1rem; height: 100%; object-fit: contain; max-width: 400px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));">
             {% endif %}
         </figure>
