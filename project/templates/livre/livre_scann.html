@@ -544,9 +544,9 @@
                         if (data.error) {
                             console.info("Livre non trouvé en base :", code);
                             if (data.is_isbn || isISBN(code)) {
-                                window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}`;
+                                window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}&from_scan=1`;
                             } else {
-                                window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}`;
+                                window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}&from_scan=1`;
                             }
                             return;
                         }

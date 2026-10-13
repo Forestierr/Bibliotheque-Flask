@@ -14,6 +14,7 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
     url_for,
 )
 from flask_babel import gettext as _
@@ -350,13 +351,27 @@ def livre_ajout():
     book = None
 
     if isbn:
+        clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper()) if isbn else ""
+        pending_code = session.pop("pending_scan_code", None)
+        is_from_scan = pending_code == clean_isbn or (
+            request.args.get("from_scan") == "1" and pending_code is not None
+        )
+
         # Get the book from the API
         book = get_book_from_api(isbn)
-        # If the book is not found, we create a book with the ISBN
-        # The user can complete the book information
-        if not book:
+
+        # Si le livre a été trouvé par l'API suite à un scan, on incrémente le compteur
+        if book:
+            if is_from_scan and not current_user.is_premium:
+                current_user.check_and_reset_weekly_scans()
+                current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
+                db.session.commit()
+        else:
+            # If the book is not found, we create a book with the ISBN
+            # The user can complete the book information (compteur non incrémenté)
             book = {"isbn": isbn}
     elif barcode:
+        session.pop("pending_scan_code", None)
         book = {"barcode": barcode}
 
     if book is not None and barcode:
@@ -626,10 +641,7 @@ def livre_exist(isbn):
                 403,
             )
 
-    # Incrémentation du compteur de scans pour les utilisateurs en mode gratuit
-    if not current_user.is_premium:
-        current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
-        db.session.commit()
+    clean_code = str(isbn).strip().replace("-", "")
 
     # 1. Search by custom barcode first
     books = get_books_by_barcode(current_user.id, isbn)
@@ -638,13 +650,21 @@ def livre_exist(isbn):
         books = get_books_by_isbn(current_user.id, isbn)
 
     if books:
+        # Le livre a été trouvé dans la bibliothèque : on incrémente le compteur de scan
+        if not current_user.is_premium:
+            current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
+            db.session.commit()
+
         if len(books) == 1:
             data = {"id": books[0].id, "multiple": False}
         else:
             data = {"ids": [b.id for b in books], "multiple": True}
         return make_response(jsonify(data), 200)
 
-    clean_code = str(isbn).strip().replace("-", "")
+    # Livre non trouvé en base locale : on mémorise le code scanné en session.
+    # Le quota de scan ne sera décompté dans /livre/ajout QUE si l'API trouve le livre.
+    session["pending_scan_code"] = clean_code
+
     is_isbn = len(clean_code) == 13 and clean_code.startswith(("978", "979"))
     return make_response(
         jsonify({"error": "Book not found", "is_isbn": is_isbn, "code": isbn}), 404
