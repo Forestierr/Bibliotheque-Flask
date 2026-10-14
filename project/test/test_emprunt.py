@@ -1,5 +1,5 @@
 import math
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -87,7 +87,7 @@ def test_return_loan_success(client, app, logged_in_user):
                 mock_session.commit = MagicMock()
                 response = client.post("/emprunt/1")
                 assert response.status_code == 302  # Redirect
-                assert mock_loan.date_return == datetime.now(tz=timezone.utc).date()
+                assert mock_loan.date_return == datetime.now(tz=UTC).date()
                 mock_session.commit.assert_called_once()
 
 

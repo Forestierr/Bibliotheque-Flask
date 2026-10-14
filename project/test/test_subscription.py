@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -37,7 +37,7 @@ def client(app):
 
 def test_trial_period_attributes():
     """Vérifie la gestion de la période d'essai sur le modèle User."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # Utilisateur en période d'essai valide (15 jours restants)
     user_trial = User(
@@ -336,7 +336,7 @@ def test_stripe_webhook_customer_subscription_deleted_no_data_loss(client, app):
             assert u.is_premium is True
 
             # Une fois le délai de grâce écoulé, l'accès premium retombe sur free
-            u.trial_ends_at = datetime.now(timezone.utc) - timedelta(hours=1)
+            u.trial_ends_at = datetime.now(UTC) - timedelta(hours=1)
             db.session.commit()
             assert u.is_in_trial is False
             assert u.is_premium is False
@@ -671,7 +671,7 @@ def test_admin_set_plan_free_resets_trial_ends_at(client, app):
             email="to_free@test.com",
             plan="premium",
             stripe_subscription_status="active",
-            trial_ends_at=datetime.now(timezone.utc) + timedelta(days=20),
+            trial_ends_at=datetime.now(UTC) + timedelta(days=20),
         )
         db.session.add(user)
         db.session.commit()
@@ -740,7 +740,7 @@ def test_admin_coupons_create_uses_modern_stripe_promotion(client, app):
 
 def test_user_is_canceling_attributes():
     """Vérifie la gestion des attributs is_canceling et effective_cancellation_date."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     future_date = now + timedelta(days=12)
 
     # Utilisateur avec résiliation programmée
@@ -774,7 +774,7 @@ def test_user_is_canceling_attributes():
 
 def test_reglage_displays_cancellation_info(app):
     """Vérifie que la page /reglage indique la résiliation programmée et la date d'échéance."""
-    future_date = datetime.now(timezone.utc) + timedelta(days=15)
+    future_date = datetime.now(UTC) + timedelta(days=15)
     with app.app_context():
         user = User(
             id=88,
@@ -815,9 +815,7 @@ def test_stripe_webhook_subscription_updated_cancel_at_period_end(client, app):
         db.session.add(user)
         db.session.commit()
 
-        future_timestamp = int(
-            (datetime.now(timezone.utc) + timedelta(days=20)).timestamp()
-        )
+        future_timestamp = int((datetime.now(UTC) + timedelta(days=20)).timestamp())
         payload = {
             "id": "evt_sub_update_cancel",
             "type": "customer.subscription.updated",
@@ -861,9 +859,7 @@ def test_stripe_webhook_subscription_updated_cancel_at_without_period_end(client
         db.session.add(user)
         db.session.commit()
 
-        future_timestamp = int(
-            (datetime.now(timezone.utc) + timedelta(days=30)).timestamp()
-        )
+        future_timestamp = int((datetime.now(UTC) + timedelta(days=30)).timestamp())
         payload = {
             "id": "evt_sub_update_cancel_at_only",
             "type": "customer.subscription.updated",
@@ -919,7 +915,7 @@ def test_tarifs_page_legal_and_pricing_requirements(client):
 
 def test_canceling_user_display_in_tarifs_and_navbar(app, client):
     """Vérifie que pour un utilisateur en résiliation programmée, /tarifs et la navbar affichent l'état de résiliation et non le simple badge Premium actif."""
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
     from project import db
     from project.models import User
@@ -932,7 +928,7 @@ def test_canceling_user_display_in_tarifs_and_navbar(app, client):
             plan="premium",
             stripe_subscription_status="active",
             stripe_customer_id="cus_canceling_105",
-            subscription_end_at=datetime.now(timezone.utc) + timedelta(days=20),
+            subscription_end_at=datetime.now(UTC) + timedelta(days=20),
             is_verified=True,
         )
         db.session.add(user)
@@ -967,24 +963,24 @@ def test_canceling_user_display_in_tarifs_and_navbar(app, client):
 def test_get_current_scan_period_start_calculation():
     """Vérifie le calcul du début de période (dimanche à 00:00:00 UTC)."""
     # Dimanche 13 sept 2026 à 14h30 -> Dimanche 13 sept 2026 à 00h00
-    dt_sunday = datetime(2026, 9, 13, 14, 30, 0, tzinfo=timezone.utc)
+    dt_sunday = datetime(2026, 9, 13, 14, 30, 0, tzinfo=UTC)
     start = get_current_scan_period_start(dt_sunday)
-    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=timezone.utc)
+    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=UTC)
 
     # Samedi 19 sept 2026 à 23h59 -> Dimanche 13 sept 2026 à 00h00
-    dt_saturday = datetime(2026, 9, 19, 23, 59, 59, tzinfo=timezone.utc)
+    dt_saturday = datetime(2026, 9, 19, 23, 59, 59, tzinfo=UTC)
     start = get_current_scan_period_start(dt_saturday)
-    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=timezone.utc)
+    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=UTC)
 
     # Dimanche 20 sept 2026 à 00h00 -> Dimanche 20 sept 2026 à 00h00 (nouveau cycle !)
-    dt_next_sunday = datetime(2026, 9, 20, 0, 0, 0, tzinfo=timezone.utc)
+    dt_next_sunday = datetime(2026, 9, 20, 0, 0, 0, tzinfo=UTC)
     start = get_current_scan_period_start(dt_next_sunday)
-    assert start == datetime(2026, 9, 20, 0, 0, 0, tzinfo=timezone.utc)
+    assert start == datetime(2026, 9, 20, 0, 0, 0, tzinfo=UTC)
 
     # Mercredi 16 sept 2026 à 10h00 -> Dimanche 13 sept 2026 à 00h00
-    dt_wed = datetime(2026, 9, 16, 10, 0, 0, tzinfo=timezone.utc)
+    dt_wed = datetime(2026, 9, 16, 10, 0, 0, tzinfo=UTC)
     start = get_current_scan_period_start(dt_wed)
-    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=timezone.utc)
+    assert start == datetime(2026, 9, 13, 0, 0, 0, tzinfo=UTC)
 
 
 def test_weekly_scans_left_property(app):
@@ -1017,7 +1013,7 @@ def test_weekly_scans_left_property(app):
 
 def test_weekly_scan_quota_reset_after_sunday_midnight(client, app):
     """Vérifie que le quota de scans hebdomadaires est réinitialisé après le passage du dimanche à minuit."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     period_start = get_current_scan_period_start(now)
 
     with app.app_context():
@@ -1044,7 +1040,7 @@ def test_weekly_scan_quota_reset_after_sunday_midnight(client, app):
         reset_at = (
             u.last_scan_reset_at
             if u.last_scan_reset_at.tzinfo
-            else u.last_scan_reset_at.replace(tzinfo=timezone.utc)
+            else u.last_scan_reset_at.replace(tzinfo=UTC)
         )
         assert reset_at >= period_start
 
@@ -1063,7 +1059,7 @@ def test_weekly_scan_quota_reset_after_sunday_midnight(client, app):
 
 def test_weekly_scan_no_reset_within_same_period(client, app):
     """Vérifie que les scans ne sont PAS réinitialisés tant que l'on reste dans la même semaine."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     period_start = get_current_scan_period_start(now)
 
     with app.app_context():
@@ -1103,7 +1099,7 @@ def test_reset_weekly_scans_script(app, monkeypatch, capsys):
 
     from scripts.reset_weekly_scans import main as reset_main
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     period_start = get_current_scan_period_start(now)
 
     with app.app_context():
@@ -1168,7 +1164,7 @@ def test_scheduler_downgrade_expired_subscriptions(app):
     """Vérifie la rétrogradation automatique des abonnements échus vers le plan gratuit par le scheduler."""
     from project.scheduler import downgrade_expired_subscriptions
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     with app.app_context():
         # User 1 : Premium dont la date de fin d'abonnement est dépassée -> doit être rétrogradé en free
@@ -1226,7 +1222,7 @@ def test_scheduler_downgrade_expired_subscriptions(app):
 
 def test_realtime_expired_subscription_check():
     """Vérifie que User.is_premium et User.effective_plan détectent immédiatement l'expiration à la volée."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # Utilisateur premium dont subscription_end_at est passée
     user_expired = User(
@@ -1255,7 +1251,7 @@ def test_scheduler_reset_weekly_scans(app):
     """Vérifie la réinitialisation des scans par la fonction reset_weekly_scans du scheduler."""
     from project.scheduler import reset_weekly_scans
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     period_start = get_current_scan_period_start(now)
 
     with app.app_context():

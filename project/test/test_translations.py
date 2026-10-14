@@ -1,3 +1,4 @@
+from datetime import UTC
 from pathlib import Path
 
 from project import LANGUAGES, create_app
@@ -142,7 +143,7 @@ def test_user_preferred_language_persistence():
 
 def test_format_date_localization():
     """Verify that format_date adapts to the active locale in Jinja templates."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     from flask import render_template_string
 
@@ -154,7 +155,7 @@ def test_format_date_localization():
         }
     )
 
-    dt = datetime(2026, 9, 5, 12, 0, tzinfo=timezone.utc)
+    dt = datetime(2026, 9, 5, 12, 0, tzinfo=UTC)
 
     expected = {
         "fr": "5 sept. 2026",
@@ -457,7 +458,7 @@ def test_navbar_language_dropdown_and_highlight():
 
 def test_dashboard_heatmap_localization():
     """Verify that heatmap day names, months, and tooltips are localized on /dashboard."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     from flask import render_template
     from flask_babel import refresh
@@ -470,7 +471,7 @@ def test_dashboard_heatmap_localization():
         }
     )
 
-    test_date = datetime(2025, 9, 1, 12, 0, tzinfo=timezone.utc)
+    test_date = datetime(2025, 9, 1, 12, 0, tzinfo=UTC)
     months = [(test_date, 4)]
     loans = [(test_date, 2, 1)] * 371
 

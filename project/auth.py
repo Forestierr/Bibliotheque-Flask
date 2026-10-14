@@ -1,7 +1,7 @@
 # auth.py
 
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import requests
 import stripe
@@ -175,7 +175,7 @@ def signup_post():
     # create new user with the form data. Hash the password so plaintext version isn't saved.
     current_lang = session.get("lang")
     trial_ends = (
-        datetime.now(timezone.utc) + timedelta(days=TRIAL_PERIOD_DAYS)
+        datetime.now(UTC) + timedelta(days=TRIAL_PERIOD_DAYS)
         if TRIAL_PERIOD_DAYS > 0
         else None
     )
@@ -387,9 +387,7 @@ def reglage():
                 cancel_ts = getattr(sub, "current_period_end", None)
 
             if cancel_ts:
-                user.subscription_end_at = datetime.fromtimestamp(
-                    cancel_ts, tz=timezone.utc
-                )
+                user.subscription_end_at = datetime.fromtimestamp(cancel_ts, tz=UTC)
             else:
                 user.subscription_end_at = None
             db.session.commit()

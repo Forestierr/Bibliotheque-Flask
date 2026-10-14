@@ -3,7 +3,7 @@
 import locale
 import logging
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -225,7 +225,7 @@ def create_app(test_config=None):
         """Supprime les comptes non vérifiés âgés de plus de 7 jours, une fois par jour."""
         if app.config.get("TESTING"):
             return
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if _last_cleanup["ts"] is None or now - _last_cleanup["ts"] > timedelta(days=1):
             _last_cleanup["ts"] = now
             from .query import delete_unverified_users

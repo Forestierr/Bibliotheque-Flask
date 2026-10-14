@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from threading import Thread
 
 import jinja2
@@ -499,7 +499,7 @@ TRACKING_PIXEL_PNG = (
 def email_track(token):
     delivery = NewsletterDelivery.query.filter_by(tracking_token=token).first()
     if delivery:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if delivery.opened_at is None:
             delivery.opened_at = now
             if delivery.campaign:

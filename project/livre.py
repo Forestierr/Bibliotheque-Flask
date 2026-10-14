@@ -3,7 +3,7 @@ import logging
 import math
 import os
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import requests
 from flask import (
@@ -473,13 +473,13 @@ def livre_edit(id):
                 if loan.student_id != student.id:
                     # changement de l'élève
                     # fin de la location
-                    loan.date_return = datetime.now(tz=timezone.utc).date()
+                    loan.date_return = datetime.now(tz=UTC).date()
 
                     # nouvelle location
                     new_loan = Loan(
                         student_id=student.id,
                         book_id=id,
-                        date_loan=datetime.now(tz=timezone.utc).date(),
+                        date_loan=datetime.now(tz=UTC).date(),
                     )
                     db.session.add(new_loan)
             else:
@@ -487,13 +487,13 @@ def livre_edit(id):
                 new_loan = Loan(
                     student_id=student.id,
                     book_id=id,
-                    date_loan=datetime.now(tz=timezone.utc).date(),
+                    date_loan=datetime.now(tz=UTC).date(),
                 )
                 db.session.add(new_loan)
         else:
             if loan:
                 # fin de la location
-                loan.date_return = datetime.now(tz=timezone.utc).date()
+                loan.date_return = datetime.now(tz=UTC).date()
 
         # Remove the tags to the book
         book_tags = BookTags.query.filter_by(book_id=id).all()
@@ -599,7 +599,7 @@ def livre_edit_student(id):
     loan = Loan(
         student_id=student.id,
         book_id=id,
-        date_loan=datetime.now(tz=timezone.utc).date(),
+        date_loan=datetime.now(tz=UTC).date(),
     )
     db.session.add(loan)
     db.session.commit()

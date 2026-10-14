@@ -10,7 +10,7 @@ import logging
 import os
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from . import db
 from .models import User, get_current_scan_period_start
@@ -28,7 +28,7 @@ def reset_weekly_scans(app) -> int:
     Retourne le nombre d'utilisateurs réinitialisés.
     """
     with app.app_context():
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         period_start = get_current_scan_period_start(now)
 
         query = User.query.filter(
@@ -74,7 +74,7 @@ def downgrade_expired_subscriptions(app) -> int:
     Retourne le nombre d'utilisateurs rétrogradés.
     """
     with app.app_context():
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         # Les utilisateurs premium non-fondateurs dont l'accès est arrivé à échéance
         expired_users = User.query.filter(

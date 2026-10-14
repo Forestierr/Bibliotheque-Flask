@@ -6,7 +6,7 @@ import secrets
 import string
 import sys
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from threading import Thread
 
 import markupsafe
@@ -58,7 +58,7 @@ def inject_admin_globals():
 
 @admin.route("/admin")
 def index():
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     total_users = User.query.count()
     active_users = User.query.filter_by(is_verified=True).count()
     unconfirmed_users = max(0, total_users - active_users)
@@ -81,7 +81,7 @@ def index():
     recent_feedbacks = Feedback.query.order_by(Feedback.id.desc()).limit(5).all()
 
     # Évolution des inscriptions sur les 30 derniers jours
-    today = datetime.now(timezone.utc).date()
+    today = datetime.now(UTC).date()
     days_labels = []
     days_map = {}
     for i in range(29, -1, -1):
@@ -89,7 +89,7 @@ def index():
         days_labels.append(day_date.strftime("%d/%m"))
         days_map[day_date] = 0
 
-    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
     recent_users_30d = User.query.filter(User.created_at >= thirty_days_ago).all()
     for u in recent_users_30d:
         if u.created_at:
@@ -174,13 +174,13 @@ def index():
             all_subs = stripe.Subscription.list(status="all", limit=100)
             for s in all_subs.data:
                 if getattr(s, "created", None):
-                    c_dt = datetime.fromtimestamp(s.created, tz=timezone.utc)
+                    c_dt = datetime.fromtimestamp(s.created, tz=UTC)
                     slot_c = (c_dt.year, c_dt.month)
                     if slot_c in subs_by_slot:
                         subs_by_slot[slot_c] += 1
                 c_ts = getattr(s, "canceled_at", None) or getattr(s, "ended_at", None)
                 if c_ts:
-                    e_dt = datetime.fromtimestamp(c_ts, tz=timezone.utc)
+                    e_dt = datetime.fromtimestamp(c_ts, tz=UTC)
                     slot_e = (e_dt.year, e_dt.month)
                     if slot_e in cancels_by_slot:
                         cancels_by_slot[slot_e] += 1
@@ -190,7 +190,7 @@ def index():
             for inv in invoices.data:
                 paid = round((inv.amount_paid or 0) / 100.0, 2)
                 total_revenue_collected += paid
-                inv_dt = datetime.fromtimestamp(inv.created, tz=timezone.utc)
+                inv_dt = datetime.fromtimestamp(inv.created, tz=UTC)
                 slot = (inv_dt.year, inv_dt.month)
                 if slot in revenue_by_slot:
                     revenue_by_slot[slot] += paid
@@ -228,7 +228,7 @@ def index():
         for u in User.query.all():
             if (u.plan in ("premium", "founder") or u.stripe_price_id) and u.created_at:
                 u_c = (
-                    u.created_at.replace(tzinfo=timezone.utc)
+                    u.created_at.replace(tzinfo=UTC)
                     if u.created_at.tzinfo is None
                     else u.created_at
                 )
@@ -239,9 +239,7 @@ def index():
                 end_dt = u.subscription_end_at or u.created_at
                 if end_dt:
                     u_e = (
-                        end_dt.replace(tzinfo=timezone.utc)
-                        if end_dt.tzinfo is None
-                        else end_dt
+                        end_dt.replace(tzinfo=UTC) if end_dt.tzinfo is None else end_dt
                     )
                     slot_e = (u_e.year, u_e.month)
                     if slot_e in cancels_by_slot:
@@ -410,7 +408,7 @@ def set_plan(user_id):
         user.plan = "free"
         days = int(trial_days) if trial_days.isdigit() else 30
         if days > 0:
-            user.trial_ends_at = datetime.now(timezone.utc) + timedelta(days=days)
+            user.trial_ends_at = datetime.now(UTC) + timedelta(days=days)
         else:
             # trial_days = 0 → gratuit immédiat, on efface la date d'essai
             user.trial_ends_at = None
@@ -418,9 +416,7 @@ def set_plan(user_id):
 
     # Surcharge de trial_ends_at pour les plans free/founder si trial_days > 0
     if new_plan in ["free", "founder"] and trial_days.isdigit() and int(trial_days) > 0:
-        user.trial_ends_at = datetime.now(timezone.utc) + timedelta(
-            days=int(trial_days)
-        )
+        user.trial_ends_at = datetime.now(UTC) + timedelta(days=int(trial_days))
 
     if reset_scans:
         user.free_scans_used = 0
@@ -713,7 +709,7 @@ def send_newsletter_async(
 
                 if delivery:
                     delivery.status = "sent"
-                    delivery.sent_at = datetime.now(timezone.utc)
+                    delivery.sent_at = datetime.now(UTC)
                 if campaign:
                     campaign.sent_count = (campaign.sent_count or 0) + 1
                 db.session.commit()
@@ -734,7 +730,7 @@ def send_newsletter_async(
 @admin.route("/admin/emails", methods=["GET", "POST"])
 def emails():
     # Stats for audience counters, interactive matrix, and health dashboard
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     users_data = db.session.query(
         User.is_verified,
         User.newsletter_subscribed,
@@ -789,7 +785,7 @@ def emails():
         else:
             if trial_ends_at:
                 end_dt = (
-                    trial_ends_at.replace(tzinfo=timezone.utc)
+                    trial_ends_at.replace(tzinfo=UTC)
                     if trial_ends_at.tzinfo is None
                     else trial_ends_at
                 )

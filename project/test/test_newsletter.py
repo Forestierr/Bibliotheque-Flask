@@ -1,3 +1,4 @@
+from datetime import UTC
 from unittest.mock import patch
 
 import pytest
@@ -664,9 +665,9 @@ def test_admin_emails_get_matrix_and_buttons(client, app, sample_user):
 
 @patch("project.admin.Thread")
 def test_admin_emails_filter_by_plan(mock_thread, client, app):
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     with app.app_context():
         u_founder = User(
             email="founder@ecole.fr",

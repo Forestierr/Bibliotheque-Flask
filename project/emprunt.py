@@ -1,5 +1,5 @@
 import math
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from flask import (
     Blueprint,
@@ -27,7 +27,7 @@ emprunt = Blueprint("emprunt", __name__)
 
 
 def get_loan_history_cutoff():
-    return datetime.now(timezone.utc).date() - timedelta(days=FREE_HISTORY_MONTHS * 30)
+    return datetime.now(UTC).date() - timedelta(days=FREE_HISTORY_MONTHS * 30)
 
 
 @emprunt.route("/emprunt", methods=["GET", "POST"])
@@ -66,7 +66,7 @@ def return_loan(id):
     if loan:
         book = db.session.query(Book).filter(Book.id == loan.book_id).first()
         if book and book.user_id == current_user.id:
-            loan.date_return = datetime.now(tz=timezone.utc).date()
+            loan.date_return = datetime.now(tz=UTC).date()
             db.session.commit()
         else:
             flash(_("Accès non autorisé."), "error")

@@ -2,7 +2,7 @@
 import logging
 import os
 import threading
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from functools import wraps
 
 import stripe
@@ -381,7 +381,7 @@ def _handle_subscription_updated(sub):
         if not cancel_ts and cancel_at_period_end:
             cancel_ts = current_period_end
         if cancel_ts:
-            end_at = datetime.fromtimestamp(cancel_ts, tz=timezone.utc)
+            end_at = datetime.fromtimestamp(cancel_ts, tz=UTC)
 
         # Idempotence : si le statut, le plan et subscription_end_at sont déjà identiques, pas de commit redondant
         # On compare les timestamps (int) pour éviter les problèmes timezone-aware vs naive avec SQLite
@@ -389,7 +389,7 @@ def _handle_subscription_updated(sub):
         if user.subscription_end_at:
             dt = user.subscription_end_at
             existing_end_ts = int(
-                dt.replace(tzinfo=timezone.utc).timestamp()
+                dt.replace(tzinfo=UTC).timestamp()
                 if dt.tzinfo is None
                 else dt.timestamp()
             )
@@ -453,7 +453,7 @@ def _handle_subscription_deleted(sub):
         if user.plan != "founder":
             user.plan = "free"
             # Délai de grâce de 48h pour ne pas bloquer l'enseignant en pleine journée de classe
-            user.trial_ends_at = datetime.now(timezone.utc) + timedelta(hours=48)
+            user.trial_ends_at = datetime.now(UTC) + timedelta(hours=48)
             user.subscription_end_at = None
 
         db.session.commit()
