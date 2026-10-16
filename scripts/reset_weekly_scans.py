@@ -9,7 +9,7 @@ Usage :
 
 import argparse
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # Ajouter le dossier racine au PYTHONPATH
@@ -37,7 +37,7 @@ def main():
 
     app = create_app()
     with app.app_context():
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         period_start = get_current_scan_period_start(now)
 
         query = User.query.filter(

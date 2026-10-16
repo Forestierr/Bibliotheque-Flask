@@ -14,7 +14,7 @@ TRIAL_PERIOD_DAYS = 0
 
 # Devise et tarification
 DEFAULT_CURRENCY = "CHF"
-PRICE_MONTHLY_AMOUNT = 5.0
+PRICE_MONTHLY_AMOUNT = 3.0
 PRICE_YEARLY_AMOUNT = 30.0
 
 # Seuil d'alerte pour les jauges visuelles (en pourcentage)

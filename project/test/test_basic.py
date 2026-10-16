@@ -59,6 +59,11 @@ def test_homepage_freemium_section(client):
         or "Voir le détail des tarifs & offres" in html
     )
 
+    # FAQ Est-ce un logiciel gratuit ?
+    assert "Est-ce un logiciel gratuit ?" in html
+    assert "limitée en volume" in html
+    assert "3.-" in html
+
 
 def test_dashboard_premium_shows_loans_count(app):
     """Vérifie que le dashboard affiche 'Prêts enregistrés' pour un membre premium."""
@@ -99,7 +104,7 @@ def test_mentions_legales_payment_and_cancellation_terms(client):
         assert "Aucune coordonnée bancaire" in html
         # Durée de l'engagement (mensuelle / annuelle)
         assert "douze mois" in html or "12 mois" in html or "engagement" in html
-        assert "5.00 CHF" in html
+        assert "3.00 CHF" in html
         assert "30.00 CHF" in html
         # Politique d'annulation et non-destruction des données
         assert "résilié à tout moment" in html
@@ -109,6 +114,15 @@ def test_mentions_legales_payment_and_cancellation_terms(client):
         # Notifications par email
         assert "e-mail" in html or "email" in html
         assert "gestion de votre abonnement" in html or "factures et reçus" in html
+        # Protection des données LPD & RGPD, élèves, PFPDT
+        assert "LPD" in html
+        assert "PFPDT" in html
+        assert "Élèves" in html or "élèves" in html
+        assert "minimisation" in html
+        assert "PCI-DSS" in html
+        assert "PolyForm Noncommercial" in html
+        assert "Code des obligations" in html
+        assert "dispositions légales impératives" in html
 
 
 def test_contact_page_get_unauthenticated(client):

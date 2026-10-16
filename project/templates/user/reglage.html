@@ -374,7 +374,7 @@
                             </form>
                         {% else %}
                             <a href="{{ url_for('subscription.tarifs') }}" class="button is-primary is-rounded">
-                                <span>{{ _("Passer à Premium (dès 5.- CHF/mois)") }}</span>
+                                <span>{{ _("Passer à Premium (dès 3.- CHF/mois)") }}</span>
                             </a>
                         {% endif %}
                     </div>
@@ -798,7 +798,7 @@
             <button class="button is-light" onclick="closeModal('modalPremiumExport')">{{ _("Fermer") }}</button>
             <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-dark">
                 <span class="icon"><i class="fas fa-bolt"></i></span>
-                <span>{{ _("Découvrir les offres Premium (dès 5.- CHF/mois)") }}</span>
+                <span>{{ _("Découvrir les offres Premium (dès 3.- CHF/mois)") }}</span>
             </a>
         </footer>
     </div>

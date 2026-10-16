@@ -200,7 +200,7 @@
                     <!-- Option Annuelle -->
                     <div class="column is-6">
                         <div class="plan-option {% if plan_type == 'yearly' %}is-selected{% endif %}" id="planOptionYearly" onclick="selectPlan('yearly')">
-                            <span class="plan-badge-savings">{{ _("Économisez 50%%")|replace("%%", "%") }}</span>
+                            <span class="plan-badge-savings">{{ _("2 mois gratuits") }}</span>
                             <div class="is-flex is-justify-content-space-between is-align-items-center" style="flex-wrap: wrap; gap: 0.5rem;">
                                 <div style="flex: 1 1 130px; min-width: 0;">
                                     <h3 class="title is-5 mb-1" style="font-weight: 700; color: #2563eb;">{{ _("Annuel") }}</h3>
@@ -228,7 +228,7 @@
                                 </div>
                                 <div class="has-text-right" style="flex-shrink: 0;">
                                     <div class="is-size-4 has-text-weight-bold has-text-dark" style="line-height: 1.1;">
-                                        5.- <small class="is-size-7">{{ currency }} {{ _("TTC") }} / {{ _("mois") }}</small>
+                                        3.- <small class="is-size-7">{{ currency }} {{ _("TTC") }} / {{ _("mois") }}</small>
                                     </div>
                                     <div class="is-size-7 has-text-grey">
                                         {{ _("sans frais cachés ni pénalités") }}
@@ -279,13 +279,13 @@
                             {% if plan_type == 'yearly' %}
                                 {{ _("Abonnement annuel renouvelé à 30.- CHF TTC / an") }}
                             {% else %}
-                                {{ _("Abonnement mensuel renouvelé à 5.- CHF TTC / mois") }}
+                                {{ _("Abonnement mensuel renouvelé à 3.- CHF TTC / mois") }}
                             {% endif %}
                         </span>
                     </div>
                     <div class="checkout-total-right">
                         <span class="has-text-weight-bold" style="color: #2563eb; font-size: 1.65rem; line-height: 1.1; white-space: nowrap;" id="totalPriceDisplay">
-                            {% if plan_type == 'yearly' %}30.- {{ currency }} {{ _("TTC") }}{% else %}5.- {{ currency }} {{ _("TTC") }}{% endif %}
+                            {% if plan_type == 'yearly' %}30.- {{ currency }} {{ _("TTC") }}{% else %}3.- {{ currency }} {{ _("TTC") }}{% endif %}
                         </span>
                     </div>
                 </div>
@@ -309,7 +309,7 @@
                                 {% if plan_type == 'yearly' %}
                                     {{ _("Procéder au paiement sécurisé (30.- CHF TTC / an)") }}
                                 {% else %}
-                                    {{ _("Procéder au paiement sécurisé (5.- CHF TTC / mois)") }}
+                                    {{ _("Procéder au paiement sécurisé (3.- CHF TTC / mois)") }}
                                 {% endif %}
                             </span>
                         </button>
@@ -445,10 +445,10 @@ function selectPlan(plan) {
     } else {
         optionMonthly.classList.add('is-selected');
         optionYearly.classList.remove('is-selected');
-        totalPriceDisplay.textContent = '5.- {{ currency }} {{ _("TTC") }}';
-        billingFrequencyText.textContent = "{{ _('Abonnement mensuel renouvelé à 5.- CHF TTC / mois') }}";
+        totalPriceDisplay.textContent = '3.- {{ currency }} {{ _("TTC") }}';
+        billingFrequencyText.textContent = "{{ _('Abonnement mensuel renouvelé à 3.- CHF TTC / mois') }}";
         if (btnSubmitText) {
-            btnSubmitText.textContent = "{{ _('Procéder au paiement sécurisé (5.- CHF TTC / mois)') }}";
+            btnSubmitText.textContent = "{{ _('Procéder au paiement sécurisé (3.- CHF TTC / mois)') }}";
         }
     }
 }

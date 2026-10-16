@@ -4,8 +4,8 @@
 
 {% extends "base.html" %}
  
-{% block title %}{{ _("Mentions Légales | Livres en Classe") }}{% endblock %}
-{% block meta_description %}{{ _("Mentions légales et politique de confidentialité de Livres en Classe.") }}{% endblock %}
+{% block title %}{{ _("Mentions Légales & Confidentialité | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Mentions légales, conditions générales d'utilisation, politique de confidentialité LPD/RGPD et conditions de vente de Livres en Classe.") }}{% endblock %}
 
 {% block head_extra %}
 <script type="application/ld+json">
@@ -16,8 +16,8 @@
     "@type": "WebPage",
     "@id": "{{ lang_url(get_locale(), external=True) }}"
   },
-  "name": {{ _("Mentions Légales | Livres en Classe")|tojson }},
-  "description": {{ _("Mentions légales et politique de confidentialité de Livres en Classe.")|tojson }},
+  "name": {{ _("Mentions Légales & Confidentialité | Livres en Classe")|tojson }},
+  "description": {{ _("Mentions légales, conditions générales d'utilisation, politique de confidentialité LPD/RGPD et conditions de vente de Livres en Classe.")|tojson }},
   "inLanguage": "{{ get_locale() }}"
 }
 </script>
@@ -30,7 +30,7 @@
 {% block content %}
 
     <section class="section">
-      <h1 class="title is-1">{{ _("Mentions Légales") }}</h1>
+      <h1 class="title is-1">{{ _("Mentions Légales & Conditions Générales") }}</h1>
 
         <br>
 
@@ -38,10 +38,10 @@
           <h3 class="title is-3">{{ _("Informations légales & Contact") }}</h3>
           <div class="container content">
             <ul>
-                <li><strong>{{ _("Éditeur du service :") }}</strong> Robin Forestier</li>
+                <li><strong>{{ _("Éditeur du service :") }}</strong> Robin Forestier ({{ _("créateur et éditeur indépendant de Livres en Classe") }})</li>
                 <li><strong>{{ _("Contact e-mail :") }}</strong> <a href="mailto:livresenclasse@gmail.com">livresenclasse@gmail.com</a></li>
+                <li><strong>{{ _("Localisation :") }}</strong> {{ _("Canton de Vaud, Suisse (adresse de contact postale communiquée sur demande préalable par e-mail)") }}</li>
                 <li><strong>{{ _("Dépôt GitHub :") }}</strong> <a href="https://github.com/Forestierr/Bibliotheque-Flask" target="_blank" rel="noopener noreferrer">https://github.com/Forestierr/Bibliotheque-Flask</a></li>
-                <li><strong>{{ _("Localisation :") }}</strong> {{ _("Canton de Vaud, Suisse") }}</li>
             </ul>
           </div>
         </div>
@@ -49,10 +49,10 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">{{ _("1. CONDITIONS GÉNÉRALES D'UTILISATION") }}</h3>
+          <h3 class="title is-3">{{ _("1. CONDITIONS GÉNÉRALES D'UTILISATION (CGU)") }}</h3>
           <div class="container content">
             <p>
-                {{ _("Le présent site web et ses services associés sont proposés sous réserve de votre acceptation pleine et entière des présentes conditions générales d'utilisation. En accédant au service, en créant un compte ou en naviguant sur le site, l'Utilisateur reconnaît avoir pris connaissance des présentes conditions et s'engage à les respecter sans réserve.") }}
+                {{ _("Le présent site web et ses services associés sont proposés sous réserve de votre acceptation pleine et entière des présentes conditions générales d'utilisation. En accédant au service, en créant un compte ou en naviguant sur le site, l'Utilisateur reconnaît avoir pris connaissance des présentes conditions et s'engage à les respecter sans réserve. Le service s'adresse en priorité aux enseignants, directeurs d'école, documentalistes et professionnels de l'éducation désireux d'administrer une bibliothèque de classe ou scolaire.") }}
             </p>
           </div>
         </div>
@@ -63,20 +63,26 @@
           <h3 class="title is-3">{{ _("2. PROPRIÉTÉ INTELLECTUELLE & LICENCE DU CODE SOURCE") }}</h3>
           <div class="container content">
             <p>
-                {{ _("L'application Livres en Classe, ses contenus, son architecture et son code source sont protégés par les lois relatives à la propriété intellectuelle et le droit d'auteur (Copyright 2024-2026 Robin Forestier).") }}
+                {{ _("L'application Livres en Classe, son design, son architecture logicielle, ses logos et ses textes originaux sont protégés par le droit d'auteur et les lois applicables en matière de propriété intellectuelle (Copyright 2024-2026 Robin Forestier).") }}
             </p>
             <p>
-                {{ _("Le code source de l'application est mis à disposition publiquement sous licence PolyForm Noncommercial License 1.0.0. Cette licence autorise toute personne physique ou morale à consulter, exécuter, modifier et redistribuer le logiciel exclusivement à des fins non commerciales, personnelles ou éducatives (notamment pour les enseignants et établissements scolaires).") }}
+                {{ _("Le code source de l'application est mis à disposition publiquement sous licence PolyForm Noncommercial License 1.0.0. Conformément aux termes de cette licence, toute personne physique ou morale est autorisée à utiliser, exécuter, copier, modifier et redistribuer le logiciel exclusivement à des fins personnelles ou non commerciales, notamment dans le cadre éducatif pour la classe.") }}
             </p>
             <p>
-                {{ _("Toute exploitation commerciale, monétisation, revente, hébergement payant ou utilisation concurrente du logiciel ou de ses dérivés est strictement interdite sans autorisation écrite préalable et expresse du titulaire des droits.") }}
+                {{ _("Toute utilisation commerciale directe ou indirecte, monétisation, revente, hébergement payant ou exploitation concurrente du logiciel ou de ses dérivés est strictement interdite sans autorisation écrite préalable et expresse du titulaire des droits.") }}
+            </p>
+            <p>
+                {{ _("L'application intègre également des bibliothèques et frameworks tiers open source (notamment Flask sous licence BSD, Bulma sous licence MIT, FontAwesome) qui demeurent soumis à leurs licences respectives.") }}
+            </p>
+            <p>
+                {{ _("Les métadonnées bibliographiques (titres, résumés, auteurs, couvertures) issues d'API publiques et de services partenaires externes (Google Books, BNF, Decitre) demeurent la propriété de leurs auteurs, éditeurs ou ayants droit respectifs et sont présentées exclusivement à des fins de catalogage et d'illustration pédagogique.") }}
             </p>
             <p>
                 {{ _("Le logiciel est fourni « tel quel », sans garantie d'aucune sorte. En aucun cas l'auteur ou le titulaire des droits ne peut être tenu responsable des dommages directs ou indirects découlant de l'utilisation du logiciel.") }}
             </p>
             <p>
                 <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer">
-                    {{ _("Consulter le texte complet de la licence PolyForm Noncommercial 1.0.0") }}
+                    {{ _("Consulter le texte officiel de la licence PolyForm Noncommercial 1.0.0") }}
                 </a>
             </p>
           </div>
@@ -85,10 +91,10 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">{{ _("3. LIENS HYPERTEXTES ET SITES TIERS") }}</h3>
+          <h3 class="title is-3">{{ _("3. LIENS HYPERTEXTES ET RESSOURCES DE TIERS") }}</h3>
           <div class="container content">
             <p>
-                {{ _("Ce site peut contenir des liens hypertextes renvoyant vers des sites internet ou des ressources externes tiers (notamment des éditeurs, des APIs publiques ou des services partenaires). Nous n'exerçons aucun contrôle sur le contenu, le fonctionnement ou les politiques de confidentialité de ces sites tiers. En conséquence, nous déclinons toute responsabilité quant aux contenus, publicités, produits ou services disponibles sur ou à partir de ces sites externes. L'inclusion d'un lien ne constitue en aucun cas une validation ou une recommandation de son contenu.") }}
+                {{ _("Ce site peut contenir des liens hypertextes renvoyant vers des sites internet ou ressources externes de tiers (notamment des éditeurs, des API publiques, des documents pédagogiques ou des partenaires). Nous n'exerçons aucun contrôle sur le contenu, la disponibilité ou les politiques de confidentialité de ces sites tiers. En conséquence, nous déclinons toute responsabilité quant aux contenus, publicités, produits ou services disponibles sur ou à partir de ces ressources externes. L'inclusion d'un lien ne constitue en aucun cas une validation ou une recommandation de son contenu.") }}
             </p>
           </div>
         </div>
@@ -107,7 +113,7 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">{{ _("5. ESPACES INTERACTIFS ET RÈGLES DE CONDUITE") }}</h3>
+          <h3 class="title is-3">{{ _("5. ESPACES INTERACTIFS, RÈGLES DE CONDUITE ET MODÉRATION") }}</h3>
           <div class="container content">
             <p>
                 {{ _("Dans le cadre de l'utilisation des formulaires de contact, de retour d'expérience ou de toute fonctionnalité interactive mise à disposition sur la plateforme, l'Utilisateur s'engage à :") }}
@@ -119,7 +125,7 @@
                 <li>{{ _("Respecter la confidentialité et les droits de propriété intellectuelle d'autrui.") }}</li>
             </ul>
             <p>
-                {{ _("Nous nous réservons le droit de supprimer tout contenu contrevenant à ces règles et de suspendre l'accès de l'utilisateur concerné sans préavis.") }}
+                {{ _("En cas de violation caractérisée des présentes règles, atteinte à la sécurité du système ou comportement illicite, nous nous réservons le droit de supprimer les contenus litigieux et de suspendre ou clôturer le compte concerné. Sauf urgence manifeste liée à la sécurité des données ou obligation légale impérative, l'Utilisateur sera informé par e-mail des motifs de la mesure et disposera d'une possibilité de contestation en écrivant à livresenclasse@gmail.com.") }}
             </p>
           </div>
         </div>
@@ -130,10 +136,10 @@
           <h3 class="title is-3">{{ _("6. LIMITATION DE RESPONSABILITÉ") }}</h3>
           <div class="container content">
             <p>
-                {{ _("Les fonctionnalités et informations de Livres en Classe sont fournies avec soin afin d'accompagner au mieux les enseignants. Toutefois, le service est fourni « en l'état ». Nous ne pouvons garantir une disponibilité continue et ininterrompue de la plateforme, ni l'absence absolue d'anomalies techniques ou d'inexactitudes dans les fiches bibliographiques issues d'APIs externes.") }}
+                {{ _("Les fonctionnalités et informations de Livres en Classe sont fournies avec soin afin d'accompagner au mieux les enseignants. Toutefois, le service est fourni « en l'état ». Nous ne pouvons garantir une disponibilité continue et ininterrompue de la plateforme, ni l'absence absolue d'anomalies techniques ou d'inexactitudes dans les fiches bibliographiques issues d'API externes.") }}
             </p>
             <p>
-                {{ _("Dans les limites permises par la législation applicable, notre responsabilité ne saurait être engagée en cas de perte indirecte de données, d'interruption temporaire d'activité ou de tout dommage résultant de l'utilisation ou de l'impossibilité d'utiliser le service.") }}
+                {{ _("Dans les limites permises par la législation applicable, notre responsabilité ne saurait être engagée en cas de perte indirecte de données, d'interruption temporaire d'activité ou de tout dommage résultant de l'utilisation ou de l'impossibilité d'utiliser le service. Rien dans les présentes conditions ne saurait toutefois exclure ou limiter la responsabilité de l'Éditeur en cas de dol, de faute grave ou de toute autre responsabilité ne pouvant être légalement exclue ou limitée en vertu du droit suisse impératif (notamment l'article 100 alinéa 1 du Code des obligations suisse).") }}
             </p>
           </div>
         </div>
@@ -141,21 +147,13 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">{{ _("7. DISPONIBILITÉ DU SERVICE ET RESTRICTION D'ACCÈS") }}</h3>
+          <h3 class="title is-3">{{ _("7. DISPONIBILITÉ DU SERVICE ET RÉSILIATION DU COMPTE") }}</h3>
           <div class="container content">
             <p>
-                {{ _("Nous nous réservons le droit d'interrompre temporairement l'accès au site ou à certaines fonctionnalités pour des raisons de maintenance, de mise à jour ou d'amélioration technique, sans que cette interruption ne puisse ouvrir droit à une indemnisation. Nous nous réservons également le droit de restreindre ou de résilier unilatéralement l'accès au compte d'un utilisateur en cas de violation grave ou répétée des présentes conditions d'utilisation.") }}
+                {{ _("Nous nous réservons le droit d'interrompre temporairement l'accès au site ou à certaines fonctionnalités pour des raisons de maintenance, de mise à jour ou d'amélioration technique, sans que cette interruption ne puisse ouvrir droit à une indemnisation.") }}
             </p>
-          </div>
-        </div>
-
-        <hr>
-
-        <div class="block">
-            <h3 class="title is-3">{{ _("8. ACCÈS AUX DONNÉES PERSONNELLES & CONFIDENTIALITÉ") }}</h3>
-          <div class="container">
             <p>
-                {{ _("En vertu de la législation suisse sur la protection des données (LPD) et du RGPD le cas échéant, l'Utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données personnelles. Les données collectées (notamment l'adresse e-mail et le nom) sont strictement destinées au fonctionnement du service et à l'envoi des notifications contractuelles d'abonnement. Pour le traitement des paiements, notre sous-traitant Stripe opère en conformité avec les réglementations de protection des données financières. Pour exercer vos droits, vous pouvez nous écrire à livresenclasse@gmail.com.") }}
+                {{ _("Nous nous réservons également le droit de restreindre ou de résilier l'accès au compte d'un Utilisateur en cas de violation grave ou répétée des présentes conditions. En cas de résiliation unilatérale pour juste motif, les prélèvements futurs au titre d'un abonnement payant sont immédiatement interrompus. Les données du compte sont conservées pendant un délai de sécurité de 30 jours pour permettre leur restitution ou leur export sur demande écrite légitime de l'Utilisateur, avant suppression définitive, sous réserve des obligations légales de conservation.") }}
             </p>
           </div>
         </div>
@@ -163,13 +161,77 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("9. MODIFICATION DES CONDITIONS ET FOR JURIDIQUE") }}</h3>
+            <h3 class="title is-3">{{ _("8. POLITIQUE DE CONFIDENTIALITÉ & PROTECTION DES DONNÉES (LPD & RGPD)") }}</h3>
           <div class="container content">
             <p>
-                {{ _("Nous nous réservons le droit de modifier les présentes conditions à tout moment afin de les adapter aux évolutions du service ou aux modifications législatives. La version à jour est consultable en permanence sur cette page.") }}
+                {{ _("La protection de vos données personnelles et de celles de vos élèves est une priorité absolue pour Livres en Classe. Les données personnelles sont traitées aux fins de fournir et d'administrer le service Livres en Classe, de gérer les comptes utilisateurs, d'assurer les fonctionnalités de gestion des bibliothèques et des prêts, et, le cas échéant, de gérer les abonnements et les communications associées. Les traitements sont effectués en stricte conformité avec la Loi fédérale sur la protection des données (LPD) suisse révisée et, le cas échéant, avec le Règlement Général sur la Protection des Données (RGPD) de l'Union européenne.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Responsable du traitement :") }}</strong>
+                {{ _("Robin Forestier, Canton de Vaud, Suisse. Contact pour l'exercice de vos droits et la protection des données : livresenclasse@gmail.com.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Catégories de données collectées :") }}</strong>
+            </p>
+            <ul>
+                <li>
+                    <strong>{{ _("Données du compte Enseignant :") }}</strong>
+                    {{ _("Nom, prénom, adresse e-mail, mot de passe chiffré par empreinte cryptographique (hachage sécurisé), adresse IP de connexion, journaux techniques de sécurité, préférence linguistique d'affichage, ainsi que les identifiants techniques Stripe en cas de formule payante (identifiant client et abonnement).") }}
+                </li>
+                <li>
+                    <strong>{{ _("Données relatives aux Élèves :") }}</strong>
+                    {{ _("Prénom, nom (ou pseudonyme / initiales choisis par l'enseignant), niveau ou désignation de la classe. Aucune donnée sensible concernant les enfants (telle que date de naissance, adresse postale, situation familiale ou résultats scolaires) n'est collectée ni traitée. Livres en Classe encourage expressément les enseignants à n'utiliser que des prénoms ou des pseudonymes dans le cadre du principe de minimisation des données.") }}
+                </li>
+                <li>
+                    <strong>{{ _("Données relatives à la bibliothèque :") }}</strong>
+                    {{ _("Livres enregistrés (titres, auteurs, éditeurs, codes ISBN), codes-barres internes de la classe, historique et dates des emprunts et des retours.") }}
+                </li>
+            </ul>
+
+            <p>
+                <strong>{{ _("Finalités et bases juridiques des traitements :") }}</strong>
+            </p>
+            <ul>
+                <li>{{ _("Fourniture et administration du service, gestion du catalogue de livres et suivi des prêts scolaires (exécution contractuelle / CGU).") }}</li>
+                <li>{{ _("Gestion des abonnements et facturation sécurisée via Stripe (exécution contractuelle et obligations légales de tenue comptable).") }}</li>
+                <li>{{ _("Sécurisation de la plateforme, prévention de la fraude et détection d'éventuels abus (intérêt légitime).") }}</li>
+                <li>{{ _("Envoi de communications transactionnelles indispensables (vérification d'e-mail, réinitialisation de mot de passe, alertes d'abonnement).") }}</li>
+            </ul>
+
+            <p>
+                <strong>{{ _("Destinataires et transferts à l'étranger :") }}</strong>
+                {{ _("Les données collectées sont hébergées sur des serveurs sécurisés situés en Europe. Les paiements sont opérés par notre sous-traitant Stripe (Stripe Payments Europe, Ltd. en Irlande et Stripe, Inc. aux États-Unis, sous le couvert du Data Privacy Framework Suisse-USA et UE-USA ou de clauses contractuelles types). Aucune donnée personnelle n'est vendue, louée, commercialisée ni cédée à des tiers à des fins publicitaires ou de prospection.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Durées de conservation :") }}</strong>
+            </p>
+            <ul>
+                <li>{{ _("Données de compte et de classe (élèves, livres, prêts) : conservées tant que le compte de l'Utilisateur demeure actif.") }}</li>
+                <li>{{ _("Suppression immédiate : lors de la suppression de son compte par l'Utilisateur depuis ses réglages, l'ensemble de ses données (élèves, livres, historique des prêts, avis) est supprimé immédiatement et irréversiblement.") }}</li>
+                <li>{{ _("Comptes non vérifiés : les comptes créés sans confirmation de l'adresse e-mail sont purgés automatiquement après un délai de 7 jours.") }}</li>
+                <li>{{ _("Données comptables et de facturation : conservées pendant 10 ans conformément aux obligations comptables et fiscales du droit suisse.") }}</li>
+            </ul>
+
+            <p>
+                <strong>{{ _("Droits des personnes concernées et réclamations :") }}</strong>
+                {{ _("Conformément à la LPD suisse et au RGPD le cas échéant, vous disposez d'un droit d'accès, de rectification, d'effacement et de limitation du traitement de vos données personnelles, ainsi que d'un droit à la remise ou à la transmission de vos données (portabilité) dans les limites prévues par les lois applicables (art. 28 LPD, art. 20 RGPD). Vous pouvez exporter à tout moment vos données de livres et d'emprunts au format Excel depuis votre interface ou nous contacter à livresenclasse@gmail.com pour toute demande relative à vos données. Vous disposez également du droit de déposer une réclamation auprès de l'autorité compétente en Suisse, le Préposé fédéral à la protection des données et à la transparence (PFPDT, Feldeggweg 1, CH-3003 Berne, www.edoeb.admin.ch), ou auprès de l'autorité de protection des données compétente de votre lieu de résidence dans l'Union européenne (telle que la CNIL en France).") }}
+            </p>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="block">
+            <h3 class="title is-3">{{ _("9. MODIFICATION DES CONDITIONS, DROIT APPLICABLE ET FOR JURIDIQUE") }}</h3>
+          <div class="container content">
+            <p>
+                {{ _("Nous nous réservons le droit de modifier les présentes conditions à tout moment afin de les adapter aux évolutions du service ou aux modifications législatives. La version en vigueur est accessible en permanence sur cette page. En cas de modification substantielle, les utilisateurs enregistrés en seront avertis par e-mail ou par notification sur le site.") }}
             </p>
             <p>
-                {{ _("Les présentes conditions générales d'utilisation sont régies et interprétées conformément au droit suisse. En cas de litige relatif à leur validité, leur interprétation ou leur exécution, et à défaut de résolution amiable, les tribunaux compétents du canton de Vaud (Suisse) sont seuls compétents, sous réserve d'un for légal impératif.") }}
+                {{ _("Les présentes conditions générales d'utilisation sont régies et interprétées conformément au droit suisse. En cas de litige relatif à leur validité, leur interprétation ou leur exécution, une résolution amiable sera systématiquement recherchée en premier lieu. À défaut d'accord amiable, les tribunaux compétents du canton de Vaud (Suisse) sont seuls compétents, sous réserve d'éventuels fors impératifs prévus par le Code de procédure civile suisse (CPC), la Convention de Lugano ou les dispositions légales impératives applicables aux consommateurs.") }}
             </p>
           </div>
         </div>
@@ -181,24 +243,34 @@
             <div class="container content">
                 <p>
                     <strong>{{ _("Partenaire de paiement et sécurité bancaire :") }}</strong>
-                    {{ _("Tous les paiements en ligne et abonnements récurrents sont opérés de manière chiffrée et sécurisée par notre prestataire agréé Stripe (Stripe Payments Europe, Ltd. / Stripe Inc.). Les données bancaires (numéro de carte, date d'expiration, cryptogramme visuel CVC) sont collectées, gérées et traitées exclusivement par Stripe conformément aux normes de sécurité les plus strictes de l'industrie bancaire (certification PCI-DSS Niveau 1). Aucune coordonnée bancaire n'est collectée, consultée ni stockée sur les serveurs de Livres en Classe.") }}
+                    {{ _("Tous les paiements en ligne et abonnements récurrents sont opérés de manière chiffrée et sécurisée par notre prestataire agréé Stripe (Stripe Payments Europe, Ltd. pour l'Europe et la Suisse, et Stripe, Inc.). Les données bancaires (numéro de carte, date d'expiration, cryptogramme visuel CVC) sont collectées, gérées et traitées directement sur les infrastructures de Stripe, certifiées conformes aux normes PCI-DSS de niveau 1 (Payment Card Industry Data Security Standard). Aucune coordonnée bancaire complète n'est collectée, consultée ni stockée sur les serveurs de Livres en Classe.") }}
                 </p>
 
                 <p>
                     <strong>{{ _("Tarifs et durée de l'engagement :") }}</strong>
-                    {{ _("Le service Livres en Classe propose une formule gratuite ainsi qu'un abonnement Premium disponible au tarif de 5.00 CHF par mois ou 30.00 CHF par an (tarifs indiqués en Francs Suisses toutes taxes comprises). La souscription mensuelle engage l'utilisateur pour une période d'un mois renouvelable. La souscription annuelle engage l'utilisateur pour une période ferme de douze mois. Sauf résiliation effectuée avant la date d'échéance, tout abonnement est tacitement reconduit pour une durée identique.") }}
+                    {{ _("Le service Livres en Classe propose une formule gratuite ainsi qu'un abonnement Premium disponible au tarif de 3.00 CHF par mois ou 30.00 CHF par an (tarifs indiqués en Francs Suisses toutes taxes comprises). Le prix total, la devise (CHF) et la périodicité de prélèvement sont clairement affichés sur la page des tarifs ainsi que dans le récapitulatif de commande Stripe avant tout paiement. La souscription mensuelle engage l'Utilisateur pour une période d'un mois renouvelable tacitement chaque mois à la date anniversaire. La souscription annuelle engage l'Utilisateur pour une période ferme de douze mois renouvelable tacitement chaque année à la date anniversaire.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Statut Membre Fondateur :") }}</strong>
+                    {{ _("Le statut exclusif de Membre Fondateur confère un accès gratuit et illimité à l'ensemble des fonctionnalités du service à vie, sous réserve de la continuité de l'exploitation et de l'existence de la plateforme Livres en Classe.") }}
                 </p>
 
                 <p>
                     <strong>{{ _("Politique d'annulation et résiliation :") }}</strong>
-                    {{ _("L'abonnement Premium peut être résilié à tout moment, en toute autonomie et sans frais, directement depuis les réglages de votre compte via le portail sécurisé Stripe. La résiliation prend effet à la fin de la période facturée en cours (mensuelle ou annuelle). Vous conservez l'accès à l'ensemble des fonctionnalités Premium jusqu'à cette date d'échéance.") }}
+                    {{ _("L'abonnement Premium peut être résilié à tout moment, en toute autonomie et sans frais, directement depuis les réglages de votre compte via le portail sécurisé Stripe, jusqu'au dernier jour de la période facturée en cours. La résiliation prend effet à la fin de la période facturée en cours (mensuelle ou annuelle). Vous conservez l'accès à l'ensemble des fonctionnalités Premium jusqu'à cette date d'échéance.") }}
                     <strong>{{ _("Politique de non-destruction des données :") }}</strong>
                     {{ _("À l'issue de la période d'abonnement, votre compte bascule automatiquement en formule gratuite. Aucune donnée n'est supprimée ni bloquée : vos livres, élèves et historiques de prêts restent consultables et utilisables ; seul l'ajout de nouveaux éléments au-delà des plafonds gratuits est limité.") }}
                 </p>
 
                 <p>
-                    <strong>{{ _("Politique de non-remboursement :") }}</strong>
-                    {{ _("Compte tenu de la fourniture immédiate d'un service numérique dès la validation de la commande et de la mise à disposition d'une formule gratuite complète permettant d'essayer la plateforme sans engagement, toute période d'abonnement entamée (mensuelle ou annuelle) est due dans son intégralité. Aucun remboursement, total ou partiel au prorata temporis, ne sera consenti en cas d'annulation en cours de période, d'interruption anticipée ou de non-utilisation du service.") }}
+                    <strong>{{ _("Modification des tarifs :") }}</strong>
+                    {{ _("Livres en Classe se réserve le droit de modifier le prix de ses abonnements. En cas de modification tarifaire applicable aux abonnements en cours, l'Utilisateur en sera informé par e-mail avec un préavis d'au moins 30 jours avant l'entrée en vigueur du nouveau tarif. Le nouveau tarif s'appliquera lors du renouvellement suivant la fin du délai de préavis. L'Utilisateur qui n'accepte pas la modification tarifaire conserve la liberté de résilier son abonnement sans frais avant la date de prise d'effet du nouveau prix, directement depuis son espace de gestion.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Politique de non-remboursement et réserves légales :") }}</strong>
+                    {{ _("Compte tenu de la fourniture immédiate d'un service numérique dès la validation de la commande et de la mise à disposition préalable d'une formule gratuite complète permettant d'essayer la plateforme sans engagement, toute période d'abonnement entamée (mensuelle ou annuelle) est due dans son intégralité. En cas de résiliation en cours de période, l'abonnement reste actif jusqu'à la fin de la période déjà payée, sans remboursement au prorata du temps restant, d'interruption anticipée ou de simple non-utilisation du service, sous réserve des dispositions légales impératives applicables et des éventuels droits de remboursement de l'Utilisateur (notamment en cas de défaut majeur imputable au service, d'indisponibilité anormale et prolongée non résolue ou d'obligation légale impérative).") }}
                 </p>
 
                 <p>

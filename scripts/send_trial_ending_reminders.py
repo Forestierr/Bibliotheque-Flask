@@ -8,7 +8,7 @@ Usage :
 import argparse
 import os
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 # Ajouter le dossier racine au PYTHONPATH
@@ -34,7 +34,7 @@ def main():
 
     app = create_app()
     with app.app_context():
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         # Cibler les utilisateurs dont l'essai se termine dans moins de 3 jours et pas encore notifiés
         in_3_days = now + timedelta(days=3)
 

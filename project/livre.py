@@ -349,6 +349,7 @@ def livre_ajout():
     barcode = request.args.get("barcode")
 
     book = None
+    not_found_in_api = False
 
     if isbn:
         clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper()) if isbn else ""
@@ -370,6 +371,7 @@ def livre_ajout():
             # If the book is not found, we create a book with the ISBN
             # The user can complete the book information (compteur non incrémenté)
             book = {"isbn": isbn}
+            not_found_in_api = True
     elif barcode:
         session.pop("pending_scan_code", None)
         book = {"barcode": barcode}
@@ -381,7 +383,12 @@ def livre_ajout():
     tags = Tags.query.filter_by(user_id=current_user.id).all()
     tags = [tag.name for tag in tags]
 
-    return render_template("livre/livre_ajout.html", tags=tags, book=book)
+    return render_template(
+        "livre/livre_ajout.html",
+        tags=tags,
+        book=book,
+        not_found_in_api=not_found_in_api,
+    )
 
 
 @livre.route("/livre/check-title", methods=["POST"])

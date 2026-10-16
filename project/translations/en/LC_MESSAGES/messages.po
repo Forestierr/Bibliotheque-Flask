@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-10-12 23:48+0200\n"
+"POT-Creation-Date: 2026-10-16 19:04+0200\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: en\n"
@@ -19,24 +19,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: project/admin.py:695
+#: project/admin.py:691
 msgid "Pour vous désabonner :"
 msgstr "To unsubscribe:"
 
-#: project/admin.py:696
+#: project/admin.py:692
 msgid "Donner votre avis :"
 msgstr "Give your feedback:"
 
-#: project/admin.py:697
+#: project/admin.py:693
 msgid "Signaler un problème :"
 msgstr "Report an issue:"
 
-#: project/auth.py:76 project/auth.py:147 project/main.py:242
+#: project/auth.py:76 project/auth.py:147 project/main.py:262
 #: project/templates/auth/login.html:158 project/templates/auth/signup.html:265
 msgid "Veuillez compléter le CAPTCHA."
 msgstr "Please complete the CAPTCHA."
 
-#: project/auth.py:85 project/auth.py:157 project/main.py:251
+#: project/auth.py:85 project/auth.py:157 project/main.py:271
 msgid "CAPTCHA invalide. Veuillez réessayer."
 msgstr "Invalid CAPTCHA. Please try again."
 
@@ -139,7 +139,7 @@ msgstr ""
 "existing students remain accessible. To add more, upgrade to Premium or "
 "delete an existing student."
 
-#: project/eleve.py:61 project/main.py:257
+#: project/eleve.py:61 project/main.py:277
 msgid "Veuillez remplir tous les champs."
 msgstr "Please fill in all fields."
 
@@ -155,11 +155,11 @@ msgstr "Unauthorized access."
 msgid "Emprunt introuvable."
 msgstr "Loan not found."
 
-#: project/livre.py:235
+#: project/livre.py:236
 msgid "Le livre que vous souhaitiez voir n'existe pas."
 msgstr "The book you were looking for does not exist."
 
-#: project/livre.py:270 project/livre.py:530
+#: project/livre.py:271 project/livre.py:552
 #, python-format
 msgid ""
 "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres"
@@ -170,43 +170,43 @@ msgstr ""
 "existing books remain accessible. To add more, upgrade to Premium or "
 "delete an existing book."
 
-#: project/livre.py:295
+#: project/livre.py:296
 msgid "Veuillez ajouter un titre."
 msgstr "Please enter a title."
 
-#: project/livre.py:340
+#: project/livre.py:341
 msgid "Le livre : "
 msgstr "The book: "
 
-#: project/livre.py:340
+#: project/livre.py:341
 msgid " a été ajouté à votre bibliothèque."
 msgstr " has been added to your library."
 
-#: project/livre.py:406
+#: project/livre.py:428
 msgid "Le livre que vous souhaitiez éditer n'existe pas."
 msgstr "The book you wanted to edit does not exist."
 
-#: project/livre.py:440
+#: project/livre.py:462
 msgid "Veuillez ajouter un titre au livre."
 msgstr "Please give the book a title."
 
-#: project/livre.py:539
+#: project/livre.py:561
 msgid "Le livre que vous souhaitiez dupliquer n'existe pas."
 msgstr "The book you wanted to duplicate does not exist."
 
-#: project/livre.py:574
+#: project/livre.py:596
 msgid "Le livre reste dans la bibliothèque."
 msgstr "The book stays in the library."
 
-#: project/livre.py:580
+#: project/livre.py:602
 msgid "L'élève n'existe pas."
 msgstr "The student does not exist."
 
-#: project/livre.py:604
+#: project/livre.py:626
 msgid "Le livre a été supprimé."
 msgstr "The book has been deleted."
 
-#: project/livre.py:621
+#: project/livre.py:643
 #, python-format
 msgid ""
 "Vous avez atteint votre quota de %(max)s scans gratuits pour cette "
@@ -217,11 +217,11 @@ msgstr ""
 " reset on Sunday at midnight, or upgrade to Premium for unlimited "
 "scanning."
 
-#: project/livre.py:664
+#: project/livre.py:691
 msgid "Tous les livres ont été supprimés."
 msgstr "All books have been deleted."
 
-#: project/main.py:279
+#: project/main.py:299
 msgid ""
 "Votre message a été envoyé avec succès. Vous avez reçu un email de "
 "confirmation."
@@ -229,21 +229,21 @@ msgstr ""
 "Your message has been sent successfully. A confirmation email has been "
 "sent to you."
 
-#: project/main.py:345
+#: project/main.py:365
 msgid "Veuillez renseigner l'objet et la description de votre retour."
 msgstr "Please provide the subject and description of your feedback."
 
-#: project/main.py:380
+#: project/main.py:400
 msgid "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 msgstr ""
 "Your feedback has been successfully submitted. Thank you for your "
 "valuable help!"
 
-#: project/main.py:436
+#: project/main.py:456
 msgid "Article non trouvé"
 msgstr "Article not found"
 
-#: project/main.py:446
+#: project/main.py:466
 msgid "Guide non trouvé"
 msgstr "Guide not found"
 
@@ -268,20 +268,24 @@ msgstr ""
 "the administrator."
 
 #: project/subscription.py:185
-#, python-format
-msgid "Une erreur est survenue lors de l'accès au paiement : %(error)s"
-msgstr "An error occurred while accessing checkout: %(error)s"
+msgid ""
+"Une erreur est survenue lors de l'accès au paiement. Veuillez réessayer "
+"ultérieurement ou contacter le support."
+msgstr ""
+"An error occurred while accessing checkout. Please try again later or "
+"contact support."
 
-#: project/subscription.py:204
+#: project/subscription.py:203
 msgid "Aucun abonnement Stripe actif n'est associé à votre compte pour le moment."
 msgstr ""
 "No active Stripe subscription is associated with your account at this "
 "time."
 
-#: project/subscription.py:221
-#, python-format
-msgid "Impossible d'accéder au portail de gestion : %(error)s"
-msgstr "Unable to access the customer portal: %(error)s"
+#: project/subscription.py:220
+msgid ""
+"Impossible d'accéder au portail de gestion pour le moment. Veuillez "
+"réessayer ultérieurement."
+msgstr "Unable to access the customer portal at this time. Please try again later."
 
 #: project/templates/aide.html:7
 msgid "Centre d'aide | Livres en Classe"
@@ -868,7 +872,7 @@ msgid "Nous contacter"
 msgstr "Contact us"
 
 #: project/templates/base.html:11 project/templates/base.html:13
-#: project/templates/base.html:43
+#: project/templates/base.html:45
 msgid ""
 "Livres en Classe aide les enseignants à gérer facilement les livres de "
 "leur classe : catalogage, prêts, suivi des élèves et statistiques en "
@@ -882,7 +886,7 @@ msgstr ""
 msgid "Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe"
 msgstr "Free Classroom Library Management Software | Livres en Classe"
 
-#: project/templates/base.html:42
+#: project/templates/base.html:44
 msgid "Logiciel de gestion de bibliothèque scolaire | Livres en Classe"
 msgstr "School Library Management Software | Livres en Classe"
 
@@ -1041,11 +1045,11 @@ msgstr ""
 "Library management software for teachers. Catalog your books, manage "
 "loans, and track student borrowing in a few clicks."
 
-#: project/templates/index.html:61 project/templates/index.html:635
+#: project/templates/index.html:61 project/templates/index.html:636
 msgid "Comment gérer une bibliothèque de classe ?"
 msgstr "How to manage a classroom library?"
 
-#: project/templates/index.html:64 project/templates/index.html:636
+#: project/templates/index.html:64 project/templates/index.html:637
 msgid ""
 "Livres en Classe vous permet de scanner le code-barres de vos livres, "
 "d'inscrire vos élèves et de suivre les emprunts en un clic depuis votre "
@@ -1056,24 +1060,30 @@ msgstr ""
 "track loans with one click from your dashboard. The fastest and most "
 "efficient way for teachers."
 
-#: project/templates/index.html:69 project/templates/index.html:638
+#: project/templates/index.html:69 project/templates/index.html:639
 msgid "Est-ce un logiciel gratuit ?"
 msgstr "Is this software free?"
 
-#: project/templates/index.html:72 project/templates/index.html:639
+#: project/templates/index.html:72 project/templates/index.html:640
 msgid ""
-"Oui, notre logiciel de gestion de bibliothèque scolaire est conçu pour "
-"être accessible aux enseignants avec des fonctionnalités entièrement "
-"gratuites pour débuter."
+"Oui, Livres en Classe propose une formule gratuite accessible à tous les "
+"enseignants pour équiper leur classe. Cette formule est toutefois limitée"
+" en volume (jusqu'à 40 élèves, 500 livres, 30 scans par semaine et 10 "
+"mois d'historique). Pour lever ces quotas et bénéficier d'un usage "
+"illimité (scans illimités, exports Excel), un abonnement Premium sans "
+"engagement est proposé."
 msgstr ""
-"Yes, our school library software is designed to be accessible to teachers"
-" with free features to get started."
+"Yes, Livres en Classe offers a free plan accessible to all teachers to "
+"set up their classroom library. However, this plan has volume limits (up "
+"to 40 students, 500 books, 30 scans per week, and 10 months of history). "
+"To remove these quotas and unlock unlimited access (unlimited scans, "
+"Excel exports), a flexible Premium subscription is available."
 
-#: project/templates/index.html:77 project/templates/index.html:641
+#: project/templates/index.html:77 project/templates/index.html:645
 msgid "Peut-on scanner les ISBN ?"
 msgstr "Can we scan ISBNs?"
 
-#: project/templates/index.html:80 project/templates/index.html:642
+#: project/templates/index.html:80 project/templates/index.html:646
 msgid ""
 "Oui, il suffit d'utiliser la caméra de votre smartphone, tablette ou "
 "ordinateur portable pour scanner les ISBN et importer automatiquement le "
@@ -1083,11 +1093,11 @@ msgstr ""
 "ISBNs and automatically import title, author, and book details into your "
 "catalog."
 
-#: project/templates/index.html:85 project/templates/index.html:644
+#: project/templates/index.html:85 project/templates/index.html:648
 msgid "Est-ce compatible sur tablette et téléphone ?"
 msgstr "Is it compatible with tablets and phones?"
 
-#: project/templates/index.html:88 project/templates/index.html:645
+#: project/templates/index.html:88 project/templates/index.html:649
 msgid ""
 "Absolument. L'interface est conçue pour tous les écrans. De plus, vous "
 "pouvez l'installer comme une véritable application sur Android ou iOS "
@@ -1117,19 +1127,19 @@ msgstr ""
 msgid "Essayer gratuitement"
 msgstr "Try for free"
 
-#: project/templates/index.html:227
+#: project/templates/index.html:228
 msgid "Élève lisant un livre dans la bibliothèque de classe"
 msgstr "Student reading a book in the classroom library"
 
-#: project/templates/index.html:237
+#: project/templates/index.html:238
 msgid "Pourquoi utiliser une bibliothèque de classe ?"
 msgstr "Why use a classroom library?"
 
-#: project/templates/index.html:241
+#: project/templates/index.html:242
 msgid "Gagnez du temps"
 msgstr "Save time"
 
-#: project/templates/index.html:242
+#: project/templates/index.html:243
 msgid ""
 "Fini les cahiers brouillons. En quelques clics, enregistrez un prêt ou un"
 " retour. Retrouvez un livre instantanément."
@@ -1137,11 +1147,11 @@ msgstr ""
 "No more messy notebooks. In just a few clicks, record loans and returns. "
 "Find any book instantly."
 
-#: project/templates/index.html:246
+#: project/templates/index.html:247
 msgid "Suivez la progression"
 msgstr "Track progress"
 
-#: project/templates/index.html:247
+#: project/templates/index.html:248
 msgid ""
 "Analysez les habitudes de lecture de vos élèves. Voyez qui a lu quoi, et "
 "encouragez ceux qui lisent moins."
@@ -1149,11 +1159,11 @@ msgstr ""
 "Analyze student reading habits. See who read what, and encourage "
 "reluctant readers."
 
-#: project/templates/index.html:251
+#: project/templates/index.html:252
 msgid "Mobile"
 msgstr "Mobile"
 
-#: project/templates/index.html:252
+#: project/templates/index.html:253
 msgid ""
 "Scannez directement avec votre téléphone, sans équipement coûteux. "
 "L'application vous suit partout dans la classe."
@@ -1161,57 +1171,57 @@ msgstr ""
 "Scan directly with your phone without expensive hardware. The app goes "
 "everywhere with you in class."
 
-#: project/templates/index.html:259
+#: project/templates/index.html:260
 msgid "Une vue globale de votre bibliothèque scolaire"
 msgstr "A complete overview of your school library"
 
-#: project/templates/index.html:261
+#: project/templates/index.html:262
 msgid ""
 "Un tableau de bord complet pour gérer la bibliothèque de votre école "
 "primaire."
 msgstr "A complete dashboard to manage your primary school library."
 
-#: project/templates/index.html:262
+#: project/templates/index.html:263
 msgid ""
 "Suivez les tendances de prêt de livres et l'activité de vos élèves en un "
 "coup d'œil."
 msgstr "Track book lending trends and student activity at a glance."
 
-#: project/templates/index.html:270
+#: project/templates/index.html:271
 msgid "Tous les livres de la classe au même endroit"
 msgstr "All classroom books in one place"
 
-#: project/templates/index.html:272
+#: project/templates/index.html:273
 msgid ""
 "Scannez les codes-barres (ISBN) de vos livres pédagogiques pour les "
 "ajouter instantanément."
 msgstr "Scan barcodes (ISBN) of your educational books to add them instantly."
 
-#: project/templates/index.html:273
+#: project/templates/index.html:274
 msgid "La gestion de votre inventaire n'a jamais été aussi simple et rapide."
 msgstr "Managing your inventory has never been so simple and fast."
 
-#: project/templates/index.html:281
+#: project/templates/index.html:282
 msgid "Qui a lu quoi ? Suivez vos élèves"
 msgstr "Who read what? Track your students"
 
-#: project/templates/index.html:283
+#: project/templates/index.html:284
 msgid ""
 "Suivez le parcours de lecture de chaque élève. Consultez l'historique des"
 " emprunts."
 msgstr "Follow each student's reading journey. View their borrowing history."
 
-#: project/templates/index.html:284
+#: project/templates/index.html:285
 msgid ""
 "Idéal pour le suivi pédagogique des enseignants et l'encouragement à la "
 "lecture."
 msgstr "Ideal for pedagogical monitoring and encouraging reading."
 
-#: project/templates/index.html:293
+#: project/templates/index.html:294
 msgid "Une formule adaptée à votre classe"
 msgstr "A plan tailored to your classroom"
 
-#: project/templates/index.html:295
+#: project/templates/index.html:296
 msgid ""
 "Démarrez gratuitement pour équiper votre classe, ou passez au forfait "
 "Premium pour profiter d'un accès illimité."
@@ -1219,107 +1229,107 @@ msgstr ""
 "Start for free to equip your classroom, or upgrade to Premium to enjoy "
 "unlimited access."
 
-#: project/templates/index.html:305 project/templates/user/dashboard.html:155
+#: project/templates/index.html:306 project/templates/user/dashboard.html:155
 #: project/templates/utils/navbar.html:371
 #: project/templates/utils/navbar.html:455
 msgid "Version Gratuite"
 msgstr "Free Version"
 
-#: project/templates/auth/signup.html:119 project/templates/index.html:306
+#: project/templates/auth/signup.html:119 project/templates/index.html:307
 #, python-format
 msgid "100%% gratuit"
 msgstr "100%% free"
 
-#: project/templates/index.html:309
+#: project/templates/index.html:310
 msgid "Idéal pour débuter et équiper une classe sans débourser un centime."
 msgstr "Ideal to get started and equip a classroom without spending a dime."
 
-#: project/templates/index.html:314
+#: project/templates/index.html:315
 msgid "à vie"
 msgstr "for life"
 
-#: project/templates/index.html:320
+#: project/templates/index.html:321
 #: project/templates/subscription/tarifs.html:397
 msgid "élèves max"
 msgstr "max students"
 
-#: project/templates/auth/signup.html:129 project/templates/index.html:324
+#: project/templates/auth/signup.html:129 project/templates/index.html:325
 msgid "livres au catalogue"
 msgstr "catalog books"
 
-#: project/templates/index.html:328
+#: project/templates/index.html:329
 msgid "scans code-barres par semaine"
 msgstr "barcode scans per week"
 
-#: project/templates/auth/signup.html:133 project/templates/index.html:332
+#: project/templates/auth/signup.html:133 project/templates/index.html:333
 msgid "mois d'historique des prêts"
 msgstr "months of loan history"
 
-#: project/templates/index.html:336
+#: project/templates/index.html:337
 msgid "Exports Excel & étiquettes de bacs réservés"
 msgstr "Excel exports & book bin labels reserved"
 
-#: project/templates/index.html:343
+#: project/templates/index.html:344
 msgid "Commencer gratuitement"
 msgstr "Start for free"
 
-#: project/templates/index.html:353
+#: project/templates/index.html:354
 msgid "Accès complet"
 msgstr "Full access"
 
-#: project/templates/index.html:358
+#: project/templates/index.html:359
 msgid "Abonnement Premium"
 msgstr "Premium Subscription"
 
-#: project/templates/index.html:359
-msgid "Dès 2.50 CHF/mois"
-msgstr "From 2.50 CHF/month"
+#: project/templates/index.html:360
+msgid "Sans engagement"
+msgstr "No commitment"
 
-#: project/templates/index.html:362
+#: project/templates/index.html:363
 msgid "Pour une utilisation sans aucune limite et tous les outils pédagogiques."
 msgstr "For unlimited usage and all educational tools."
 
-#: project/templates/index.html:367
-msgid "an (ou 5.-/mois)"
-msgstr "year (or 5.-/month)"
+#: project/templates/index.html:368
+msgid "mois (ou 30.-/an, 2 mois gratuits)"
+msgstr "month (or 30.-/year, 2 months free)"
 
-#: project/templates/index.html:373
+#: project/templates/index.html:374
 msgid "Élèves et livres illimités"
 msgstr "Unlimited students and books"
 
-#: project/templates/index.html:377
+#: project/templates/index.html:378
 msgid "Scans codes-barres illimités"
 msgstr "Unlimited barcode scans"
 
-#: project/templates/index.html:381
+#: project/templates/index.html:382
 msgid "Historique et archives illimitées"
 msgstr "Unlimited history and archives"
 
-#: project/templates/index.html:385
+#: project/templates/index.html:386
 msgid "Exports complets Excel pour vos bilans"
 msgstr "Full Excel exports for your reports"
 
-#: project/templates/index.html:389
+#: project/templates/index.html:390
 msgid "Planches d'étiquettes de bacs & codes-barres"
 msgstr "Bin label sheets & barcodes"
 
-#: project/templates/index.html:396
+#: project/templates/index.html:397
 msgid "Voir le détail des tarifs & offres"
 msgstr "View pricing & plan details"
 
-#: project/templates/index.html:407
+#: project/templates/index.html:408
 msgid "Consulter le comparatif détaillé de toutes les fonctionnalités"
 msgstr "View full detailed feature comparison"
 
-#: project/templates/index.html:414
+#: project/templates/index.html:415
 msgid "Ressources & Guides pour les Enseignants"
 msgstr "Resources & Guides for Teachers"
 
-#: project/templates/index.html:420
+#: project/templates/index.html:421
 msgid "Guides et Pédagogie"
 msgstr "Guides & Pedagogy"
 
-#: project/templates/index.html:422
+#: project/templates/index.html:423
 msgid ""
 "Accédez à nos fiches pratiques d'organisation pour votre classe : choix "
 "du classement (par couleur ou par genre), gestion des prêts physiques, et"
@@ -1329,15 +1339,15 @@ msgstr ""
 "color or genre), managing physical loans, and tips for daily reading "
 "routines."
 
-#: project/templates/index.html:427
+#: project/templates/index.html:428
 msgid "Consulter nos Guides"
 msgstr "Browse our Guides"
 
-#: project/templates/index.html:437
+#: project/templates/index.html:438
 msgid "Le Blog d'actualités"
 msgstr "The News Blog"
 
-#: project/templates/index.html:439
+#: project/templates/index.html:440
 msgid ""
 "Retrouvez nos sélections de livres jeunesse pour le CP, des conseils pour"
 " installer des bacs de lecture inspirants, et des astuces concrètes "
@@ -1346,19 +1356,19 @@ msgstr ""
 "Discover children's book selections, tips for setting up inviting book "
 "bins, and practical advice written by teachers for teachers."
 
-#: project/templates/index.html:444
+#: project/templates/index.html:445
 msgid "Lire le Blog"
 msgstr "Read the Blog"
 
-#: project/templates/index.html:454
+#: project/templates/index.html:455
 msgid "Toutes vos fonctionnalités"
 msgstr "All your features"
 
-#: project/templates/index.html:458
+#: project/templates/index.html:459
 msgid "Scan ISBN ultra rapide"
 msgstr "Ultra-fast ISBN scan"
 
-#: project/templates/index.html:459
+#: project/templates/index.html:460
 msgid ""
 "Ajoutez un livre en 2 secondes grâce à la caméra de votre smartphone. "
 "Titre et image récupérés automatiquement."
@@ -1366,19 +1376,19 @@ msgstr ""
 "Add a book in 2 seconds using your smartphone camera. Title and cover are"
 " retrieved automatically."
 
-#: project/templates/index.html:460
+#: project/templates/index.html:461
 msgid "Gestion des prêts"
 msgstr "Loan management"
 
-#: project/templates/index.html:461
+#: project/templates/index.html:462
 msgid "Prêtez et récupérez des livres d'un simple clic pour un suivi rigoureux."
 msgstr "Loan and return books with a single click for accurate tracking."
 
-#: project/templates/index.html:462
+#: project/templates/index.html:463
 msgid "Historique des emprunts"
 msgstr "Loan history"
 
-#: project/templates/index.html:463
+#: project/templates/index.html:464
 msgid ""
 "Gardez une trace de tous les livres empruntés par chaque élève tout au "
 "long de l'année."
@@ -1386,11 +1396,11 @@ msgstr ""
 "Keep track of all books borrowed by each student throughout the school "
 "year."
 
-#: project/templates/index.html:468
+#: project/templates/index.html:469
 msgid "Recherche instantanée"
 msgstr "Instant search"
 
-#: project/templates/index.html:469
+#: project/templates/index.html:470
 msgid ""
 "Retrouvez un livre ou un élève dans votre catalogue en une fraction de "
 "seconde grâce à notre moteur de recherche rapide."
@@ -1398,21 +1408,21 @@ msgstr ""
 "Find any book or student in your catalog in a split second thanks to our "
 "fast search engine."
 
-#: project/templates/index.html:470
+#: project/templates/index.html:471
 msgid "Gestion des élèves"
 msgstr "Student management"
 
-#: project/templates/index.html:471
+#: project/templates/index.html:472
 msgid ""
 "Importez facilement votre liste de classe et créez des profils "
 "individuels."
 msgstr "Easily import your class list and create individual student profiles."
 
-#: project/templates/index.html:472
+#: project/templates/index.html:473
 msgid "Statistiques de lecture"
 msgstr "Reading statistics"
 
-#: project/templates/index.html:473
+#: project/templates/index.html:474
 msgid ""
 "Identifiez les livres pédagogiques les plus populaires et les élèves les "
 "plus assidus avec le tableau de bord interactif."
@@ -1420,49 +1430,49 @@ msgstr ""
 "Identify the most popular educational books and most active readers with "
 "the interactive dashboard."
 
-#: project/templates/index.html:478 project/templates/index.html:661
+#: project/templates/index.html:479 project/templates/index.html:665
 #: project/templates/ressources/marque_pages.html:355
 msgid "Créer ma bibliothèque"
 msgstr "Create my library"
 
-#: project/templates/index.html:484
+#: project/templates/index.html:485
 msgid "Livres en Classe vs. Excel"
 msgstr "Livres en Classe vs. Excel"
 
-#: project/templates/index.html:489
+#: project/templates/index.html:490
 #: project/templates/subscription/tarifs.html:389
 msgid "Fonctionnalité"
 msgstr "Feature"
 
-#: project/templates/index.html:490
+#: project/templates/index.html:491
 msgid "Excel / Papier"
 msgstr "Excel / Paper"
 
-#: project/templates/index.html:496
+#: project/templates/index.html:497
 msgid "Ajout de livre par code-barres"
 msgstr "Barcode book adding"
 
-#: project/templates/index.html:501
+#: project/templates/index.html:502
 msgid "Récupération auto de l'auteur et du titre"
 msgstr "Auto-fetch author and title"
 
-#: project/templates/index.html:506
+#: project/templates/index.html:507
 msgid "Consultable partout (Mobile / PC)"
 msgstr "Accessible everywhere (Mobile / PC)"
 
-#: project/templates/index.html:511
+#: project/templates/index.html:512
 msgid "Statistiques automatiques de lecture"
 msgstr "Automatic reading statistics"
 
-#: project/templates/index.html:516
+#: project/templates/index.html:517
 msgid "Recherche rapide et filtre instantané"
 msgstr "Fast search and instant filtering"
 
-#: project/templates/index.html:528
+#: project/templates/index.html:529
 msgid "Ressources et guides pratiques pour votre classe"
 msgstr "Practical resources and guides for your classroom"
 
-#: project/templates/index.html:530
+#: project/templates/index.html:531
 msgid ""
 "Retrouvez nos méthodologies, nos sélections de lecture et nos outils "
 "imprimables gratuits pour animer votre bibliothèque scolaire."
@@ -1470,11 +1480,11 @@ msgstr ""
 "Find our methodologies, reading selections, and free printable tools to "
 "bring your school library to life."
 
-#: project/templates/index.html:539
+#: project/templates/index.html:540
 msgid "Guides Enseignants"
 msgstr "Teacher Guides"
 
-#: project/templates/index.html:542
+#: project/templates/index.html:543
 msgid ""
 "Conseils d'aménagement, choix du mobilier et rituels d'autonomie pour "
 "structurer le coin lecture."
@@ -1482,23 +1492,23 @@ msgstr ""
 "Layout tips, furniture choices, and reading routines to structure your "
 "reading corner."
 
-#: project/templates/index.html:547
+#: project/templates/index.html:548
 msgid "Guide complet de la bibliothèque"
 msgstr "Complete classroom library guide"
 
-#: project/templates/index.html:552
+#: project/templates/index.html:553
 msgid "Comment classer les livres ?"
 msgstr "How to organize books?"
 
-#: project/templates/index.html:558
+#: project/templates/index.html:559
 msgid "Explorer l'espace enseignants"
 msgstr "Explore the teachers area"
 
-#: project/templates/index.html:569
+#: project/templates/index.html:570
 msgid "Outils Imprimables"
 msgstr "Printable Tools"
 
-#: project/templates/index.html:572
+#: project/templates/index.html:573
 msgid ""
 "Générez en quelques clics des documents pédagogiques prêts à imprimer en "
 "PDF pour vos élèves."
@@ -1506,27 +1516,27 @@ msgstr ""
 "Generate print-ready PDF educational materials for your students in a few"
 " clicks."
 
-#: project/templates/index.html:577
+#: project/templates/index.html:578
 msgid "Diplôme de lecture personnalisé"
 msgstr "Customizable reading certificate"
 
-#: project/templates/index.html:582
+#: project/templates/index.html:583
 msgid "Marque-pages d'emprunt et avis"
 msgstr "Checkout bookmarks and reviews"
 
-#: project/templates/index.html:587
+#: project/templates/index.html:588
 msgid "Charte du coin lecture"
 msgstr "Reading corner charter"
 
-#: project/templates/index.html:593
+#: project/templates/index.html:594
 msgid "Voir tous les outils gratuits"
 msgstr "View all free tools"
 
-#: project/templates/index.html:604
+#: project/templates/index.html:605
 msgid "Le Blog de la Classe"
 msgstr "The Classroom Blog"
 
-#: project/templates/index.html:607
+#: project/templates/index.html:608
 msgid ""
 "Sélections littéraires par cycle, rituels pour motiver les petits "
 "lecteurs et retours d'expérience."
@@ -1534,27 +1544,44 @@ msgstr ""
 "Book selections by grade, routines to engage young readers, and teacher "
 "experiences."
 
-#: project/templates/index.html:612
+#: project/templates/index.html:613
 msgid "Comment donner envie de lire ?"
 msgstr "How to inspire a love of reading?"
 
-#: project/templates/index.html:617
+#: project/templates/index.html:618
 msgid "Les 10 meilleurs livres pour le CP"
 msgstr "Top 10 books for 1st grade"
 
-#: project/templates/index.html:623
+#: project/templates/index.html:624
 msgid "Découvrir tous les articles"
 msgstr "Discover all articles"
 
-#: project/templates/index.html:633
+#: project/templates/index.html:634
 msgid "Questions Fréquentes"
 msgstr "Frequently Asked Questions"
 
-#: project/templates/index.html:651
+#: project/templates/index.html:642
+#: project/templates/subscription/tarifs.html:441
+msgid "Pourquoi existe-t-il une formule payante ?"
+msgstr "Why is there a paid plan?"
+
+#: project/templates/index.html:643
+#: project/templates/subscription/tarifs.html:444
+msgid ""
+"L'abonnement permet simplement de couvrir les frais d'hébergement des "
+"serveurs et d'améliorer l'application au quotidien, notamment pour "
+"financer les services de reconnaissance automatique des livres lors du "
+"scan."
+msgstr ""
+"The subscription simply covers server hosting costs and day-to-day "
+"application improvements, particularly to fund automatic book recognition"
+" services during scanning."
+
+#: project/templates/index.html:655
 msgid "Prêt à gérer votre bibliothèque scolaire ?"
 msgstr "Ready to manage your school library?"
 
-#: project/templates/index.html:652
+#: project/templates/index.html:656
 msgid ""
 "Installez l'application sur votre appareil pour un accès plus rapide, ou "
 "testez-la directement en ligne."
@@ -1562,24 +1589,29 @@ msgstr ""
 "Install the app on your device for faster access, or try it directly "
 "online."
 
-#: project/templates/index.html:658 project/templates/utils/app_install.html:13
+#: project/templates/index.html:662 project/templates/utils/app_install.html:13
 #: project/templates/utils/app_install.html:20
 msgid "Installer l'application"
 msgstr "Install the app"
 
 #: project/templates/mentions-legales.html:7
 #: project/templates/mentions-legales.html:19
-msgid "Mentions Légales | Livres en Classe"
-msgstr "Legal Notice | Livres en Classe"
+#, fuzzy
+msgid "Mentions Légales & Confidentialité | Livres en Classe"
+msgstr "Legal notice and privacy policy of Livres en Classe."
 
 #: project/templates/mentions-legales.html:8
 #: project/templates/mentions-legales.html:20
-msgid "Mentions légales et politique de confidentialité de Livres en Classe."
+#, fuzzy
+msgid ""
+"Mentions légales, conditions générales d'utilisation, politique de "
+"confidentialité LPD/RGPD et conditions de vente de Livres en Classe."
 msgstr "Legal notice and privacy policy of Livres en Classe."
 
 #: project/templates/mentions-legales.html:33
-msgid "Mentions Légales"
-msgstr "Legal Notice"
+#, fuzzy
+msgid "Mentions Légales & Conditions Générales"
+msgstr "Legal Information & Contact"
 
 #: project/templates/mentions-legales.html:38
 msgid "Informations légales & Contact"
@@ -1589,33 +1621,44 @@ msgstr "Legal Information & Contact"
 msgid "Éditeur du service :"
 msgstr "Service Publisher:"
 
+#: project/templates/mentions-legales.html:41
+msgid "créateur et éditeur indépendant de Livres en Classe"
+msgstr ""
+
 #: project/templates/mentions-legales.html:42
 msgid "Contact e-mail :"
 msgstr "Contact Email:"
 
 #: project/templates/mentions-legales.html:43
-msgid "Dépôt GitHub :"
-msgstr "GitHub Repository:"
-
-#: project/templates/mentions-legales.html:44
 msgid "Localisation :"
 msgstr "Location:"
 
+#: project/templates/mentions-legales.html:43
+msgid ""
+"Canton de Vaud, Suisse (adresse de contact postale communiquée sur "
+"demande préalable par e-mail)"
+msgstr ""
+
 #: project/templates/mentions-legales.html:44
-msgid "Canton de Vaud, Suisse"
-msgstr "Canton of Vaud, Switzerland"
+msgid "Dépôt GitHub :"
+msgstr "GitHub Repository:"
 
 #: project/templates/mentions-legales.html:52
-msgid "1. CONDITIONS GÉNÉRALES D'UTILISATION"
+#, fuzzy
+msgid "1. CONDITIONS GÉNÉRALES D'UTILISATION (CGU)"
 msgstr "1. GENERAL TERMS OF USE"
 
 #: project/templates/mentions-legales.html:55
+#, fuzzy
 msgid ""
 "Le présent site web et ses services associés sont proposés sous réserve "
 "de votre acceptation pleine et entière des présentes conditions générales"
 " d'utilisation. En accédant au service, en créant un compte ou en "
 "naviguant sur le site, l'Utilisateur reconnaît avoir pris connaissance "
-"des présentes conditions et s'engage à les respecter sans réserve."
+"des présentes conditions et s'engage à les respecter sans réserve. Le "
+"service s'adresse en priorité aux enseignants, directeurs d'école, "
+"documentalistes et professionnels de l'éducation désireux d'administrer "
+"une bibliothèque de classe ou scolaire."
 msgstr ""
 "This website and its associated services are offered subject to your full"
 " and unconditional acceptance of these terms of use. By accessing the "
@@ -1628,24 +1671,26 @@ msgid "2. PROPRIÉTÉ INTELLECTUELLE & LICENCE DU CODE SOURCE"
 msgstr "2. INTELLECTUAL PROPERTY & SOURCE CODE LICENSE"
 
 #: project/templates/mentions-legales.html:66
+#, fuzzy
 msgid ""
-"L'application Livres en Classe, ses contenus, son architecture et son "
-"code source sont protégés par les lois relatives à la propriété "
-"intellectuelle et le droit d'auteur (Copyright 2024-2026 Robin "
-"Forestier)."
+"L'application Livres en Classe, son design, son architecture logicielle, "
+"ses logos et ses textes originaux sont protégés par le droit d'auteur et "
+"les lois applicables en matière de propriété intellectuelle (Copyright "
+"2024-2026 Robin Forestier)."
 msgstr ""
 "The Livres en Classe application, its contents, architecture, and source "
 "code are protected by intellectual property and copyright laws (Copyright"
 " 2024-2026 Robin Forestier)."
 
 #: project/templates/mentions-legales.html:69
+#, fuzzy
 msgid ""
 "Le code source de l'application est mis à disposition publiquement sous "
-"licence PolyForm Noncommercial License 1.0.0. Cette licence autorise "
-"toute personne physique ou morale à consulter, exécuter, modifier et "
-"redistribuer le logiciel exclusivement à des fins non commerciales, "
-"personnelles ou éducatives (notamment pour les enseignants et "
-"établissements scolaires)."
+"licence PolyForm Noncommercial License 1.0.0. Conformément aux termes de "
+"cette licence, toute personne physique ou morale est autorisée à "
+"utiliser, exécuter, copier, modifier et redistribuer le logiciel "
+"exclusivement à des fins personnelles ou non commerciales, notamment dans"
+" le cadre éducatif pour la classe."
 msgstr ""
 "The application's source code is publicly available under the PolyForm "
 "Noncommercial License 1.0.0. This license authorizes individuals and "
@@ -1654,17 +1699,34 @@ msgstr ""
 "(specifically for teachers and schools)."
 
 #: project/templates/mentions-legales.html:72
+#, fuzzy
 msgid ""
-"Toute exploitation commerciale, monétisation, revente, hébergement payant"
-" ou utilisation concurrente du logiciel ou de ses dérivés est strictement"
-" interdite sans autorisation écrite préalable et expresse du titulaire "
-"des droits."
+"Toute utilisation commerciale directe ou indirecte, monétisation, "
+"revente, hébergement payant ou exploitation concurrente du logiciel ou de"
+" ses dérivés est strictement interdite sans autorisation écrite préalable"
+" et expresse du titulaire des droits."
 msgstr ""
 "Any commercial exploitation, monetization, resale, paid hosting, or "
 "competing use of the software or its derivatives is strictly prohibited "
 "without prior express written authorization from the rights holder."
 
 #: project/templates/mentions-legales.html:75
+msgid ""
+"L'application intègre également des bibliothèques et frameworks tiers "
+"open source (notamment Flask sous licence BSD, Bulma sous licence MIT, "
+"FontAwesome) qui demeurent soumis à leurs licences respectives."
+msgstr ""
+
+#: project/templates/mentions-legales.html:78
+msgid ""
+"Les métadonnées bibliographiques (titres, résumés, auteurs, couvertures) "
+"issues d'API publiques et de services partenaires externes (Google Books,"
+" BNF, Decitre) demeurent la propriété de leurs auteurs, éditeurs ou "
+"ayants droit respectifs et sont présentées exclusivement à des fins de "
+"catalogage et d'illustration pédagogique."
+msgstr ""
+
+#: project/templates/mentions-legales.html:81
 msgid ""
 "Le logiciel est fourni « tel quel », sans garantie d'aucune sorte. En "
 "aucun cas l'auteur ou le titulaire des droits ne peut être tenu "
@@ -1675,25 +1737,28 @@ msgstr ""
 "circumstances shall the author or copyright holder be liable for any "
 "direct or indirect damages arising from the use of the software."
 
-#: project/templates/mentions-legales.html:79
-msgid "Consulter le texte complet de la licence PolyForm Noncommercial 1.0.0"
+#: project/templates/mentions-legales.html:85
+#, fuzzy
+msgid "Consulter le texte officiel de la licence PolyForm Noncommercial 1.0.0"
 msgstr "View the full PolyForm Noncommercial License 1.0.0 text"
 
-#: project/templates/mentions-legales.html:88
-msgid "3. LIENS HYPERTEXTES ET SITES TIERS"
+#: project/templates/mentions-legales.html:94
+#, fuzzy
+msgid "3. LIENS HYPERTEXTES ET RESSOURCES DE TIERS"
 msgstr "3. HYPERLINKS AND THIRD-PARTY SITES"
 
-#: project/templates/mentions-legales.html:91
+#: project/templates/mentions-legales.html:97
+#, fuzzy
 msgid ""
 "Ce site peut contenir des liens hypertextes renvoyant vers des sites "
-"internet ou des ressources externes tiers (notamment des éditeurs, des "
-"APIs publiques ou des services partenaires). Nous n'exerçons aucun "
-"contrôle sur le contenu, le fonctionnement ou les politiques de "
-"confidentialité de ces sites tiers. En conséquence, nous déclinons toute "
-"responsabilité quant aux contenus, publicités, produits ou services "
-"disponibles sur ou à partir de ces sites externes. L'inclusion d'un lien "
-"ne constitue en aucun cas une validation ou une recommandation de son "
-"contenu."
+"internet ou ressources externes de tiers (notamment des éditeurs, des API"
+" publiques, des documents pédagogiques ou des partenaires). Nous "
+"n'exerçons aucun contrôle sur le contenu, la disponibilité ou les "
+"politiques de confidentialité de ces sites tiers. En conséquence, nous "
+"déclinons toute responsabilité quant aux contenus, publicités, produits "
+"ou services disponibles sur ou à partir de ces ressources externes. "
+"L'inclusion d'un lien ne constitue en aucun cas une validation ou une "
+"recommandation de son contenu."
 msgstr ""
 "This site may contain hyperlinks leading to third-party external websites"
 " or resources (including publishers, public APIs, or partner services). "
@@ -1703,11 +1768,11 @@ msgstr ""
 "from these external sites. The inclusion of a link in no way implies "
 "endorsement or recommendation of its content."
 
-#: project/templates/mentions-legales.html:99
+#: project/templates/mentions-legales.html:105
 msgid "4. UTILISATION LICITE ET RESPONSABILITÉ DE L'UTILISATEUR"
 msgstr "4. LAWFUL USE AND USER RESPONSIBILITY"
 
-#: project/templates/mentions-legales.html:102
+#: project/templates/mentions-legales.html:108
 msgid ""
 "L'Utilisateur s'engage à utiliser le site et l'ensemble de ses "
 "fonctionnalités conformément aux lois et réglementations en vigueur en "
@@ -1723,11 +1788,12 @@ msgstr ""
 "manner that infringes on the rights of third parties or compromises the "
 "security of information systems."
 
-#: project/templates/mentions-legales.html:110
-msgid "5. ESPACES INTERACTIFS ET RÈGLES DE CONDUITE"
+#: project/templates/mentions-legales.html:116
+#, fuzzy
+msgid "5. ESPACES INTERACTIFS, RÈGLES DE CONDUITE ET MODÉRATION"
 msgstr "5. INTERACTIVE SPACES AND CODE OF CONDUCT"
 
-#: project/templates/mentions-legales.html:113
+#: project/templates/mentions-legales.html:119
 msgid ""
 "Dans le cadre de l'utilisation des formulaires de contact, de retour "
 "d'expérience ou de toute fonctionnalité interactive mise à disposition "
@@ -1736,7 +1802,7 @@ msgstr ""
 "When using contact forms, feedback tools, or any interactive features "
 "provided on the platform, the User agrees to:"
 
-#: project/templates/mentions-legales.html:116
+#: project/templates/mentions-legales.html:122
 msgid ""
 "Ne pas publier, transmettre ou diffuser de messages haineux, "
 "diffamatoires, menaçants, obscènes ou contraires à l'ordre public."
@@ -1744,7 +1810,7 @@ msgstr ""
 "Not publish, transmit, or distribute hateful, defamatory, threatening, "
 "obscene, or unlawful messages."
 
-#: project/templates/mentions-legales.html:117
+#: project/templates/mentions-legales.html:123
 msgid ""
 "Ne pas télécharger ni transmettre de fichiers contenant des virus "
 "informatiques, des logiciels malveillants ou des scripts susceptibles "
@@ -1753,7 +1819,7 @@ msgstr ""
 "Not upload or transmit files containing computer viruses, malware, or "
 "scripts capable of impairing the proper functioning of the service."
 
-#: project/templates/mentions-legales.html:118
+#: project/templates/mentions-legales.html:124
 msgid ""
 "Ne pas usurper l'identité d'un tiers ni fournir d'informations "
 "délibérément inexactes lors de son inscription."
@@ -1761,32 +1827,36 @@ msgstr ""
 "Not impersonate any third party or provide deliberately inaccurate "
 "information upon registration."
 
-#: project/templates/mentions-legales.html:119
+#: project/templates/mentions-legales.html:125
 msgid ""
 "Respecter la confidentialité et les droits de propriété intellectuelle "
 "d'autrui."
 msgstr "Respect the privacy and intellectual property rights of others."
 
-#: project/templates/mentions-legales.html:122
+#: project/templates/mentions-legales.html:128
 msgid ""
-"Nous nous réservons le droit de supprimer tout contenu contrevenant à ces"
-" règles et de suspendre l'accès de l'utilisateur concerné sans préavis."
+"En cas de violation caractérisée des présentes règles, atteinte à la "
+"sécurité du système ou comportement illicite, nous nous réservons le "
+"droit de supprimer les contenus litigieux et de suspendre ou clôturer le "
+"compte concerné. Sauf urgence manifeste liée à la sécurité des données ou"
+" obligation légale impérative, l'Utilisateur sera informé par e-mail des "
+"motifs de la mesure et disposera d'une possibilité de contestation en "
+"écrivant à livresenclasse@gmail.com."
 msgstr ""
-"We reserve the right to remove any content violating these rules and "
-"suspend access for the user concerned without prior notice."
 
-#: project/templates/mentions-legales.html:130
+#: project/templates/mentions-legales.html:136
 msgid "6. LIMITATION DE RESPONSABILITÉ"
 msgstr "6. LIMITATION OF LIABILITY"
 
-#: project/templates/mentions-legales.html:133
+#: project/templates/mentions-legales.html:139
+#, fuzzy
 msgid ""
 "Les fonctionnalités et informations de Livres en Classe sont fournies "
 "avec soin afin d'accompagner au mieux les enseignants. Toutefois, le "
 "service est fourni « en l'état ». Nous ne pouvons garantir une "
 "disponibilité continue et ininterrompue de la plateforme, ni l'absence "
 "absolue d'anomalies techniques ou d'inexactitudes dans les fiches "
-"bibliographiques issues d'APIs externes."
+"bibliographiques issues d'API externes."
 msgstr ""
 "The features and information of Livres en Classe are provided with care "
 "to best support educators. However, the service is provided 'as is'. We "
@@ -1794,31 +1864,36 @@ msgstr ""
 "platform, nor the complete absence of technical anomalies or inaccuracies"
 " in bibliographic records obtained from external APIs."
 
-#: project/templates/mentions-legales.html:136
+#: project/templates/mentions-legales.html:142
+#, fuzzy
 msgid ""
 "Dans les limites permises par la législation applicable, notre "
 "responsabilité ne saurait être engagée en cas de perte indirecte de "
 "données, d'interruption temporaire d'activité ou de tout dommage "
-"résultant de l'utilisation ou de l'impossibilité d'utiliser le service."
+"résultant de l'utilisation ou de l'impossibilité d'utiliser le service. "
+"Rien dans les présentes conditions ne saurait toutefois exclure ou "
+"limiter la responsabilité de l'Éditeur en cas de dol, de faute grave ou "
+"de toute autre responsabilité ne pouvant être légalement exclue ou "
+"limitée en vertu du droit suisse impératif (notamment l'article 100 "
+"alinéa 1 du Code des obligations suisse)."
 msgstr ""
 "To the fullest extent permitted by applicable law, our liability shall "
 "not be incurred in the event of indirect data loss, temporary business "
 "interruption, or any damages arising from the use or inability to use the"
 " service."
 
-#: project/templates/mentions-legales.html:144
-msgid "7. DISPONIBILITÉ DU SERVICE ET RESTRICTION D'ACCÈS"
+#: project/templates/mentions-legales.html:150
+#, fuzzy
+msgid "7. DISPONIBILITÉ DU SERVICE ET RÉSILIATION DU COMPTE"
 msgstr "7. SERVICE AVAILABILITY AND ACCESS RESTRICTION"
 
-#: project/templates/mentions-legales.html:147
+#: project/templates/mentions-legales.html:153
+#, fuzzy
 msgid ""
 "Nous nous réservons le droit d'interrompre temporairement l'accès au site"
 " ou à certaines fonctionnalités pour des raisons de maintenance, de mise "
 "à jour ou d'amélioration technique, sans que cette interruption ne puisse"
-" ouvrir droit à une indemnisation. Nous nous réservons également le droit"
-" de restreindre ou de résilier unilatéralement l'accès au compte d'un "
-"utilisateur en cas de violation grave ou répétée des présentes conditions"
-" d'utilisation."
+" ouvrir droit à une indemnisation."
 msgstr ""
 "We reserve the right to temporarily interrupt access to the site or "
 "specific features for maintenance, updates, or technical improvements, "
@@ -1826,52 +1901,215 @@ msgstr ""
 "right to unilaterally restrict or terminate access to a user account in "
 "the event of a material or repeated breach of these terms of use."
 
-#: project/templates/mentions-legales.html:155
-msgid "8. ACCÈS AUX DONNÉES PERSONNELLES & CONFIDENTIALITÉ"
-msgstr "8. ACCESS TO PERSONAL DATA & PRIVACY"
-
-#: project/templates/mentions-legales.html:158
+#: project/templates/mentions-legales.html:156
 msgid ""
-"En vertu de la législation suisse sur la protection des données (LPD) et "
-"du RGPD le cas échéant, l'Utilisateur dispose d'un droit d'accès, de "
-"rectification, de suppression et de portabilité de ses données "
-"personnelles. Les données collectées (notamment l'adresse e-mail et le "
-"nom) sont strictement destinées au fonctionnement du service et à l'envoi"
-" des notifications contractuelles d'abonnement. Pour le traitement des "
-"paiements, notre sous-traitant Stripe opère en conformité avec les "
-"réglementations de protection des données financières. Pour exercer vos "
-"droits, vous pouvez nous écrire à livresenclasse@gmail.com."
+"Nous nous réservons également le droit de restreindre ou de résilier "
+"l'accès au compte d'un Utilisateur en cas de violation grave ou répétée "
+"des présentes conditions. En cas de résiliation unilatérale pour juste "
+"motif, les prélèvements futurs au titre d'un abonnement payant sont "
+"immédiatement interrompus. Les données du compte sont conservées pendant "
+"un délai de sécurité de 30 jours pour permettre leur restitution ou leur "
+"export sur demande écrite légitime de l'Utilisateur, avant suppression "
+"définitive, sous réserve des obligations légales de conservation."
 msgstr ""
-"Pursuant to Swiss data protection legislation (FADP) and the GDPR where "
-"applicable, the User has the right to access, rectify, delete, and port "
-"their personal data. Collected data (specifically email address and name)"
-" is strictly intended for operating the service and sending contractual "
-"subscription notifications. For payment processing, our processor Stripe "
-"operates in compliance with financial data protection regulations. To "
-"exercise your rights, you can contact us at livresenclasse@gmail.com."
 
-#: project/templates/mentions-legales.html:166
-msgid "9. MODIFICATION DES CONDITIONS ET FOR JURIDIQUE"
+#: project/templates/mentions-legales.html:164
+#, fuzzy
+msgid "8. POLITIQUE DE CONFIDENTIALITÉ & PROTECTION DES DONNÉES (LPD & RGPD)"
+msgstr "Data Preservation Guarantee:"
+
+#: project/templates/mentions-legales.html:167
+msgid ""
+"La protection de vos données personnelles et de celles de vos élèves est "
+"une priorité absolue pour Livres en Classe. Les données personnelles sont"
+" traitées aux fins de fournir et d'administrer le service Livres en "
+"Classe, de gérer les comptes utilisateurs, d'assurer les fonctionnalités "
+"de gestion des bibliothèques et des prêts, et, le cas échéant, de gérer "
+"les abonnements et les communications associées. Les traitements sont "
+"effectués en stricte conformité avec la Loi fédérale sur la protection "
+"des données (LPD) suisse révisée et, le cas échéant, avec le Règlement "
+"Général sur la Protection des Données (RGPD) de l'Union européenne."
+msgstr ""
+
+#: project/templates/mentions-legales.html:171
+#, fuzzy
+msgid "Responsable du traitement :"
+msgstr "Try for free"
+
+#: project/templates/mentions-legales.html:172
+msgid ""
+"Robin Forestier, Canton de Vaud, Suisse. Contact pour l'exercice de vos "
+"droits et la protection des données : livresenclasse@gmail.com."
+msgstr ""
+
+#: project/templates/mentions-legales.html:176
+msgid "Catégories de données collectées :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:180
+#, fuzzy
+msgid "Données du compte Enseignant :"
+msgstr "Create a teacher account"
+
+#: project/templates/mentions-legales.html:181
+msgid ""
+"Nom, prénom, adresse e-mail, mot de passe chiffré par empreinte "
+"cryptographique (hachage sécurisé), adresse IP de connexion, journaux "
+"techniques de sécurité, préférence linguistique d'affichage, ainsi que "
+"les identifiants techniques Stripe en cas de formule payante (identifiant"
+" client et abonnement)."
+msgstr ""
+
+#: project/templates/mentions-legales.html:184
+msgid "Données relatives aux Élèves :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:185
+msgid ""
+"Prénom, nom (ou pseudonyme / initiales choisis par l'enseignant), niveau "
+"ou désignation de la classe. Aucune donnée sensible concernant les "
+"enfants (telle que date de naissance, adresse postale, situation "
+"familiale ou résultats scolaires) n'est collectée ni traitée. Livres en "
+"Classe encourage expressément les enseignants à n'utiliser que des "
+"prénoms ou des pseudonymes dans le cadre du principe de minimisation des "
+"données."
+msgstr ""
+
+#: project/templates/mentions-legales.html:188
+#, fuzzy
+msgid "Données relatives à la bibliothèque :"
+msgstr "Manage the Library"
+
+#: project/templates/mentions-legales.html:189
+msgid ""
+"Livres enregistrés (titres, auteurs, éditeurs, codes ISBN), codes-barres "
+"internes de la classe, historique et dates des emprunts et des retours."
+msgstr ""
+
+#: project/templates/mentions-legales.html:194
+msgid "Finalités et bases juridiques des traitements :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:197
+msgid ""
+"Fourniture et administration du service, gestion du catalogue de livres "
+"et suivi des prêts scolaires (exécution contractuelle / CGU)."
+msgstr ""
+
+#: project/templates/mentions-legales.html:198
+msgid ""
+"Gestion des abonnements et facturation sécurisée via Stripe (exécution "
+"contractuelle et obligations légales de tenue comptable)."
+msgstr ""
+
+#: project/templates/mentions-legales.html:199
+msgid ""
+"Sécurisation de la plateforme, prévention de la fraude et détection "
+"d'éventuels abus (intérêt légitime)."
+msgstr ""
+
+#: project/templates/mentions-legales.html:200
+msgid ""
+"Envoi de communications transactionnelles indispensables (vérification "
+"d'e-mail, réinitialisation de mot de passe, alertes d'abonnement)."
+msgstr ""
+
+#: project/templates/mentions-legales.html:204
+msgid "Destinataires et transferts à l'étranger :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:205
+msgid ""
+"Les données collectées sont hébergées sur des serveurs sécurisés situés "
+"en Europe. Les paiements sont opérés par notre sous-traitant Stripe "
+"(Stripe Payments Europe, Ltd. en Irlande et Stripe, Inc. aux États-Unis, "
+"sous le couvert du Data Privacy Framework Suisse-USA et UE-USA ou de "
+"clauses contractuelles types). Aucune donnée personnelle n'est vendue, "
+"louée, commercialisée ni cédée à des tiers à des fins publicitaires ou de"
+" prospection."
+msgstr ""
+
+#: project/templates/mentions-legales.html:209
+#, fuzzy
+msgid "Durées de conservation :"
+msgstr "Lending dates:"
+
+#: project/templates/mentions-legales.html:212
+msgid ""
+"Données de compte et de classe (élèves, livres, prêts) : conservées tant "
+"que le compte de l'Utilisateur demeure actif."
+msgstr ""
+
+#: project/templates/mentions-legales.html:213
+msgid ""
+"Suppression immédiate : lors de la suppression de son compte par "
+"l'Utilisateur depuis ses réglages, l'ensemble de ses données (élèves, "
+"livres, historique des prêts, avis) est supprimé immédiatement et "
+"irréversiblement."
+msgstr ""
+
+#: project/templates/mentions-legales.html:214
+msgid ""
+"Comptes non vérifiés : les comptes créés sans confirmation de l'adresse "
+"e-mail sont purgés automatiquement après un délai de 7 jours."
+msgstr ""
+
+#: project/templates/mentions-legales.html:215
+msgid ""
+"Données comptables et de facturation : conservées pendant 10 ans "
+"conformément aux obligations comptables et fiscales du droit suisse."
+msgstr ""
+
+#: project/templates/mentions-legales.html:219
+msgid "Droits des personnes concernées et réclamations :"
+msgstr ""
+
+#: project/templates/mentions-legales.html:220
+msgid ""
+"Conformément à la LPD suisse et au RGPD le cas échéant, vous disposez "
+"d'un droit d'accès, de rectification, d'effacement et de limitation du "
+"traitement de vos données personnelles, ainsi que d'un droit à la remise "
+"ou à la transmission de vos données (portabilité) dans les limites "
+"prévues par les lois applicables (art. 28 LPD, art. 20 RGPD). Vous pouvez"
+" exporter à tout moment vos données de livres et d'emprunts au format "
+"Excel depuis votre interface ou nous contacter à livresenclasse@gmail.com"
+" pour toute demande relative à vos données. Vous disposez également du "
+"droit de déposer une réclamation auprès de l'autorité compétente en "
+"Suisse, le Préposé fédéral à la protection des données et à la "
+"transparence (PFPDT, Feldeggweg 1, CH-3003 Berne, www.edoeb.admin.ch), ou"
+" auprès de l'autorité de protection des données compétente de votre lieu "
+"de résidence dans l'Union européenne (telle que la CNIL en France)."
+msgstr ""
+
+#: project/templates/mentions-legales.html:228
+#, fuzzy
+msgid "9. MODIFICATION DES CONDITIONS, DROIT APPLICABLE ET FOR JURIDIQUE"
 msgstr "9. AMENDMENT OF TERMS AND JURISDICTION"
 
-#: project/templates/mentions-legales.html:169
+#: project/templates/mentions-legales.html:231
+#, fuzzy
 msgid ""
 "Nous nous réservons le droit de modifier les présentes conditions à tout "
 "moment afin de les adapter aux évolutions du service ou aux modifications"
-" législatives. La version à jour est consultable en permanence sur cette "
-"page."
+" législatives. La version en vigueur est accessible en permanence sur "
+"cette page. En cas de modification substantielle, les utilisateurs "
+"enregistrés en seront avertis par e-mail ou par notification sur le site."
 msgstr ""
 "We reserve the right to modify these terms at any time to adapt them to "
 "service developments or legislative changes. The up-to-date version is "
 "permanently available on this page."
 
-#: project/templates/mentions-legales.html:172
+#: project/templates/mentions-legales.html:234
+#, fuzzy
 msgid ""
 "Les présentes conditions générales d'utilisation sont régies et "
 "interprétées conformément au droit suisse. En cas de litige relatif à "
-"leur validité, leur interprétation ou leur exécution, et à défaut de "
-"résolution amiable, les tribunaux compétents du canton de Vaud (Suisse) "
-"sont seuls compétents, sous réserve d'un for légal impératif."
+"leur validité, leur interprétation ou leur exécution, une résolution "
+"amiable sera systématiquement recherchée en premier lieu. À défaut "
+"d'accord amiable, les tribunaux compétents du canton de Vaud (Suisse) "
+"sont seuls compétents, sous réserve d'éventuels fors impératifs prévus "
+"par le Code de procédure civile suisse (CPC), la Convention de Lugano ou "
+"les dispositions légales impératives applicables aux consommateurs."
 msgstr ""
 "These general terms of use are governed by and construed in accordance "
 "with Swiss law. In the event of a dispute concerning their validity, "
@@ -1879,24 +2117,26 @@ msgstr ""
 "competent courts of the Canton of Vaud (Switzerland) shall have exclusive"
 " jurisdiction, subject to mandatory statutory venues."
 
-#: project/templates/mentions-legales.html:180
+#: project/templates/mentions-legales.html:242
 msgid "10. PAIEMENT, ABONNEMENTS & CONDITIONS GÉNÉRALES DE VENTE (CGV)"
 msgstr "10. PAYMENT, SUBSCRIPTIONS & GENERAL TERMS OF SALE (GTS)"
 
-#: project/templates/mentions-legales.html:183
+#: project/templates/mentions-legales.html:245
 msgid "Partenaire de paiement et sécurité bancaire :"
 msgstr "Payment Partner and Banking Security:"
 
-#: project/templates/mentions-legales.html:184
+#: project/templates/mentions-legales.html:246
+#, fuzzy
 msgid ""
 "Tous les paiements en ligne et abonnements récurrents sont opérés de "
 "manière chiffrée et sécurisée par notre prestataire agréé Stripe (Stripe "
-"Payments Europe, Ltd. / Stripe Inc.). Les données bancaires (numéro de "
-"carte, date d'expiration, cryptogramme visuel CVC) sont collectées, "
-"gérées et traitées exclusivement par Stripe conformément aux normes de "
-"sécurité les plus strictes de l'industrie bancaire (certification PCI-DSS"
-" Niveau 1). Aucune coordonnée bancaire n'est collectée, consultée ni "
-"stockée sur les serveurs de Livres en Classe."
+"Payments Europe, Ltd. pour l'Europe et la Suisse, et Stripe, Inc.). Les "
+"données bancaires (numéro de carte, date d'expiration, cryptogramme "
+"visuel CVC) sont collectées, gérées et traitées directement sur les "
+"infrastructures de Stripe, certifiées conformes aux normes PCI-DSS de "
+"niveau 1 (Payment Card Industry Data Security Standard). Aucune "
+"coordonnée bancaire complète n'est collectée, consultée ni stockée sur "
+"les serveurs de Livres en Classe."
 msgstr ""
 "All online payments and recurring subscriptions are processed in an "
 "encrypted and secure manner by our authorized provider Stripe (Stripe "
@@ -1906,40 +2146,60 @@ msgstr ""
 "standards (PCI-DSS Level 1 certification). No banking details are "
 "collected, accessed, or stored on Livres en Classe servers."
 
-#: project/templates/mentions-legales.html:188
+#: project/templates/mentions-legales.html:250
 msgid "Tarifs et durée de l'engagement :"
 msgstr "Pricing and Commitment Duration:"
 
-#: project/templates/mentions-legales.html:189
+#: project/templates/mentions-legales.html:251
+#, fuzzy
 msgid ""
 "Le service Livres en Classe propose une formule gratuite ainsi qu'un "
-"abonnement Premium disponible au tarif de 5.00 CHF par mois ou 30.00 CHF "
-"par an (tarifs indiqués en Francs Suisses toutes taxes comprises). La "
-"souscription mensuelle engage l'utilisateur pour une période d'un mois "
-"renouvelable. La souscription annuelle engage l'utilisateur pour une "
-"période ferme de douze mois. Sauf résiliation effectuée avant la date "
-"d'échéance, tout abonnement est tacitement reconduit pour une durée "
-"identique."
+"abonnement Premium disponible au tarif de 3.00 CHF par mois ou 30.00 CHF "
+"par an (tarifs indiqués en Francs Suisses toutes taxes comprises). Le "
+"prix total, la devise (CHF) et la périodicité de prélèvement sont "
+"clairement affichés sur la page des tarifs ainsi que dans le "
+"récapitulatif de commande Stripe avant tout paiement. La souscription "
+"mensuelle engage l'Utilisateur pour une période d'un mois renouvelable "
+"tacitement chaque mois à la date anniversaire. La souscription annuelle "
+"engage l'Utilisateur pour une période ferme de douze mois renouvelable "
+"tacitement chaque année à la date anniversaire."
 msgstr ""
 "The Livres en Classe service offers a free tier as well as a Premium "
-"subscription available at 5.00 CHF per month or 30.00 CHF per year "
+"subscription available at 3.00 CHF per month or 30.00 CHF per year "
 "(prices in Swiss Francs including all taxes). The monthly subscription "
 "commits the user for a renewable one-month period. The annual "
 "subscription commits the user for a firm twelve-month period. Unless "
 "canceled before the renewal date, subscriptions automatically renew for "
 "an identical duration."
 
-#: project/templates/mentions-legales.html:193
+#: project/templates/mentions-legales.html:255
+msgid "Statut Membre Fondateur :"
+msgstr "Founder Member Status:"
+
+#: project/templates/mentions-legales.html:256
+msgid ""
+"Le statut exclusif de Membre Fondateur confère un accès gratuit et "
+"illimité à l'ensemble des fonctionnalités du service à vie, sous réserve "
+"de la continuité de l'exploitation et de l'existence de la plateforme "
+"Livres en Classe."
+msgstr ""
+"The exclusive Founder Member status grants free lifetime unlimited access"
+" to all service features, subject to the continued operation and "
+"existence of the Livres en Classe platform."
+
+#: project/templates/mentions-legales.html:260
 msgid "Politique d'annulation et résiliation :"
 msgstr "Cancellation and Termination Policy:"
 
-#: project/templates/mentions-legales.html:194
+#: project/templates/mentions-legales.html:261
+#, fuzzy
 msgid ""
 "L'abonnement Premium peut être résilié à tout moment, en toute autonomie "
 "et sans frais, directement depuis les réglages de votre compte via le "
-"portail sécurisé Stripe. La résiliation prend effet à la fin de la "
-"période facturée en cours (mensuelle ou annuelle). Vous conservez l'accès"
-" à l'ensemble des fonctionnalités Premium jusqu'à cette date d'échéance."
+"portail sécurisé Stripe, jusqu'au dernier jour de la période facturée en "
+"cours. La résiliation prend effet à la fin de la période facturée en "
+"cours (mensuelle ou annuelle). Vous conservez l'accès à l'ensemble des "
+"fonctionnalités Premium jusqu'à cette date d'échéance."
 msgstr ""
 "The Premium subscription can be canceled at any time, independently and "
 "free of charge, directly from your account settings via the secure Stripe"
@@ -1947,11 +2207,11 @@ msgstr ""
 "period (monthly or yearly). You retain access to all Premium features "
 "until that expiration date."
 
-#: project/templates/mentions-legales.html:195
+#: project/templates/mentions-legales.html:262
 msgid "Politique de non-destruction des données :"
 msgstr "Data Preservation Guarantee:"
 
-#: project/templates/mentions-legales.html:196
+#: project/templates/mentions-legales.html:263
 msgid ""
 "À l'issue de la période d'abonnement, votre compte bascule "
 "automatiquement en formule gratuite. Aucune donnée n'est supprimée ni "
@@ -1964,19 +2224,52 @@ msgstr ""
 "students, and loan history remain accessible and usable; only adding new "
 "items beyond free plan limits is restricted."
 
-#: project/templates/mentions-legales.html:200
-msgid "Politique de non-remboursement :"
+#: project/templates/mentions-legales.html:267
+msgid "Modification des tarifs :"
+msgstr "Price Modifications:"
+
+#: project/templates/mentions-legales.html:268
+#, fuzzy
+msgid ""
+"Livres en Classe se réserve le droit de modifier le prix de ses "
+"abonnements. En cas de modification tarifaire applicable aux abonnements "
+"en cours, l'Utilisateur en sera informé par e-mail avec un préavis d'au "
+"moins 30 jours avant l'entrée en vigueur du nouveau tarif. Le nouveau "
+"tarif s'appliquera lors du renouvellement suivant la fin du délai de "
+"préavis. L'Utilisateur qui n'accepte pas la modification tarifaire "
+"conserve la liberté de résilier son abonnement sans frais avant la date "
+"de prise d'effet du nouveau prix, directement depuis son espace de "
+"gestion."
+msgstr ""
+"Livres en Classe reserves the right to modify the price of its "
+"subscriptions. In the event of a price change applicable to ongoing "
+"subscriptions, the user will be notified by email with at least 30 days' "
+"advance notice before the new price takes effect. The new price will "
+"apply upon the next renewal following the notice period. Users who do not"
+" agree to the price change remain free to cancel their subscription "
+"without charge before the effective date of the new price, directly from "
+"their account management area."
+
+#: project/templates/mentions-legales.html:272
+#, fuzzy
+msgid "Politique de non-remboursement et réserves légales :"
 msgstr "No-Refund Policy:"
 
-#: project/templates/mentions-legales.html:201
+#: project/templates/mentions-legales.html:273
+#, fuzzy
 msgid ""
 "Compte tenu de la fourniture immédiate d'un service numérique dès la "
-"validation de la commande et de la mise à disposition d'une formule "
-"gratuite complète permettant d'essayer la plateforme sans engagement, "
-"toute période d'abonnement entamée (mensuelle ou annuelle) est due dans "
-"son intégralité. Aucun remboursement, total ou partiel au prorata "
-"temporis, ne sera consenti en cas d'annulation en cours de période, "
-"d'interruption anticipée ou de non-utilisation du service."
+"validation de la commande et de la mise à disposition préalable d'une "
+"formule gratuite complète permettant d'essayer la plateforme sans "
+"engagement, toute période d'abonnement entamée (mensuelle ou annuelle) "
+"est due dans son intégralité. En cas de résiliation en cours de période, "
+"l'abonnement reste actif jusqu'à la fin de la période déjà payée, sans "
+"remboursement au prorata du temps restant, d'interruption anticipée ou de"
+" simple non-utilisation du service, sous réserve des dispositions légales"
+" impératives applicables et des éventuels droits de remboursement de "
+"l'Utilisateur (notamment en cas de défaut majeur imputable au service, "
+"d'indisponibilité anormale et prolongée non résolue ou d'obligation "
+"légale impérative)."
 msgstr ""
 "Given the immediate provision of digital services upon order validation "
 "and the availability of a complete free plan to evaluate the platform "
@@ -1985,11 +2278,11 @@ msgstr ""
 " granted in the event of mid-term cancellation, early termination, or "
 "non-use of the service."
 
-#: project/templates/mentions-legales.html:205
+#: project/templates/mentions-legales.html:277
 msgid "Notifications d'abonnement et facturation par e-mail :"
 msgstr "Subscription and Billing Email Notifications:"
 
-#: project/templates/mentions-legales.html:206
+#: project/templates/mentions-legales.html:278
 msgid ""
 "L'adresse e-mail associée à votre compte est utilisée pour l'envoi des "
 "communications strictement nécessaires à la gestion de votre abonnement :"
@@ -2005,11 +2298,11 @@ msgstr ""
 "communications are of a contractual and transactional nature required for"
 " service execution."
 
-#: project/templates/mentions-legales.html:210
+#: project/templates/mentions-legales.html:282
 msgid "Contact & Facturation :"
 msgstr "Contact & Billing:"
 
-#: project/templates/mentions-legales.html:211
+#: project/templates/mentions-legales.html:283
 msgid ""
 "Pour toute question relative à votre abonnement, facturation ou demande "
 "d'assistance, vous pouvez nous écrire à livresenclasse@gmail.com."
@@ -2707,7 +3000,7 @@ msgstr "Student's first name"
 #: project/templates/eleve/eleve_info.html:63
 #: project/templates/eleve/eleve_info.html:158
 #: project/templates/eleve/eleve_info.html:205
-#: project/templates/livre/livre_ajout.html:117
+#: project/templates/livre/livre_ajout.html:139
 #: project/templates/livre/livre_edit.html:127
 #: project/templates/livre/livre_edit.html:154
 #: project/templates/livre/livre_info.html:95
@@ -3183,47 +3476,70 @@ msgstr "Search for a book"
 msgid "Livre"
 msgstr "Book"
 
-#: project/templates/livre/livre_ajout.html:22
+#: project/templates/livre/livre_ajout.html:26
+msgid "Informations du livre introuvables automatiquement"
+msgstr "Book information not found automatically"
+
+#: project/templates/livre/livre_ajout.html:29
+msgid ""
+"Ce livre n'a pas été trouvé dans les bases de données publiques (Google "
+"Books, Open Library...). C'est pourquoi les champs ci-dessous n'ont pas "
+"pu être pré-remplis."
+msgstr ""
+"This book was not found in public databases (Google Books, Open "
+"Library...). That is why the fields below could not be pre-filled."
+
+#: project/templates/livre/livre_ajout.html:33
+msgid ""
+"En renseignant son titre et son auteur maintenant, vous enrichissez la "
+"bibliothèque collaborative : les autres utilisateurs de Livres en Classe "
+"qui scanneront ce même livre en bénéficieront automatiquement !"
+msgstr ""
+"By entering its title and author now, you enrich the collaborative "
+"library: other Livres en Classe users who scan this same book will "
+"benefit from it automatically!"
+
+#: project/templates/livre/livre_ajout.html:44
 #: project/templates/livre/livre_edit.html:22
 msgid "Titre"
 msgstr "Title"
 
-#: project/templates/livre/livre_ajout.html:34
+#: project/templates/livre/livre_ajout.html:56
 #: project/templates/livre/livre_edit.html:29
 msgid "Auteur"
 msgstr "Author"
 
-#: project/templates/livre/livre_ajout.html:41
+#: project/templates/livre/livre_ajout.html:63
 #: project/templates/livre/livre_edit.html:36
 msgid "Editeur"
 msgstr "Publisher"
 
-#: project/templates/livre/livre_ajout.html:48
+#: project/templates/livre/livre_ajout.html:70
 #: project/templates/livre/livre_edit.html:43
 msgid "Année"
 msgstr "Year"
 
-#: project/templates/livre/livre_ajout.html:55
+#: project/templates/livre/livre_ajout.html:77
 #: project/templates/livre/livre_edit.html:50
 msgid "Genre"
 msgstr "Genre"
 
-#: project/templates/livre/livre_ajout.html:63
+#: project/templates/livre/livre_ajout.html:85
 #: project/templates/livre/livre_edit.html:58
 msgid "ISBN officiel"
 msgstr "Official ISBN"
 
-#: project/templates/livre/livre_ajout.html:64
+#: project/templates/livre/livre_ajout.html:86
 #: project/templates/livre/livre_edit.html:59
 msgid "Code éditeur / Google Books"
 msgstr "Publisher code / Google Books"
 
-#: project/templates/livre/livre_ajout.html:67
+#: project/templates/livre/livre_ajout.html:89
 #: project/templates/livre/livre_edit.html:62
 msgid "ex: 9782070612758"
 msgstr "e.g.: 9782070612758"
 
-#: project/templates/livre/livre_ajout.html:72
+#: project/templates/livre/livre_ajout.html:94
 #: project/templates/livre/livre_edit.html:67
 msgid ""
 "Identifiant commercial du livre, utilisé pour récupérer automatiquement "
@@ -3232,22 +3548,22 @@ msgstr ""
 "Commercial book identifier used to automatically retrieve the cover and "
 "metadata."
 
-#: project/templates/livre/livre_ajout.html:77
+#: project/templates/livre/livre_ajout.html:99
 #: project/templates/livre/livre_edit.html:72
 msgid "Référence classe"
 msgstr "Class reference"
 
-#: project/templates/livre/livre_ajout.html:78
+#: project/templates/livre/livre_ajout.html:100
 #: project/templates/livre/livre_edit.html:73
 msgid "Code-barres exemplaire / Rangement bac"
 msgstr "Copy barcode / Bin shelving"
 
-#: project/templates/livre/livre_ajout.html:81
+#: project/templates/livre/livre_ajout.html:103
 #: project/templates/livre/livre_edit.html:76
 msgid "ex: BAC-A-001 ou LIV-042"
 msgstr "e.g.: BIN-A-001 or BK-042"
 
-#: project/templates/livre/livre_ajout.html:86
+#: project/templates/livre/livre_ajout.html:108
 #: project/templates/livre/livre_edit.html:81
 msgid ""
 "Votre étiquette interne collée sur le livre pour distinguer chaque "
@@ -3256,17 +3572,17 @@ msgstr ""
 "Your internal label affixed to the book to distinguish each physical copy"
 " and simplify shelving."
 
-#: project/templates/livre/livre_ajout.html:90
+#: project/templates/livre/livre_ajout.html:112
 #: project/templates/livre/livre_edit.html:85
 msgid "Étiquettes"
 msgstr "Tags"
 
-#: project/templates/livre/livre_ajout.html:98
+#: project/templates/livre/livre_ajout.html:120
 #: project/templates/livre/livre_edit.html:93
 msgid "Ajouter une étiquette ou une catégorie"
 msgstr "Add a tag or category"
 
-#: project/templates/livre/livre_ajout.html:113
+#: project/templates/livre/livre_ajout.html:135
 #: project/templates/livre/livre_edit.html:123
 #: project/templates/livre/livre_info.html:136
 msgid "Enregistrer"
@@ -3505,10 +3821,6 @@ msgstr "Add manually"
 #: project/templates/livre/livre_scann.html:727
 msgid "Lampe torche non supportée sur cet appareil"
 msgstr "Flashlight not supported on this device"
-
-#: project/templates/livre/livre_scann_live.html:6
-msgid "Scanner des livres"
-msgstr "Scan books"
 
 #: project/templates/ressources/base_editor.html:20
 msgid "Studio de Ressources"
@@ -4824,8 +5136,8 @@ msgstr "Close"
 
 #: project/templates/ressources/index.html:468
 #: project/templates/user/reglage.html:801
-msgid "Découvrir les offres Premium (dès 5.- CHF/mois)"
-msgstr "Discover Premium plans (from 5.- CHF/month)"
+msgid "Découvrir les offres Premium (dès 3.- CHF/mois)"
+msgstr "Discover Premium plans (from 3.- CHF/month)"
 
 #: project/templates/ressources/marque_pages.html:3
 msgid ""
@@ -5298,9 +5610,8 @@ msgstr "1. Choose your billing frequency"
 
 #: project/templates/subscription/paiement.html:203
 #: project/templates/subscription/tarifs.html:309
-#, python-format
-msgid "Économisez 50%%"
-msgstr "Save 50%%"
+msgid "2 mois gratuits"
+msgstr "2 months free"
 
 #: project/templates/subscription/paiement.html:206
 #: project/templates/subscription/tarifs.html:312
@@ -5411,8 +5722,8 @@ msgstr "Annual subscription renewing at 30.- CHF incl. VAT / year"
 
 #: project/templates/subscription/paiement.html:282
 #: project/templates/subscription/paiement.html:449
-msgid "Abonnement mensuel renouvelé à 5.- CHF TTC / mois"
-msgstr "Monthly subscription renewing at 5.- CHF incl. VAT / month"
+msgid "Abonnement mensuel renouvelé à 3.- CHF TTC / mois"
+msgstr "Monthly subscription renewing at 3.- CHF incl. VAT / month"
 
 #: project/templates/subscription/paiement.html:295
 msgid "Code de réduction ou bon d'école ?"
@@ -5437,8 +5748,8 @@ msgstr "Proceed to secure checkout (30.- CHF incl. VAT / year)"
 
 #: project/templates/subscription/paiement.html:312
 #: project/templates/subscription/paiement.html:451
-msgid "Procéder au paiement sécurisé (5.- CHF TTC / mois)"
-msgstr "Proceed to secure checkout (5.- CHF incl. VAT / month)"
+msgid "Procéder au paiement sécurisé (3.- CHF TTC / mois)"
+msgstr "Proceed to secure checkout (3.- CHF incl. VAT / month)"
 
 #: project/templates/subscription/paiement.html:319
 msgid "Connectez-vous pour finaliser votre abonnement"
@@ -5479,7 +5790,7 @@ msgstr "All your features are unlocked immediately."
 
 #: project/templates/subscription/paiement.html:354
 #: project/templates/subscription/paiement.html:378
-#: project/templates/subscription/tarifs.html:441
+#: project/templates/subscription/tarifs.html:452
 msgid "Résiliation libre et sans frais"
 msgstr "Free cancellation with no fees"
 
@@ -5505,7 +5816,7 @@ msgid "← Revenir au comparatif complet des offres"
 msgstr "← Back to plans and pricing comparison"
 
 #: project/templates/subscription/paiement.html:381
-#: project/templates/subscription/tarifs.html:444
+#: project/templates/subscription/tarifs.html:455
 msgid ""
 "Résiliez à tout moment en 1 clic depuis vos réglages. Aucun frais caché "
 "ni pénalité : vous conservez vos accès complets jusqu'au terme de votre "
@@ -5515,12 +5826,12 @@ msgstr ""
 "penalties: you retain full access until the end of your billing cycle."
 
 #: project/templates/subscription/paiement.html:389
-#: project/templates/subscription/tarifs.html:452
+#: project/templates/subscription/tarifs.html:463
 msgid "Que se passe-t-il si je résilie ?"
 msgstr "What happens if I cancel?"
 
 #: project/templates/subscription/paiement.html:392
-#: project/templates/subscription/tarifs.html:455
+#: project/templates/subscription/tarifs.html:466
 msgid ""
 "Toutes vos données (élèves, livres, historique) restent intégralement "
 "conservées et utilisables pour gérer vos prêts du quotidien. Seul l'ajout"
@@ -5531,12 +5842,12 @@ msgstr ""
 " is paused."
 
 #: project/templates/subscription/paiement.html:400
-#: project/templates/subscription/tarifs.html:463
+#: project/templates/subscription/tarifs.html:474
 msgid "Puis-je utiliser un code de réduction ?"
 msgstr "Can I use a discount coupon?"
 
 #: project/templates/subscription/paiement.html:403
-#: project/templates/subscription/tarifs.html:466
+#: project/templates/subscription/tarifs.html:477
 msgid ""
 "Oui ! Si votre école, votre canton ou une promotion vous a fourni un code"
 " avantage, saisissez-le simplement lors du paiement sécurisé sur Stripe."
@@ -5545,13 +5856,13 @@ msgstr ""
 "simply enter it during secure checkout on Stripe."
 
 #: project/templates/subscription/paiement.html:413
-#: project/templates/subscription/tarifs.html:476
+#: project/templates/subscription/tarifs.html:487
 #, python-format
 msgid "Paiement 100%% sécurisé par carte bancaire via Stripe."
 msgstr "100%% secure payment by credit card via Stripe."
 
 #: project/templates/subscription/paiement.html:414
-#: project/templates/subscription/tarifs.html:477
+#: project/templates/subscription/tarifs.html:488
 msgid ""
 "Tarifs nets en Francs Suisses (CHF) toutes taxes comprises (TTC), sans "
 "engagement contraignant ni frais cachés."
@@ -5560,7 +5871,7 @@ msgstr ""
 "binding commitment or hidden fees."
 
 #: project/templates/subscription/paiement.html:418
-#: project/templates/subscription/tarifs.html:481
+#: project/templates/subscription/tarifs.html:492
 msgid "Consulter nos Conditions Générales de Vente (CGV) & Mentions Légales"
 msgstr "View our General Terms of Sale (GTS) & Legal Notice"
 
@@ -6210,8 +6521,8 @@ msgid "Gérer ma facturation"
 msgstr "Manage billing"
 
 #: project/templates/user/reglage.html:377
-msgid "Passer à Premium (dès 5.- CHF/mois)"
-msgstr "Upgrade to Premium (from 5.- CHF/month)"
+msgid "Passer à Premium (dès 3.- CHF/mois)"
+msgstr "Upgrade to Premium (from 3.- CHF/month)"
 
 #: project/templates/user/reglage.html:385
 msgid "Informations personnelles & Sécurité"
@@ -7934,4 +8245,84 @@ msgstr "No book found"
 
 #~ msgid "7. RESTRICTION DE L'ACCÈS"
 #~ msgstr "7. ACCESS RESTRICTION"
+
+#~ msgid "Scanner des livres"
+#~ msgstr "Scan books"
+
+#~ msgid "Mentions Légales | Livres en Classe"
+#~ msgstr "Legal Notice | Livres en Classe"
+
+#~ msgid "Mentions Légales"
+#~ msgstr "Legal Notice"
+
+#~ msgid "Canton de Vaud, Suisse"
+#~ msgstr "Canton of Vaud, Switzerland"
+
+#~ msgid ""
+#~ "Nous nous réservons le droit de "
+#~ "supprimer tout contenu contrevenant à "
+#~ "ces règles et de suspendre l'accès "
+#~ "de l'utilisateur concerné sans préavis."
+#~ msgstr ""
+#~ "We reserve the right to remove any"
+#~ " content violating these rules and "
+#~ "suspend access for the user concerned"
+#~ " without prior notice."
+
+#~ msgid "8. ACCÈS AUX DONNÉES PERSONNELLES & CONFIDENTIALITÉ"
+#~ msgstr "8. ACCESS TO PERSONAL DATA & PRIVACY"
+
+#~ msgid ""
+#~ "En vertu de la législation suisse "
+#~ "sur la protection des données (LPD) "
+#~ "et du RGPD le cas échéant, "
+#~ "l'Utilisateur dispose d'un droit d'accès, "
+#~ "de rectification, de suppression et de"
+#~ " portabilité de ses données personnelles."
+#~ " Les données collectées (notamment "
+#~ "l'adresse e-mail et le nom) sont "
+#~ "strictement destinées au fonctionnement du "
+#~ "service et à l'envoi des notifications"
+#~ " contractuelles d'abonnement. Pour le "
+#~ "traitement des paiements, notre sous-"
+#~ "traitant Stripe opère en conformité avec"
+#~ " les réglementations de protection des "
+#~ "données financières. Pour exercer vos "
+#~ "droits, vous pouvez nous écrire à "
+#~ "livresenclasse@gmail.com."
+#~ msgstr ""
+#~ "Pursuant to Swiss data protection "
+#~ "legislation (FADP) and the GDPR where"
+#~ " applicable, the User has the right"
+#~ " to access, rectify, delete, and port"
+#~ " their personal data. Collected data "
+#~ "(specifically email address and name) is"
+#~ " strictly intended for operating the "
+#~ "service and sending contractual subscription"
+#~ " notifications. For payment processing, our"
+#~ " processor Stripe operates in compliance"
+#~ " with financial data protection "
+#~ "regulations. To exercise your rights, "
+#~ "you can contact us at "
+#~ "livresenclasse@gmail.com."
+
+#~ msgid ""
+#~ "Oui, notre logiciel de gestion de "
+#~ "bibliothèque scolaire est conçu pour "
+#~ "être accessible aux enseignants avec des"
+#~ " fonctionnalités entièrement gratuites pour "
+#~ "débuter."
+#~ msgstr ""
+#~ "Yes, our school library software is "
+#~ "designed to be accessible to teachers"
+#~ " with free features to get started."
+
+#~ msgid "Dès 2.50 CHF/mois"
+#~ msgstr "From 2.50 CHF/month"
+
+#~ msgid "an (ou 3.-/mois)"
+#~ msgstr "year (or 3.-/month)"
+
+#~ msgid "Économisez 50%%"
+#~ msgstr "Save 50%%"
 

@@ -308,6 +308,9 @@ def test_scan_counter_not_incremented_when_not_found(client, app):
             # 2. Redirection vers /livre/ajout suite au scan : l'API ne trouve pas le livre
             resp_ajout = client.get("/livre/ajout?isbn=9789999999999")
             assert resp_ajout.status_code == 200
+            content = resp_ajout.get_data(as_text=True)
+            assert "Informations du livre introuvables automatiquement" in content
+            assert "bibliothèque collaborative" in content
             assert u.free_scans_used == 5  # Le compteur reste toujours à 5 !
 
 

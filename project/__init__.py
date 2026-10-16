@@ -272,6 +272,7 @@ def create_app(test_config=None):
         if app.url_map.is_endpoint_expecting(endpoint, "lang_code"):
             values["lang_code"] = lang
 
+    INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "1452be41003e41c59435f150f75f55d8")
     EXEMPT_PREFIXES = ("/static", "/api", "/webhook", "/email/track")
     EXEMPT_PATHS = {
         "/sitemap.xml",
@@ -285,6 +286,8 @@ def create_app(test_config=None):
         "/favicon.ico",
         "/manifest.json",
         "/sw.js",
+        "/1452be41003e41c59435f150f75f55d8.txt",
+        f"/{INDEXNOW_KEY}.txt",
     }
 
     @app.before_request
@@ -294,7 +297,11 @@ def create_app(test_config=None):
             return
 
         # Chemins techniques exemptés
-        if request.path.startswith(EXEMPT_PREFIXES) or request.path in EXEMPT_PATHS:
+        if (
+            request.path.startswith(EXEMPT_PREFIXES)
+            or request.path in EXEMPT_PATHS
+            or (request.path.endswith(".txt") and request.path.count("/") == 1)
+        ):
             return
 
         # Si l'URL comporte un paramètre explicite ?lang=xx (anciennes URLs indexées)

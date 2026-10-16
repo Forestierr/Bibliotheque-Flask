@@ -245,7 +245,7 @@
                     </div>
 
                     <div class="price-tag">
-                        5.- <small>{{ currency }} {{ _("TTC") }} / {{ _("mois") }}</small>
+                        3.- <small>{{ currency }} {{ _("TTC") }} / {{ _("mois") }}</small>
                     </div>
                     <p class="is-size-7 has-text-grey mb-4">{{ _("Facturé chaque mois, résiliation en 1 clic sans frais cachés") }}</p>
 
@@ -306,7 +306,7 @@
             <!-- Offre Annuelle (Mise en avant) -->
             <div class="column is-6">
                 <div class="pricing-card is-featured">
-                    <span class="pricing-ribbon">{{ _("Économisez 50%%")|replace("%%", "%") }}</span>
+                    <span class="pricing-ribbon">{{ _("2 mois gratuits") }}</span>
 
                     <div>
                         <h3 class="title is-4 mb-1 has-text-link">{{ _("Annuel") }}</h3>
@@ -434,7 +434,18 @@
 
         <!-- FAQ & Garanties de sérénité -->
         <div class="columns is-multiline mt-5">
-            <div class="column is-4">
+            <div class="column is-6">
+                <div class="box" style="height: 100%;">
+                    <h4 class="title is-5 mb-2">
+                        <span class="icon has-text-link mr-1"><i class="fas fa-heart"></i></span>
+                        {{ _("Pourquoi existe-t-il une formule payante ?") }}
+                    </h4>
+                    <p class="is-size-6 has-text-grey">
+                        {{ _("L'abonnement permet simplement de couvrir les frais d'hébergement des serveurs et d'améliorer l'application au quotidien, notamment pour financer les services de reconnaissance automatique des livres lors du scan.") }}
+                    </p>
+                </div>
+            </div>
+            <div class="column is-6">
                 <div class="box" style="height: 100%;">
                     <h4 class="title is-5 mb-2">
                         <span class="icon has-text-link mr-1"><i class="fas fa-calendar-check"></i></span>
@@ -445,7 +456,7 @@
                     </p>
                 </div>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
                 <div class="box" style="height: 100%;">
                     <h4 class="title is-5 mb-2">
                         <span class="icon has-text-link mr-1"><i class="fas fa-shield-alt"></i></span>
@@ -456,7 +467,7 @@
                     </p>
                 </div>
             </div>
-            <div class="column is-4">
+            <div class="column is-6">
                 <div class="box" style="height: 100%;">
                     <h4 class="title is-5 mb-2">
                         <span class="icon has-text-link mr-1"><i class="fas fa-tag"></i></span>

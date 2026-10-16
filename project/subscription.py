@@ -178,12 +178,11 @@ def create_checkout_session():
     try:
         session = stripe.checkout.Session.create(**checkout_params)
         return redirect(session.url, code=303)
-    except Exception as e:
+    except Exception:
         logger.exception("Erreur lors de la création de session Stripe Checkout")
         flash(
             _(
-                "Une erreur est survenue lors de l'accès au paiement : %(error)s",
-                error=str(e),
+                "Une erreur est survenue lors de l'accès au paiement. Veuillez réessayer ultérieurement ou contacter le support."
             ),
             "error",
         )
@@ -214,12 +213,11 @@ def portail_abonne():
             return_url=url_for("auth.reglage", _external=True),
         )
         return redirect(portal_session.url, code=303)
-    except Exception as e:
+    except Exception:
         logger.exception("Erreur Stripe Portal")
         flash(
             _(
-                "Impossible d'accéder au portail de gestion : %(error)s",
-                error=str(e),
+                "Impossible d'accéder au portail de gestion pour le moment. Veuillez réessayer ultérieurement."
             ),
             "error",
         )

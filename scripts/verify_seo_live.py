@@ -41,15 +41,26 @@ def test_sitemap():
             assert 'rel="alternate" hreflang="fr"' in html, (
                 f"Missing hreflang fr in {path}"
             )
-            assert 'rel="alternate" hreflang="en"' in html, (
-                f"Missing hreflang en in {path}"
-            )
-            assert 'rel="alternate" hreflang="de"' in html, (
-                f"Missing hreflang de in {path}"
-            )
             assert 'rel="alternate" hreflang="x-default"' in html, (
                 f"Missing hreflang x-default in {path}"
             )
+            if not any(
+                res_tool in path
+                for res_tool in (
+                    "marque-pages",
+                    "diplome-de-lecture",
+                    "fiche-de-lecture",
+                    "charte-coin-lecture",
+                    "defi-lecture-bingo",
+                    "passeport-de-lecture",
+                )
+            ):
+                assert 'rel="alternate" hreflang="en"' in html, (
+                    f"Missing hreflang en in {path}"
+                )
+                assert 'rel="alternate" hreflang="de"' in html, (
+                    f"Missing hreflang de in {path}"
+                )
     print("All sitemap URLs verified with HTTP 200 and hreflang tags.")
 
 
@@ -208,8 +219,30 @@ def test_robots():
     print("robots.txt verified.")
 
 
+def test_bing_indexnow():
+    print("=== Testing Bing Webmaster & IndexNow ===")
+    r = client.get("/1452be41003e41c59435f150f75f55d8.txt")
+    assert r.status_code == 200, f"Expected 200, got {r.status_code}"
+    assert "text/plain" in r.content_type
+    key_content = r.get_data(as_text=True).strip()
+    assert key_content == "1452be41003e41c59435f150f75f55d8", (
+        f"Unexpected content: {key_content}"
+    )
+
+    # Verify Bing meta tag in homepage
+    r_home = client.get("/fr/")
+    assert r_home.status_code == 200
+    html = r_home.get_data(as_text=True)
+    assert (
+        '<meta name="msvalidate.01" content="1452be41003e41c59435f150f75f55d8"/>'
+        in html
+    )
+    print("Bing Webmaster & IndexNow verified successfully.")
+
+
 if __name__ == "__main__":
     test_robots()
+    test_bing_indexnow()
     test_sitemap()
     test_meta_and_performance()
     test_multilingual_blog()

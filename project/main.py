@@ -7,6 +7,7 @@ import requests
 from flask import (
     Blueprint,
     Response,
+    abort,
     current_app,
     flash,
     jsonify,
@@ -214,6 +215,25 @@ def llms():
         200,
         {"Content-Type": "text/plain; charset=utf-8"},
     )
+
+
+INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "1452be41003e41c59435f150f75f55d8")
+
+
+@core.route(f"/{INDEXNOW_KEY}.txt")
+@main.route(f"/{INDEXNOW_KEY}.txt")
+@core.route("/<key>.txt")
+@main.route("/<key>.txt")
+def indexnow_key(key=None):
+    valid_key = os.getenv("INDEXNOW_KEY", INDEXNOW_KEY)
+    requested = key or INDEXNOW_KEY
+    if requested in (INDEXNOW_KEY, valid_key):
+        return (
+            requested,
+            200,
+            {"Content-Type": "text/plain; charset=utf-8"},
+        )
+    abort(404)
 
 
 @core.route("/favicon.ico")

@@ -83,9 +83,11 @@ Dans [`project/__init__.py`](../project/__init__.py), les cookies d'authentifica
 is_prod = os.getenv("FLASK_ENV") == "production"
 
 # Cookie de session Flask
-app.config["SESSION_COOKIE_SECURE"] = is_prod         # Transmis uniquement sur HTTPS en prod
-app.config["SESSION_COOKIE_HTTPONLY"] = True          # Inaccessible via document.cookie (anti-XSS)
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"         # Protection CSRF native
+app.config["SESSION_COOKIE_SECURE"] = is_prod  # Transmis uniquement sur HTTPS en prod
+app.config["SESSION_COOKIE_HTTPONLY"] = (
+    True  # Inaccessible via document.cookie (anti-XSS)
+)
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Protection CSRF native
 
 # Cookie de reconnexion automatique "Se souvenir de moi"
 app.config["REMEMBER_COOKIE_SECURE"] = is_prod
@@ -93,9 +95,9 @@ app.config["REMEMBER_COOKIE_HTTPONLY"] = True
 app.config["REMEMBER_COOKIE_SAMESITE"] = "Lax"
 
 # Durées de vie
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)   # Session active 7 jours
-app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=30)     # Mémorisation 30 jours
-app.config["REMEMBER_COOKIE_REFRESH_EACH_REQUEST"] = True       # Renouvellement glissant
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)  # Session active 7 jours
+app.config["REMEMBER_COOKIE_DURATION"] = timedelta(days=30)  # Mémorisation 30 jours
+app.config["REMEMBER_COOKIE_REFRESH_EACH_REQUEST"] = True  # Renouvellement glissant
 ```
 
 ---

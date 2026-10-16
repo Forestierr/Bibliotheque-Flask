@@ -443,7 +443,7 @@ def test_tarifs_no_redirect_loop_and_founder_reglage_display(client, app):
         assert "👑" not in content
         # Ne doit PAS proposer de passer à Premium
         assert "Passer à Premium" not in content
-        assert "Passer à Premium (dès 5.- CHF/mois)" not in content
+        assert "Passer à Premium (dès 3.- CHF/mois)" not in content
         # Ne doit PAS avoir de bouton de portail Stripe facturation
         assert "subscription/portal" not in content
 
@@ -460,7 +460,7 @@ def test_tarifs_no_redirect_loop_and_founder_reglage_display(client, app):
         assert resp_reglage_free.status_code == 200
         content_free = resp_reglage_free.get_data(as_text=True)
         # La carte Formule & Abonnement en bas propose toujours le passage à Premium
-        assert "Passer à Premium (dès 5.- CHF/mois)" in content_free
+        assert "Passer à Premium (dès 3.- CHF/mois)" in content_free
         # Mais pas de bouton dans la boîte de profil supérieure (à côté du nom)
         assert 'class="button is-primary is-rounded is-small"' not in content_free
         # La navbar ne doit pas avoir de bouton "Passer Premium" à côté de Ressources
@@ -532,7 +532,7 @@ def test_paiement_page_display(client, app):
     resp_anon_monthly = client.get("/paiement?plan_type=monthly")
     assert resp_anon_monthly.status_code == 200
     text_m = resp_anon_monthly.get_data(as_text=True)
-    assert "5.-" in text_m
+    assert "3.-" in text_m
     assert "TTC" in text_m
     assert "CHF" in text_m
 
@@ -898,8 +898,9 @@ def test_tarifs_page_legal_and_pricing_requirements(client):
     # 1. Prix TTC clairement affichés en CHF
     assert "CHF" in html
     assert "TTC" in html
-    assert "5.-" in html
+    assert "3.-" in html
     assert "30.-" in html
+    assert "2 mois gratuits" in html
     assert "toutes taxes comprises" in html or "TTC" in html
 
     # 2. Lien vers les CGU / Mentions légales

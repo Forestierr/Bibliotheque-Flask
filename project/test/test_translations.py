@@ -414,6 +414,46 @@ def test_llms_txt_mentions_languages():
         assert "https://livresenclasse.com/fr/" in text
         assert "https://livresenclasse.com/en/" in text
         assert "https://livresenclasse.com/de/" in text
+        # Verify subscription and freemium documentation
+        assert "Modèle Freemium & Abonnements" in text
+        assert "40 élèves" in text
+        assert "500 livres" in text
+        assert "30 scans" in text
+        assert "3.00 CHF" in text
+        assert "30.00 CHF" in text
+        assert "https://livresenclasse.com/tarifs" in text
+
+
+def test_bing_webmaster_and_indexnow_verification():
+    """Verify Bing Webmaster / IndexNow verification key file at root and meta tag."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-translations",
+            "TEST_REDIRECTS": True,
+        }
+    )
+
+    with app.test_client() as client:
+        # 1. Root verification file
+        res = client.get("/1452be41003e41c59435f150f75f55d8.txt")
+        assert res.status_code == 200
+        assert "text/plain" in res.content_type
+        assert res.data.decode("utf-8").strip() == "1452be41003e41c59435f150f75f55d8"
+
+        # 2. Non-existent txt key should return 404
+        res_404 = client.get("/00000000000000000000000000000000.txt")
+        assert res_404.status_code == 404
+
+        # 3. Bing verification meta tag in homepage
+        res_home = client.get("/fr/")
+        assert res_home.status_code == 200
+        html = res_home.data.decode("utf-8")
+        assert (
+            '<meta name="msvalidate.01" content="1452be41003e41c59435f150f75f55d8"/>'
+            in html
+        )
 
 
 def test_navbar_language_dropdown_and_highlight():
