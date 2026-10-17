@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - master
-      - fix
 
 jobs:
   build-and-push:
@@ -32,12 +31,10 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            # 2. Tag 'latest' uniquement sur la branche par défaut
+            # Tag 'latest' uniquement sur la branche par défaut
             type=raw,value=latest,enable={{is_default_branch}}
-            # Tag dynamique avec le nom de la branche (donnera ghcr.io/...:fix)
+            # Tag dynamique avec le nom de la branche
             type=ref,event=branch
-            # (Optionnel) Tag explicite 'staging' quand on pousse sur la branche fix
-            type=raw,value=staging,enable=${{ github.ref_name == 'fix' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
