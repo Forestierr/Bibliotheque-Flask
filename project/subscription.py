@@ -238,16 +238,22 @@ def success():
         try:
             stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
             session = stripe.checkout.Session.retrieve(session_id)
-            if session.payment_status == "paid" or session.status == "complete":
+            session_data = session.to_dict() if hasattr(session, "to_dict") else session
+            if (
+                session_data.get("payment_status") == "paid"
+                or session_data.get("status") == "complete"
+            ):
                 current_user.plan = "premium"
                 current_user.stripe_subscription_status = "active"
                 current_user.subscription_end_at = None
-                if session.customer:
-                    current_user.stripe_customer_id = str(session.customer)
-                if session.subscription:
-                    current_user.stripe_subscription_id = str(session.subscription)
+                if session_data.get("customer"):
+                    current_user.stripe_customer_id = str(session_data["customer"])
+                if session_data.get("subscription"):
+                    current_user.stripe_subscription_id = str(
+                        session_data["subscription"]
+                    )
                 # Récupérer le type d'abonnement (mensuel/annuel) depuis les métadonnées de session
-                plan_type = (session.metadata or {}).get("plan_type")
+                plan_type = (session_data.get("metadata") or {}).get("plan_type")
                 if plan_type and not current_user.stripe_price_id:
                     current_user.stripe_price_id = plan_type
                 db.session.commit()
@@ -264,7 +270,6 @@ def cancel():
 
 
 @webhook_bp.route("/webhook/stripe", methods=["POST"])
-@subscription.route("/webhook/stripe", methods=["POST"])
 @csrf.exempt
 def stripe_webhook():
     """Endpoint recevant les événements Stripe sécurisés par signature."""
@@ -288,8 +293,13 @@ def stripe_webhook():
         except (ValueError, TypeError):
             return jsonify({"error": "No JSON payload"}), 400
 
+    if hasattr(event, "to_dict"):
+        event = event.to_dict()
+
     event_type = event.get("type")
     data_object = event.get("data", {}).get("object", {})
+    if hasattr(data_object, "to_dict"):
+        data_object = data_object.to_dict()
 
     logger.info("Webhook Stripe reçu : %s", event_type)
 
@@ -306,6 +316,8 @@ def stripe_webhook():
 
 
 def _handle_checkout_completed(session):
+    if hasattr(session, "to_dict"):
+        session = session.to_dict()
     client_ref_id = session.get("client_reference_id")
     user_id = client_ref_id or session.get("metadata", {}).get("user_id")
 
@@ -315,8 +327,22 @@ def _handle_checkout_completed(session):
             user = db.session.get(User, int(user_id))
         except (ValueError, TypeError):
             user = None
-    if not user and session.get("customer_email"):
-        user = User.query.filter_by(email=session.get("customer_email")).first()
+
+    if not user:
+        email = session.get("customer_email") or (
+            session.get("customer_details") or {}
+        ).get("email")
+        if email:
+            user = User.query.filter_by(email=email).first()
+
+    if not user:
+        logger.warning(
+            "Webhook checkout.session.completed ignoré : aucun utilisateur trouvé (user_id=%s, email=%s)",
+            user_id,
+            session.get("customer_email")
+            or (session.get("customer_details") or {}).get("email"),
+        )
+        return
 
     if user:
         customer_id = str(session.get("customer")) if session.get("customer") else None
@@ -355,6 +381,8 @@ def _handle_checkout_completed(session):
 
 
 def _handle_subscription_updated(sub):
+    if hasattr(sub, "to_dict"):
+        sub = sub.to_dict()
     sub_id = sub.get("id")
     customer_id = sub.get("customer")
     status = sub.get("status")
@@ -424,6 +452,8 @@ def _handle_subscription_updated(sub):
 
 
 def _handle_subscription_deleted(sub):
+    if hasattr(sub, "to_dict"):
+        sub = sub.to_dict()
     sub_id = sub.get("id")
     customer_id = sub.get("customer")
 
@@ -489,6 +519,8 @@ def _handle_subscription_deleted(sub):
 
 
 def _handle_invoice_payment_failed(invoice):
+    if hasattr(invoice, "to_dict"):
+        invoice = invoice.to_dict()
     customer_id = invoice.get("customer")
     user = User.query.filter_by(stripe_customer_id=customer_id).first()
 
