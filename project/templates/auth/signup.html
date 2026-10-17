@@ -1,4 +1,4 @@
-<!-- templates/signup.html -->
+<!-- templates/auth/signup.html -->
 
 {% from "utils/navbar.html" import navbar %}
 
@@ -12,61 +12,208 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    .signup-section {
+        padding: 3rem 1.5rem 4rem 1.5rem;
+    }
+    .signup-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        padding: 2.2rem 2rem;
+    }
+    .benefit-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1.75rem 1.75rem;
+    }
+    .benefit-item {
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        color: hsl(0, 0%, 25%);
+        margin-bottom: 0.95rem;
+        line-height: 1.5;
+    }
+    .benefit-item:last-child {
+        margin-bottom: 0;
+    }
+    .benefit-item .icon {
+        color: hsl(141, 71%, 45%);
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+    }
+    .btn-signup-action {
+        background-color: #2563eb !important;
+        border-color: transparent !important;
+        color: #ffffff !important;
+        border-radius: 8px;
+        font-weight: 700;
+        padding: 0.75rem 1.25rem;
+        height: auto;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-signup-action:hover {
+        background-color: #1d4ed8 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+    }
+    .captcha-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    @media (max-width: 768px) {
+        .signup-section {
+            padding: 1.5rem 0.75rem 2.5rem 0.75rem;
+        }
+        .signup-card {
+            padding: 1.5rem 1rem !important;
+            border-radius: 12px;
+        }
+        .benefit-box {
+            padding: 1.25rem 1rem !important;
+        }
+    }
+    @media (max-width: 360px) {
+        .captcha-container {
+            transform: scale(0.9);
+            transform-origin: center center;
+        }
+    }
+    @media (max-width: 330px) {
+        .captcha-container {
+            transform: scale(0.82);
+            transform-origin: center center;
+        }
+    }
+</style>
 
-<div class="section">
-    <div class="columns login-container" style="align-items: center;">
-        <div class="column is-half is-hidden-mobile left-side">
-            <h1 class="title">{{ _("Bienvenu") }}</h1>
-            <h3 class="subtitle is-3">
-                {{ _("Créer un compte pour gérer vos livres en toute simplicité.") }}
-            </h3>
+<div class="section signup-section">
+    <div class="container" style="max-width: 1040px; margin: 0 auto;">
+        <div class="columns is-vcentered login-container">
+            <!-- Colonne gauche contextuelle -->
+            <div class="column is-6 left-side pr-5">
+                <span class="tag is-link is-light is-rounded mb-3 has-text-weight-bold" style="font-size: 0.85rem; padding: 0.4rem 0.85rem;">
+                    {{ _("Offre Enseignants & Écoles") }}
+                </span>
+                <h1 class="title is-2 mb-3" style="font-weight: 800; color: hsl(0, 0%, 15%); line-height: 1.25;">
+                    {{ _("Simplifiez la gestion de vos livres") }}
+                </h1>
+                <p class="subtitle is-5 has-text-grey mb-5" style="line-height: 1.5;">
+                    {{ _("Gérez facilement votre bibliothèque scolaire, le catalogue et le suivi des prêts de vos élèves en toute sérénité.") }}
+                </p>
 
-            <div class="columns" style="align-items: center;">
-                <div class="column is-narrow">
-                    <figure class="image is-128x128">
-                        <img src="{{ url_for('static',filename='/image/kid.png') }}"
-                        href="https://www.flaticon.com/free-stickers/reading"
-                         alt="Reading stickers created by Stickers - Flaticon">
-                    </figure>
+                <!-- Bloc offre gratuite Essentiel -->
+                <div class="benefit-box mb-6">
+                    <div class="is-flex is-align-items-center is-justify-content-space-between mb-4" style="gap: 1rem;">
+                        <span class="has-text-weight-bold is-size-6" style="color: hsl(217, 71%, 45%);">
+                            <i class="fas fa-check-circle mr-1"></i> {{ _("Plan Gratuit Essentiel inclus :") }}
+                        </span>
+                        <span class="tag is-success is-light is-rounded has-text-weight-semibold ml-3" style="flex-shrink: 0;">{{ _("100%% gratuit")|replace("%%", "%") }}</span>
+                    </div>
+                    
+                    <ul class="mb-4" style="list-style: none; margin: 0; padding: 0;">
+                        <li class="benefit-item">
+                            <span class="icon"><i class="fas fa-check"></i></span>
+                            <span><strong>{{ max_students|default(40) }}</strong> {{ _("élèves gérés") }}</span>
+                        </li>
+                        <li class="benefit-item">
+                            <span class="icon"><i class="fas fa-check"></i></span>
+                            <span><strong>{{ max_books|default(500) }}</strong> {{ _("livres au catalogue") }}</span>
+                        </li>
+                        <li class="benefit-item">
+                            <span class="icon"><i class="fas fa-check"></i></span>
+                            <span><strong>{{ history_months|default(10) }}</strong> {{ _("mois d'historique des prêts") }}</span>
+                        </li>
+                        <li class="benefit-item">
+                            <span class="icon"><i class="fas fa-check"></i></span>
+                            <span><strong>{{ max_scans|default(30) }}</strong> {{ _("scans de codes-barres par semaine") }}</span>
+                        </li>
+                    </ul>
+
+                    <div class="pt-4 mt-4" style="border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: hsl(0, 0%, 45%); line-height: 1.55;">
+                        <span class="icon has-text-warning-dark mr-1"><i class="fas fa-star"></i></span>
+                        {{ _("Besoin d'aller plus loin ? Un mode") }} <a href="{{ url_for('subscription.tarifs') }}" target="_blank" class="has-text-weight-semibold has-text-link">{{ _("Premium avec accès illimité") }}</a> {{ _("est également disponible à tout moment.") }}
+                    </div>
                 </div>
-                <div class="column">
-                    <p class="subtitle">{{ _("Gérez vos livres en toute simplicité.") }}</p>
+
+                <!-- Illustration sobre sans répétition -->
+                <div class="is-flex is-align-items-center" style="gap: 1rem; opacity: 0.95;">
+                    <figure class="image is-64x64" style="flex-shrink: 0;">
+                        <img src="{{ url_for('static', filename='image/kid.png') }}"
+                             alt="{{ _('Illustration lecture') }}"
+                             style="border-radius: 50%; box-shadow: none;">
+                    </figure>
+                    <p class="is-size-7 has-text-grey" style="line-height: 1.4;">
+                        {{ _("Conçu avec soin pour les professeurs des écoles et leurs élèves.") }}
+                    </p>
                 </div>
             </div>
-        </div>
-        <div class="column is-half right-side">
-            <div class="container box" style="width: 80%; max-width: 400px;">
-                <h2 class="title is-4 has-text-centered">{{ _("Créer un compte") }}</h2>
 
-                {% include "utils/flash_message.html" %}
+            <!-- Colonne droite formulaire -->
+            <div class="column is-5 is-offset-1 right-side">
+                <div class="box signup-card">
+                    <h2 class="title is-4 has-text-centered mb-2" style="font-weight: 700; color: hsl(0, 0%, 15%);">
+                        {{ _("Créer un compte") }}
+                    </h2>
+                    <p class="has-text-centered is-size-7 has-text-grey mb-4">
+                        {{ _("Sans engagement • Aucune carte bancaire requise") }}
+                    </p>
 
-                <form method="POST" action="/signup">
-    {% include 'utils/csrf.html' %}
-                    <div class="field">
-                        <label class="label">{{ _("Email") }}</label>
-                        <div class="control">
-                            <input class="input" type="email" name="email" placeholder="{{ _('Votre email') }}" required>
+                    {% include "utils/flash_message.html" %}
+
+                    <form method="POST" action="{{ url_for('auth.signup_post') }}" id="signupForm">
+                        {% include 'utils/csrf.html' %}
+                        <div class="field mb-3">
+                            <label class="label is-small">{{ _("Email") }}</label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="email" name="email" value="{{ email|default('') }}" placeholder="{{ _('Votre email professionnel ou personnel') }}" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ _("Nom") }}</label>
-                        <div class="control">
-                            <input class="input" type="text" name="name" placeholder="{{ _('Votre nom') }}" required>
+                        <div class="field mb-3">
+                            <label class="label is-small">{{ _("Nom") }}</label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="text" name="name" value="{{ name|default('') }}" placeholder="{{ _('Votre nom complet') }}" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">{{ _("Mot de passe") }}</label>
-                        <div class="control">
-                            <input class="input" type="password" name="password" placeholder="{{ _('Votre mot de passe') }}" required>
+                        <div class="field mb-4">
+                            <label class="label is-small">{{ _("Mot de passe") }}</label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="password" name="password" placeholder="{{ _('Votre mot de passe') }}" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                    {% if hcaptcha_site_key %}
-                    <div class="field h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
-                    {% endif %}
-                    <div class="field has-text-centered">
-                        <button class="button is-primary is-fullwidth">{{ _("S'inscrire") }}</button>
-                    </div>
-                </form>
+                        {% if hcaptcha_site_key %}
+                        <div class="captcha-container">
+                            <div class="field h-captcha mb-4" data-sitekey="{{ hcaptcha_site_key }}" data-callback="onCaptchaSuccess" data-expired-callback="onCaptchaExpired"></div>
+                        </div>
+                        {% endif %}
+                        <div class="field has-text-centered mb-3">
+                            <button type="submit" class="button is-link is-fullwidth has-text-weight-bold btn-signup-action">
+                                {{ _("S'inscrire et commencer gratuitement") }}
+                            </button>
+                        </div>
+                    </form>
+
+                    <p class="has-text-centered is-size-7 has-text-grey mt-4 pt-3" style="border-top: 1px solid #f1f5f9;">
+                        {{ _("Déjà un compte ?") }} <a href="{{ url_for('auth.login') }}" class="has-text-weight-semibold has-text-link">{{ _("Se connecter") }}</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -76,5 +223,51 @@
 {% block scripts %}
 {% if hcaptcha_site_key %}
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<script>
+window.onCaptchaSuccess = function() {
+    const err = document.getElementById('captchaError');
+    if (err) err.remove();
+};
+window.onCaptchaExpired = function() {
+    // expired
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('signupForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        const captchaElem = document.querySelector('.h-captcha');
+        if (captchaElem) {
+            let token = '';
+            if (typeof hcaptcha !== 'undefined') {
+                try {
+                    token = hcaptcha.getResponse();
+                } catch (ex) {}
+            }
+            if (!token) {
+                const respInput = document.querySelector('[name="h-captcha-response"]');
+                if (respInput && respInput.value) {
+                    token = respInput.value;
+                }
+            }
+
+            if (!token) {
+                e.preventDefault();
+                let err = document.getElementById('captchaError');
+                if (!err) {
+                    err = document.createElement('div');
+                    err.id = 'captchaError';
+                    err.className = 'notification is-danger is-light py-2 px-3 mb-3 is-size-7 has-text-centered';
+                    const container = captchaElem.closest('.captcha-container') || captchaElem;
+                    container.parentNode.insertBefore(err, container.nextSibling);
+                }
+                err.textContent = "{{ _('Veuillez compléter le CAPTCHA.') }}";
+                return false;
+            }
+        }
+    });
+});
+</script>
 {% endif %}
 {% endblock %}

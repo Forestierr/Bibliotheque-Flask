@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Votre période d'essai se termine bientôt</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #2b6cb0;">Il vous reste {{ days_left }} jours d'accès complet offert !</h2>
+    
+    <p>Bonjour {{ user.name or 'Enseignant' }},</p>
+    
+    <p>Votre période d'essai gratuit de 30 jours sur <strong>Livres en Classe</strong> arrive bientôt à son terme.</p>
+    
+    <p>Nous espérons que l'application vous a fait gagner un temps précieux dans la gestion de votre bibliothèque de classe et les prêts de vos élèves !</p>
+    
+    <div style="background: #f7fafc; border-left: 4px solid #3182ce; padding: 15px; margin: 20px 0; border-radius: 4px;">
+        <p style="margin: 0; font-weight: bold; color: #2d3748;">Ce qui se passe à la fin de l'essai :</p>
+        <p style="margin: 5px 0 0 0; font-size: 14px; color: #4a5568;">
+            &bull; <strong>Rien n'est supprimé :</strong> tous vos livres et élèves existants restent disponibles.<br>
+            &bull; En version gratuite, vous serez limité à 40 élèves, 500 livres et 30 scans code-barres.<br>
+            &bull; Pour conserver les scans illimités, les exports Excel et l'impression d'étiquettes, passez à l'abonnement Premium.
+        </p>
+    </div>
+    
+    <p>L'offre annuelle est à seulement <strong>30.- CHF par an</strong> (soit 2.50 CHF par mois) pour vous accompagner toute l'année scolaire en toute tranquillité.</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ tarifs_url }}" style="background-color: #3182ce; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Découvrir l'offre Premium (30.- CHF/an)</a>
+    </div>
+    
+    <p>Merci pour votre engagement auprès de vos élèves !</p>
+    
+    <hr style="border: none; border-top: 1px solid #eee; margin-top: 40px;">
+    <p style="font-size: 12px; color: #999; text-align: center;">Livres en Classe &bull; Support &amp; Contact : livresenclasse@gmail.com</p>
+</body>
+</html>

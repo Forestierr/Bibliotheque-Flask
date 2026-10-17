@@ -1,5 +1,5 @@
 import math
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -87,7 +87,7 @@ def test_return_loan_success(client, app, logged_in_user):
                 mock_session.commit = MagicMock()
                 response = client.post("/emprunt/1")
                 assert response.status_code == 302  # Redirect
-                assert mock_loan.date_return == datetime.now(tz=timezone.utc).date()
+                assert mock_loan.date_return == datetime.now(tz=UTC).date()
                 mock_session.commit.assert_called_once()
 
 
@@ -471,14 +471,13 @@ def test_math_ceil_usage(client, app, logged_in_user):
         mock_ceil.assert_called()
 
 
-def test_print_statement_coverage(client, app, logged_in_user):
-    """Test pour couvrir la ligne print dans la fonction search"""
+def test_search_with_active_loan_filter(client, app, logged_in_user):
+    """Test de la fonction search avec le filtre active_loan='1'."""
     with (
         app.app_context(),
         patch("project.emprunt.current_user", logged_in_user),
         patch("project.emprunt.get_loans_count", return_value=10),
         patch("project.emprunt.get_loans_with_infos", return_value=([], 5)),
-        patch("builtins.print") as mock_print,
         app.test_request_context("/emprunt/search", method="POST"),
     ):
         response = client.post(
@@ -492,8 +491,6 @@ def test_print_statement_coverage(client, app, logged_in_user):
             },
         )
         assert response.status_code == 200
-        # Vérifier que print a été appelé
-        mock_print.assert_called_with("1")
 
 
 def test_delete_loan_with_none_loan(client, app, logged_in_user):

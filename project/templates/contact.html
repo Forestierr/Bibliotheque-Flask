@@ -7,63 +7,115 @@
 {% block title %}{{ _("Contact | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Contactez l'équipe de Livres en Classe pour toute question, suggestion ou demande d'assistance.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "name": {{ _("Contact | Livres en Classe")|tojson }},
+  "description": {{ _("Contactez l'équipe de Livres en Classe pour toute question, suggestion ou demande d'assistance.")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Support",
+      "email": "livresenclasse@gmail.com",
+      "url": "{{ lang_url(get_locale(), external=True) }}",
+      "availableLanguage": ["French", "English", "German"]
+    }
+  }
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
 
 {% block content %}
 
-    <h1 class="title is-1">
-        {{ _("Contact") }}
-    </h1>
+<section class="section">
+    <div class="container" style="max-width: 640px; margin: 0 auto;">
+        <h1 class="title is-1 has-text-centered mb-5">
+            {{ _("Contact") }}
+        </h1>
+        <p class="subtitle is-5 has-text-centered has-text-grey mb-6">
+            {{ _("Une question, une suggestion ou besoin d'aide ? Écrivez-nous.") }}
+        </p>
 
-    {% include 'utils/flash_message.html' %}
+        {% include 'utils/flash_message.html' %}
 
-    <div class="container">
-        <form action="{{ url_for('main.contact') }}" method="post">
-    {% include 'utils/csrf.html' %}
-            <div class="field">
-                <label class="label">{{ _("Nom") }}</label>
-                <div class="control">
-                    <input class="input" type="text" name="name" value="{{ user.name if user }}" required>
+        <div class="box" style="border: 1px solid #eef0f5; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-radius: 12px; padding: 2rem;">
+            <form action="{{ url_for('main.contact') }}" method="post" id="contactForm">
+                {% include 'utils/csrf.html' %}
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">{{ _("Nom") }}</label>
+                            <div class="control">
+                                <input class="input" type="text" name="name" value="{{ user.name if user and user.name else '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">{{ _("Prénom") }}</label>
+                            <div class="control">
+                                <input class="input" type="text" name="firstname" required>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="field">
-                <label class="label">{{ _("Prénom") }}</label>
-                <div class="control">
-                    <input class="input" type="text" name="firstname" required>
+                <div class="field">
+                    <label class="label">{{ _("Email") }}</label>
+                    <div class="control">
+                        <input class="input" type="email" name="email" value="{{ user.email if user and user.email else '' }}" required>
+                    </div>
                 </div>
-            </div>
-            <div class="field">
-                <label class="label">{{ _("Email") }}</label>
-                <div class="control">
-                    <input class="input" type="email" name="email" value="{{ user.email if user }}" required>
+                <div class="field">
+                    <label class="label">{{ _("Message") }}</label>
+                    <div class="control">
+                        <textarea class="textarea" name="message" rows="5" required></textarea>
+                    </div>
                 </div>
-            </div>
-            <div class="field">
-                <label class="label">{{ _("Message") }}</label>
-                <div class="control">
-                    <textarea class="textarea" name="message" required></textarea>
+
+                {% if hcaptcha_site_key %}
+                <div class="field my-4">
+                    <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
                 </div>
-            </div>
-            <div class="field">
-                <div class="control">
-                    <button class="button is-link">{{ _("Envoyer") }}</button>
+                {% endif %}
+
+                <div class="field mt-5">
+                    <div class="control">
+                        <button type="submit" class="button is-link is-fullwidth is-medium">{{ _("Envoyer") }}</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
+</section>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-        const $notification = $delete.parentNode;
+{% if hcaptcha_site_key %}
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+{% endif %}
 
-        $delete.addEventListener('click', () => {
-          $notification.parentNode.removeChild($notification);
-        });
-      });
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+    const $notification = $delete.parentNode;
+
+    $delete.addEventListener('click', () => {
+      $notification.parentNode.removeChild($notification);
     });
-    </script>
+  });
+});
+</script>
 
 {% endblock %}

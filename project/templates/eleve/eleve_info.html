@@ -49,7 +49,7 @@
                                 <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                             </header>
                             <footer class="modal-card-foot">
-                                <form action="/emprunt/{{ book.Loan.id }}/delete" method="POST" style="display:inline;">
+                                <form action="{{ url_for('emprunt.delete_loan', id=book.Loan.id) }}" method="POST" style="display:inline;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <button type="submit" class="button is-normal is-danger is-responsive">
                                         <div class="icon-text">
@@ -68,7 +68,7 @@
                     </div>
 
                     <div class="column has-text-right">
-                        <form action="/emprunt/{{ book.Loan.id }}" method="POST" style="display:inline;">
+                        <form action="{{ url_for('emprunt.return_loan', id=book.Loan.id) }}" method="POST" style="display:inline;">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <button type="submit" class="button is-success is-small">
                                 <span class="icon is-small">
@@ -112,9 +112,8 @@
                     <div class="media-right is-hidden-mobile">
                     <a href="{{ url_for('livre.livre_db') }}">
                         <figure class="image is-64x64">
-                            <img src="{{ url_for('static',filename='/image/kid.png') }}"
-                                 href="https://www.flaticon.com/free-stickers/teacher"
-                                 alt="Literature stickers created by Stickers - Flaticon">
+                            <img src="{{ url_for('static',filename='image/kid.png') }}"
+                                 alt="{{ _('Illustration élève') }}">
                         </figure>
                     </a>
                 </div>
@@ -145,7 +144,7 @@
                                 <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                             </header>
                             <footer class="modal-card-foot">
-                                <form action="/emprunt/{{ book.Loan.id }}/delete" method="POST" style="display:inline;">
+                                <form action="{{ url_for('emprunt.delete_loan', id=book.Loan.id) }}" method="POST" style="display:inline;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <button type="submit" class="button is-normal is-danger is-responsive">
                                         <div class="icon-text">
@@ -192,7 +191,7 @@
                     <p class="modal-card-title">{{ _("Supprimer l'élève ?") }}</p>
                 </header>
                 <footer class="modal-card-foot">
-                    <form action="/eleve/{{ student.id }}/delete" method="POST" style="display:inline;">
+                    <form action="{{ url_for('eleve.eleve_delete', id=student.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="button is-normal is-danger is-responsive">
                             <div class="icon-text">

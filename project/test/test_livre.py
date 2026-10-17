@@ -272,3 +272,94 @@ def test_livre_exist_is_isbn_flag(mock_isbn, mock_barcode, mock_user, client):
     assert resp_custom.status_code == 404
     data_custom = resp_custom.get_json()
     assert data_custom["is_isbn"] is False
+
+
+def test_scan_counter_not_incremented_when_not_found(client, app):
+    """Vérifie que le compteur de scans n'augmente PAS si le livre n'est pas trouvé."""
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        user = User(
+            id=301,
+            email="scan_not_found@test.com",
+            plan="free",
+            free_scans_used=5,
+            trial_ends_at=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+        u = db.session.get(User, 301)
+
+        with (
+            patch("flask_login.utils._get_user", return_value=u),
+            patch("project.livre.current_user", u),
+            patch("project.livre.get_books_by_barcode", return_value=[]),
+            patch("project.livre.get_books_by_isbn", return_value=[]),
+            patch("project.livre.get_book_from_api", return_value=None),
+            patch("project.livre.Tags.query") as mock_tags,
+        ):
+            mock_tags.filter_by().all.return_value = []
+            # 1. Le scan en base locale renvoie 404
+            resp_exist = client.get("/livre/9789999999999/exist")
+            assert resp_exist.status_code == 404
+            assert u.free_scans_used == 5  # Le compteur NE DOIT PAS avoir augmenté
+
+            # 2. Redirection vers /livre/ajout suite au scan : l'API ne trouve pas le livre
+            resp_ajout = client.get("/livre/ajout?isbn=9789999999999")
+            assert resp_ajout.status_code == 200
+            content = resp_ajout.get_data(as_text=True)
+            assert "Informations du livre introuvables automatiquement" in content
+            assert "bibliothèque collaborative" in content
+            assert u.free_scans_used == 5  # Le compteur reste toujours à 5 !
+
+
+def test_scan_counter_incremented_when_api_finds_book(client, app):
+    """Vérifie que le compteur de scans augmente si le livre est trouvé par l'API suite au scan."""
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        user = User(
+            id=302,
+            email="scan_found@test.com",
+            plan="free",
+            free_scans_used=5,
+            trial_ends_at=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+        u = db.session.get(User, 302)
+
+        found_book = {
+            "title": "Livre Trouvé",
+            "authors": "Auteur",
+            "editor": "Éditeur",
+            "year": "2024",
+            "type": "Roman",
+            "isbn": "9782070612758",
+        }
+
+        with (
+            patch("flask_login.utils._get_user", return_value=u),
+            patch("project.livre.current_user", u),
+            patch("project.livre.get_books_by_barcode", return_value=[]),
+            patch("project.livre.get_books_by_isbn", return_value=[]),
+            patch("project.livre.get_book_from_api", return_value=found_book),
+            patch("project.livre.Tags.query") as mock_tags,
+        ):
+            mock_tags.filter_by().all.return_value = []
+            # 1. Le scan en base locale renvoie 404
+            resp_exist = client.get("/livre/9782070612758/exist")
+            assert resp_exist.status_code == 404
+            assert u.free_scans_used == 5  # Pas encore incrémenté
+
+            # 2. Redirection vers /livre/ajout : l'API trouve le livre
+            resp_ajout = client.get("/livre/ajout?isbn=9782070612758")
+            assert resp_ajout.status_code == 200
+            assert u.free_scans_used == 6  # Incrémenté car le livre a été trouvé !
+
+            # 3. Recharger la page ne doit pas ré-incrémenter (protection anti-double-compte)
+            resp_reload = client.get("/livre/ajout?isbn=9782070612758")
+            assert resp_reload.status_code == 200
+            assert u.free_scans_used == 6

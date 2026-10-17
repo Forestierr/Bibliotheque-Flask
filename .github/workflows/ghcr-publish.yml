@@ -31,7 +31,10 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
+            # Tag 'latest' uniquement sur la branche par défaut
             type=raw,value=latest,enable={{is_default_branch}}
+            # Tag dynamique avec le nom de la branche
+            type=ref,event=branch
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

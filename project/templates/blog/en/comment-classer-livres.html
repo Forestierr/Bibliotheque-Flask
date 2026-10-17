@@ -1,0 +1,244 @@
+<!-- templates/blog/en/comment-classer-livres.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Comment classer les livres de sa bibliothèque de classe ?") }}{% endblock %}
+{% block meta_description %}{{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('en', external=True) }}"
+  },
+  "headline": {{ _("Comment classer les livres de sa bibliothèque de classe ?")|tojson }},
+  "description": {{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "en",
+  "datePublished": "2024-09-05",
+  "dateModified": "2026-09-12"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Table of contents (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. By Literary Genre</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. By Theme & Topic</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. By Reading Level</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Alphabetical Order</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Digital Tracking</a></li>
+                                <li><a href="#section-6" style="color: #4a4a4a;">6. Setup Checklist</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">How to organize classroom books?</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">How to Organize Books in Your Classroom Library</h1>
+                    <p class="subtitle is-5 has-text-grey">Reading time: 9 min | By the Livres en Classe Editorial Team</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    Every teacher knows the nightmare at the end of a school term: comic books mixed with fairy tales, space non-fiction misplaced among mystery novels, and unlabelled books piled up in disarray. Having books is essential—but having books that are <strong>well-organized and easy to find</strong> makes all the difference.
+                </p>
+                <p>
+                    Organizing classroom books is not merely an aesthetic choice; it serves as a valuable learning experience in classification and categorization for students. A successful system enables a six-year-old child to locate a book independently and return it exactly where it belongs.
+                </p>
+                <p>
+                    Explore our comprehensive guide on classroom library classification strategies, evaluating the pros and cons for each grade level, along with practical tips to keep your book corner tidy without extra work.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Table of Contents -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. By Literary Genre</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. By Theme & Topic</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. By Reading Level</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Alphabetical Order</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Digital Tracking</a></li>
+                        <li><a href="#section-6" style="color: #4a4a4a;">6. Setup Checklist</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Classification by Literary Genre: The Classic Setup</h2>
+                <p>
+                    This approach closely mirrors what students encounter later in municipal and school libraries. It divides your collection into distinct physical categories.
+                </p>
+                
+                <h3>How to implement it in class?</h3>
+                <p>
+                    Designate separate zones, shelves, or color-coded bins for:
+                </p>
+                <ul>
+                    <li><strong>Picture Books:</strong> Typically large format, requiring forward-facing bins so students can view covers clearly.</li>
+                    <li><strong>Comics & Graphic Novels:</strong> Highly popular, best grouped together for quick selection and exchange.</li>
+                    <li><strong>Chapter Books & Fiction:</strong> Subdivided by reading difficulty or age brackets (early chapter books, illustrated fiction, middle grade).</li>
+                    <li><strong>Non-Fiction:</strong> Gathering all factual and informational books (animals, science, history, geography).</li>
+                </ul>
+                <p>
+                    <strong>Best for:</strong> 1st through 5th grade, as students develop a clear understanding of the distinction between fiction (invented stories) and non-fiction (factual knowledge).
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. Thematic Organization: Perfect for Younger Learners</h2>
+                <p>
+                    For kindergarteners and early primary students, literary genres (picture book vs. fable vs. short novel) are often too abstract. Organizing books by topics and personal interests is much more intuitive.
+                </p>
+                
+                <h3>How to implement it?</h3>
+                <p>
+                    Label book baskets according to subjects with large visual illustrations or pictograms:
+                </p>
+                <ul>
+                    <li>The <strong>Animals</strong> bin (wildlife non-fiction, wolf stories, pets, bear tales).</li>
+                    <li>The <strong>Nature & Seasons</strong> bin.</li>
+                    <li>The <strong>Space & Science</strong> bin.</li>
+                    <li>The <strong>School & Friendship</strong> bin.</li>
+                    <li>The <strong>Fairy Tales, Knights & Castles</strong> bin.</li>
+                </ul>
+                <p>
+                    <strong>Best for:</strong> Preschool, kindergarten, and the beginning of 1st grade. This setup sparks immediate curiosity based on familiar visual interests.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. Classification by Reading Level: Guiding Without Labeling</h2>
+                <p>
+                    Very popular for graded readers and early decodable books, this method allows emerging readers to select books matching their exact phonics and decoding skills independently.
+                </p>
+                
+                <h3>The Color-Coded Sticker System</h3>
+                <p>
+                    Apply small colored dot stickers to the spine of each book:
+                </p>
+                <ul>
+                    <li><span class="has-text-success">●</span> <strong>Green:</strong> Beginner (simple decodable sounds, very short sentences).</li>
+                    <li><span class="has-text-warning">●</span> <strong>Orange:</strong> Intermediate (digraphs, compound words, emerging paragraphs).</li>
+                    <li><span class="has-text-danger">●</span> <strong>Red:</strong> Fluent reader (complex vocabulary, full chapter layouts).</li>
+                </ul>
+                <p>
+                    <strong>Teacher tip:</strong> To avoid any sense of stigma, present these color dots like "belts in martial arts" or "video game levels"—goals to practice and progress through, rather than fixed labels.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. Alphabetical Order: For Older Elementary Students</h2>
+                <p>
+                    Alphabetical sorting by author's last name (A-Z) is standard in public libraries. In a classroom, it requires meticulous tidying, which can be challenging for younger children.
+                </p>
+                <p>
+                    However, in 4th and 5th grade, it is an excellent practical exercise to reinforce alphabetical sorting and prepare students for middle school libraries. Using sturdy cardboard shelf dividers with large letters will guide students effectively.
+                </p>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. How Digital Tools Keep Everything Under Control</h2>
+                <p>
+                    Regardless of your physical classification, books will inevitably be misplaced or borrowed without notice. This is where <strong>Livres en Classe</strong> becomes an essential companion.
+                </p>
+                <p>
+                    By associating each book in your database with a virtual bin tag, you can instantly identify where a missing book belongs. With rapid camera ISBN scanning, adding books and updating inventory takes only seconds. Check out our <a href="{{ url_for('main.index') }}#comparatif">Livres en Classe vs. Excel comparison</a> to see the time saved over paper tracking sheets.
+                </p>
+                
+                <div class="box has-background-link-light has-text-centered p-5 my-5">
+                    <h3 class="title is-4">Save Time Managing Your Classroom Library</h3>
+                    <p>Stop losing classroom books. Catalog your collection and track student loans effortlessly.</p>
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Create Your Free Library</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-6">6. Physical Setup Checklist</h2>
+                <p>
+                    To establish a smooth, durable organization in your classroom reading corner:
+                </p>
+                <ol>
+                    <li><strong>Declutter and purge:</strong> Remove damaged, outdated, or age-inappropriate titles.</li>
+                    <li><strong>Label bins clearly:</strong> Combine written labels with clear pictograms so every student understands where books go. Explore our <a href="{{ url_for('ressource.index') }}">free printable classroom resources</a> for ready-to-print labels.</li>
+                    <li><strong>Mark book spines:</strong> Place corresponding color dots on spines or provide students with an <a href="{{ url_for('ressource.marque_pages') }}">interactive checkout bookmark</a>.</li>
+                    <li><strong>Train the students:</strong> Dedicate an introductory lesson at the start of the school year to teach classification rules, and post our <a href="{{ url_for('ressource.charte') }}">classroom reading charter</a> prominently.</li>
+                </ol>
+
+                <hr class="my-6">
+
+                <h2>Conclusion</h2>
+                <p>
+                    There is no single "correct" system, only the system best adapted to your students' age and developmental stage. For early years, focus on themes. For beginning readers, combine decodable color dots. For upper grades, introduce literary genres and author names. By empowering students with ownership and using modern tools like <strong>Livres en Classe</strong>, your classroom library will remain vibrant, welcoming, and organized all year long.
+                </p>
+
+                <!-- Suggested reading -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 You Might Also Like...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">COMPLETE GUIDE</p>
+                                <p class="has-text-weight-bold has-text-dark">The Ultimate Guide to Creating an Effective Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">BOOK SELECTION</p>
+                                <p class="has-text-weight-bold has-text-dark">Top 10 Books for 1st Grade Readers: Our Back-to-School Picks</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

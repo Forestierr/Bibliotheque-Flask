@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}{% block admin_title %}Administration{% endblock %} - Livres en Classe{% endblock %}
+
+{% block content %}
+<style>
+  .admin-layout {
+    display: flex;
+    gap: 1.75rem;
+    align-items: flex-start;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+  }
+  .admin-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.25rem;
+    position: sticky;
+    top: 1.5rem;
+  }
+  .admin-sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .admin-sidebar-brand {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+  }
+  .admin-menu-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  .admin-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.85rem;
+    border-radius: 10px;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+    margin-bottom: 0.2rem;
+    text-decoration: none;
+  }
+  .admin-nav-item:hover {
+    background: #f0fdf9;
+    color: #008774;
+  }
+  .admin-nav-item:hover .icon {
+    color: #008774;
+  }
+  .admin-nav-item.is-active {
+    background: #00b89c;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(0, 184, 156, 0.32);
+  }
+  .admin-nav-item.is-active .icon {
+    color: #ffffff !important;
+  }
+  .admin-nav-item.is-active .tag {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+  }
+  .admin-nav-item .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .admin-main-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .admin-header-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+    padding: 1.25rem 1.5rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    height: 100%;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  }
+  .admin-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 1023px) {
+    .admin-layout {
+      flex-direction: column;
+    }
+    .admin-sidebar {
+      width: 100%;
+      position: static;
+    }
+  }
+</style>
+
+<div class="container is-fluid" style="max-width: 1400px;">
+  <div class="admin-layout">
+    <!-- Barre Latérale (Sidebar) -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <span class="icon is-medium has-text-primary">
+          <i class="fas fa-shield-alt fa-lg"></i>
+        </span>
+        <div>
+          <div class="admin-sidebar-brand">Administration</div>
+          <div class="is-size-7 has-text-grey">Livres en Classe</div>
+        </div>
+      </div>
+
+      <nav>
+        <div class="admin-menu-label">Vue d'ensemble</div>
+        <a href="{{ url_for('admin.index') }}" class="admin-nav-item {% if active_page == 'dashboard' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-chart-pie"></i></span>
+            <span>Tableau de Bord</span>
+          </div>
+        </a>
+
+        <div class="admin-menu-label">Gestion des données</div>
+        <a href="{{ url_for('admin.users') }}" class="admin-nav-item {% if active_page == 'users' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-users"></i></span>
+            <span>Utilisateurs</span>
+          </div>
+          {% if total_users_count is defined and total_users_count %}
+            <span class="tag is-rounded is-small is-light">{{ total_users_count }}</span>
+          {% endif %}
+        </a>
+        <a href="{{ url_for('admin.livres') }}" class="admin-nav-item {% if active_page == 'livres' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-book"></i></span>
+            <span>Livres</span>
+          </div>
+        </a>
+        <a href="{{ url_for('admin.eleves') }}" class="admin-nav-item {% if active_page == 'eleves' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-user-graduate"></i></span>
+            <span>Élèves</span>
+          </div>
+        </a>
+
+        <div class="admin-menu-label">Marketing & Ventes</div>
+        <a href="{{ url_for('admin.coupons') }}" class="admin-nav-item {% if active_page == 'coupons' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-ticket-alt"></i></span>
+            <span>Codes Promo</span>
+          </div>
+        </a>
+        <a href="{{ url_for('admin.emails') }}" class="admin-nav-item {% if active_page == 'emails' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
+            <span>Newsletter</span>
+          </div>
+        </a>
+
+        <div class="admin-menu-label">Support & Système</div>
+        <a href="{{ url_for('admin.feedbacks') }}" class="admin-nav-item {% if active_page == 'feedbacks' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-comment-dots"></i></span>
+            <span>Retours & Bugs</span>
+          </div>
+          {% if new_feedbacks_count is defined and new_feedbacks_count > 0 %}
+            <span class="tag is-warning is-rounded is-small has-text-weight-bold">{{ new_feedbacks_count }}</span>
+          {% endif %}
+        </a>
+        <a href="{{ url_for('admin.parametres') }}" class="admin-nav-item {% if active_page == 'parametres' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-sliders-h"></i></span>
+            <span>Paramètres</span>
+          </div>
+        </a>
+      </nav>
+
+      <hr style="margin: 1.25rem 0; background-color: #f1f5f9; height: 1px;">
+
+      <a href="{{ url_for('main.dashboard') }}" class="button is-light is-fullwidth is-small is-rounded" style="border: 1px solid #e2e8f0;">
+        <span class="icon is-small"><i class="fas fa-arrow-left"></i></span>
+        <span>Retour au site</span>
+      </a>
+    </aside>
+
+    <!-- Zone de Contenu Principale -->
+    <main class="admin-main-content">
+      <!-- En-tête de page -->
+      <div class="admin-header-card">
+        <div class="is-flex is-align-items-center is-justify-content-space-between" style="flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="title is-4 mb-1" style="color: #0f172a; font-weight: 800;">
+              {% block admin_header_title %}Panneau d'Administration{% endblock %}
+            </h1>
+            <p class="subtitle is-6 has-text-grey mb-0">
+              {% block admin_header_subtitle %}Vue d'ensemble et gestion globale de la plateforme Livres en Classe.{% endblock %}
+            </p>
+          </div>
+          <div class="admin-actions">
+            {% block admin_actions %}{% endblock %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages Flash -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="notification is-{{ category }} is-light mb-4" style="border-radius: 12px;">
+              <button class="delete"></button>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Contenu spécifique de la page -->
+      {% block admin_content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% block admin_scripts %}{% endblock %}
+{% endblock %}

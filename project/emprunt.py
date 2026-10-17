@@ -1,6 +1,5 @@
-# emprunt.py
 import math
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timedelta
 
 from flask import (
     Blueprint,
@@ -15,6 +14,7 @@ from flask_babel import gettext as _
 from flask_login import current_user, login_required
 
 from . import db
+from .config_plans import FREE_HISTORY_MONTHS
 from .models import Book, Loan
 from .query import (
     get_loans_count,
@@ -24,6 +24,10 @@ from .query import (
 )
 
 emprunt = Blueprint("emprunt", __name__)
+
+
+def get_loan_history_cutoff():
+    return datetime.now(UTC).date() - timedelta(days=FREE_HISTORY_MONTHS * 30)
 
 
 @emprunt.route("/emprunt", methods=["GET", "POST"])
@@ -46,6 +50,7 @@ def emprunt_db():
         only_active_loans=only_active_loans,
         nb_page=nb_page,
         page=page,
+        cutoff_date=get_loan_history_cutoff(),
     )
 
 
@@ -61,7 +66,7 @@ def return_loan(id):
     if loan:
         book = db.session.query(Book).filter(Book.id == loan.book_id).first()
         if book and book.user_id == current_user.id:
-            loan.date_return = datetime.now(tz=timezone.utc).date()
+            loan.date_return = datetime.now(tz=UTC).date()
             db.session.commit()
         else:
             flash(_("Accès non autorisé."), "error")
@@ -148,7 +153,6 @@ def search(page=1):
         request.form.get("n_results") if request.form.get("n_results") else 20
     )
     page = request.form.get("page") if request.form.get("page") else page
-    print(request.form.get("active_loan"))
     only_active_loans = request.form.get("active_loan") == "1"
 
     n_books_by_page = int(n_books_by_page)
@@ -185,6 +189,7 @@ def search(page=1):
             only_active_loans=only_active_loans,
             nb_page=nb_page,
             page=int(page),
+            cutoff_date=get_loan_history_cutoff(),
         )
 
     # Si la recherche est typée (par exemple : titre:Harry Potter)
@@ -225,6 +230,7 @@ def search(page=1):
             only_active_loans=only_active_loans,
             nb_page=nb_page,
             page=int(page),
+            cutoff_date=get_loan_history_cutoff(),
         )
 
     # Recherche par défaut
@@ -246,4 +252,5 @@ def search(page=1):
         only_active_loans=only_active_loans,
         nb_page=nb_page,
         page=int(page),
+        cutoff_date=get_loan_history_cutoff(),
     )

@@ -47,9 +47,8 @@
                     <div class="media-right is-hidden-mobile">
                         <a href="{{ url_for('livre.livre_db') }}">
                             <figure class="image is-64x64">
-                                <img src="{{ url_for('static',filename='/image/book_4.png') }}"
-                                     href="https://www.flaticon.com/free-stickers/reading"
-                                     alt="Literature stickers created by Stickers - Flaticon">
+                                <img src="{{ url_for('static',filename='image/book_4.png') }}"
+                                     alt="{{ _('Illustration livre') }}">
                             </figure>
                         </a>
                     </div>
@@ -59,10 +58,10 @@
     {% else %}
 
     <div class="block">
-        {{ search_bar(_("Rechercher un livre"), True, "/livre/search-preview", "/livre/search", search) }}
+        {{ search_bar(_("Rechercher un livre"), True, url_for("livre.search_preview"), url_for("livre.search"), search) }}
     </div>
 
-    {% with n_emprunt=true, url="/livre/search" %}
+    {% with n_emprunt=true, url=url_for("livre.search") %}
     {% include "utils/result_sort.html" %}
     {% endwith %}
 

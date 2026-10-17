@@ -7,6 +7,27 @@
 {% block title %}{{ _("Espace Enseignants : Guides et Outils de Bibliothèque | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Accédez à notre sélection de guides pratiques, de fiches d'organisation de bibliothèque et d'outils numériques pour les enseignants du primaire et du collège.") }}{% endblock %}
 
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "headline": {{ _("Espace Enseignants : Guides et Outils de Bibliothèque | Livres en Classe")|tojson }},
+  "description": {{ _("Accédez à notre sélection de guides pratiques, de fiches d'organisation de bibliothèque et d'outils numériques pour les enseignants du primaire et du collège.")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
 {% endblock %}
@@ -103,10 +124,10 @@
             
             <!-- Hero Section -->
             <div class="has-text-centered mb-6">
-                <h1 class="title is-1">Espace Enseignants</h1>
-                <h2 class="subtitle is-3 mt-3">Ressources, guides pédagogiques et outils de classe</h2>
+                <h1 class="title is-1">{{ _("Espace Enseignants") }}</h1>
+                <h2 class="subtitle is-3 mt-3">{{ _("Ressources, guides pédagogiques et outils de classe") }}</h2>
                 <p class="is-size-5 has-text-grey" style="max-width: 650px; margin: 0 auto; line-height: 1.6;">
-                    Retrouvez tout ce dont vous avez besoin pour structurer le coin lecture de votre classe, cataloguer vos livres et encourager l'autonomie de vos élèves au quotidien.
+                    {{ _("Retrouvez tout ce dont vous avez besoin pour structurer le coin lecture de votre classe, cataloguer vos livres et encourager l'autonomie de vos élèves au quotidien.") }}
                 </p>
             </div>
 
@@ -121,33 +142,33 @@
                                 <span class="icon is-medium"><i class="fas fa-lg fa-book"></i></span>
                             </div>
                             <div>
-                                <h2 class="title is-4 mb-1" style="font-weight: 700;">Gérer la Bibliothèque</h2>
-                                <span class="tag is-rounded" style="background-color: hsl(210, 60%, 96%); color: hsl(210, 50%, 50%); font-weight: 600;">Méthodologie</span>
+                                <h2 class="title is-4 mb-1" style="font-weight: 700;">{{ _("Gérer la Bibliothèque") }}</h2>
+                                <span class="tag is-rounded" style="background-color: hsl(210, 60%, 96%); color: hsl(210, 50%, 50%); font-weight: 600;">{{ _("Méthodologie") }}</span>
                             </div>
                         </header>
                         <div class="card-content" style="flex-grow: 1; padding: 1.75rem;">
                             <p class="has-text-grey-dark is-size-6 mb-4" style="line-height: 1.5;">
-                                Des conseils pratiques pour trier, classer et organiser vos étagères sans que cela ne devienne un casse-tête.
+                                {{ _("Des conseils pratiques pour trier, classer et organiser vos étagères sans que cela ne devienne un casse-tête.") }}
                             </p>
                             <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
                             <ul style="list-style: none; margin-left: 0; padding-left: 0;">
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="guide-link link-method">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Gérer les emprunts
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Gérer les emprunts") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Mettre en place un système de prêt numérique efficace avec vos élèves.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Mettre en place un système de prêt numérique efficace avec vos élèves.") }}</p>
                                 </li>
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="guide-link link-method">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Classer et étiqueter
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Classer et étiqueter") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Utiliser le code couleur, les genres ou les thèmes pour faciliter le rangement.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Utiliser le code couleur, les genres ou les thèmes pour faciliter le rangement.") }}</p>
                                 </li>
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="guide-link link-method">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Sélectionner ses livres
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Sélectionner ses livres") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Notre sélection de livres adaptés au cycle 2 pour enrichir votre bibliothèque.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Notre sélection de livres adaptés au cycle 2 pour enrichir votre bibliothèque.") }}</p>
                                 </li>
                             </ul>
                         </div>
@@ -162,33 +183,33 @@
                                 <span class="icon is-medium"><i class="fas fa-lg fa-star"></i></span>
                             </div>
                             <div>
-                                <h2 class="title is-4 mb-1" style="font-weight: 700;">Encourager la Lecture</h2>
-                                <span class="tag is-rounded" style="background-color: hsl(145, 50%, 95%); color: hsl(145, 40%, 42%); font-weight: 600;">Pédagogie</span>
+                                <h2 class="title is-4 mb-1" style="font-weight: 700;">{{ _("Encourager la Lecture") }}</h2>
+                                <span class="tag is-rounded" style="background-color: hsl(145, 50%, 95%); color: hsl(145, 40%, 42%); font-weight: 600;">{{ _("Pédagogie") }}</span>
                             </div>
                         </header>
                         <div class="card-content" style="flex-grow: 1; padding: 1.75rem;">
                             <p class="has-text-grey-dark is-size-6 mb-4" style="line-height: 1.5;">
-                                Des rituels et animations testés en classe pour susciter l'intérêt de tous les élèves, même les moins lecteurs.
+                                {{ _("Des rituels et animations testés en classe pour susciter l'intérêt de tous les élèves, même les moins lecteurs.") }}
                             </p>
                             <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
                             <ul style="list-style: none; margin-left: 0; padding-left: 0;">
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="guide-link link-pedagogy">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Donner envie de lire
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Donner envie de lire") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Rituels de lecture plaisir et gestion des présentations d'élèves.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Rituels de lecture plaisir et gestion des présentations d'élèves.") }}</p>
                                 </li>
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}#rallye" class="guide-link link-pedagogy">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Le Rallye Lecture
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Le Rallye Lecture") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Comment mettre en place un défi lecture motivant et bienveillant.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Comment mettre en place un défi lecture motivant et bienveillant.") }}</p>
                                 </li>
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="guide-link link-pedagogy">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>La lecture à haute voix
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("La lecture à haute voix") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Conseils pour pratiquer la lecture offerte et développer l'imaginaire de vos élèves.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Conseils pour pratiquer la lecture offerte et développer l'imaginaire de vos élèves.") }}</p>
                                 </li>
                             </ul>
                         </div>
@@ -203,13 +224,13 @@
                                 <span class="icon is-medium"><i class="fas fa-lg fa-laptop"></i></span>
                             </div>
                             <div>
-                                <h2 class="title is-4 mb-1" style="font-weight: 700;">Outils Numériques</h2>
-                                <span class="tag is-rounded" style="background-color: hsl(38, 70%, 95%); color: hsl(38, 60%, 45%); font-weight: 600;">Technologie</span>
+                                <h2 class="title is-4 mb-1" style="font-weight: 700;">{{ _("Outils Numériques") }}</h2>
+                                <span class="tag is-rounded" style="background-color: hsl(38, 70%, 95%); color: hsl(38, 60%, 45%); font-weight: 600;">{{ _("Technologie") }}</span>
                             </div>
                         </header>
                         <div class="card-content" style="flex-grow: 1; padding: 1.75rem;">
                             <p class="has-text-grey-dark is-size-6 mb-4" style="line-height: 1.5;">
-                                Des générateurs et applications en ligne recommandés par nos soins pour équiper votre classe en quelques clics.
+                                {{ _("Des générateurs et applications en ligne recommandés par nos soins pour équiper votre classe en quelques clics.") }}
                             </p>
                             <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
                             <ul style="list-style: none; margin-left: 0; padding-left: 0;">
@@ -217,19 +238,25 @@
                                     <a href="{{ url_for('main.index') }}" class="guide-link link-tech">
                                         <i class="fas fa-chevron-right chevron-icon"></i>Livres en Classe
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Notre application gratuite pour scanner vos ISBN et prêter vos livres.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Notre application gratuite pour scanner vos ISBN et prêter vos livres.") }}</p>
                                 </li>
                                 <li class="mb-4">
                                     <a href="{{ url_for('ressource.index') }}" class="guide-link link-tech">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Ressources & Outils imprimables
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Ressources & Outils imprimables") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Diplômes, marque-pages, affiches, étiquettes et liens vérifiés pour enseignants.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Diplômes, marque-pages, affiches, étiquettes et liens vérifiés pour enseignants.") }}</p>
                                 </li>
                                 <li class="mb-4">
                                     <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="guide-link link-tech">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>Guide de l'application
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Guide de l'application") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">Comment utiliser Livres en Classe pour gérer emprunts et catalogue numérique.</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Comment utiliser Livres en Classe pour gérer emprunts et catalogue numérique.") }}</p>
+                                </li>
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.index') }}#comparatif" class="guide-link link-tech">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Comparatif Excel vs Application") }}
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Pourquoi abandonner les tableurs pour la gestion de vos livres scolaires.") }}</p>
                                 </li>
                             </ul>
                         </div>
@@ -242,14 +269,14 @@
             <div class="box mt-6 p-6" style="border-radius: 16px; border: 1px solid hsl(0, 0%, 93%); background-color: hsl(0, 0%, 98.5%); box-shadow: none;">
                 <div class="columns is-vcentered">
                     <div class="column is-8">
-                        <h3 class="title is-3 mb-2" style="font-weight: 700;">Besoin d'un outil de suivi pour vos élèves ?</h3>
+                        <h3 class="title is-3 mb-2" style="font-weight: 700;">{{ _("Besoin d'un outil de suivi pour vos élèves ?") }}</h3>
                         <p class="is-size-5 has-text-grey">
-                            Gérez les prêts de livres, inscrivez vos classes et visualisez les statistiques de lecture globale en quelques clics.
+                            {{ _("Gérez les prêts de livres, inscrivez vos classes et visualisez les statistiques de lecture globale en quelques clics.") }}
                         </p>
                     </div>
                     <div class="column is-4 has-text-centered">
                         <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded" style="font-weight: 600;">
-                            Créer mon espace
+                            {{ _("Créer mon espace") }}
                         </a>
                     </div>
                 </div>

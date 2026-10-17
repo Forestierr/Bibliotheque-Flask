@@ -1,6 +1,35 @@
-<!-- templates/ressources/diplome.html -->
-
 {% extends "ressources/base_editor.html" %}
+
+{% block title %}{{ _("Diplôme de lecture à imprimer pour élèves (A4 gratuit) | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Générez et imprimez un diplôme de lecture personnalisé pour votre classe : champion de lecture, rallye lecture, 5, 10 ou 20 livres lus. Entièrement gratuit.") }}{% endblock %}
+{% block ressource_id %}diplome-de-lecture-a-imprimer{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/diplome-de-lecture-a-imprimer" />
+<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/diplome-de-lecture-a-imprimer" />
+{% endblock %}
+
+{% block head_extra %}
+{{ super() }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Diplôme de lecture à imprimer pour la classe",
+  "description": "Diplôme personnalisable pour valoriser les progrès de lecture des élèves (rallye lecture, paliers 5, 10, 20 livres).",
+  "learningResourceType": "Printable Resource",
+  "educationalLevel": "École primaire (CP, CE1, CE2, CM1, CM2)",
+  "inLanguage": "fr",
+  "isAccessibleForFree": true,
+  "url": "https://livresenclasse.com/fr/ressources/diplome-de-lecture-a-imprimer",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+{% endblock %}
 
 {% block studio_title %}{{ _("Diplôme de Lecture") }}{% endblock %}
 {% block sheet_orientation %}landscape{% endblock %}
@@ -251,6 +280,149 @@
 {% endif %}
 {% endblock %}
 
+{% block studio_extra_content %}
+<section class="section py-6" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Encart Partage Pinterest & Sauvegarde -->
+        <div class="box mb-6" style="border-radius: 16px; border: 1px solid #fef08a; background: #fefce8; padding: 2rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-3 has-text-centered">
+                    <img src="{{ url_for('static', filename='image/pinterest/diplome-de-lecture-a-imprimer.png') }}" 
+                         alt="{{ _('Visuel Pinterest Diplôme de lecture à imprimer') }}" 
+                         style="max-height: 220px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;"
+                         data-pin-media="https://livresenclasse.com/static/image/pinterest/diplome-de-lecture-a-imprimer.png"
+                         data-pin-description="{{ _('Diplôme de lecture à imprimer gratuit (A4 paysage). Champion de lecture et rallye lecture.') }}"
+                         onclick="openPinterestShare('diplome')">
+                </div>
+                <div class="column is-9">
+                    <span class="tag is-danger is-light has-text-weight-bold mb-2">
+                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                    </span>
+                    <h3 class="title is-4 mb-2" style="color: #854d0e;">
+                        {{ _("Sauvegardez ce diplôme pour votre classe") }}
+                    </h3>
+                    <p class="subtitle is-6 has-text-grey mb-4">
+                        {{ _("Épinglez ce modèle sur votre tableau Pinterest pour célébrer les progrès de vos élèves en fin de trimestre, de période ou lors d'un rallye lecture.") }}
+                    </p>
+                    <div class="buttons">
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ 'https://livresenclasse.com/fr/ressources/diplome-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=lead_magnets&mtm_content=diplome_lecture'|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/diplome-de-lecture-a-imprimer.png'|urlencode }}&description={{ 'Diplôme de lecture à imprimer gratuit pour l école primaire (A4 paysage). Idéal rallye lecture, fin d année et paliers de livres lus (5, 10, 20 livres). #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           id="pin-button-dip"
+                           class="button is-danger is-rounded has-text-weight-bold"
+                           onclick="trackPinterestClick('diplome-de-lecture-a-imprimer')">
+                            <span class="icon"><i class="fab fa-pinterest"></i></span>
+                            <span>{{ _("Épingler sur Pinterest") }}</span>
+                        </a>
+                        <button type="button" class="button is-link is-light is-rounded has-text-weight-semibold" onclick="triggerStudioPrint()">
+                            <span class="icon"><i class="fas fa-print"></i></span>
+                            <span>{{ _("Imprimer directement") }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide Pédagogique -->
+        <div class="content mb-6">
+            <h2 class="title is-3" style="color: #1e293b;">
+                {{ _("Comment valoriser la lecture avec un diplôme officiel en classe ?") }}
+            </h2>
+            <p>
+                {{ _("La reconnaissance des réussites est un levier puissant pour susciter et entretenir le plaisir de lire en école primaire (Cycles 2 et 3). Ce diplôme de lecture gratuit au format A4 paysage a été conçu pour gratifier aussi bien les grands dévoreurs de livres que les lecteurs débutants qui franchissent leurs premiers paliers d'autonomie.") }}
+            </p>
+
+            <div class="columns is-multiline my-4">
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-warning-dark">
+                            <i class="fas fa-trophy mr-2"></i>{{ _("1. Les paliers d'effort") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Plutôt qu'un classement compétitif, fixez des paliers atteignables pour chaque profil d'élève : 5 livres pour débuter, 10 livres, puis 20 livres. Chaque palier franchi donne lieu à une remise officielle.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-link">
+                            <i class="fas fa-flag-checkered mr-2"></i>{{ _("2. Les rallyes lecture") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("En fin de période scolaire ou lors de la clôture d'un rallye thématique (contes, romans policiers, BD), remettez ce diplôme signé par l'enseignant et la direction de l'école.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-success">
+                            <i class="fas fa-palette mr-2"></i>{{ _("3. Le mode coloriage N&B") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Le thème « Noir & Blanc » permet une impression économique tout en confiant à l'élève le soin de mettre en couleurs sa propre bordure et sa médaille de champion.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="title is-4 mt-5" style="color: #1e293b;">{{ _("Conseils pour l'impression de vos diplômes") }}</h3>
+            <ul>
+                <li><strong>{{ _("Papier recommandé") }} :</strong> {{ _("Utilisez un papier blanc épais couché mat ou bristol de 200 à 250 g/m² pour conférer au document un aspect officiel et solennel.") }}</li>
+                <li><strong>{{ _("Orientation") }} :</strong> {{ _("Le document est configuré en A4 paysage avec des marges d'impression intégrées. Choisissez « Ajuster à la page » ou échelle normale dans la boîte de dialogue de votre imprimante.") }}</li>
+                <li><strong>{{ _("Génération groupée") }} :</strong> {{ _("Si vous possédez un compte Livres en Classe, connectez-vous pour générer en 1 clic les diplômes pré-remplis de tous les élèves avec leur nombre exact de livres lus.") }}</li>
+            </ul>
+        </div>
+
+        <!-- Passerelle vers le logiciel Livres en Classe (Lead Magnet CTA) -->
+        <div class="box my-6" style="border-radius: 16px; background: linear-gradient(135deg, #78350f 0%, #b45309 100%); color: white; padding: 2.5rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <span class="tag is-warning is-light has-text-weight-bold mb-2">
+                        <i class="fas fa-chart-line mr-1"></i> {{ _("Suivi automatique des emprunts") }}
+                    </span>
+                    <h3 class="title is-3 has-text-white mb-2">
+                        {{ _("Comptez automatiquement les livres lus par chaque élève") }}
+                    </h3>
+                    <p class="is-size-6" style="opacity: 0.95; line-height: 1.6;">
+                        {{ _("Livres en Classe enregistre chaque retour d'emprunt et calcule en temps réel le nombre de livres lus par élève. Générez vos bilans de lecture trimestriels et diplômes en un instant.") }}
+                    </p>
+                </div>
+                <div class="column is-4 has-text-centered">
+                    <a href="{{ url_for('auth.signup') }}" 
+                       id="cta-logiciel-dip"
+                       class="button is-warning is-medium is-rounded has-text-weight-bold"
+                       style="box-shadow: 0 4px 14px rgba(0,0,0,0.25);"
+                       onclick="trackCtaLogiciel('depuis-diplome-lecture')">
+                        <span class="icon"><i class="fas fa-sparkles"></i></span>
+                        <span>{{ _("Découvrir gratuitement") }}</span>
+                    </a>
+                    <p class="is-size-7 mt-2" style="opacity: 0.85;">
+                        {{ _("Sans carte bancaire • Prêt pour votre classe") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Pédagogique -->
+        <div class="content mt-6">
+            <h3 class="title is-4" style="color: #1e293b;">{{ _("Questions fréquentes sur les diplômes de lecture") }}</h3>
+            
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Puis-je modifier le texte du diplôme ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Absolument. Vous pouvez cliquer sur n'importe quel texte du diplôme pour le modifier directement à l'écran ou utiliser les champs dans le panneau latéral gauche.") }}</p>
+            </div>
+
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Comment imprimer les diplômes pour toute ma classe sans ressaisir les prénoms ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Si vous avez créé votre classe sur Livres en Classe (gratuit), le mode « Toute la classe » apparaît automatiquement et génère une planche complète prête à imprimer avec tous les noms et compteurs de lecture.") }}</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
 {% block extra_scripts %}
 <script>
 const studentsData = [
@@ -279,54 +451,48 @@ function selectStudentById(id) {
     const reasonEl = document.getElementById('diplomeReason');
 
     if (!id) {
-        if (selector) selector.value = '';
+        if (recipientInput) recipientInput.value = '';
+        if (recipientEl) recipientEl.textContent = 'Thomas Dubois';
+        if (reasonInput) reasonInput.value = '';
+        if (reasonEl) reasonEl.textContent = getCongratulationText(0);
         return;
     }
 
-    const st = studentsData.find(s => s.id === parseInt(id, 10));
+    const st = studentsData.find(s => s.id == id);
     if (st) {
-        if (selector) selector.value = st.id;
         if (recipientInput) recipientInput.value = st.name;
         if (recipientEl) recipientEl.textContent = st.name;
-
-        const reason = getCongratulationText(st.count);
-        if (reasonInput) reasonInput.value = reason;
-        if (reasonEl) reasonEl.textContent = reason;
+        const msg = getCongratulationText(st.count);
+        if (reasonInput) reasonInput.value = msg;
+        if (reasonEl) reasonEl.textContent = msg;
     }
 }
 
 function switchDiplomeMode(mode) {
-    const singleView = document.getElementById('singleDiplomeView');
-    const allView = document.getElementById('allDiplomesView');
     const singleControls = document.getElementById('singleStudentControls');
-    const allNotice = document.getElementById('allStudentsNotice');
-    const sheet = document.getElementById('printableSheet');
+    const allView = document.getElementById('allDiplomesView');
+    const singleSheet = document.getElementById('singleDiplomeSheet');
 
     if (mode === 'all') {
-        if (singleView) singleView.style.display = 'none';
-        if (allView) allView.style.display = 'flex';
         if (singleControls) singleControls.style.display = 'none';
-        if (allNotice) allNotice.style.display = 'block';
-        if (sheet) sheet.classList.add('multi-page');
-        syncAllDiplomesCommonFields();
+        if (singleSheet) singleSheet.style.display = 'none';
+        if (allView) allView.style.display = 'block';
     } else {
-        if (singleView) singleView.style.display = 'flex';
-        if (allView) allView.style.display = 'none';
         if (singleControls) singleControls.style.display = 'block';
-        if (allNotice) allNotice.style.display = 'none';
-        if (sheet) sheet.classList.remove('multi-page');
+        if (singleSheet) singleSheet.style.display = 'block';
+        if (allView) allView.style.display = 'none';
     }
 }
 
 function syncAllDiplomesCommonFields() {
-    const titleVal = document.querySelector('[data-bind="diplomeTitle"]')?.value || '';
-    const subtitleVal = document.querySelector('[data-bind="diplomeSubtitle"]')?.value || '';
-    const schoolVal = document.querySelector('[data-bind="diplomeSchool"]')?.value || '';
-    const dateVal = document.querySelector('[data-bind="diplomeDate"]')?.value || '';
-    const teacherVal = document.querySelector('[data-bind="diplomeTeacher"]')?.value || '';
+    const titleVal = document.getElementById('diplomeTitle') ? document.getElementById('diplomeTitle').textContent : '';
+    const subVal = document.getElementById('diplomeSubtitle') ? document.getElementById('diplomeSubtitle').textContent : '';
+    const schoolVal = document.getElementById('diplomeSchool') ? document.getElementById('diplomeSchool').textContent : '';
+    const dateVal = document.getElementById('diplomeDate') ? document.getElementById('diplomeDate').textContent : '';
+    const teacherVal = document.getElementById('diplomeTeacher') ? document.getElementById('diplomeTeacher').textContent : '';
 
     document.querySelectorAll('.class-diplome-title').forEach(el => el.textContent = titleVal);
-    document.querySelectorAll('.class-diplome-subtitle').forEach(el => el.textContent = subtitleVal);
+    document.querySelectorAll('.class-diplome-subtitle').forEach(el => el.textContent = subVal);
     document.querySelectorAll('.class-diplome-school').forEach(el => el.textContent = schoolVal);
     document.querySelectorAll('.class-diplome-date').forEach(el => el.textContent = dateVal);
     document.querySelectorAll('.class-diplome-teacher').forEach(el => el.textContent = teacherVal);
@@ -371,7 +537,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Régler la date du jour par défaut
     const dateInput = document.querySelector('[data-bind="diplomeDate"]');
     const dateEl = document.getElementById('diplomeDate');
     if (dateInput && dateEl) {
@@ -381,7 +546,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dateEl.textContent = `Le ${formatted}`;
     }
 
-    // Synchronisation en temps réel des champs communs pour le mode multi-diplômes
     ['diplomeTitle', 'diplomeSubtitle', 'diplomeSchool', 'diplomeDate', 'diplomeTeacher'].forEach(id => {
         const input = document.querySelector(`[data-bind="${id}"]`);
         if (input) {
@@ -389,5 +553,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+function trackPinterestClick(resourceName) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Ressources', 'Clic_Pinterest', resourceName]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function trackCtaLogiciel(source) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Conversion', 'CTA_Logiciel', source]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function openPinterestShare(resource) {
+    const btn = document.getElementById('pin-button-dip');
+    if (btn) btn.click();
+}
 </script>
 {% endblock %}

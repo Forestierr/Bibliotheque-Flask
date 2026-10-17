@@ -1,0 +1,228 @@
+<!-- templates/blog/en/application-scan-code-barre-livre.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}How to Scan Book Barcodes with a Smartphone in the Classroom: App & Guide{% endblock %}
+{% block meta_description %}How to quickly scan and inventory classroom books using your smartphone camera. Discover the free barcode scanning web app for teachers.{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ lang_url('en', external=True) }}"
+      },
+      "headline": {{ "How to Scan Book Barcodes with a Smartphone in the Classroom: App & Guide"|tojson }},
+      "description": {{ "How to quickly scan and inventory classroom books using your smartphone camera. Discover the free barcode scanning web app for teachers."|tojson }},
+      "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+      "author": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "url": "https://livresenclasse.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Livres en Classe",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+        }
+      },
+      "inLanguage": "en",
+      "datePublished": "2026-09-12",
+      "dateModified": "2026-09-12"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": {{ "How to scan a book barcode using a mobile phone?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "Open Livres en Classe on your smartphone browser, allow camera access, and point at the ISBN barcode on the back cover. Book details and cover art load automatically in seconds."|tojson }}
+          }
+        },
+        {
+          "@type": "Question",
+          "name": {{ "Do you need an expensive handheld barcode gun?"|tojson }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ "No. Dedicated USB scanner guns are expensive and clunky. Your phone or classroom tablet camera works just as fast and with zero cords."|tojson }}
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Desktop Table of Contents -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Smartphone vs. USB Guns</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. How ISBN Scanning Works</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Scanning 500 Books in 1 Hour</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Books Without Barcodes</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Frequently Asked Questions (FAQ)</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Scan book barcodes app</a></li>
+                      </ul>
+                    </nav>
+
+                    <h1 class="title is-1 mb-5">How to Scan Book Barcodes with a Smartphone in the Classroom: App & Guide</h1>
+                    <p class="subtitle is-5 has-text-grey">Reading time: 7 min | By the Livres en Classe Team</p>
+
+            <div class="content is-medium mt-6">
+                <p>
+                    For educators setting up or reorganizing their classroom library, the most daunting task is always the <strong>initial inventory</strong>. Manually typing titles, authors, publishers, and publication years for 300 or 500 titles easily takes dozens of tedious hours.
+                </p>
+                <p>
+                    With modern web technology, you can instantly turn any smartphone or tablet into a <strong>high-speed camera barcode scanner</strong>. Discover how to use a school-ready barcode scanning web app to catalog your classroom collection in record time.
+                </p>
+
+                <hr class="my-6">
+
+                <!-- Mobile Table of Contents -->
+                <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                    <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                    <ul class="menu-list" style="font-size: 0.95rem;">
+                        <li><a href="#section-1" style="color: #4a4a4a;">1. Smartphone vs. USB Guns</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. How ISBN Scanning Works</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Scanning 500 Books in 1 Hour</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Books Without Barcodes</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Frequently Asked Questions (FAQ)</a></li>
+                    </ul>
+                </div>
+
+                <h2 id="section-1">1. Why Ditch Handheld USB Barcode Scanners?</h2>
+                <p>
+                    Historically, schools purchased handheld corded laser scanners plugged into a fixed desktop computer. While functional, they have serious downsides in modern classrooms:
+                </p>
+                <ul>
+                    <li><strong>Expensive:</strong> Decent USB scanners cost $50 to $150 each—funds much better invested in engaging children's books.</li>
+                    <li><strong>Incompatible with iPads & Tablets:</strong> Cabled USB scanners cannot plug into classroom tablets without awkward dongles.</li>
+                    <li><strong>Tethered to a desk:</strong> You must drag heavy stacks of books across the room to the computer instead of scanning right at the bookshelf.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-2">2. How Camera ISBN Scanning Works</h2>
+                <p>
+                    Virtually every published children's book carries an international 13-digit <strong>ISBN</strong> printed on the back cover (an EAN-13 barcode beginning with <strong>978</strong> or <strong>979</strong>).
+                </p>
+                <p>
+                    When using <strong>Livres en Classe</strong>:
+                </p>
+                <ol>
+                    <li>Your device camera reads the barcode pattern and extracts the ISBN number in a fraction of a second.</li>
+                    <li>The app queries international bibliographic databases.</li>
+                    <li>The full book record appears instantly: <strong>title, author, publisher, and high-res cover art</strong>.</li>
+                    <li>The book is saved to your classroom catalog in one click.</li>
+                </ol>
+
+                <hr class="my-6">
+
+                <h2 id="section-3">3. How to Scan 500 Books in Under an Hour</h2>
+                <p>
+                    Follow this proven teacher workflow for maximum speed:
+                </p>
+                <ul>
+                    <li><strong>Work in pairs:</strong> One person scans books under the camera while the second sorts them into designated reading baskets.</li>
+                    <li><strong>Check your lighting:</strong> Natural daylight or an angled desk lamp ensures fast barcode recognition. Avoid dark shadows over the barcode.</li>
+                    <li><strong>Optimal distance:</strong> Hold the camera lens about <strong>6 to 8 inches (15–20 cm)</strong> from the book cover.</li>
+                    <li><strong>Plastic book covers:</strong> If books have shiny laminate covers, tilt the book slightly to prevent light glare from blinding the lens.</li>
+                </ul>
+
+                <div class="has-text-centered my-5">
+                    <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded">Try the Free Barcode Scanner</a>
+                </div>
+
+                <hr class="my-6">
+
+                <h2 id="section-4">4. What About Books Without Barcodes?</h2>
+                <p>
+                    Classrooms often inherit beloved vintage fairy tales or small paperbacks without printed ISBN barcodes.
+                </p>
+                <p>
+                    Two simple options solve this:
+                </p>
+                <ul>
+                    <li><strong>Manual search:</strong> Type the title and author into Livres en Classe to add the book without scanning.</li>
+                    <li><strong>Custom printable barcode labels:</strong> Generate and print our <a href="{{ url_for('ressource.codes_barres') }}">custom barcode stickers</a> to paste onto older books so they scan just like modern titles.</li>
+                </ul>
+
+                <hr class="my-6">
+
+                <h2 id="section-5">5. Frequently Asked Questions (FAQ)</h2>
+
+                <h3>How do I scan a book barcode using my smartphone?</h3>
+                <p>
+                    Open Livres en Classe in Safari or Chrome, grant camera permission, and aim at the ISBN barcode on the book's back cover. The book details pop up in seconds.
+                </p>
+
+                <h3>Does the app work on iPad, iPhone, and Android?</h3>
+                <p>
+                    Yes. As a modern Progressive Web App (PWA), it runs smoothly on Safari (iOS/iPadOS) and Chrome (Android, Windows, macOS, Chromebooks) without requiring app store purchases.
+                </p>
+
+                <!-- Suggested reading -->
+                <hr class="my-6">
+                <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                    <h3 class="title is-4 mb-4">📚 Recommended Reading...</h3>
+                    <div class="columns">
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">COMPLETE GUIDE</p>
+                                <p class="has-text-weight-bold has-text-dark">The Ultimate Guide to Creating an Effective Classroom Library</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                        <div class="column">
+                            <a href="{{ url_for('main.blog_article', article_slug='logiciel-bcd-ecole') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">COMPARISON</p>
+                                <p class="has-text-weight-bold has-text-dark">Best School Library Software for Primary Schools</p>
+                                <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- End content -->
+            </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

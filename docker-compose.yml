@@ -1,40 +1,35 @@
 version: '3.8'
 
 services:
-  flask:
-    build: 
-      context: .
-      dockerfile: project/Dockerfile
+  biblio:
+    container_name: biblio
+    image: ghcr.io/forestierr/bibliotheque-flask:latest
+    # En développement local sans image distante, décommenter 'build' :
+    # build:
+    #   context: .
+    #   dockerfile: project/Dockerfile
     command: gunicorn -w 4 -b 0.0.0.0:5602 wsgi:app
+    env_file:
+      - .env
     environment:
       - FLASK_RUN_HOST=0.0.0.0
-    restart: always
+      - FLASK_ENV=production
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.biblio.rule=Host(`livresenclasse.com`)"
+      - "traefik.http.routers.biblio.entrypoints=https"
+      - "traefik.http.routers.biblio.tls=true"
+      - "traefik.http.routers.biblio.tls.certresolver=cloudflare"
+      - "traefik.http.services.biblio.loadbalancer.server.port=5602"
+      - "traefik.http.routers.biblio.middlewares=authelia@docker"
     volumes:
-        - .:/app
-
-  nginx:
-    build: 
-      context: ./nginx
-      dockerfile: Dockerfile
-    ports:
-      - "8755:8755"
-    depends_on:
-      - flask
-    # volumes:
-    #   - /home/austin/log/nginx:/var/log/nginx
-    restart: always
-
-
-  cloudflared:
-    env_file: ".env"
-    image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token ${CF_TOCKEN}
-    restart: always
-    environment:
-      - CF_TOKEN
+      # CRUCIAL : On ne monte QUE le dossier instance (qui contient db.sqlite et les verrous)
+      # On ne monte plus tout le dossier du code pour ne pas écraser le code packagé dans l'image GHCR !
+      - ./instance:/app/instance
 
 networks:
-  default:
-    ipam:
-      config:
-        - subnet: 172.29.0.0/16
+  proxy:
+    external: true

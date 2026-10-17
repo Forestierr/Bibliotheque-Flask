@@ -245,3 +245,92 @@ def test_signup_get_authenticated_redirects(client, app):
             response = client.get("/signup", follow_redirects=False)
             assert response.status_code == 302
             assert "/dashboard" in response.headers.get("Location", "")
+
+
+# Test affichage des limites du plan gratuit et du mode Premium sur /signup
+def test_signup_page_displays_free_plan_and_quotas(client):
+    response = client.get("/signup")
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+
+    # Vérification de l'accroche
+    assert "Simplifiez la gestion de vos livres" in html
+
+    # Vérification des quotas du plan gratuit (config_plans.py)
+    assert "40" in html
+    assert "élèves gérés" in html
+    assert "500" in html
+    assert "livres au catalogue" in html
+    assert "10" in html
+    assert "mois d'historique des prêts" in html
+    assert "30" in html
+    assert "scans de codes-barres par semaine" in html
+
+    # Vérification de l'existence du mode Premium
+    assert "Premium avec accès illimité" in html
+    assert "/tarifs" in html
+
+    # Vérification du bouton d'inscription épuré
+    assert "S'inscrire et commencer gratuitement" in html
+
+
+# Test affichage multilingue sur /signup
+def test_signup_page_multilingual(client):
+    # En anglais
+    client.get("/set-lang/en", follow_redirects=True)
+    res_en = client.get("/signup")
+    html_en = res_en.get_data(as_text=True)
+    assert "Simplify your classroom book management" in html_en
+    assert "Sign up and get started for free" in html_en
+    assert "managed students" in html_en
+    assert "catalog books" in html_en
+
+    # En allemand
+    client.get("/set-lang/de", follow_redirects=True)
+    res_de = client.get("/signup")
+    html_de = res_de.get_data(as_text=True)
+    assert "Vereinfachen Sie Ihre Klassenbuch-Verwaltung" in html_de
+    assert "Registrieren und kostenlos starten" in html_de
+    assert "verwaltete Schüler" in html_de
+
+
+# Test conservation de l'email lors d'un échec de connexion
+def test_login_retains_email_on_failure(client, app):
+    with (
+        app.app_context(),
+        patch("project.auth.User.query") as mock_query,
+        patch("project.auth.os.getenv", return_value=""),
+    ):
+        mock_query.filter_by().first.return_value = None
+        response = client.post(
+            "/login",
+            data={"email": "professeur@ecole.ch", "password": "mauvais_mot_de_passe"},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert 'value="professeur@ecole.ch"' in html
+
+
+# Test conservation de l'email et du nom lors d'un échec d'inscription
+def test_signup_retains_email_and_name_on_failure(client, app):
+    with (
+        app.app_context(),
+        patch("project.auth.User.query") as mock_query,
+        patch("project.auth.os.getenv", return_value=""),
+    ):
+        # Simule email déjà existant
+        mock_query.filter_by().first.return_value = MagicMock()
+        response = client.post(
+            "/signup",
+            data={
+                "email": "existant@ecole.ch",
+                "name": "Mme Dupont",
+                "password": "motdepasse123",
+            },
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        html = response.get_data(as_text=True)
+        assert 'value="existant@ecole.ch"' in html
+        assert 'value="Mme Dupont"' in html

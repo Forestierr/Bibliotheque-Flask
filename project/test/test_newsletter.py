@@ -1,3 +1,4 @@
+from datetime import UTC
 from unittest.mock import patch
 
 import pytest
@@ -561,9 +562,8 @@ def test_admin_emails_duplicate_prefill(client, app):
     html = res.data.decode("utf-8")
     assert "Lettre de rentrée" in html
     assert "Bienvenue pour cette nouvelle année !" in html
-    assert 'value="newsletter_promo.html"' in html
-    assert 'value="all_subscribed" selected' in html
-    assert 'value="de" selected' in html
+    assert 'id="targetInput" value="all_subscribed"' in html
+    assert 'id="targetLangInput" value="de"' in html
 
 
 @patch("project.admin.mail.send")
@@ -641,3 +641,165 @@ def test_send_newsletter_async_pseudo_and_force_locale(mock_sleep, mock_send, ap
         delivery_db = db.session.get(NewsletterDelivery, delivery.id)
         assert delivery_db.status == "sent"
         assert delivery_db.sent_at is not None
+
+
+def test_admin_emails_get_matrix_and_buttons(client, app, sample_user):
+    res = client.get("/admin/emails")
+    assert res.status_code == 200
+    # Check plan filter buttons are present
+    assert b'data-plan="all"' in res.data
+    assert b'data-plan="founder"' in res.data
+    assert b'data-plan="premium"' in res.data
+    assert b'data-plan="trial"' in res.data
+    assert b'data-plan="free"' in res.data
+    # Check language filter buttons are present
+    assert b'data-lang="all"' in res.data
+    assert b'data-lang="fr"' in res.data
+    assert b'data-lang="en"' in res.data
+    assert b'data-lang="de"' in res.data
+    # Check audience filter buttons are present
+    assert b'data-target="verified_subscribed"' in res.data
+    assert b'data-target="all_subscribed"' in res.data
+    assert b'data-target="system_all"' in res.data
+
+
+@patch("project.admin.Thread")
+def test_admin_emails_filter_by_plan(mock_thread, client, app):
+    from datetime import datetime, timedelta
+
+    now = datetime.now(UTC)
+    with app.app_context():
+        u_founder = User(
+            email="founder@ecole.fr",
+            name="Founder User",
+            password="pwd",
+            is_verified=True,
+            newsletter_subscribed=True,
+            plan="founder",
+        )
+        u_premium = User(
+            email="premium@ecole.fr",
+            name="Premium User",
+            password="pwd",
+            is_verified=True,
+            newsletter_subscribed=True,
+            plan="premium",
+        )
+        u_trial = User(
+            email="trial@ecole.fr",
+            name="Trial User",
+            password="pwd",
+            is_verified=True,
+            newsletter_subscribed=True,
+            plan="free",
+            trial_ends_at=now + timedelta(days=15),
+        )
+        u_free = User(
+            email="free@ecole.fr",
+            name="Free User",
+            password="pwd",
+            is_verified=True,
+            newsletter_subscribed=True,
+            plan="free",
+            trial_ends_at=None,
+        )
+        db.session.add_all([u_founder, u_premium, u_trial, u_free])
+        db.session.commit()
+
+    # 1. Send targeting premium only
+    res = client.post(
+        "/admin/emails",
+        data={
+            "subject": "Offre Exclusive Premium",
+            "target": "verified_subscribed",
+            "target_plan": "premium",
+            "target_lang": "all",
+            "template_choice": "newsletter.html",
+            "message": "<p>Merci d'être Premium !</p>",
+            "action": "send",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    assert mock_thread.called
+    args = mock_thread.call_args[1]["args"]
+    recipient_emails = [r["email"] for r in args[6]]
+    assert recipient_emails == ["premium@ecole.fr"]
+
+    with app.app_context():
+        camp = NewsletterCampaign.query.filter_by(
+            subject="Offre Exclusive Premium"
+        ).first()
+        assert camp is not None
+        assert camp.target == "verified_subscribed:premium"
+        assert camp.total_recipients == 1
+
+    # 2. Send targeting founder only
+    mock_thread.reset_mock()
+    res = client.post(
+        "/admin/emails",
+        data={
+            "subject": "Merci aux Fondateurs",
+            "target": "verified_subscribed",
+            "target_plan": "founder",
+            "target_lang": "all",
+            "template_choice": "newsletter.html",
+            "message": "<p>Accès à vie pour vous !</p>",
+            "action": "send",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    args = mock_thread.call_args[1]["args"]
+    recipient_emails = [r["email"] for r in args[6]]
+    assert recipient_emails == ["founder@ecole.fr"]
+
+    # 3. Send targeting trial only
+    mock_thread.reset_mock()
+    res = client.post(
+        "/admin/emails",
+        data={
+            "subject": "Votre période d'essai",
+            "target": "verified_subscribed",
+            "target_plan": "trial",
+            "target_lang": "all",
+            "template_choice": "newsletter.html",
+            "message": "<p>Découvrez nos fonctionnalités !</p>",
+            "action": "send",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    args = mock_thread.call_args[1]["args"]
+    recipient_emails = [r["email"] for r in args[6]]
+    assert recipient_emails == ["trial@ecole.fr"]
+
+    # 4. Send targeting free only
+    mock_thread.reset_mock()
+    res = client.post(
+        "/admin/emails",
+        data={
+            "subject": "Passez à la vitesse supérieure",
+            "target": "verified_subscribed",
+            "target_plan": "free",
+            "target_lang": "all",
+            "template_choice": "newsletter.html",
+            "message": "<p>Découvrez nos formules.</p>",
+            "action": "send",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    args = mock_thread.call_args[1]["args"]
+    recipient_emails = [r["email"] for r in args[6]]
+    assert recipient_emails == ["free@ecole.fr"]
+
+    # 5. Duplication retains target and plan
+    with app.app_context():
+        camp = NewsletterCampaign.query.filter_by(
+            subject="Offre Exclusive Premium"
+        ).first()
+        camp_id = camp.id
+    res = client.get(f"/admin/emails?duplicate_id={camp_id}&tab=compose")
+    assert res.status_code == 200
+    assert b'id="targetPlanInput" value="premium"' in res.data

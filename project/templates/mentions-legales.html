@@ -4,8 +4,24 @@
 
 {% extends "base.html" %}
  
-{% block title %}{{ _("Mentions Légales | Livres en Classe") }}{% endblock %}
-{% block meta_description %}{{ _("Mentions légales et politique de confidentialité de Livres en Classe.") }}{% endblock %}
+{% block title %}{{ _("Mentions Légales & Confidentialité | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Mentions légales, conditions générales d'utilisation, politique de confidentialité LPD/RGPD et conditions de vente de Livres en Classe.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url(get_locale(), external=True) }}"
+  },
+  "name": {{ _("Mentions Légales & Confidentialité | Livres en Classe")|tojson }},
+  "description": {{ _("Mentions légales, conditions générales d'utilisation, politique de confidentialité LPD/RGPD et conditions de vente de Livres en Classe.")|tojson }},
+  "inLanguage": "{{ get_locale() }}"
+}
+</script>
+{% endblock %}
 
 {% block navbar %}
     {{ navbar(current_user, _("Ma Bibliothèque")) }}
@@ -14,18 +30,18 @@
 {% block content %}
 
     <section class="section">
-      <h1 class="title is-1">{{ _("Mentions Légales") }}</h1>
+      <h1 class="title is-1">{{ _("Mentions Légales & Conditions Générales") }}</h1>
 
         <br>
 
         <div class="block">
-          <h3 class="title is-3">{{ _("Nos données") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("Informations légales & Contact") }}</h3>
+          <div class="container content">
             <ul>
-                <li>Robin Forestier</li>
-                <li>livresenclasse@gmail.com</li>
-                <li><a href="https://github.com/Forestierr">https://github.com/Forestierr</a></li>
-                <li>VD, Suisse</li>
+                <li><strong>{{ _("Éditeur du service :") }}</strong> Robin Forestier ({{ _("créateur et éditeur indépendant de Livres en Classe") }})</li>
+                <li><strong>{{ _("Contact e-mail :") }}</strong> <a href="mailto:livresenclasse@gmail.com">livresenclasse@gmail.com</a></li>
+                <li><strong>{{ _("Localisation :") }}</strong> {{ _("Canton de Vaud, Suisse (adresse de contact postale communiquée sur demande préalable par e-mail)") }}</li>
+                <li><strong>{{ _("Dépôt GitHub :") }}</strong> <a href="https://github.com/Forestierr/Bibliotheque-Flask" target="_blank" rel="noopener noreferrer">https://github.com/Forestierr/Bibliotheque-Flask</a></li>
             </ul>
           </div>
         </div>
@@ -33,14 +49,10 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">{{ _("1. CONDITIONS D'UTILISATION") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("1. CONDITIONS GÉNÉRALES D'UTILISATION (CGU)") }}</h3>
+          <div class="container content">
             <p>
-                Ce site Internet est proposé sous réserve de votre acceptation inconditionnelle des conditions
-                d'utilisation ci-dessous. Conformément à la loi numéro 78-17 du 6 janvier 1978 relative à
-                l’informatique, aux fichiers et aux libertés, le Participant dispose d’un droit d’accès et de
-                rectification aux informations nominatives le concernant et que le site peut être amené à traiter pour les
-                besoins de son activité.
+                {{ _("Le présent site web et ses services associés sont proposés sous réserve de votre acceptation pleine et entière des présentes conditions générales d'utilisation. En accédant au service, en créant un compte ou en naviguant sur le site, l'Utilisateur reconnaît avoir pris connaissance des présentes conditions et s'engage à les respecter sans réserve. Le service s'adresse en priorité aux enseignants, directeurs d'école, documentalistes et professionnels de l'éducation désireux d'administrer une bibliothèque de classe ou scolaire.") }}
             </p>
           </div>
         </div>
@@ -48,47 +60,30 @@
         <hr>
 
         <div class="block">
-          <h3 class="title is-3">{{ _("2. UTILISATION EXCLUSIVEMENT PRIVÉE") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("2. PROPRIÉTÉ INTELLECTUELLE & LICENCE DU CODE SOURCE") }}</h3>
+          <div class="container content">
             <p>
-                L'utilisation de ce site internet est exclusivement destinées au fin privées et commerciales.
-                L'autorisation est accordée par la présente, gratuitement, à toute personne obtenant une copie de ce
-                logiciel et des fichiers de documentation associés (le « Logiciel »), de traiter le Logiciel sans
-                restriction, y compris sans limitation les droits d'utilisation, de copie, de modification, de fusion,
-                de publication, de distribution, de sous-licence, et/ou de vente de copies du Logiciel, et d'autoriser
-                les personnes à qui le Logiciel est fourni à le faire, sous réserve des conditions suivantes :
+                {{ _("L'application Livres en Classe, son design, son architecture logicielle, ses logos et ses textes originaux sont protégés par le droit d'auteur et les lois applicables en matière de propriété intellectuelle (Copyright 2024-2026 Robin Forestier).") }}
             </p>
-            <br>
-            <p>Copyright 2024 Robin Forestier</p>
-            <br>
             <p>
-                L'avis de droit d'auteur ci-dessus et cet avis d'autorisation doivent être inclus dans toutes les copies
-                ou parties substantielles du logiciel.
+                {{ _("Le code source de l'application est mis à disposition publiquement sous licence PolyForm Noncommercial License 1.0.0. Conformément aux termes de cette licence, toute personne physique ou morale est autorisée à utiliser, exécuter, copier, modifier et redistribuer le logiciel exclusivement à des fins personnelles ou non commerciales, notamment dans le cadre éducatif pour la classe.") }}
             </p>
-            <br>
             <p>
-                LE LOGICIEL EST FOURNI « TEL QUEL », SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU IMPLICITE, Y COMPRIS,
-                MAIS SANS S'Y LIMITER, LES GARANTIES DE QUALITÉ MARCHANDE, D'ADÉQUATION À UN USAGE PARTICULIER ET
-                D'ABSENCE DE CONTREFAÇON. EN AUCUN CAS LES AUTEURS OU LES DÉTENTEURS DES DROITS D'AUTEUR NE PEUVENT ÊTRE
-                TENUS RESPONSABLES DE TOUTE RÉCLAMATION, DE TOUT DOMMAGE OU DE TOUTE AUTRE RESPONSABILITÉ, QUE CE SOIT
-                DANS LE CADRE D'UNE ACTION CONTRACTUELLE, DÉLICTUELLE OU AUTRE, DÉCOULANT DE OU EN RAPPORT AVEC LE
-                LOGICIEL OU L'UTILISATION OU D'AUTRES OPÉRATIONS LIÉES AU LOGICIEL.
+                {{ _("Toute utilisation commerciale directe ou indirecte, monétisation, revente, hébergement payant ou exploitation concurrente du logiciel ou de ses dérivés est strictement interdite sans autorisation écrite préalable et expresse du titulaire des droits.") }}
             </p>
-            <a href="https://opensource.org/license/mit">MIT</a>
-          </div>
-        </div>
-
-        <hr>
-
-        <div class="block">
-            <h3 class="title is-3">{{ _("3. SITE DE TIERS, LIENS") }}</h3>
-          <div class="container">
             <p>
-                Nous déclinons toute responsabilité quant au contenu des sites tiers ou les liens repris sur notre site.
-                Nous ne garantissons pas l'accès ou le fonctionnement des sites ou liens proposés à si,ple titre
-                d'information. Nous n'exerçons absolument aucun contrôle sur les sites tiers et déclinons toute
-                responsabilité quant à leur contenu. Le fait qu'un site tiers ou un lien soit repris sur notre site ne
-                signifie pas que nous approuvons ou recommandons les sites ou propriétaires des sites concernés.
+                {{ _("L'application intègre également des bibliothèques et frameworks tiers open source (notamment Flask sous licence BSD, Bulma sous licence MIT, FontAwesome) qui demeurent soumis à leurs licences respectives.") }}
+            </p>
+            <p>
+                {{ _("Les métadonnées bibliographiques (titres, résumés, auteurs, couvertures) issues d'API publiques et de services partenaires externes (Google Books, BNF, Decitre) demeurent la propriété de leurs auteurs, éditeurs ou ayants droit respectifs et sont présentées exclusivement à des fins de catalogage et d'illustration pédagogique.") }}
+            </p>
+            <p>
+                {{ _("Le logiciel est fourni « tel quel », sans garantie d'aucune sorte. En aucun cas l'auteur ou le titulaire des droits ne peut être tenu responsable des dommages directs ou indirects découlant de l'utilisation du logiciel.") }}
+            </p>
+            <p>
+                <a href="https://polyformproject.org/licenses/noncommercial/1.0.0" target="_blank" rel="noopener noreferrer">
+                    {{ _("Consulter le texte officiel de la licence PolyForm Noncommercial 1.0.0") }}
+                </a>
             </p>
           </div>
         </div>
@@ -96,12 +91,10 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("4. UTILISATION ILLICITE OU INTERDITE") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("3. LIENS HYPERTEXTES ET RESSOURCES DE TIERS") }}</h3>
+          <div class="container content">
             <p>
-                Vous n'êtes autorisé(e) à utiliser ce site qu'à des conditions de garantir que vous ne l'utiliserez pas
-                à des fins illicites ou à des fins interdites en vertu des lois en vigeur dans l'Union Européenne et des
-                conditions reprises dans ce document.
+                {{ _("Ce site peut contenir des liens hypertextes renvoyant vers des sites internet ou ressources externes de tiers (notamment des éditeurs, des API publiques, des documents pédagogiques ou des partenaires). Nous n'exerçons aucun contrôle sur le contenu, la disponibilité ou les politiques de confidentialité de ces sites tiers. En conséquence, nous déclinons toute responsabilité quant aux contenus, publicités, produits ou services disponibles sur ou à partir de ces ressources externes. L'inclusion d'un lien ne constitue en aucun cas une validation ou une recommandation de son contenu.") }}
             </p>
           </div>
         </div>
@@ -109,87 +102,10 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("5. FORUMS, MESSAGERIE, COMMUNAUTÉS...") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("4. UTILISATION LICITE ET RESPONSABILITÉ DE L'UTILISATEUR") }}</h3>
+          <div class="container content">
             <p>
-                Dans le cas où notre site devrait accueillir des groupes de discussion, des forums et
-                autre système de messagerie de groupe (par exemple, mais non limité à : webmail,
-                chatroom...). Vous vous engagez à n'utiliser exclusivement ces systèmes que pour
-                envoyer et recevoir des messages et des informations propres à la Communauté en
-                question ou qui s'y rapportent. À titre d'exemple (mais non limité à ces exemples) :
-            </p>
-            <br>
-            <p>
-                - à n'offenser, abuser, traquer, harceler ou menacer personne, ni à porter atteinte d'une
-                autre manière aux droits d'autrui (en particulier les droits individuels, y compris le droit
-                au respect de la vie privée).
-            </p>
-            <br>
-            <p>
-                - à ne publier, envoyer, charger à destination d'un serveur, partager ou diffuser aucun
-                thème ou élément que ce soit, aucun nom ou information que ce soit, qui ne soit pas
-                approprié(e), qui s'avère insultant(e) envers des convictions religieuses ou éthiques,
-                qui soit calomnieux(se), obscène, indécent(e), illicite, ou qui porte atteinte à n'importe
-                quel droit, en particulier les droits de propriété intellectuelle.
-            </p>
-            <br>
-            <p>
-                - à ne charger à destination d'un serveur aucun fichier contenant un logiciel ou d'autres
-                éléments protégés par le droit de propriété intellectuelle (ou par les droits individuels, y
-                compris le droit au respect de la vie privée), à moins que vous ne soyez titulaire des
-                droits précités, que vous n'exerciez un contrôle légal sur ceux-ci, ou que vous n'ayez
-                obtenu toutes les autorisations requises. - à ne charger à destination d'un serveur
-                aucun fichier infecté par des virus, aucun fichier corrompu ou tout autre logiciel ou
-                programme similaire capable d'endommager le fonctionnement d'un autre ordinateur.
-            </p>
-            <br>
-            <p>
-                - à ne mener ou à n'envoyer aucune étude, aucun concours, aucun système pyramidal
-                ou aucune chaîne. - à ne télécharger aucun fichier communiqué par un utilisateur d'une
-                autre Communauté alors que vous savez (ou devriez savoir) que cette distribution est
-                illégale.
-            </p>
-            <br>
-            <p>
-                - à ne falsifier ou à ne supprimer aucune mention relative à l'auteur, aucune mention
-                légale, ni n'importe quelle autre mention des droits de propriété ou relative à l'origine
-                ou à la source du logiciel ou de tout autre élément inclus dans un fichier qui est chargé
-                à destination d'un serveur.
-            </p>
-            <br>
-            <p>
-                - à ne limiter ou à n'empêcher l'utilisation des Communautés par quelque autre
-                utilisateur que ce soit.
-            </p>
-            <br>
-            <p>
-                - à n'utiliser les forums ou autres systèmes de communication mentionnés ci-avant pour
-                dénigrer les activités ou le personnel de ce site ou atteindre à l'image de ce site.
-            </p>
-            <br>
-            <p>
-                - Nous nous réservons le droit de vous refuser l'accès à l'une de ces Communautés ou à
-                l'ensemble des Communautés, à tout moment, sans notification préalable et pour
-                n'importe quel motif.
-            </p>
-            <br>
-            <p>
-                - Nous ne sommes pas tenu de surveiller les Communautés. Nous nous réservons toutefois le droit
-                de rédiger, de refuser d'envoyer, ou d'effacer tout ou partie des documents ou des
-                informations, à tout moment et de manière unilatérale.
-            </p>
-            <br>
-            <p>
-                Nous nous réservons en outre le droit de diffuser toute information que ce soit pour répondre
-                à chaque loi ou réglementation en vigueur, ou pour se soumettre à un ordre judiciaire
-                ou administratif. Nous ne sommes pas responsable des forums, communautés et autre
-                système de communication éventuellement mis à disposition sur notre site.
-            </p>
-            <br>
-            <p>
-                Tout ce que vous pourriez publier, charger ou télécharger sur les systèmes en question
-                l'est à vos risques et périls. Vos commentaires, textes, messages, images... seront
-                considérés comme publiques.
+                {{ _("L'Utilisateur s'engage à utiliser le site et l'ensemble de ses fonctionnalités conformément aux lois et réglementations en vigueur en Suisse et dans son pays de résidence, ainsi qu'aux présentes conditions. Il est strictement interdit d'utiliser la plateforme à des fins illicites, diffamatoires, frauduleuses, ou de nature à porter atteinte aux droits de tiers ou à la sécurité des systèmes d'information.") }}
             </p>
           </div>
         </div>
@@ -197,15 +113,19 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("6. LIMITATION DE LA RESPONSABILITÉ") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("5. ESPACES INTERACTIFS, RÈGLES DE CONDUITE ET MODÉRATION") }}</h3>
+          <div class="container content">
             <p>
-                Les informations, produits et services contenus sur ce site Internet peuvent comporter
-                des inexactitudes ou des fautes de frappe sur les plans technique et du contenu. Ces
-                données font régulièrement l'objet de modifications. Nous et/ou nos fournisseurs
-                pouvons, quel que soit le moment, apporter des améliorations et/ou des modifications à
-                ce site Internet. Ne prenez pas la moindre décision sur base des recommandations
-                formulées sur ce site Internet. L'information proposée sur le site l'est à titre de confort.
+                {{ _("Dans le cadre de l'utilisation des formulaires de contact, de retour d'expérience ou de toute fonctionnalité interactive mise à disposition sur la plateforme, l'Utilisateur s'engage à :") }}
+            </p>
+            <ul>
+                <li>{{ _("Ne pas publier, transmettre ou diffuser de messages haineux, diffamatoires, menaçants, obscènes ou contraires à l'ordre public.") }}</li>
+                <li>{{ _("Ne pas télécharger ni transmettre de fichiers contenant des virus informatiques, des logiciels malveillants ou des scripts susceptibles d'altérer le bon fonctionnement du service.") }}</li>
+                <li>{{ _("Ne pas usurper l'identité d'un tiers ni fournir d'informations délibérément inexactes lors de son inscription.") }}</li>
+                <li>{{ _("Respecter la confidentialité et les droits de propriété intellectuelle d'autrui.") }}</li>
+            </ul>
+            <p>
+                {{ _("En cas de violation caractérisée des présentes règles, atteinte à la sécurité du système ou comportement illicite, nous nous réservons le droit de supprimer les contenus litigieux et de suspendre ou clôturer le compte concerné. Sauf urgence manifeste liée à la sécurité des données ou obligation légale impérative, l'Utilisateur sera informé par e-mail des motifs de la mesure et disposera d'une possibilité de contestation en écrivant à livresenclasse@gmail.com.") }}
             </p>
           </div>
         </div>
@@ -213,11 +133,13 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("7. RESTRICTION DE L'ACCÈS") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("6. LIMITATION DE RESPONSABILITÉ") }}</h3>
+          <div class="container content">
             <p>
-                Nous nous réservons le droit de refuser l'accès de tout ou partie de ce site Internet à tout
-                utilisateur, de manière unilatérale et sans notification préalable.
+                {{ _("Les fonctionnalités et informations de Livres en Classe sont fournies avec soin afin d'accompagner au mieux les enseignants. Toutefois, le service est fourni « en l'état ». Nous ne pouvons garantir une disponibilité continue et ininterrompue de la plateforme, ni l'absence absolue d'anomalies techniques ou d'inexactitudes dans les fiches bibliographiques issues d'API externes.") }}
+            </p>
+            <p>
+                {{ _("Dans les limites permises par la législation applicable, notre responsabilité ne saurait être engagée en cas de perte indirecte de données, d'interruption temporaire d'activité ou de tout dommage résultant de l'utilisation ou de l'impossibilité d'utiliser le service. Rien dans les présentes conditions ne saurait toutefois exclure ou limiter la responsabilité de l'Éditeur en cas de dol, de faute grave ou de toute autre responsabilité ne pouvant être légalement exclue ou limitée en vertu du droit suisse impératif (notamment l'article 100 alinéa 1 du Code des obligations suisse).") }}
             </p>
           </div>
         </div>
@@ -225,13 +147,13 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("8. ACCÈS AUX DONNÉES PERSONNELLES") }}</h3>
-          <div class="container">
+          <h3 class="title is-3">{{ _("7. DISPONIBILITÉ DU SERVICE ET RÉSILIATION DU COMPTE") }}</h3>
+          <div class="container content">
             <p>
-                En vertu de la Règlementation applicable en matière de protection des Données à caractère
-                personnel, l'Utilisateur dispose d'un droit d'accès, de rectification, de suppression et d'opposition de
-                ses données personnelles. L'Utilisateur peut exercer ce droit :
-                - depuis le formulaire de contact ;
+                {{ _("Nous nous réservons le droit d'interrompre temporairement l'accès au site ou à certaines fonctionnalités pour des raisons de maintenance, de mise à jour ou d'amélioration technique, sans que cette interruption ne puisse ouvrir droit à une indemnisation.") }}
+            </p>
+            <p>
+                {{ _("Nous nous réservons également le droit de restreindre ou de résilier l'accès au compte d'un Utilisateur en cas de violation grave ou répétée des présentes conditions. En cas de résiliation unilatérale pour juste motif, les prélèvements futurs au titre d'un abonnement payant sont immédiatement interrompus. Les données du compte sont conservées pendant un délai de sécurité de 30 jours pour permettre leur restitution ou leur export sur demande écrite légitime de l'Utilisateur, avant suppression définitive, sous réserve des obligations légales de conservation.") }}
             </p>
           </div>
         </div>
@@ -239,19 +161,129 @@
         <hr>
 
         <div class="block">
-            <h3 class="title is-3">{{ _("9. MODIFICATION DES PRÉSENTES CONDITIONS ET DISPOSITIONS") }}</h3>
-          <div class="container">
+            <h3 class="title is-3">{{ _("8. POLITIQUE DE CONFIDENTIALITÉ & PROTECTION DES DONNÉES (LPD & RGPD)") }}</h3>
+          <div class="container content">
             <p>
-                Les présentes conditions sont applicables à partir du 20/11/2024 et peuvent être
-                modifiées sans préavis. Les présentes conditions générales d'utilisation sont régies par
-                la loi suisse.
+                {{ _("La protection de vos données personnelles et de celles de vos élèves est une priorité absolue pour Livres en Classe. Les données personnelles sont traitées aux fins de fournir et d'administrer le service Livres en Classe, de gérer les comptes utilisateurs, d'assurer les fonctionnalités de gestion des bibliothèques et des prêts, et, le cas échéant, de gérer les abonnements et les communications associées. Les traitements sont effectués en stricte conformité avec la Loi fédérale sur la protection des données (LPD) suisse révisée et, le cas échéant, avec le Règlement Général sur la Protection des Données (RGPD) de l'Union européenne.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Responsable du traitement :") }}</strong>
+                {{ _("Robin Forestier, Canton de Vaud, Suisse. Contact pour l'exercice de vos droits et la protection des données : livresenclasse@gmail.com.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Catégories de données collectées :") }}</strong>
+            </p>
+            <ul>
+                <li>
+                    <strong>{{ _("Données du compte Enseignant :") }}</strong>
+                    {{ _("Nom, prénom, adresse e-mail, mot de passe chiffré par empreinte cryptographique (hachage sécurisé), adresse IP de connexion, journaux techniques de sécurité, préférence linguistique d'affichage, ainsi que les identifiants techniques Stripe en cas de formule payante (identifiant client et abonnement).") }}
+                </li>
+                <li>
+                    <strong>{{ _("Données relatives aux Élèves :") }}</strong>
+                    {{ _("Prénom, nom (ou pseudonyme / initiales choisis par l'enseignant), niveau ou désignation de la classe. Aucune donnée sensible concernant les enfants (telle que date de naissance, adresse postale, situation familiale ou résultats scolaires) n'est collectée ni traitée. Livres en Classe encourage expressément les enseignants à n'utiliser que des prénoms ou des pseudonymes dans le cadre du principe de minimisation des données.") }}
+                </li>
+                <li>
+                    <strong>{{ _("Données relatives à la bibliothèque :") }}</strong>
+                    {{ _("Livres enregistrés (titres, auteurs, éditeurs, codes ISBN), codes-barres internes de la classe, historique et dates des emprunts et des retours.") }}
+                </li>
+            </ul>
+
+            <p>
+                <strong>{{ _("Finalités et bases juridiques des traitements :") }}</strong>
+            </p>
+            <ul>
+                <li>{{ _("Fourniture et administration du service, gestion du catalogue de livres et suivi des prêts scolaires (exécution contractuelle / CGU).") }}</li>
+                <li>{{ _("Gestion des abonnements et facturation sécurisée via Stripe (exécution contractuelle et obligations légales de tenue comptable).") }}</li>
+                <li>{{ _("Sécurisation de la plateforme, prévention de la fraude et détection d'éventuels abus (intérêt légitime).") }}</li>
+                <li>{{ _("Envoi de communications transactionnelles indispensables (vérification d'e-mail, réinitialisation de mot de passe, alertes d'abonnement).") }}</li>
+            </ul>
+
+            <p>
+                <strong>{{ _("Destinataires et transferts à l'étranger :") }}</strong>
+                {{ _("Les données collectées sont hébergées sur des serveurs sécurisés situés en Europe. Les paiements sont opérés par notre sous-traitant Stripe (Stripe Payments Europe, Ltd. en Irlande et Stripe, Inc. aux États-Unis, sous le couvert du Data Privacy Framework Suisse-USA et UE-USA ou de clauses contractuelles types). Aucune donnée personnelle n'est vendue, louée, commercialisée ni cédée à des tiers à des fins publicitaires ou de prospection.") }}
+            </p>
+
+            <p>
+                <strong>{{ _("Durées de conservation :") }}</strong>
+            </p>
+            <ul>
+                <li>{{ _("Données de compte et de classe (élèves, livres, prêts) : conservées tant que le compte de l'Utilisateur demeure actif.") }}</li>
+                <li>{{ _("Suppression immédiate : lors de la suppression de son compte par l'Utilisateur depuis ses réglages, l'ensemble de ses données (élèves, livres, historique des prêts, avis) est supprimé immédiatement et irréversiblement.") }}</li>
+                <li>{{ _("Comptes non vérifiés : les comptes créés sans confirmation de l'adresse e-mail sont purgés automatiquement après un délai de 7 jours.") }}</li>
+                <li>{{ _("Données comptables et de facturation : conservées pendant 10 ans conformément aux obligations comptables et fiscales du droit suisse.") }}</li>
+            </ul>
+
+            <p>
+                <strong>{{ _("Droits des personnes concernées et réclamations :") }}</strong>
+                {{ _("Conformément à la LPD suisse et au RGPD le cas échéant, vous disposez d'un droit d'accès, de rectification, d'effacement et de limitation du traitement de vos données personnelles, ainsi que d'un droit à la remise ou à la transmission de vos données (portabilité) dans les limites prévues par les lois applicables (art. 28 LPD, art. 20 RGPD). Vous pouvez exporter à tout moment vos données de livres et d'emprunts au format Excel depuis votre interface ou nous contacter à livresenclasse@gmail.com pour toute demande relative à vos données. Vous disposez également du droit de déposer une réclamation auprès de l'autorité compétente en Suisse, le Préposé fédéral à la protection des données et à la transparence (PFPDT, Feldeggweg 1, CH-3003 Berne, www.edoeb.admin.ch), ou auprès de l'autorité de protection des données compétente de votre lieu de résidence dans l'Union européenne (telle que la CNIL en France).") }}
             </p>
           </div>
+        </div>
+
+        <hr>
+
+        <div class="block">
+            <h3 class="title is-3">{{ _("9. MODIFICATION DES CONDITIONS, DROIT APPLICABLE ET FOR JURIDIQUE") }}</h3>
+          <div class="container content">
+            <p>
+                {{ _("Nous nous réservons le droit de modifier les présentes conditions à tout moment afin de les adapter aux évolutions du service ou aux modifications législatives. La version en vigueur est accessible en permanence sur cette page. En cas de modification substantielle, les utilisateurs enregistrés en seront avertis par e-mail ou par notification sur le site.") }}
+            </p>
+            <p>
+                {{ _("Les présentes conditions générales d'utilisation sont régies et interprétées conformément au droit suisse. En cas de litige relatif à leur validité, leur interprétation ou leur exécution, une résolution amiable sera systématiquement recherchée en premier lieu. À défaut d'accord amiable, les tribunaux compétents du canton de Vaud (Suisse) sont seuls compétents, sous réserve d'éventuels fors impératifs prévus par le Code de procédure civile suisse (CPC), la Convention de Lugano ou les dispositions légales impératives applicables aux consommateurs.") }}
+            </p>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="block">
+            <h3 class="title is-3">{{ _("10. PAIEMENT, ABONNEMENTS & CONDITIONS GÉNÉRALES DE VENTE (CGV)") }}</h3>
+            <div class="container content">
+                <p>
+                    <strong>{{ _("Partenaire de paiement et sécurité bancaire :") }}</strong>
+                    {{ _("Tous les paiements en ligne et abonnements récurrents sont opérés de manière chiffrée et sécurisée par notre prestataire agréé Stripe (Stripe Payments Europe, Ltd. pour l'Europe et la Suisse, et Stripe, Inc.). Les données bancaires (numéro de carte, date d'expiration, cryptogramme visuel CVC) sont collectées, gérées et traitées directement sur les infrastructures de Stripe, certifiées conformes aux normes PCI-DSS de niveau 1 (Payment Card Industry Data Security Standard). Aucune coordonnée bancaire complète n'est collectée, consultée ni stockée sur les serveurs de Livres en Classe.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Tarifs et durée de l'engagement :") }}</strong>
+                    {{ _("Le service Livres en Classe propose une formule gratuite ainsi qu'un abonnement Premium disponible au tarif de 3.00 CHF par mois ou 30.00 CHF par an (tarifs indiqués en Francs Suisses toutes taxes comprises). Le prix total, la devise (CHF) et la périodicité de prélèvement sont clairement affichés sur la page des tarifs ainsi que dans le récapitulatif de commande Stripe avant tout paiement. La souscription mensuelle engage l'Utilisateur pour une période d'un mois renouvelable tacitement chaque mois à la date anniversaire. La souscription annuelle engage l'Utilisateur pour une période ferme de douze mois renouvelable tacitement chaque année à la date anniversaire.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Statut Membre Fondateur :") }}</strong>
+                    {{ _("Le statut exclusif de Membre Fondateur confère un accès gratuit et illimité à l'ensemble des fonctionnalités du service à vie, sous réserve de la continuité de l'exploitation et de l'existence de la plateforme Livres en Classe.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Politique d'annulation et résiliation :") }}</strong>
+                    {{ _("L'abonnement Premium peut être résilié à tout moment, en toute autonomie et sans frais, directement depuis les réglages de votre compte via le portail sécurisé Stripe, jusqu'au dernier jour de la période facturée en cours. La résiliation prend effet à la fin de la période facturée en cours (mensuelle ou annuelle). Vous conservez l'accès à l'ensemble des fonctionnalités Premium jusqu'à cette date d'échéance.") }}
+                    <strong>{{ _("Politique de non-destruction des données :") }}</strong>
+                    {{ _("À l'issue de la période d'abonnement, votre compte bascule automatiquement en formule gratuite. Aucune donnée n'est supprimée ni bloquée : vos livres, élèves et historiques de prêts restent consultables et utilisables ; seul l'ajout de nouveaux éléments au-delà des plafonds gratuits est limité.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Modification des tarifs :") }}</strong>
+                    {{ _("Livres en Classe se réserve le droit de modifier le prix de ses abonnements. En cas de modification tarifaire applicable aux abonnements en cours, l'Utilisateur en sera informé par e-mail avec un préavis d'au moins 30 jours avant l'entrée en vigueur du nouveau tarif. Le nouveau tarif s'appliquera lors du renouvellement suivant la fin du délai de préavis. L'Utilisateur qui n'accepte pas la modification tarifaire conserve la liberté de résilier son abonnement sans frais avant la date de prise d'effet du nouveau prix, directement depuis son espace de gestion.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Politique de non-remboursement et réserves légales :") }}</strong>
+                    {{ _("Compte tenu de la fourniture immédiate d'un service numérique dès la validation de la commande et de la mise à disposition préalable d'une formule gratuite complète permettant d'essayer la plateforme sans engagement, toute période d'abonnement entamée (mensuelle ou annuelle) est due dans son intégralité. En cas de résiliation en cours de période, l'abonnement reste actif jusqu'à la fin de la période déjà payée, sans remboursement au prorata du temps restant, d'interruption anticipée ou de simple non-utilisation du service, sous réserve des dispositions légales impératives applicables et des éventuels droits de remboursement de l'Utilisateur (notamment en cas de défaut majeur imputable au service, d'indisponibilité anormale et prolongée non résolue ou d'obligation légale impérative).") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Notifications d'abonnement et facturation par e-mail :") }}</strong>
+                    {{ _("L'adresse e-mail associée à votre compte est utilisée pour l'envoi des communications strictement nécessaires à la gestion de votre abonnement : confirmations de commande, factures et reçus de paiement, alertes d'échéance ou de renouvellement, avis d'échec de prélèvement et confirmations de résiliation. Ces communications présentent un caractère contractuel et transactionnel nécessaire à l'exécution du service.") }}
+                </p>
+
+                <p>
+                    <strong>{{ _("Contact & Facturation :") }}</strong>
+                    {{ _("Pour toute question relative à votre abonnement, facturation ou demande d'assistance, vous pouvez nous écrire à livresenclasse@gmail.com.") }}
+                </p>
+            </div>
         </div>
     </section>
-
-
-
-
 
 {% endblock %}

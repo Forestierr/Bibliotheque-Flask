@@ -1,0 +1,563 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Utilisateurs{% endblock %}
+
+{% block admin_header_title %}Gestion des Utilisateurs{% endblock %}
+{% block admin_header_subtitle %}Consultez, filtrez et gérez les comptes enseignants, formules d'abonnement et autorisations.{% endblock %}
+
+{% block admin_actions %}
+<div class="tags has-addons mb-0">
+  <span class="tag is-light is-medium">Total inscrits</span>
+  <span class="tag is-primary is-medium has-text-weight-bold">{{ users|length }}</span>
+</div>
+{% endblock %}
+
+{% block admin_content %}
+<style>
+  /* Conteneur de la carte du tableau */
+  .admin-users-card {
+    padding: 0 !important;
+    position: relative;
+  }
+
+  /* Préservation stricte du défilement latéral du tableau sur tous les écrans */
+  .admin-users-card .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  /* Ligne du tableau */
+  .user-row {
+    transition: background-color 0.15s ease;
+  }
+  .user-row.has-dropdown-open {
+    background-color: #f8fafc;
+  }
+
+  /* Style soigné pour le menu des actions */
+  .admin-actions-dropdown-content {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 6px;
+    background: #ffffff;
+  }
+  .admin-actions-dropdown-content .dropdown-item {
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  .admin-actions-dropdown-content .dropdown-item:hover {
+    background-color: #f8fafc;
+  }
+
+  /* La modale d'édition doit impérativement rester au-dessus de tout */
+  #modalEditPlan {
+    z-index: 99999 !important;
+  }
+</style>
+
+<!-- Barre de Recherche et Filtres -->
+<div class="admin-card mb-4" style="padding: 1.25rem;">
+  <div class="columns is-variable is-2 is-multiline">
+    <!-- Recherche -->
+    <div class="column is-5-desktop is-12-tablet">
+      <div class="field mb-0">
+        <p class="control has-icons-left">
+          <input class="input is-rounded" type="text" id="searchInput" placeholder="Rechercher par ID, Email ou Nom...">
+          <span class="icon is-small is-left">
+            <i class="fas fa-search"></i>
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Filtre Formule -->
+    <div class="column is-4-desktop is-6-tablet">
+      <div class="field mb-0">
+        <div class="control has-icons-left is-expanded">
+          <div class="select is-rounded is-fullwidth">
+            <select id="filterPlan">
+              <option value="all">Toutes les formules</option>
+              <option value="premium">⭐ Premium (Actif)</option>
+              <option value="founder">👑 Fondateur (À vie)</option>
+              <option value="trial">⏳ En essai</option>
+              <option value="free">Gratuit</option>
+            </select>
+          </div>
+          <span class="icon is-small is-left">
+            <i class="fas fa-crown"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtre Statut -->
+    <div class="column is-3-desktop is-6-tablet">
+      <div class="field mb-0">
+        <div class="control has-icons-left is-expanded">
+          <div class="select is-rounded is-fullwidth">
+            <select id="filterStatus">
+              <option value="all">Tous les statuts</option>
+              <option value="verified">✅ Vérifiés</option>
+              <option value="unverified">⚠️ Non vérifiés</option>
+              <option value="newsletter">✉️ Abonnés newsletter</option>
+            </select>
+          </div>
+          <span class="icon is-small is-left">
+            <i class="fas fa-filter"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tableau des Utilisateurs -->
+<div class="admin-card admin-users-card">
+  <div class="table-container mb-0">
+    <table class="table is-fullwidth is-hoverable" id="usersTable" style="margin-bottom: 0;">
+      <thead>
+        <tr style="background: #f8fafc;">
+          <th style="padding: 1rem; width: 60px;">ID</th>
+          <th style="padding: 1rem;">Utilisateur</th>
+          <th style="padding: 1rem;">Statut</th>
+          <th style="padding: 1rem;">Formule</th>
+          <th style="padding: 1rem;">Scans</th>
+          <th style="padding: 1rem;">Newsletter</th>
+          <th style="padding: 1rem; text-align: center;">Livres</th>
+          <th style="padding: 1rem; text-align: center;">Élèves</th>
+          <th style="padding: 1rem; width: 80px; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        {% set plan_category = 'founder' if u.plan == 'founder' else ('trial' if u.is_in_trial else ('premium' if u.is_premium else 'free')) %}
+        <tr class="user-row"
+            data-id="{{ u.id }}"
+            data-email="{{ u.email|lower }}"
+            data-name="{{ (u.name or '')|lower }}"
+            data-plan="{{ plan_category }}"
+            data-verified="{{ '1' if u.is_verified else '0' }}"
+            data-newsletter="{{ '1' if u.newsletter_subscribed else '0' }}">
+          
+          <td style="padding: 1rem; vertical-align: middle;">
+            <span class="has-text-grey font-monospace is-size-7">#{{ u.id }}</span>
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle;">
+            <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
+              <div class="user-avatar" style="width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;">
+                {{ (u.name or u.email)[:2]|upper }}
+              </div>
+              <div>
+                <div class="has-text-weight-semibold user-email" style="color: #0f172a; line-height: 1.2;">
+                  {{ u.email }}
+                </div>
+                <div class="is-size-7 has-text-grey user-name">
+                  {{ u.name or 'Sans nom' }}
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle;">
+            {% if u.is_verified %}
+              <span class="tag is-success is-light is-rounded">
+                <i class="fas fa-check-circle mr-1"></i> Vérifié
+              </span>
+            {% else %}
+              <span class="tag is-warning is-light is-rounded">
+                <i class="fas fa-clock mr-1"></i> En attente
+              </span>
+            {% endif %}
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle;">
+            {% if u.plan == 'founder' %}
+              <span class="tag is-warning is-light is-rounded has-text-weight-bold" title="Accès illimité permanent">
+                👑 Fondateur
+              </span>
+            {% elif u.is_canceling %}
+              <span class="tag is-warning is-light is-rounded" title="Résiliation Stripe programmée">
+                ⚠️ Résilié ({{ u.effective_cancellation_date|format_date }})
+              </span>
+            {% elif u.is_in_trial %}
+              <span class="tag is-info is-light is-rounded" title="Période d'essai actif">
+                ⏳ Essai ({{ u.trial_days_left }}j)
+              </span>
+            {% elif u.is_premium %}
+              <span class="tag is-success is-light is-rounded has-text-weight-semibold" title="Abonnement Stripe actif">
+                ⭐ Premium
+              </span>
+            {% else %}
+              <span class="tag is-light is-rounded">
+                Gratuit
+              </span>
+            {% endif %}
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle;">
+            <span class="tag {% if (u.free_scans_used or 0) >= 30 and not u.is_premium %}is-danger is-light{% else %}is-light{% endif %} is-rounded" title="Scans de codes-barres cette semaine (remis à zéro dimanche à 00h00)">
+              {{ u.free_scans_used or 0 }}/30
+            </span>
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle;">
+            {% if u.newsletter_subscribed %}
+              <span class="tag is-success is-light is-rounded" title="Abonné à la newsletter">
+                <i class="fas fa-bell mr-1"></i> Oui
+              </span>
+            {% else %}
+              <span class="tag is-light is-rounded has-text-grey" title="Désabonné de la newsletter">
+                <i class="fas fa-bell-slash mr-1"></i> Non
+              </span>
+            {% endif %}
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle; text-align: center;">
+            <span class="tag is-light is-rounded has-text-weight-semibold">{{ u.books|length }}</span>
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle; text-align: center;">
+            <span class="tag is-light is-rounded has-text-weight-semibold">{{ u.students|length }}</span>
+          </td>
+
+          <td style="padding: 1rem; vertical-align: middle; text-align: right;">
+            <!-- Menu Dropdown 3 Points -->
+            <div class="dropdown is-right">
+              <div class="dropdown-trigger">
+                <button class="button is-small is-white is-rounded" aria-haspopup="true" aria-controls="dropdown-menu-{{ u.id }}" title="Actions">
+                  <span class="icon"><i class="fas fa-ellipsis-v"></i></span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu-{{ u.id }}" role="menu" style="min-width: 200px;">
+                <div class="dropdown-content has-text-left admin-actions-dropdown-content">
+                  <a class="dropdown-item" onclick="openPlanModal('{{ u.id }}', '{{ u.email }}', '{{ u.plan }}', '{{ u.free_scans_used or 0 }}', '{{ u.trial_days_left if u.is_in_trial else 0 }}')">
+                    <span class="icon is-small has-text-warning"><i class="fas fa-crown mr-2"></i></span>
+                    <span>Modifier formule / quotas</span>
+                  </a>
+
+                  {% if not u.is_verified %}
+                  <form action="{{ url_for('admin.verify_user', user_id=u.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <button type="submit" class="dropdown-item" style="width: 100%; border: none; background: none; cursor: pointer;">
+                      <span class="icon is-small has-text-success"><i class="fas fa-check-circle mr-2"></i></span>
+                      <span>Forcer la vérification</span>
+                    </button>
+                  </form>
+                  {% endif %}
+
+                  <form action="{{ url_for('admin.reset_password', user_id=u.id) }}" method="POST" onsubmit="return confirm('Générer et afficher un nouveau mot de passe temporaire pour {{ u.email }} ?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <button type="submit" class="dropdown-item" style="width: 100%; border: none; background: none; cursor: pointer;">
+                      <span class="icon is-small has-text-info"><i class="fas fa-key mr-2"></i></span>
+                      <span>Réinitialiser le mot de passe</span>
+                    </button>
+                  </form>
+
+                  <hr class="dropdown-divider">
+
+                  <form action="{{ url_for('admin.delete_user', user_id=u.id) }}" method="POST" onsubmit="return confirm('ATTENTION ! Voulez-vous vraiment supprimer DÉFINITIVEMENT le compte {{ u.email }} et toutes ses données associées ?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <button type="submit" class="dropdown-item has-text-danger" style="width: 100%; border: none; background: none; cursor: pointer;">
+                      <span class="icon is-small has-text-danger"><i class="fas fa-trash mr-2"></i></span>
+                      <span>Supprimer le compte</span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div id="noResults" class="has-text-centered has-text-grey py-6 is-hidden">
+      <span class="icon is-large has-text-grey-light"><i class="fas fa-search fa-2x"></i></span>
+      <p class="title is-6 mt-2 mb-1">Aucun utilisateur trouvé</p>
+      <p class="is-size-7">Essayez de modifier votre recherche ou vos critères de filtre.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modification du Plan & Quotas -->
+<div class="modal" id="modalEditPlan">
+  <div class="modal-background" onclick="closePlanModal()"></div>
+  <div class="modal-card" style="border-radius: 16px; overflow: hidden; max-width: 480px;">
+    <header class="modal-card-head" style="background: #ffffff; border-bottom: 1px solid #f1f5f9;">
+      <p class="modal-card-title is-size-5 has-text-weight-bold mb-0">Modifier la formule</p>
+      <button class="delete" aria-label="close" onclick="closePlanModal()"></button>
+    </header>
+    <form id="formEditPlan" method="POST" action="">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <section class="modal-card-body">
+        <p class="mb-4 is-size-7 has-text-grey">
+          Utilisateur : <strong id="modalPlanUserEmail" class="has-text-dark"></strong>
+        </p>
+
+        <div class="field">
+          <label class="label is-small">Formule / Plan</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select name="plan" id="selectPlan">
+                <option value="free">Gratuit (Free - Sans abonnement)</option>
+                <option value="trial">Période d'essai (Trial)</option>
+                <option value="premium">⭐ Premium (Forcé actif)</option>
+                <option value="founder">👑 Fondateur (Illimité à vie)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label is-small">Jours d'essai additionnels / restant</label>
+          <div class="control">
+            <input class="input" type="number" name="trial_days" id="inputTrialDays" placeholder="30" min="0">
+          </div>
+          <p class="help">Indiquez 0 pour annuler immédiatement une période d'essai et repasser en full gratuit.</p>
+        </div>
+
+        <div class="field mt-4">
+          <label class="checkbox is-size-7">
+            <input type="checkbox" name="reset_scans" value="1">
+            <strong>Réinitialiser le compteur de scans</strong> (actuellement : <span id="modalScansCount">0</span>/30 cette semaine)
+          </label>
+        </div>
+      </section>
+      <footer class="modal-card-foot" style="background: #f8fafc; border-top: 1px solid #f1f5f9; justify-content: flex-end;">
+        <button type="button" class="button is-light is-rounded" onclick="closePlanModal()">Annuler</button>
+        <button type="submit" class="button is-primary is-rounded">Enregistrer</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const filterPlan = document.getElementById('filterPlan');
+    const filterStatus = document.getElementById('filterStatus');
+    const rows = document.querySelectorAll('.user-row');
+    const noResults = document.getElementById('noResults');
+
+    function applyFilters() {
+      const term = (searchInput ? searchInput.value : '').toLowerCase().trim();
+      const selectedPlan = filterPlan ? filterPlan.value : 'all';
+      const selectedStatus = filterStatus ? filterStatus.value : 'all';
+
+      let visibleCount = 0;
+
+      rows.forEach(row => {
+        const id = row.dataset.id || '';
+        const email = row.dataset.email || '';
+        const name = row.dataset.name || '';
+        const plan = row.dataset.plan || '';
+        const verified = row.dataset.verified || '';
+        const newsletter = row.dataset.newsletter || '';
+
+        // Match recherche
+        const matchesSearch = !term || id.includes(term) || email.includes(term) || name.includes(term);
+
+        // Match plan
+        const matchesPlan = (selectedPlan === 'all') || (plan === selectedPlan);
+
+        // Match statut
+        let matchesStatus = true;
+        if (selectedStatus === 'verified') matchesStatus = (verified === '1');
+        else if (selectedStatus === 'unverified') matchesStatus = (verified === '0');
+        else if (selectedStatus === 'newsletter') matchesStatus = (newsletter === '1');
+
+        if (matchesSearch && matchesPlan && matchesStatus) {
+          row.style.display = '';
+          visibleCount++;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      if (noResults) {
+        if (visibleCount === 0) {
+          noResults.classList.remove('is-hidden');
+        } else {
+          noResults.classList.add('is-hidden');
+        }
+      }
+    }
+
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (filterPlan) filterPlan.addEventListener('change', applyFilters);
+    if (filterStatus) filterStatus.addEventListener('change', applyFilters);
+  });
+
+  function openPlanModal(userId, email, plan, scans, trialDays) {
+    // Fermer les dropdowns ouverts
+    document.querySelectorAll('.user-row .dropdown.is-active').forEach(d => {
+      d.classList.remove('is-active');
+      const r = d.closest('.user-row');
+      if (r) r.classList.remove('has-dropdown-open');
+    });
+
+    document.getElementById('modalPlanUserEmail').textContent = email;
+    document.getElementById('selectPlan').value = plan;
+    document.getElementById('modalScansCount').textContent = scans;
+    document.getElementById('inputTrialDays').value = (trialDays && trialDays > 0) ? trialDays : '';
+    document.getElementById('formEditPlan').action = '/admin/set_plan/' + userId;
+    document.getElementById('modalEditPlan').classList.add('is-active');
+  }
+
+  function closePlanModal() {
+    document.getElementById('modalEditPlan').classList.remove('is-active');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closePlanModal();
+      document.querySelectorAll('.user-row .dropdown.is-active').forEach(d => {
+        d.classList.remove('is-active');
+        const r = d.closest('.user-row');
+        if (r) r.classList.remove('has-dropdown-open');
+      });
+    }
+  });
+
+  // Gestion fluide et intelligente des dropdowns d'actions (position: fixed détaché du conteneur scrollable)
+  function setupActionDropdowns() {
+    const dropdowns = document.querySelectorAll('.user-row .dropdown');
+
+    function closeMenu(dropdown) {
+      const menu = dropdown.querySelector('.dropdown-menu');
+      if (menu) {
+        menu.style.position = '';
+        menu.style.top = '';
+        menu.style.bottom = '';
+        menu.style.left = '';
+        menu.style.right = '';
+        menu.style.zIndex = '';
+        menu.style.display = '';
+      }
+      dropdown.classList.remove('is-active');
+      const row = dropdown.closest('.user-row');
+      if (row) row.classList.remove('has-dropdown-open');
+    }
+
+    function closeAllMenus() {
+      dropdowns.forEach(d => closeMenu(d));
+    }
+
+    function openMenu(dropdown) {
+      const triggerBtn = dropdown.querySelector('.dropdown-trigger button');
+      const menu = dropdown.querySelector('.dropdown-menu');
+      if (!triggerBtn || !menu) return;
+
+      // Fermer tous les autres d'abord
+      dropdowns.forEach(d => {
+        if (d !== dropdown) closeMenu(d);
+      });
+
+      const rect = triggerBtn.getBoundingClientRect();
+      const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+      // Afficher temporairement pour mesurer les dimensions réelles
+      menu.style.display = 'block';
+      menu.style.visibility = 'hidden';
+      menu.style.position = 'fixed';
+      const menuHeight = menu.offsetHeight || 220;
+      menu.style.visibility = '';
+
+      const spaceBelow = windowHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      menu.style.zIndex = '1050';
+
+      // Orientation verticale : vers le haut si pas assez de place en bas
+      if (spaceBelow < menuHeight && spaceAbove > spaceBelow) {
+        menu.style.top = 'auto';
+        menu.style.bottom = `${Math.round(windowHeight - rect.top + 4)}px`;
+      } else {
+        menu.style.top = `${Math.round(rect.bottom + 4)}px`;
+        menu.style.bottom = 'auto';
+      }
+
+      // Alignement horizontal : aligné sur le bord droit du bouton
+      const rightOffset = windowWidth - rect.right;
+      menu.style.right = `${Math.max(8, Math.round(rightOffset))}px`;
+      menu.style.left = 'auto';
+
+      dropdown.classList.add('is-active');
+      const row = dropdown.closest('.user-row');
+      if (row) row.classList.add('has-dropdown-open');
+    }
+
+    dropdowns.forEach(dropdown => {
+      const triggerBtn = dropdown.querySelector('.dropdown-trigger button');
+      const menu = dropdown.querySelector('.dropdown-menu');
+      let hoverTimeout = null;
+
+      // Au survol du bouton
+      dropdown.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+        openMenu(dropdown);
+      });
+
+      dropdown.addEventListener('mouseleave', () => {
+        hoverTimeout = setTimeout(() => {
+          closeMenu(dropdown);
+        }, 180);
+      });
+
+      // Maintien ouvert quand la souris est sur le menu (position: fixed)
+      if (menu) {
+        menu.addEventListener('mouseenter', () => {
+          clearTimeout(hoverTimeout);
+        });
+        menu.addEventListener('mouseleave', () => {
+          hoverTimeout = setTimeout(() => {
+            closeMenu(dropdown);
+          }, 180);
+        });
+      }
+
+      // Au clic (support mobile, tablettes et clics directs)
+      if (triggerBtn) {
+        triggerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          clearTimeout(hoverTimeout);
+          if (dropdown.classList.contains('is-active')) {
+            closeMenu(dropdown);
+          } else {
+            openMenu(dropdown);
+          }
+        });
+      }
+    });
+
+    // Clic en dehors pour refermer
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown') && !e.target.closest('.dropdown-menu')) {
+        closeAllMenus();
+      }
+    });
+
+    // Défilement du tableau (scroll latéral) ou de la page : refermer proprement
+    const tableContainer = document.querySelector('.admin-users-card .table-container');
+    if (tableContainer) {
+      tableContainer.addEventListener('scroll', closeAllMenus, { passive: true });
+    }
+    window.addEventListener('scroll', closeAllMenus, { passive: true });
+    window.addEventListener('resize', closeAllMenus, { passive: true });
+  }
+
+  // Initialisation dès le chargement de la page
+  document.addEventListener('DOMContentLoaded', () => {
+    setupActionDropdowns();
+  });
+</script>
+{% endblock %}

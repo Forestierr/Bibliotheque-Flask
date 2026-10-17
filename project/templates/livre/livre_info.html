@@ -61,7 +61,7 @@
                     </a>
                 </div>
                 <div class="column has-text-right">
-                    <form action="/emprunt/{{ actual_loans.Loan.id }}" method="POST" style="display:inline;">
+                    <form action="{{ url_for('emprunt.return_loan', id=actual_loans.Loan.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <button type="submit" class="button is-success is-small">
                             <span class="icon is-small">
@@ -81,7 +81,7 @@
                         <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                     </header>
                     <footer class="modal-card-foot">
-                        <form action="/emprunt/{{ actual_loans.Loan.id }}/delete" method="POST" style="display:inline;">
+                        <form action="{{ url_for('emprunt.delete_loan', id=actual_loans.Loan.id) }}" method="POST" style="display:inline;">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <button type="submit" class="button is-normal is-danger is-responsive">
                                 <div class="icon-text">
@@ -116,7 +116,7 @@
         {% else %}
             <div class="container block">
                 <h3 class="subtitle is-3">{{ _("Ce livre n'est pas actuellement prêté.") }}</h3>
-                <form action="/livre/{{ book.id }}/edit-student" method="post">
+                <form action="{{ url_for('livre.livre_edit_student', id=book.id) }}" method="post">
     {% include 'utils/csrf.html' %}
                     <div class="field">
                         <label class="label" for="students">{{ _("Prêter le livre à un élève") }}</label>
@@ -161,7 +161,7 @@
                                 <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
                             </header>
                             <footer class="modal-card-foot">
-                                <form action="/emprunt/{{ loan.Loan.id }}/delete" method="POST" style="display:inline;">
+                                <form action="{{ url_for('emprunt.delete_loan', id=loan.Loan.id) }}" method="POST" style="display:inline;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                     <button type="submit" class="button is-normal is-danger is-responsive">
                                         <div class="icon-text">

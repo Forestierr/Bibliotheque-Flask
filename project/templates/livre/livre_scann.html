@@ -237,6 +237,14 @@
         }
     </style>
 
+    {% if not current_user.is_premium %}
+    <div class="has-text-centered mb-2">
+        <span class="tag is-info is-light is-rounded has-text-weight-semibold" style="font-size: 0.85rem;">
+            <i class="fas fa-barcode mr-1"></i> {{ _("Scans cette semaine : %(used)s / %(max)s (remis à zéro dimanche à 00h00)", used=current_user.free_scans_used or 0, max=max_scans|default(30)) }}
+        </span>
+    </div>
+    {% endif %}
+
     <div class="container is-max-desktop scanner-container" id="scanner-container">
         <!-- Zone de flux vidéo injectée dynamiquement -->
         <div id="scanner-viewport"></div>
@@ -353,7 +361,58 @@
         </div>
     </div>
 
+    <!-- Modal Paywall Scans Gratuits -->
+    <div class="modal" id="modalScanPaywall">
+        <div class="modal-background" onclick="closeScanPaywallModal()"></div>
+        <div class="modal-card" style="max-width: 480px; margin: 1rem;">
+            <header class="modal-card-head" style="background: #fff; border-bottom: 1px solid #f1f5f9;">
+                <p class="modal-card-title is-size-6 has-text-weight-bold">
+                    <span class="icon has-text-warning mr-1"><i class="fas fa-crown"></i></span>
+                    {{ _("Limite de scans atteinte") }}
+                </p>
+                <button class="delete" aria-label="close" onclick="closeScanPaywallModal()"></button>
+            </header>
+            <section class="modal-card-body has-text-centered" style="padding: 2rem 1.5rem;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: #eff6ff; color: #3b82f6; display: inline-flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 1rem;">
+                    <i class="fas fa-barcode"></i>
+                </div>
+                <p class="title is-5 mb-2" id="scanPaywallTitle">
+                    {{ _("Vous avez utilisé vos %(max)s scans gratuits pour cette semaine !", max=max_scans) }}
+                </p>
+                <p class="is-size-6 has-text-grey mb-5" id="scanPaywallMessage">
+                    {{ _("Votre quota de scans sera remis à zéro dimanche à 00h00. Vous pouvez aussi passer à l'offre Premium à %(price)s.- CHF/an pour scanner en illimité.", price=price_yearly) }}
+                </p>
+                <div class="buttons is-centered">
+                    <a href="{{ url_for('subscription.tarifs') }}" class="button is-link is-rounded has-text-weight-bold">
+                        <span>{{ _("Passer Premium (%(price)s.- CHF/an)", price=price_yearly) }}</span>
+                    </a>
+                    <a href="{{ url_for('livre.livre_ajout') }}" class="button is-light is-rounded">
+                        <span>{{ _("Ajouter manuellement") }}</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+
     <script>
+        function showScanPaywallModal(msg) {
+            const modal = document.getElementById('modalScanPaywall');
+            if (modal) {
+                if (msg) {
+                    const msgEl = document.getElementById('scanPaywallMessage');
+                    if (msgEl) msgEl.textContent = msg;
+                }
+                modal.classList.add('is-active');
+            }
+        }
+
+        function closeScanPaywallModal() {
+            const modal = document.getElementById('modalScanPaywall');
+            if (modal) modal.classList.remove('is-active');
+            isProcessingDetection = false;
+            resetScannerUI();
+            startScanner();
+        }
         let isScannerRunning = false;
         let isProcessingDetection = false;
         let currentFacingMode = 'environment';
@@ -472,14 +531,22 @@
             // Court délai de 400ms pour laisser voir la confirmation verte
             setTimeout(() => {
                 fetch("{{ url_for('livre.livre_exist', isbn='CODE_PARAM') }}".replace("CODE_PARAM", encodeURIComponent(code)))
-                    .then(response => response.json())
+                    .then(response => {
+                        if (response.status === 403) {
+                            return response.json().then(errData => {
+                                showScanPaywallModal(errData.message);
+                                throw new Error("scan_quota_reached");
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.error) {
                             console.info("Livre non trouvé en base :", code);
                             if (data.is_isbn || isISBN(code)) {
-                                window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}`;
+                                window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}&from_scan=1`;
                             } else {
-                                window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}`;
+                                window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}&from_scan=1`;
                             }
                             return;
                         }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Problème avec votre moyen de paiement</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #d9534f;">Problème de renouvellement de votre abonnement</h2>
+    
+    <p>Bonjour {{ user.name or 'Enseignant' }},</p>
+    
+    <p>Nous n'avons pas pu traiter le renouvellement de votre abonnement <strong>Livres en Classe</strong> en raison d'un problème avec votre moyen de paiement enregistré.</p>
+    
+    <p>Pas d'inquiétude : <strong>toutes vos données, vos livres et vos listes d'élèves restent intacts et sauvegardés</strong>.</p>
+    
+    <p>Pour éviter toute interruption de vos fonctionnalités Premium (scans illimités, exports Excel, étiquettes personnalisées), nous vous invitons à actualiser votre carte bancaire en quelques secondes :</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ reglage_url }}" style="background-color: #3273dc; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Mettre à jour mon moyen de paiement</a>
+    </div>
+    
+    <p>Si vous avez la moindre question ou besoin d'assistance, n'hésitez pas à répondre directement à cet e-mail.</p>
+    
+    <hr style="border: none; border-top: 1px solid #eee; margin-top: 40px;">
+    <p style="font-size: 12px; color: #999; text-align: center;">Livres en Classe &bull; Votre bibliothèque de classe simplifiée</p>
+</body>
+</html>

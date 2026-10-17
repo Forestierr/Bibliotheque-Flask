@@ -1,8 +1,17 @@
-{% extends "base.html" %}
+{% extends "admin/base_admin.html" %}
 
-{% block title %}Diffusion Newsletter - Administration Livres en Classe{% endblock %}
+{% block admin_title %}Newsletter & Diffusion{% endblock %}
 
-{% block content %}
+{% block admin_header_title %}Diffusion & Campagnes d'Information{% endblock %}
+{% block admin_header_subtitle %}Gestion des listes de diffusion, conformité légale (RFC 8058) et expédition de courriels d'information.{% endblock %}
+
+{% block admin_actions %}
+<span class="tag is-white" style="border: 1px solid var(--color-slate-200); font-weight: 600; color: var(--color-slate-700); border-radius: 8px;">
+    <i class="fas fa-server mr-2 has-text-grey"></i> Service d'e-mailing actif
+</span>
+{% endblock %}
+
+{% block admin_content %}
 <style>
     /* Palette & Base */
     :root {
@@ -215,49 +224,40 @@
         border-bottom: 1px solid var(--color-slate-100);
         font-size: 0.82rem;
     }
-    .recent-user-item:last-child {
-        border-bottom: none;
+    /* Filter Button Groups */
+    .btn-filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .btn-filter-group .button {
+        background: #ffffff;
+        border: 1px solid var(--color-slate-200);
+        color: var(--color-slate-700);
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 0.4rem 0.8rem;
+        height: auto;
+        line-height: 1.4;
+        transition: all 0.15s ease;
+    }
+    .btn-filter-group .button:hover {
+        border-color: #00b89c;
+        color: #008f79;
+        background: #f0fdf4;
+    }
+    .btn-filter-group .button.is-active {
+        background: #00b89c !important;
+        border-color: #00b89c !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        box-shadow: 0 2px 6px rgba(0, 184, 156, 0.25) !important;
+    }
+    .btn-filter-group .button.is-active i {
+        color: #ffffff !important;
     }
 </style>
 
-<section class="section pt-4 pb-6">
-    <div class="container" style="max-width: 1200px;">
-        
-        <!-- Header & Nav -->
-        <div class="level mb-4">
-            <div class="level-left">
-                <a href="{{ url_for('admin.index') }}" class="button is-small is-light" style="border: 1px solid var(--color-slate-200);">
-                    <span class="icon is-small"><i class="fas fa-chevron-left"></i></span>
-                    <span>Tableau de bord administration</span>
-                </a>
-            </div>
-            <div class="level-right">
-                <span class="tag is-white" style="border: 1px solid var(--color-slate-200); font-weight: 600; color: var(--color-slate-700);">
-                    <i class="fas fa-server mr-2 has-text-grey"></i> Service d'e-mailing actif
-                </span>
-            </div>
-        </div>
-
-        <div class="mb-5">
-            <h1 class="title is-3 mb-1" style="color: var(--color-slate-900); font-weight: 800; letter-spacing: -0.5px;">
-                Diffusion & Campagnes d'Information
-            </h1>
-            <p class="subtitle is-6 has-text-grey mb-0">
-                Gestion des listes de diffusion, conformité légale (RFC 8058) et expédition de courriels d'information.
-            </p>
-        </div>
-
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="notification is-{{ category }} is-light mb-5" style="border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);">
-                        <button class="delete"></button>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
 
         <!-- TOP METRICS CARDS (Inspired by Lethe Mailing System) -->
         <div class="columns is-multiline mb-5">
@@ -352,71 +352,93 @@
                             <label class="label is-size-6 mb-3" style="color: var(--color-slate-900); font-weight: 700;">
                                 1. Destinataires et Langue cible
                             </label>
-                            
-                            <div class="columns is-variable is-3 mb-2">
-                                <div class="column is-7">
-                                    <label class="label is-size-7 mb-1" style="color: var(--color-slate-700); font-weight: 600;">
-                                        Audience ciblée
+
+                            <!-- Hidden inputs for form submission -->
+                            <input type="hidden" name="target" id="targetInput" value="{{ duplicate_target or 'verified_subscribed' }}">
+                            <input type="hidden" name="target_plan" id="targetPlanInput" value="{{ duplicate_plan or 'all' }}">
+                            <input type="hidden" name="target_lang" id="targetLangInput" value="{{ target_lang_prefill or (duplicate_campaign.target_lang if duplicate_campaign else 'all') }}">
+
+                            <!-- Critère 1 : Formule d'abonnement -->
+                            <div class="mb-4">
+                                <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                                    <label class="label is-size-7 mb-0" style="color: var(--color-slate-700); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        <i class="fas fa-crown mr-1" style="color: #f59e0b;"></i> Formule d'abonnement
                                     </label>
-                                    <div class="select is-fullwidth">
-                                        <select name="target" id="targetSelect" onchange="updateRecipientCount()">
-                                            <option value="verified_subscribed" {% if not duplicate_campaign or duplicate_campaign.target == 'verified_subscribed' %}selected{% endif %}>
-                                                Comptes vérifiés et consentants — Recommandé
-                                            </option>
-                                            <option value="all_subscribed" {% if duplicate_campaign and duplicate_campaign.target == 'all_subscribed' %}selected{% endif %}>
-                                                Tous les comptes abonnés (vérifiés ou en attente)
-                                            </option>
-                                            <option value="system_all" {% if duplicate_campaign and duplicate_campaign.target == 'system_all' %}selected{% endif %}>
-                                                Communication technique ou légale (tous les inscrits)
-                                            </option>
-                                        </select>
-                                    </div>
+                                    <span class="is-size-7 has-text-grey">Cibler selon la formule active</span>
                                 </div>
-                                <div class="column is-5">
-                                    <label class="label is-size-7 mb-1" style="color: var(--color-slate-700); font-weight: 600;">
-                                        Langue des destinataires
-                                    </label>
-                                    <div class="select is-fullwidth">
-                                        <select name="target_lang" id="targetLangSelect" onchange="updateRecipientCount()">
-                                            <option value="all" {% if (target_lang_prefill == 'all') and (not duplicate_campaign or duplicate_campaign.target_lang == 'all') %}selected{% endif %}>
-                                                🌐 Toutes les langues
-                                            </option>
-                                            <option value="fr" {% if (target_lang_prefill == 'fr') or (duplicate_campaign and duplicate_campaign.target_lang == 'fr') %}selected{% endif %}>
-                                                🇫🇷 Français (fr)
-                                            </option>
-                                            <option value="en" {% if (target_lang_prefill == 'en') or (duplicate_campaign and duplicate_campaign.target_lang == 'en') %}selected{% endif %}>
-                                                🇬🇧 English (en)
-                                            </option>
-                                            <option value="de" {% if (target_lang_prefill == 'de') or (duplicate_campaign and duplicate_campaign.target_lang == 'de') %}selected{% endif %}>
-                                                🇩🇪 Deutsch (de)
-                                            </option>
-                                        </select>
-                                    </div>
+                                <div class="buttons are-small mb-0 btn-filter-group" id="planButtonGroup">
+                                    <button type="button" class="button plan-btn" data-plan="all" onclick="setTargetPlan('all')">
+                                        Tous les forfaits
+                                    </button>
+                                    <button type="button" class="button plan-btn" data-plan="founder" onclick="setTargetPlan('founder')">
+                                        <span class="mr-1">👑</span> Fondateurs
+                                    </button>
+                                    <button type="button" class="button plan-btn" data-plan="premium" onclick="setTargetPlan('premium')">
+                                        <span class="mr-1">⭐</span> Premium
+                                    </button>
+                                    <button type="button" class="button plan-btn" data-plan="trial" onclick="setTargetPlan('trial')">
+                                        <span class="mr-1">🎁</span> En Essai
+                                    </button>
+                                    <button type="button" class="button plan-btn" data-plan="free" onclick="setTargetPlan('free')">
+                                        <span class="mr-1">🌱</span> Gratuit
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Live volume counter & quick copy toggle -->
-                            <div class="p-3 is-flex is-align-items-center is-justify-content-space-between" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 6px;">
+                            <!-- Critère 2 : Langue des destinataires -->
+                            <div class="mb-4">
+                                <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                                    <label class="label is-size-7 mb-0" style="color: var(--color-slate-700); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        <i class="fas fa-globe mr-1" style="color: #3b82f6;"></i> Langue des destinataires
+                                    </label>
+                                    <span class="is-size-7 has-text-grey">Langue de l'interface du compte</span>
+                                </div>
+                                <div class="buttons are-small mb-0 btn-filter-group" id="langButtonGroup">
+                                    <button type="button" class="button lang-btn" data-lang="all" onclick="setTargetLanguage('all')">
+                                        🌐 Toutes les langues
+                                    </button>
+                                    <button type="button" class="button lang-btn" data-lang="fr" onclick="setTargetLanguage('fr')">
+                                        🇫🇷 Français (fr)
+                                    </button>
+                                    <button type="button" class="button lang-btn" data-lang="en" onclick="setTargetLanguage('en')">
+                                        🇬🇧 English (en)
+                                    </button>
+                                    <button type="button" class="button lang-btn" data-lang="de" onclick="setTargetLanguage('de')">
+                                        🇩🇪 Deutsch (de)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Critère 3 : Audience & Consentement -->
+                            <div class="mb-4">
+                                <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                                    <label class="label is-size-7 mb-0" style="color: var(--color-slate-700); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        <i class="fas fa-shield-alt mr-1" style="color: #10b981;"></i> Consentement & Délivrabilité
+                                    </label>
+                                    <span class="is-size-7 has-text-grey">Statut de souscription & conformité</span>
+                                </div>
+                                <div class="buttons are-small mb-0 btn-filter-group" id="targetButtonGroup">
+                                    <button type="button" class="button target-btn" data-target="verified_subscribed" onclick="setTargetAudience('verified_subscribed')">
+                                        <i class="fas fa-check-circle mr-1" style="color: inherit;"></i> Vérifiés & Abonnés (Recommandé)
+                                    </button>
+                                    <button type="button" class="button target-btn" data-target="all_subscribed" onclick="setTargetAudience('all_subscribed')">
+                                        <i class="fas fa-envelope mr-1" style="color: inherit;"></i> Tous les abonnés
+                                    </button>
+                                    <button type="button" class="button target-btn" data-target="system_all" onclick="setTargetAudience('system_all')">
+                                        <i class="fas fa-bullhorn mr-1" style="color: inherit;"></i> Tous les inscrits (Légal / Technique)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Live volume counter & selected tags -->
+                            <div class="p-3 is-flex is-align-items-center is-justify-content-space-between" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 8px;">
                                 <div class="is-flex is-align-items-center">
-                                    <span class="icon has-text-info mr-2"><i class="fas fa-users"></i></span>
+                                    <span class="icon mr-2" style="color: #00b89c;"><i class="fas fa-paper-plane"></i></span>
                                     <span class="is-size-7" style="color: var(--color-slate-800);">
-                                        Volume estimé : <strong id="recipientCountDisplay" style="color: var(--color-slate-900);">Calcul...</strong>
+                                        Volume estimé : <strong id="recipientCountDisplay" style="color: var(--color-slate-900); font-size: 0.95rem;">Calcul...</strong>
                                     </span>
                                 </div>
-                                <div class="is-flex is-align-items-center" style="gap: 6px;">
-                                    <span class="is-size-7 has-text-grey">Changer de langue :</span>
-                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('all')" title="Tous les abonnés">
-                                        🌐 Tous
-                                    </button>
-                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('fr')" title="Abonnés francophones">
-                                        🇫🇷 FR
-                                    </button>
-                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('en')" title="Abonnés anglophones">
-                                        🇬🇧 EN
-                                    </button>
-                                    <button type="button" class="button is-white is-small py-0 px-2" style="font-size: 0.72rem; height: 24px; border: 1px solid var(--color-slate-200);" onclick="setTargetLanguage('de')" title="Abonnés germanophones">
-                                        🇩🇪 DE
-                                    </button>
+                                <div id="targetSummaryBadges" class="tags are-small mb-0">
                                 </div>
                             </div>
                         </div>
@@ -794,13 +816,27 @@
                                             </div>
                                         </td>
                                         <td style="padding: 12px 14px; white-space: nowrap;">
+                                            {% set target_parts = c.target.split(':') %}
+                                            {% set t_base = target_parts[0] %}
+                                            {% set t_plan = target_parts[1] if target_parts|length > 1 else 'all' %}
                                             <div>
-                                                {% if c.target in ('verified_subscribed', 'verified') %}
+                                                {% if t_base in ('verified_subscribed', 'verified') %}
                                                     <span class="tag is-small is-success is-light" style="font-size: 0.72rem;">Vérifiés abonnés</span>
-                                                {% elif c.target in ('all_subscribed', 'all') %}
+                                                {% elif t_base in ('all_subscribed', 'all') %}
                                                     <span class="tag is-small is-info is-light" style="font-size: 0.72rem;">Tous abonnés</span>
                                                 {% else %}
-                                                    <span class="tag is-small is-warning is-light" style="font-size: 0.72rem;">Général</span>
+                                                    <span class="tag is-small is-warning is-light" style="font-size: 0.72rem;">Tous inscrits</span>
+                                                {% endif %}
+                                                {% if t_plan != 'all' %}
+                                                    {% if t_plan == 'founder' %}
+                                                        <span class="tag is-small is-warning is-light" style="font-size: 0.72rem; font-weight: 700;">👑 Fondateur</span>
+                                                    {% elif t_plan == 'premium' %}
+                                                        <span class="tag is-small is-primary is-light" style="font-size: 0.72rem; font-weight: 700; color: #008f79; background: #ccfbf1;">⭐ Premium</span>
+                                                    {% elif t_plan == 'trial' %}
+                                                        <span class="tag is-small is-info is-light" style="font-size: 0.72rem; font-weight: 700;">🎁 Essai</span>
+                                                    {% elif t_plan == 'free' %}
+                                                        <span class="tag is-small is-light" style="font-size: 0.72rem; font-weight: 700;">🌱 Gratuit</span>
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
                                             <div class="mt-1">
@@ -896,10 +932,7 @@
                 {% endif %}
             </div>
         </div>
-        <!-- Fin TAB 2 -->
 
-    </div>
-</section>
 
 <!-- MODALE DE CONFIRMATION DE PRÉ-VOL -->
 <div id="confirmModal" class="modal">
@@ -1080,18 +1113,60 @@
             switchTab('history');
         }
 
+        // Initialize button selectors from input values
+        const currentTarget = (document.getElementById('targetInput') && document.getElementById('targetInput').value) || 'verified_subscribed';
+        const currentPlan = (document.getElementById('targetPlanInput') && document.getElementById('targetPlanInput').value) || 'all';
+        const currentLang = (document.getElementById('targetLangInput') && document.getElementById('targetLangInput').value) || 'all';
+
+        setTargetAudience(currentTarget);
+        setTargetPlan(currentPlan);
+        setTargetLanguage(currentLang);
+
         // Initialize recipient counter & live preview
         updateRecipientCount();
         updateLivePreview();
     });
 
+    function setTargetPlan(plan) {
+        const input = document.getElementById('targetPlanInput');
+        if (input) input.value = plan;
+        document.querySelectorAll('.plan-btn').forEach(btn => {
+            if (btn.getAttribute('data-plan') === plan) {
+                btn.classList.add('is-active');
+            } else {
+                btn.classList.remove('is-active');
+            }
+        });
+        updateRecipientCount();
+        updateLivePreview();
+    }
+
     function setTargetLanguage(lang) {
-        const select = document.getElementById('targetLangSelect');
-        if (select) {
-            select.value = lang;
-            updateRecipientCount();
-            updateLivePreview();
-        }
+        const input = document.getElementById('targetLangInput');
+        if (input) input.value = lang;
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            if (btn.getAttribute('data-lang') === lang) {
+                btn.classList.add('is-active');
+            } else {
+                btn.classList.remove('is-active');
+            }
+        });
+        updateRecipientCount();
+        updateLivePreview();
+    }
+
+    function setTargetAudience(target) {
+        const input = document.getElementById('targetInput');
+        if (input) input.value = target;
+        document.querySelectorAll('.target-btn').forEach(btn => {
+            if (btn.getAttribute('data-target') === target) {
+                btn.classList.add('is-active');
+            } else {
+                btn.classList.remove('is-active');
+            }
+        });
+        updateRecipientCount();
+        updateLivePreview();
     }
 
     function insertPseudoTag() {
@@ -1365,27 +1440,53 @@
     }
 
     function updateRecipientCount() {
-        const targetSelect = document.getElementById('targetSelect');
-        const targetLangSelect = document.getElementById('targetLangSelect');
-        if (!targetSelect || !targetLangSelect) return 0;
+        const targetInput = document.getElementById('targetInput');
+        const targetPlanInput = document.getElementById('targetPlanInput');
+        const targetLangInput = document.getElementById('targetLangInput');
+        if (!targetInput || !targetPlanInput || !targetLangInput) return 0;
 
-        const targetVal = targetSelect.value;
-        const langVal = targetLangSelect.value;
+        const targetVal = targetInput.value || 'verified_subscribed';
+        const planVal = targetPlanInput.value || 'all';
+        const langVal = targetLangInput.value || 'all';
 
         let count = 0;
-        if (COUNTS_MATRIX && COUNTS_MATRIX[targetVal] && COUNTS_MATRIX[targetVal][langVal] !== undefined) {
-            count = COUNTS_MATRIX[targetVal][langVal];
+        if (COUNTS_MATRIX && COUNTS_MATRIX[targetVal] && COUNTS_MATRIX[targetVal][planVal] && COUNTS_MATRIX[targetVal][planVal][langVal] !== undefined) {
+            count = COUNTS_MATRIX[targetVal][planVal][langVal];
         }
 
         const displayEl = document.getElementById('recipientCountDisplay');
         if (displayEl) {
-            let langName = "toutes langues confondues";
-            if (langVal === 'fr') langName = "abonnés francophones";
-            else if (langVal === 'en') langName = "abonnés anglophones";
-            else if (langVal === 'de') langName = "abonnés germanophones";
-
-            displayEl.textContent = `${count} destinataire(s) (${langName})`;
+            displayEl.textContent = `${count} destinataire(s)`;
         }
+
+        const badgesEl = document.getElementById('targetSummaryBadges');
+        if (badgesEl) {
+            const planNames = {
+                'all': 'Tous forfaits',
+                'founder': '👑 Fondateurs',
+                'premium': '⭐ Premium',
+                'trial': '🎁 En Essai',
+                'free': '🌱 Gratuit'
+            };
+            const langNames = {
+                'all': '🌐 Toutes langues',
+                'fr': '🇫🇷 FR',
+                'en': '🇬🇧 EN',
+                'de': '🇩🇪 DE'
+            };
+            const targetNames = {
+                'verified_subscribed': 'Vérifiés & Abonnés',
+                'all_subscribed': 'Tous abonnés',
+                'system_all': 'Tous inscrits'
+            };
+
+            badgesEl.innerHTML = `
+                <span class="tag is-white" style="border: 1px solid var(--color-slate-200); font-weight: 600; color: #008f79;">${planNames[planVal] || planVal}</span>
+                <span class="tag is-white" style="border: 1px solid var(--color-slate-200); font-weight: 600; color: #1e3a8a;">${langNames[langVal] || langVal}</span>
+                <span class="tag is-white" style="border: 1px solid var(--color-slate-200); font-weight: 600; color: #166534;">${targetNames[targetVal] || targetVal}</span>
+            `;
+        }
+
         return count;
     }
 
@@ -1404,10 +1505,29 @@
             return;
         }
 
-        const targetSelect = document.getElementById('targetSelect');
-        const targetText = targetSelect.options[targetSelect.selectedIndex].text.trim();
-        const targetLangSelect = document.getElementById('targetLangSelect');
-        const langText = targetLangSelect.options[targetLangSelect.selectedIndex].text.trim();
+        const targetVal = (document.getElementById('targetInput') && document.getElementById('targetInput').value) || 'verified_subscribed';
+        const planVal = (document.getElementById('targetPlanInput') && document.getElementById('targetPlanInput').value) || 'all';
+        const langVal = (document.getElementById('targetLangInput') && document.getElementById('targetLangInput').value) || 'all';
+
+        const planNames = {
+            'all': 'Toutes les formules',
+            'founder': '👑 Fondateurs',
+            'premium': '⭐ Premium',
+            'trial': '🎁 En Essai',
+            'free': '🌱 Gratuit'
+        };
+        const targetNames = {
+            'verified_subscribed': 'Comptes vérifiés et abonnés',
+            'all_subscribed': 'Tous les abonnés',
+            'system_all': 'Tous les inscrits (Légal / Technique)'
+        };
+        const langNames = {
+            'all': '🌐 Toutes les langues',
+            'fr': '🇫🇷 Français (fr)',
+            'en': '🇬🇧 English (en)',
+            'de': '🇩🇪 Deutsch (de)'
+        };
+
         const targetCount = updateRecipientCount();
 
         const templateVal = document.getElementById('templateChoiceInput').value;
@@ -1416,8 +1536,8 @@
         if (templateVal === 'newsletter_promo.html') templateLabel = "Circulaire Officielle (Administrative)";
 
         document.getElementById('modalSubject').textContent = subject;
-        document.getElementById('modalRecipients').textContent = `${targetCount} destinataire(s) [${targetText}]`;
-        document.getElementById('modalLang').textContent = langText;
+        document.getElementById('modalRecipients').textContent = `${targetCount} destinataire(s) [${planNames[planVal] || planVal} • ${targetNames[targetVal] || targetVal}]`;
+        document.getElementById('modalLang').textContent = langNames[langVal] || langVal;
         document.getElementById('modalTemplate').textContent = templateLabel;
         document.getElementById('modalEstimatedTime').textContent = targetCount > 0 ? `~${targetCount} secondes (1 email/seconde)` : "Instantané (0 destinataire)";
 
@@ -1470,7 +1590,32 @@
                 if (data.target_lang === 'fr') langLabel = "Français 🇫🇷";
                 else if (data.target_lang === 'en') langLabel = "English 🇬🇧";
                 else if (data.target_lang === 'de') langLabel = "Deutsch 🇩🇪";
-                document.getElementById('cdmMeta').textContent = `${data.created_at} • Gabarit : ${data.template} • Cible : ${data.target} • Langue : ${langLabel}`;
+
+                let targetLabel = data.target;
+                const planLabels = {
+                    'all': 'Tous forfaits',
+                    'founder': '👑 Fondateur',
+                    'premium': '⭐ Premium',
+                    'trial': '🎁 En Essai',
+                    'free': '🌱 Gratuit'
+                };
+                const audienceLabels = {
+                    'verified_subscribed': 'Vérifiés & Abonnés',
+                    'verified': 'Vérifiés & Abonnés',
+                    'all_subscribed': 'Tous abonnés',
+                    'all': 'Tous abonnés',
+                    'system_all': 'Tous inscrits'
+                };
+                if (data.target && data.target.includes(':')) {
+                    const parts = data.target.split(':');
+                    const aud = audienceLabels[parts[0]] || parts[0];
+                    const pln = planLabels[parts[1]] || parts[1];
+                    targetLabel = `${aud} (${pln})`;
+                } else if (audienceLabels[data.target]) {
+                    targetLabel = audienceLabels[data.target];
+                }
+
+                document.getElementById('cdmMeta').textContent = `${data.created_at} • Gabarit : ${data.template} • Cible : ${targetLabel} • Langue : ${langLabel}`;
                 document.getElementById('cdmTotal').textContent = data.total_recipients;
                 document.getElementById('cdmSent').textContent = data.sent_count;
                 document.getElementById('cdmOpened').textContent = data.open_count;

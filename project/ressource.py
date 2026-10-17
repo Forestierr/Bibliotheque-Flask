@@ -1,12 +1,13 @@
 # ressource.py
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, redirect, render_template, request, url_for
 from flask_babel import gettext as _
 from flask_login import current_user
 from sqlalchemy import func
 
 from . import db
 from .models import Book, Loan, Student, Tags
+from .subscription import premium_required
 
 ressource = Blueprint("ressource", __name__)
 
@@ -17,8 +18,8 @@ def index():
     return render_template("ressources/index.html")
 
 
-@ressource.route("/ressources/diplome")
-def diplome():
+@ressource.route("/ressources/diplome-de-lecture-a-imprimer")
+def diplome_de_lecture_a_imprimer():
     """Générateur de diplôme de lecture personnalisé."""
     student_id = request.args.get("student_id", type=int)
     student = None
@@ -71,25 +72,60 @@ def diplome():
     )
 
 
-@ressource.route("/ressources/marque-pages")
-def marque_pages():
+@ressource.route("/ressources/diplome")
+def diplome():
+    """Redirection 301 permanente vers l'URL canonique optimisée."""
+    args = request.args.to_dict()
+    return redirect(
+        url_for("ressource.diplome_de_lecture_a_imprimer", **args), code=301
+    )
+
+
+@ressource.route("/ressources/marque-pages-a-imprimer")
+def marque_pages_a_imprimer():
     """Générateur de marque-pages Emprunt & Avis (4 par page A4)."""
     return render_template("ressources/marque_pages.html")
 
 
-@ressource.route("/ressources/charte")
-def charte():
+@ressource.route("/ressources/marque-pages")
+def marque_pages():
+    """Redirection 301 permanente vers l'URL canonique optimisée."""
+    args = request.args.to_dict()
+    return redirect(url_for("ressource.marque_pages_a_imprimer", **args), code=301)
+
+
+@ressource.route("/ressources/charte-coin-lecture-a-imprimer")
+def charte_coin_lecture_a_imprimer():
     """Générateur de la Charte du Coin Lecture (A4 / A3)."""
     return render_template("ressources/charte.html")
 
 
-@ressource.route("/ressources/bingo")
-def bingo():
+@ressource.route("/ressources/charte")
+def charte():
+    """Redirection 301 permanente vers l'URL canonique optimisée."""
+    args = request.args.to_dict()
+    return redirect(
+        url_for("ressource.charte_coin_lecture_a_imprimer", **args), code=301
+    )
+
+
+@ressource.route("/ressources/defi-lecture-bingo-a-imprimer")
+def defi_lecture_bingo_a_imprimer():
     """Générateur de Bingo / Défi de lecture personnalisé."""
     return render_template("ressources/bingo.html")
 
 
+@ressource.route("/ressources/bingo")
+def bingo():
+    """Redirection 301 permanente vers l'URL canonique optimisée."""
+    args = request.args.to_dict()
+    return redirect(
+        url_for("ressource.defi_lecture_bingo_a_imprimer", **args), code=301
+    )
+
+
 @ressource.route("/ressources/etiquettes")
+@premium_required
 def etiquettes():
     """Générateur de planches d'étiquettes de genres pour bacs et tranches."""
     user_tags = []
@@ -100,13 +136,21 @@ def etiquettes():
     return render_template("ressources/etiquettes.html", user_tags=user_tags)
 
 
-@ressource.route("/ressources/fiches-avis")
-def fiches_avis():
+@ressource.route("/ressources/fiche-de-lecture-a-imprimer")
+def fiche_de_lecture_a_imprimer():
     """Générateur de fiches « Coup de cœur » et fanions de recommandation."""
     return render_template("ressources/fiches_avis.html")
 
 
+@ressource.route("/ressources/fiches-avis")
+def fiches_avis():
+    """Redirection 301 permanente vers l'URL canonique optimisée."""
+    args = request.args.to_dict()
+    return redirect(url_for("ressource.fiche_de_lecture_a_imprimer", **args), code=301)
+
+
 @ressource.route("/ressources/codes-barres")
+@premium_required
 def codes_barres():
     """Générateur de planches de codes-barres (livres ou cartes élèves)."""
     books_list = []
@@ -127,10 +171,19 @@ def codes_barres():
     )
 
 
-@ressource.route("/ressources/passeport")
-def passeport():
+@ressource.route("/ressources/passeport-de-lecture-a-imprimer")
+def passeport_de_lecture_a_imprimer():
     """Générateur de Passeport de Lecture pliable en livret A5."""
     return render_template("ressources/passeport.html")
+
+
+@ressource.route("/ressources/passeport")
+def passeport():
+    """Redirection 301 permanente vers l'URL canonique optimisée."""
+    args = request.args.to_dict()
+    return redirect(
+        url_for("ressource.passeport_de_lecture_a_imprimer", **args), code=301
+    )
 
 
 @ressource.route("/ressources/<path:ressource_slug>")

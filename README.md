@@ -1,167 +1,126 @@
-# Bibliothèque flask
+# LivresEnClasse.com — Gestion de bibliothèque de classe
+
+[![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![Framework](https://img.shields.io/badge/flask-3.0-lightgrey.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-green.svg)](LICENSE.md)
+[![Code style](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Testing](https://img.shields.io/badge/tests-pytest-yellow.svg)](project/test/)
 
 [English version](README.en.md)
 
-<strong>Ma bibliothèque</strong> est une application web spécialement conçue pour répondre aux
-besoins des enseignants dans la gestion de leur bibliothèque de classe. Cette plateforme
-intuitive leur permet de centraliser et d’organiser facilement leur collection de livres.
-Ils ont la possibilité d’ajouter de nouveaux ouvrages, de modifier les informations existantes
-ou de supprimer des livres qui ne sont plus nécessaires. En outre, l'application offre un suivi
-détaillé des emprunts effectués par leurs élèves, leur permettant de savoir quels livres ont été
-empruntés, par qui et pour combien de temps. Grâce à LivresEnClasse.com, les enseignants peuvent
-ainsi encourager la lecture tout en gardant une vue d’ensemble claire et précise sur
-l’utilisation des ressources de leur bibliothèque.
+**LivresEnClasse.com** (Bibliothèque-Flask) est une application web conçue spécialement pour les enseignants afin de gérer facilement leur bibliothèque de classe, suivre les emprunts des élèves et enrichir leur catalogue grâce au scan de codes-barres.
 
-## Caractéristiques
+---
 
-- Ajouter, supprimer, modifier un livre
-- Ajouter, supprimer, modifier un élève
-- Scanner le code-barres d'un livre
-- Gestion des emprunts
-- Connexion / déconnexion
+## Sommaire
 
-## Installation
+- [Fonctionnalités clés](#fonctionnalités-clés)
+- [Stack technique](#stack-technique)
+- [Démarrage rapide en local (Quickstart)](#démarrage-rapide-en-local-quickstart)
+- [Documentation technique](#documentation-technique)
+- [Qualité du code & Tests](#qualité-du-code--tests)
+- [Licence](#licence)
 
-### Créer un environnement virtuel
+---
+
+## Fonctionnalités clés
+
+- **Scan code-barres & enrichissement multi-APIs** : Reconnaissance instantanée par webcam/smartphone (HTML5-QRCode) avec recherche en cascade sur la **Bibliothèque nationale de France (BnF SRU Dublin Core)**, **Google Books** et **Open Library**.
+- **Gestion des élèves & prêts** : Emprunts et retours en un clic, historique des lectures, indicateurs d'ouvrages en retard.
+- **Outils de classe & impressions** : Génération de planches de codes-barres vectoriels et d'étiquettes thématiques pour les bacs de livres.
+- **Modèle SaaS Freemium & Stripe** : Quotas gratuits (40 élèves, 500 livres, 30 scans/semaine), période d'essai de 30 jours, statut Fondateur à vie et abonnement Premium illimité opéré par Stripe Checkout et le Portail Client Stripe.
+- **Multi-langue & SEO international** : Support complet du Français 🇫🇷, Anglais 🇬🇧 et Allemand 🇩🇪 avec URLs dédiées (`/fr/`, `/en/`, `/de/`) et balises `hreflang`.
+- **Sécurité & Confidentialité** : Authentification sécurisée (Werkzeug/Scrypt), protection anti-brute force et anti-spam (hCaptcha), isolation stricte des données par enseignant et politique de non-destruction des données.
+
+---
+
+## Stack technique
+
+- **Backend** : Python 3.12, Flask 3, Flask-Login, Flask-WTF, Flask-Babel 4
+- **ORM & Base de données** : SQLAlchemy, Flask-Migrate (Alembic), SQLite (stocké dans `instance/db.sqlite`)
+- **Frontend** : Jinja2, HTML5 sémantique, CSS3 responsive (design système fluide), Vanilla JavaScript
+- **Production & Conteneurisation** : Gunicorn, Traefik (reverse proxy & TLS Let's Encrypt), Authelia (2FA /admin), Docker Compose, Cloudflare Tunnel
+
+---
+
+## Démarrage rapide en local (Quickstart)
+
+Pour lancer le projet en environnement de développement local en 5 étapes :
 
 ```bash
+# 1. Cloner le dépôt et entrer dans le dossier
+git clone https://github.com/Forestierr/Bibliotheque-Flask.git
+cd Bibliotheque-Flask
+
+# 2. Créer et activer l'environnement virtuel Python 3.12
 python -m venv venv
-source venv/bin/activate
-```
+# Sur Linux / macOS : source venv/bin/activate
+# Sur Windows (PowerShell) : .\venv\Scripts\Activate.ps1
 
-Puis installer les dépendances :
-
-```bash
+# 3. Installer les dépendances applicatives et d'outillage
+pip install --upgrade pip
 pip install -r project/requirements.txt
-```
+pip install ruff pytest
 
-Modifiez le fichier `.env' pour définir les variables d'environnement.
-Le fichier `.env.example` contient toutes les valeurs par défaut, il vous suffit de copier le fichier et d'ajouter vos propres valeurs. 
-copier le fichier et ajouter vos propres valeurs.
-
-```bash
+# 4. Configurer les variables d'environnement
 cp .env.example .env
-```
 
-### Création de la base de données
-
-```bash
-flask db init
-flask db migrate
+# 5. Appliquer les migrations de base de données et lancer le serveur
+export FLASK_APP=project   # Windows PowerShell: $env:FLASK_APP="project"
 flask db upgrade
+flask run -p 5000 -h 127.0.0.1
 ```
 
-> [!TIP]
-> Vous pouvez utiliser la commande `flask db --help` pour voir toutes les commandes disponibles.
+Accédez ensuite à l'application dans votre navigateur à l'adresse : **[http://127.0.0.1:5000](http://127.0.0.1:5000)**.
 
-### Mise à jour de la base de données
+> **Note Caméra / HTTPS :** Les navigateurs modernes restreignent l'accès à la webcam aux contextes sécurisés (HTTPS ou localhost). Pour tester le scanner sur un smartphone connecté à votre réseau local, lancez le serveur avec :
+> ```bash
+> flask run -p 5000 -h 0.0.0.0 --cert adhoc
+> ```
 
-Si vous modifiez le modèle de données, vous devez mettre à jour la base de données.
+---
 
-```bash
-flask db migrate -m "message"
-flask db upgrade
-```
+## Documentation technique
 
-### Lancer le serveur
+Pour approfondir le fonctionnement, l'architecture et la maintenance du projet, consultez les guides détaillés situés dans le dossier [`/docs`](docs/) :
 
-```bash
-$env:FLASK_APP = "project"
-flask run -p 80 -h 0.0.0.0
-```
+| Document | Description |
+| :--- | :--- |
+| [**Architecture logicielle**](docs/architecture.md) | Découpage en 11 Blueprints, diagramme Mermaid du cycle HTTP, filtres Jinja2, middlewares et scheduler multi-workers. |
+| [**Base de données**](docs/base-de-donnees.md) | Diagramme relationnel complet (`erDiagram`), détail des 9 tables, gestion des migrations Alembic et stratégie de sauvegarde SQLite. |
+| [**Déploiement en production**](docs/deploiement.md) | Guide pas-à-pas pour serveur de production, stack Traefik, Authelia, Cloudflare Tunnel, images GHCR et persistance. |
+| [**APIs Externes & Intégrations**](docs/apis-externes.md) | Spécifications des requêtes BnF SRU (Dublin Core), Google Books, Open Library, webhooks Stripe et hCaptcha (dont obligations légales BnF). |
+| [**Configuration & Variables**](docs/configuration.md) | Répertoire exhaustif des variables `.env`, constantes métiers de tarification (`config_plans.py`), cookies de session et drapeaux d'environnement. |
+| [**Exploitation & Maintenance**](docs/maintenance.md) | Utilitaire des scripts CLI (`scripts/`), gestion manuelle des quotas et des comptes Fondateurs, supervision et résolution des pannes courantes. |
 
-And go to http://127.0.0.1:80
+---
 
-> [!TIP]
-> Vous pouvez utiliser `flask run --help` pour voir toutes les options disponibles.
+## Qualité du code & Tests
 
-> [!CAUTION]
-> Flask ne lance pas de serveur WSGI, vous devez utiliser un serveur WSGI de production comme Gunicorn.
+Le projet intègre un pipeline strict de validation CI/CD sur GitHub Actions ([`.github/workflows/pr-validation.yml`](.github/workflows/pr-validation.yml)) :
 
-Si vous avez des problèmes lors du developpement avec le scann.
-Il se peut que vous deviez utiliser un server en HTTPS.
-Pour cela, vous pouvez utiliser le flag  `--cert=adhoc`.
-
-
-## Tests et Qualité du code (CI/CD)
-
-Pour que votre code soit accepté lors d'une Pull Request (PR), il doit respecter les standards de formatage et passer tous les tests automatisés. Si ces vérifications échouent, la PR sera bloquée.
-
-### Formater et vérifier le code (Ruff)
-
-Nous utilisons **Ruff** pour le linting (vérification des erreurs) et le formatage du code.
-
-- **Formater automatiquement le code** (à faire avant de commit) :
+- **Formatage & Linting** :
   ```bash
   ruff format project/
-  ```
-- **Vérifier les erreurs de style et de lint** :
-  ```bash
   ruff check project/
   ```
+- **Tests unitaires & d'intégration** :
+  ```bash
+  pytest project/test/
+  ```
+- **Internationalisation (i18n)** :  
+  Avant de soumettre une modification touchant aux traductions, les fichiers `.mo` compilés doivent impérativement être mis à jour :
+  ```bash
+  pybabel compile -d project/translations
+  ```
 
-### Lancer les tests (Pytest)
+Consultez le guide [**CONTRIBUTING.md**](CONTRIBUTING.md) pour découvrir les règles complètes de contribution.
 
-Assurez-vous que tous les tests réussissent avant de soumettre vos changements :
-
-```bash
-pytest project/test/
-```
-
-
-## Publication
-
-Pour publier l'application, j'ai décider d'utiliser [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
-, nginx et gunicorn. Cela me permet de publier l'application sur mon serveur personnel et de la rendre accessible sous
-un nom de domaine personnalisé [Cloudflare Registrar](https://www.cloudflare.com/fr-fr/products/registrar/).
-
-Pour cela je me suis inspiré de l'article de blog de [austinsnerdythings](https://austinsnerdythings.com/2023/11/01/using-github-actions-to-deploy-a-flask-nginx-cloudflared-tunnel-docker-compose-stack/).
-Mais sans utiliser GitHub Actions, libre à vous de l'utiliser.
-
-> [!CAUTION]
-> AVERTISSEMENT SUR LA SÉCURITÉ
-> Cette solution ne rend pas automatiquement votre application sûre. Vous devez toujours vous concentrer sur la sécurité. Toute vulnérabilité dans votre application web peut permettre à un attaquant de prendre pied dans votre réseau. Votre hôte Docker doit être isolé du reste de votre réseau par un pare-feu, dans un premier temps, afin d'empêcher toute intrusion dans d'autres ordinateurs/services/systèmes de votre réseau. Toutes les étapes suivantes devraient être axées sur les vecteurs d'attaque habituels (injection SQL, mise à jour des systèmes, etc.).
-
-### Shéma de l'infrastructure
-
-![Infrastructure schema](docs/infrastructure.png)
-
-### Lancer l'application
-
-Premièrement, vous devez créer un fichier `docker-compose.yml` à la racine du projet.
-
-```yaml
-command: tunnel --no-autoupdate run --token ${CF_TOCKEN}
-```
-
-En remplaçant `${CF_TOCKEN}` par votre token Cloudflare.
-
-### Build et lancer l'application
-
-```bash
-docker-compose up --build
-```
-
-> [!TIP]
-> Vous pouvez utiliser l'option `-d` pour lancer les conteneurs en arrière-plan.
-
-### Arrêter l'application
-
-```bash
-docker-compose down
-```
-
-## Base de données
-
-La base de données est une base de données SQLite. Stockée dans le fichier `instance\db.sqlite`.
-
-### Schéma de la base de données
-
-![Database schema](docs/model.png)
-
-_**User** est un professeur._
+---
 
 ## Licence
 
-Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE.md) pour plus de détails.
+Ce projet est distribué sous licence **[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)** (Source-Available) — voir le fichier [LICENSE.md](LICENSE.md).
 
+- **Autorisé** : Utilisation personnelle, pédagogique, éducative (écoles, enseignants, médiathèques), recherche et contributions open source non commerciales.
+- **Interdit** : Toute exploitation commerciale, monétisation directe ou indirecte, revente ou hébergement SaaS payant concurrent sans autorisation écrite préalable de l'auteur.

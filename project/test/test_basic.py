@@ -9,6 +9,7 @@ def app():
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
         }
     )
 
@@ -32,3 +33,177 @@ def runner(app):
 def test_homepage(client):
     response = client.get("/")
     assert response.status_code == 200
+
+
+def test_homepage_freemium_section(client):
+    """Vérifie que la section comparative Gratuit vs Premium est présente sur l'accueil avec liens vers tarifs."""
+    response = client.get("/")
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+
+    # Titre de la section
+    assert "Une formule adaptée à votre classe" in html
+
+    # Offre gratuite et quotas
+    assert "Version Gratuite" in html
+    assert "40" in html
+    assert "500" in html
+    assert "30" in html
+    assert "10" in html
+
+    # Offre Premium et lien vers tarifs
+    assert "Abonnement Premium" in html
+    assert "/tarifs" in html
+    assert (
+        "Voir le détail des tarifs &amp; offres" in html
+        or "Voir le détail des tarifs & offres" in html
+    )
+
+    # FAQ Est-ce un logiciel gratuit ?
+    assert "Est-ce un logiciel gratuit ?" in html
+    assert "limitée en volume" in html
+    assert "3.-" in html
+
+
+def test_dashboard_premium_shows_loans_count(app):
+    """Vérifie que le dashboard affiche 'Prêts enregistrés' pour un membre premium."""
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        user = User(
+            id=77,
+            email="premium_dash@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            is_verified=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "77"
+
+        res = client.get("/dashboard")
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+        assert "Prêts enregistrés" in html
+
+
+def test_mentions_legales_payment_and_cancellation_terms(client):
+    """Vérifie que la page mentions légales mentionne bien Stripe, les clauses de résiliation, non-remboursement et sécurité des données."""
+    for url in ("/mentions_legales", "/mentions-legales"):
+        res = client.get(url)
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+
+        # Partenaire Stripe
+        assert "Stripe" in html
+        # Données bancaires non stockées
+        assert "Aucune coordonnée bancaire" in html
+        # Durée de l'engagement (mensuelle / annuelle)
+        assert "douze mois" in html or "12 mois" in html or "engagement" in html
+        assert "3.00 CHF" in html
+        assert "30.00 CHF" in html
+        # Politique d'annulation et non-destruction des données
+        assert "résilié à tout moment" in html
+        assert "Aucune donnée n'est supprimée ni bloquée" in html
+        # Non-remboursement
+        assert "non-remboursement" in html or "non remboursable" in html
+        # Notifications par email
+        assert "e-mail" in html or "email" in html
+        assert "gestion de votre abonnement" in html or "factures et reçus" in html
+        # Protection des données LPD & RGPD, élèves, PFPDT
+        assert "LPD" in html
+        assert "PFPDT" in html
+        assert "Élèves" in html or "élèves" in html
+        assert "minimisation" in html
+        assert "PCI-DSS" in html
+        assert "PolyForm Noncommercial" in html
+        assert "Code des obligations" in html
+        assert "dispositions légales impératives" in html
+
+
+def test_contact_page_get_unauthenticated(client):
+    """Vérifie que la page contact est accessible publiquement sans authentification."""
+    res = client.get("/contact")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Contact" in html
+    assert 'name="name"' in html
+    assert 'name="firstname"' in html
+    assert 'name="email"' in html
+    assert 'name="message"' in html
+    assert '"@type": "ContactPage"' in html
+
+
+def test_contact_page_post_success(client, monkeypatch):
+    """Vérifie l'envoi d'un message de contact valide sans captcha configuré."""
+    monkeypatch.setenv("HCAPTCHA_SECRET_KEY", "")
+    sent_emails = []
+
+    def mock_send_email_to_me(subject, body):
+        sent_emails.append((subject, body))
+
+    def mock_send_email_confirmation(name, firstname, email):
+        sent_emails.append(("confirmation", f"{name} {firstname} {email}"))
+
+    monkeypatch.setattr("project.main.send_email_to_me", mock_send_email_to_me)
+    monkeypatch.setattr(
+        "project.main.send_email_confirmation", mock_send_email_confirmation
+    )
+
+    res = client.post(
+        "/fr/contact",
+        data={
+            "name": "Dupont",
+            "firstname": "Claire",
+            "email": "claire@ecole.fr",
+            "message": "Bonjour, super application !",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    assert len(sent_emails) == 2
+    html = res.get_data(as_text=True)
+    assert "Votre message a été envoyé avec succès" in html
+
+
+def test_contact_page_post_missing_fields(client, monkeypatch):
+    """Vérifie le rejet si un champ est manquant."""
+    monkeypatch.setenv("HCAPTCHA_SECRET_KEY", "")
+    res = client.post(
+        "/fr/contact",
+        data={
+            "name": "Dupont",
+            "firstname": "",
+            "email": "claire@ecole.fr",
+            "message": "",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Veuillez remplir tous les champs." in html
+
+
+def test_contact_page_post_captcha_validation(client, monkeypatch):
+    """Vérifie le comportement lorsque hCaptcha est activé."""
+
+    monkeypatch.setenv("HCAPTCHA_SECRET_KEY", "dummy_secret")
+
+    # Sans token captcha -> rejet
+    res = client.post(
+        "/fr/contact",
+        data={
+            "name": "Dupont",
+            "firstname": "Claire",
+            "email": "claire@ecole.fr",
+            "message": "Test",
+        },
+        follow_redirects=True,
+    )
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Veuillez compléter le CAPTCHA." in html

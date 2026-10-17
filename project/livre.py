@@ -3,7 +3,7 @@ import logging
 import math
 import os
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import requests
 from flask import (
@@ -14,12 +14,18 @@ from flask import (
     redirect,
     render_template,
     request,
+    session,
     url_for,
 )
 from flask_babel import gettext as _
 from flask_login import current_user, login_required
 
 from . import db
+from .config_plans import (
+    MAX_FREE_BOOKS,
+    MAX_FREE_SCANS,
+    PRICE_YEARLY_AMOUNT,
+)
 from .models import Book, BookTags, Loan, Tags
 from .query import (
     get_book_actual_loan,
@@ -257,6 +263,22 @@ def livre_infos(id):
 @login_required
 def livre_ajout():
     if request.method == "POST":
+        # Vérification du quota pour les utilisateurs en plan gratuit
+        if not current_user.is_premium:
+            current_count = get_books_count(current_user.id)
+            if current_count >= MAX_FREE_BOOKS:
+                msg = _(
+                    "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres existants restent utilisables. Pour en ajouter d'autres, passez Premium ou supprimez un livre existant.",
+                    max=MAX_FREE_BOOKS,
+                )
+                if (
+                    request.headers.get("X-Requested-With") == "XMLHttpRequest"
+                    or request.is_json
+                ):
+                    return jsonify({"error": "quota_reached", "message": msg}), 403
+                flash(msg, "warning")
+                return redirect(url_for("subscription.tarifs"))
+
         title = request.form.get("title")
         author = request.form.get("author") if request.form.get("author") else None
         editor = request.form.get("editor") if request.form.get("editor") else None
@@ -327,15 +349,31 @@ def livre_ajout():
     barcode = request.args.get("barcode")
 
     book = None
+    not_found_in_api = False
 
     if isbn:
+        clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper()) if isbn else ""
+        pending_code = session.pop("pending_scan_code", None)
+        is_from_scan = pending_code == clean_isbn or (
+            request.args.get("from_scan") == "1" and pending_code is not None
+        )
+
         # Get the book from the API
         book = get_book_from_api(isbn)
-        # If the book is not found, we create a book with the ISBN
-        # The user can complete the book information
-        if not book:
+
+        # Si le livre a été trouvé par l'API suite à un scan, on incrémente le compteur
+        if book:
+            if is_from_scan and not current_user.is_premium:
+                current_user.check_and_reset_weekly_scans()
+                current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
+                db.session.commit()
+        else:
+            # If the book is not found, we create a book with the ISBN
+            # The user can complete the book information (compteur non incrémenté)
             book = {"isbn": isbn}
+            not_found_in_api = True
     elif barcode:
+        session.pop("pending_scan_code", None)
         book = {"barcode": barcode}
 
     if book is not None and barcode:
@@ -345,7 +383,12 @@ def livre_ajout():
     tags = Tags.query.filter_by(user_id=current_user.id).all()
     tags = [tag.name for tag in tags]
 
-    return render_template("livre/livre_ajout.html", tags=tags, book=book)
+    return render_template(
+        "livre/livre_ajout.html",
+        tags=tags,
+        book=book,
+        not_found_in_api=not_found_in_api,
+    )
 
 
 @livre.route("/livre/check-title", methods=["POST"])
@@ -367,7 +410,13 @@ def check_title():
 @livre.route("/livre/scann", methods=["GET", "POST"])
 @login_required
 def livre_scann():
-    return render_template("livre/livre_scann.html")
+    if not current_user.is_premium:
+        current_user.check_and_reset_weekly_scans()
+    return render_template(
+        "livre/livre_scann.html",
+        max_scans=MAX_FREE_SCANS,
+        price_yearly=int(PRICE_YEARLY_AMOUNT),
+    )
 
 
 @livre.route("/livre/<id>/edit", methods=["GET", "POST"])
@@ -431,13 +480,13 @@ def livre_edit(id):
                 if loan.student_id != student.id:
                     # changement de l'élève
                     # fin de la location
-                    loan.date_return = datetime.now(tz=timezone.utc).date()
+                    loan.date_return = datetime.now(tz=UTC).date()
 
                     # nouvelle location
                     new_loan = Loan(
                         student_id=student.id,
                         book_id=id,
-                        date_loan=datetime.now(tz=timezone.utc).date(),
+                        date_loan=datetime.now(tz=UTC).date(),
                     )
                     db.session.add(new_loan)
             else:
@@ -445,13 +494,13 @@ def livre_edit(id):
                 new_loan = Loan(
                     student_id=student.id,
                     book_id=id,
-                    date_loan=datetime.now(tz=timezone.utc).date(),
+                    date_loan=datetime.now(tz=UTC).date(),
                 )
                 db.session.add(new_loan)
         else:
             if loan:
                 # fin de la location
-                loan.date_return = datetime.now(tz=timezone.utc).date()
+                loan.date_return = datetime.now(tz=UTC).date()
 
         # Remove the tags to the book
         book_tags = BookTags.query.filter_by(book_id=id).all()
@@ -495,6 +544,17 @@ def livre_edit(id):
 @livre.route("/livre/<id>/duplique", methods=["GET"])
 @login_required
 def livre_duplique(id):
+    # Vérification du quota pour les utilisateurs en plan gratuit
+    if not current_user.is_premium:
+        current_count = get_books_count(current_user.id)
+        if current_count >= MAX_FREE_BOOKS:
+            msg = _(
+                "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres existants restent utilisables. Pour en ajouter d'autres, passez Premium ou supprimez un livre existant.",
+                max=MAX_FREE_BOOKS,
+            )
+            flash(msg, "warning")
+            return redirect(url_for("subscription.tarifs"))
+
     book = get_book_by_id(current_user.id, id)
 
     if not book:
@@ -546,7 +606,7 @@ def livre_edit_student(id):
     loan = Loan(
         student_id=student.id,
         book_id=id,
-        date_loan=datetime.now(tz=timezone.utc).date(),
+        date_loan=datetime.now(tz=UTC).date(),
     )
     db.session.add(loan)
     db.session.commit()
@@ -571,6 +631,25 @@ def livre_delete(id):
 @livre.route("/livre/<isbn>/exist")
 @login_required
 def livre_exist(isbn):
+    # Vérification du quota de scans pour les comptes gratuits
+    if not current_user.is_premium:
+        current_user.check_and_reset_weekly_scans()
+        if (current_user.free_scans_used or 0) >= MAX_FREE_SCANS:
+            return make_response(
+                jsonify(
+                    {
+                        "error": "scan_limit_reached",
+                        "message": _(
+                            "Vous avez atteint votre quota de %(max)s scans gratuits pour cette semaine ! Vos scans seront réinitialisés dimanche à minuit, ou passez Premium pour scanner en illimité.",
+                            max=MAX_FREE_SCANS,
+                        ),
+                    }
+                ),
+                403,
+            )
+
+    clean_code = str(isbn).strip().replace("-", "")
+
     # 1. Search by custom barcode first
     books = get_books_by_barcode(current_user.id, isbn)
     if not books:
@@ -578,13 +657,21 @@ def livre_exist(isbn):
         books = get_books_by_isbn(current_user.id, isbn)
 
     if books:
+        # Le livre a été trouvé dans la bibliothèque : on incrémente le compteur de scan
+        if not current_user.is_premium:
+            current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
+            db.session.commit()
+
         if len(books) == 1:
             data = {"id": books[0].id, "multiple": False}
         else:
             data = {"ids": [b.id for b in books], "multiple": True}
         return make_response(jsonify(data), 200)
 
-    clean_code = str(isbn).strip().replace("-", "")
+    # Livre non trouvé en base locale : on mémorise le code scanné en session.
+    # Le quota de scan ne sera décompté dans /livre/ajout QUE si l'API trouve le livre.
+    session["pending_scan_code"] = clean_code
+
     is_isbn = len(clean_code) == 13 and clean_code.startswith(("978", "979"))
     return make_response(
         jsonify({"error": "Book not found", "is_isbn": is_isbn, "code": isbn}), 404

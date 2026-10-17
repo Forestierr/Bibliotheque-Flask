@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Votre abonnement Livres en Classe</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #2563eb;">Votre abonnement a pris fin</h2>
+    
+    <p>Bonjour {{ user.name or 'Enseignant' }},</p>
+    
+    <p>Nous vous confirmons l'interruption de votre abonnement <strong>Livres en Classe</strong>.</p>
+    
+    <div style="background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px; margin: 20px 0; border-radius: 4px;">
+        <p style="margin: 0; font-weight: bold; color: #15803d;">Vos données sont 100% conservées en sécurité</p>
+        <p style="margin: 5px 0 0 0; font-size: 14px; color: #166534;">
+            Conformément à nos engagements, aucun livre, élève ou historique d'emprunt n'est supprimé. Vous conservez un accès permanent à votre classe.
+        </p>
+    </div>
+
+    <p>Afin de ne pas perturber le déroulement de votre classe, vous bénéficiez d'un <strong>délai de grâce de 48 heures</strong> durant lequel toutes vos fonctionnalités restent pleinement actives.</p>
+
+    <p>À l'issue de ce délai, votre compte passera automatiquement sur notre formule gratuite essentielle (jusqu'à 40 élèves et 500 livres).</p>
+    
+    <p>Si vous souhaitez réactiver votre accès Premium ou mettre à jour vos coordonnées :</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ reactivate_url }}" style="background-color: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Réactiver mon abonnement Premium</a>
+    </div>
+    
+    <p>Merci pour votre confiance et pour votre engagement auprès des élèves,</p>
+    <p>L'équipe Livres en Classe</p>
+    
+    <hr style="border: none; border-top: 1px solid #eee; margin-top: 40px;">
+    <p style="font-size: 12px; color: #999; text-align: center;">Livres en Classe &bull; Votre bibliothèque scolaire simplifiée</p>
+</body>
+</html>

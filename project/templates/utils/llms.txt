@@ -1,39 +1,67 @@
 # Livres en classe
  
-> Livres en classe (aussi appelé My Bibliothèque) est une application web **gratuite** destinée aux enseignants, permettant de gérer facilement la bibliothèque de classe et de suivre les emprunts de livres par les élèves, afin d'encourager la lecture.
+> Livres en classe (aussi appelé My Bibliothèque) est une application web freemium destinée aux enseignants, permettant de gérer facilement la bibliothèque de classe et de suivre les emprunts de livres par les élèves, afin d'encourager la lecture.
  
-Livres en classe s'adresse aux enseignants (maternelle, élémentaire, primaire, collège) qui souhaitent organiser et faire vivre une bibliothèque de classe sans matériel complexe ni frais. L'application se veut simple d'utilisation, accessible depuis n'importe quel navigateur, et pensée pour un usage quotidien en classe.
+Livres en classe s'adresse aux enseignants (maternelle, élémentaire, primaire, collège) qui souhaitent organiser et faire vivre une bibliothèque de classe avec un matériel minimal (un smartphone, une tablette ou un ordinateur). L'application se veut simple d'utilisation, accessible depuis n'importe quel navigateur, et pensée pour un usage quotidien en classe.
 
 ## Langues disponibles / Multilingual Support / Mehrsprachigkeit
-L'application et l'ensemble de ses pages publiques et outils sont disponibles en 3 langues :
-- **Français (fr)** [Langue par défaut] : https://livresenclasse.com/
-- **English (en)** : https://livresenclasse.com/?lang=en (or via `/set-lang/en`)
-- **Deutsch (de)** : https://livresenclasse.com/?lang=de (oder über `/set-lang/de`)
+L'application et l'ensemble de ses pages publiques et outils sont disponibles en 3 langues avec des URLs dédiées :
+- **Français (fr)** [Langue par défaut] : https://livresenclasse.com/fr/
+- **English (en)** : https://livresenclasse.com/en/
+- **Deutsch (de)** : https://livresenclasse.com/de/
 
-Le sélecteur de langue est accessible dans la barre de navigation (🇫🇷 Français, 🇬🇧 English, 🇩🇪 Deutsch). Le paramètre d'URL `?lang=<lang>` (`fr`, `en`, `de`) est supporté sur toutes les pages pour les moteurs de recherche et les agents IA.
+Le sélecteur de langue est accessible dans la barre de navigation (🇫🇷 Français, 🇬🇧 English, 🇩🇪 Deutsch). Des URLs dédiées avec préfixe (/fr/, /en/, /de/) et balises hreflang sont implémentées pour chaque page publique.
  
 ## Fonctionnalités principales
 - Gestion des élèves de la classe (création, listes, classes multiples)
-- Inventaire des livres de la bibliothèque, avec scan de codes-barres ISBN pour un ajout rapide
-- Suivi des emprunts et retours de livres par élève
-- Tableau de bord et statistiques de lecture (livres lus, élèves les plus actifs, etc.)
-- Application 100% gratuite et open-source
+- Inventaire des livres de la bibliothèque, avec scan de codes-barres ISBN pour un ajout instantané
+- Suivi des emprunts et retours de livres par élève d'un simple clic
+- Tableau de bord et statistiques interactives de lecture (livres les plus lus, élèves les plus assidus)
+- Modèle freemium avec formule gratuite, essai sans carte bancaire et abonnement Premium sans engagement
+- Code source disponible publiquement sous licence PolyForm Noncommercial 1.0.0
 - Support multilingue complet (Français, Anglais, Allemand)
- 
+- PWA installable sur Android, iOS, Windows et macOS
+
+## Modèle Freemium & Abonnements
+
+Livres en Classe propose une formule gratuite adaptée aux petits besoins et un abonnement Premium sans limite :
+
+### Formule Gratuite (Free)
+- **100% gratuite à vie**, sans carte bancaire requise.
+- **Quotas inclus** : jusqu'à 40 élèves, 500 livres au catalogue, 30 scans de codes-barres par semaine (réinitialisés chaque dimanche à minuit UTC).
+- **Historique des prêts** : consultation et suivi sur les 10 derniers mois.
+- **Politique de non-destruction des données** : aucune donnée n'est supprimée ni bloquée en cas de dépassement de quota ou d'arrêt d'abonnement ; la consultation et les retours d'emprunts restent toujours accessibles.
+
+### Période d'Essai (Trial)
+- **7 jours d'accès complet offerts** automatiquement à chaque nouvel enseignant inscrit, sans carte bancaire requise, pour tester l'ensemble des fonctionnalités Premium.
+
+### Abonnement Premium (Payant)
+- **Accès illimité** : élèves illimités, livres illimités, scans de codes-barres illimités.
+- **Historique complet** : archives des prêts sur plusieurs années sans limite temporelle.
+- **Outils exclusifs** : exports complets Excel pour les bilans scolaires, planches de codes-barres vectoriels et étiquettes pour les bacs de lecture.
+- **Tarifs simples et transparents en Francs Suisses (CHF)** :
+  - **Mensuel** : 3.00 CHF / mois (renouvelable chaque mois, résiliable à tout moment).
+  - **Annuel** : 30.00 CHF / an (soit 2.50 CHF / mois, engagement d'un an).
+- **Sécurité bancaire** : paiements opérés de manière chiffrée par Stripe (Stripe Payments Europe, Ltd. / Stripe Inc., certifié PCI-DSS niveau 1).
+- **Gestion autonome** : résiliation en un clic depuis les réglages du compte via le portail Stripe, effective à la fin de la période en cours.
+
+### Membres Fondateurs (Founder)
+- Statut permanent accordé à vie aux utilisateurs historiques inscrits avant le déploiement du modèle payant, garantissant un accès illimité et gratuit.
+
 ## Docs & Liens utiles
-- [Accueil](https://livresenclasse.com/): présentation de l'application, fonctionnalités et inscription (disponible en FR / EN / DE)
+- [Accueil](https://livresenclasse.com/): présentation de l'application, fonctionnalités et inscription (FR / EN / DE)
+- [Tarifs & Abonnements](https://livresenclasse.com/tarifs): comparatif détaillé Gratuit vs Premium et souscription (FR / EN / DE)
 - [Centre d'aide](https://livresenclasse.com/aide): guides pas-à-pas, tutoriels et foire aux questions (FR / EN / DE)
-- [Blog](https://livresenclasse.com/blog): articles sur la lecture à l'école, conseils pédagogiques et gestion de classe
+- [Blog](https://livresenclasse.com/blog): articles sur la lecture à l'école, conseils pédagogiques et gestion de classe (FR / EN / DE)
 - [Ressources](https://livresenclasse.com/ressources): fiches pratiques et outils téléchargeables pour les enseignants
 - [Espace Enseignants](https://livresenclasse.com/enseignants): guides d'organisation de bibliothèque scolaire
+- [Mentions Légales & Confidentialité](https://livresenclasse.com/mentions-legales): conditions d'utilisation, politique de confidentialité LPD/RGPD et CGV
  
 ## Public cible
 - Professeurs des écoles et instituteurs (maternelle, primaire, élémentaire, collège)
-- Enseignants internationaux cherchant une solution gratuite et multilingue de gestion de bibliothèque
-- Écoles primaires et bibliothèques scolaires
+- Enseignants internationaux cherchant une solution freemium et multilingue de gestion de bibliothèque
+- Écoles primaires, BCD et bibliothèques scolaires
  
 ## Optional
-- Espace enseignant (/eleve, /livre, /emprunt): accès privé, authentification requise, réservé aux comptes enseignants inscrits
+- Espace enseignant (/eleve, /livre, /emprunt, /dashboard, /reglage): accès privé, authentification requise, réservé aux comptes enseignants inscrits
 - Le respect des règles définies dans /robots.txt s'applique à l'ensemble du site
-
- 

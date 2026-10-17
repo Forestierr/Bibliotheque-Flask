@@ -53,9 +53,48 @@ fabric.properties
 # *.iml
 # modules.xml
 
-/instance/
-/project/__pycache__
-*.pyc
-.env
-*.log
+# Python / Bytecode / Virtualenvs
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# Tests & Coverage
+.pytest_cache/
+.ruff_cache/
 .coverage
+htmlcov/
+
+# Database & SQLite files
+/instance/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.bak
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# IDE & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Agent / AI local docs
+GEMINI.md
