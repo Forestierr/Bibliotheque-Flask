@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
+import stripe
 
 from project import create_app, db
 from project.config_plans import (
@@ -1373,3 +1374,80 @@ def test_subscription_type_property():
             ).subscription_type
             == "monthly"
         )
+
+
+def test_stripe_webhook_with_real_stripe_event_object(client, app):
+    """Vérifie que le webhook gère correctement les objets stripe.Event natifs (pas seulement dict)."""
+    with app.app_context():
+        user = User(
+            id=99,
+            email="real_event@test.com",
+            plan="premium",
+            stripe_customer_id="cus_real_event",
+            stripe_subscription_id="sub_real_event",
+            stripe_subscription_status="active",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    raw_event_data = {
+        "id": "evt_real_test",
+        "type": "customer.subscription.deleted",
+        "data": {
+            "object": {
+                "id": "sub_real_event",
+                "customer": "cus_real_event",
+            }
+        },
+    }
+    stripe_event = stripe.Event.construct_from(raw_event_data, key=None)
+
+    with (
+        patch("stripe.Webhook.construct_event", return_value=stripe_event),
+        patch.dict("os.environ", {"STRIPE_WEBHOOK_SECRET": "whsec_test"}),
+    ):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(raw_event_data),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            u = db.session.get(User, 99)
+            assert u.plan == "free"
+            assert u.stripe_subscription_status == "canceled"
+
+    # Test avec customer.subscription.updated
+    raw_event_updated = {
+        "id": "evt_real_test_2",
+        "type": "customer.subscription.updated",
+        "data": {
+            "object": {
+                "id": "sub_real_event",
+                "customer": "cus_real_event",
+                "status": "active",
+                "cancel_at_period_end": True,
+                "current_period_end": 1780000000,
+            }
+        },
+    }
+    stripe_event_updated = stripe.Event.construct_from(raw_event_updated, key=None)
+    with (
+        patch("stripe.Webhook.construct_event", return_value=stripe_event_updated),
+        patch.dict("os.environ", {"STRIPE_WEBHOOK_SECRET": "whsec_test"}),
+    ):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(raw_event_updated),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            u = db.session.get(User, 99)
+            assert u.plan == "premium"
+            assert u.stripe_subscription_status == "active"
+            assert u.subscription_end_at is not None
