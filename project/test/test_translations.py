@@ -436,11 +436,20 @@ def test_bing_webmaster_and_indexnow_verification():
     )
 
     with app.test_client() as client:
-        # 1. Root verification file
-        res = client.get("/1452be41003e41c59435f150f75f55d8.txt")
-        assert res.status_code == 200
-        assert "text/plain" in res.content_type
-        assert res.data.decode("utf-8").strip() == "1452be41003e41c59435f150f75f55d8"
+        # 1. Root verification files (support multi-clés)
+        res_old = client.get("/1452be41003e41c59435f150f75f55d8.txt")
+        assert res_old.status_code == 200
+        assert "text/plain" in res_old.content_type
+        assert (
+            res_old.data.decode("utf-8").strip() == "1452be41003e41c59435f150f75f55d8"
+        )
+
+        res_new = client.get("/744d589148a54a93bfd6c066fce258a6.txt")
+        assert res_new.status_code == 200
+        assert "text/plain" in res_new.content_type
+        assert (
+            res_new.data.decode("utf-8").strip() == "744d589148a54a93bfd6c066fce258a6"
+        )
 
         # 2. Non-existent txt key should return 404
         res_404 = client.get("/00000000000000000000000000000000.txt")
@@ -451,7 +460,7 @@ def test_bing_webmaster_and_indexnow_verification():
         assert res_home.status_code == 200
         html = res_home.data.decode("utf-8")
         assert (
-            '<meta name="msvalidate.01" content="1452be41003e41c59435f150f75f55d8"/>'
+            '<meta name="msvalidate.01" content="744d589148a54a93bfd6c066fce258a6"/>'
             in html
         )
 

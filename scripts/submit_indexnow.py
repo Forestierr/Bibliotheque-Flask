@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 import requests
 
 DEFAULT_HOST = "livresenclasse.com"
-DEFAULT_KEY = os.getenv("INDEXNOW_KEY", "1452be41003e41c59435f150f75f55d8")
+DEFAULT_KEY = os.getenv("INDEXNOW_KEY", "744d589148a54a93bfd6c066fce258a6")
 DEFAULT_ENDPOINT = "https://api.indexnow.org/IndexNow"
 
 

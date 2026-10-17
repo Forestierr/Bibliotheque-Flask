@@ -217,7 +217,12 @@ def llms():
     )
 
 
-INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "1452be41003e41c59435f150f75f55d8")
+INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "744d589148a54a93bfd6c066fce258a6")
+KNOWN_INDEXNOW_KEYS = {
+    "1452be41003e41c59435f150f75f55d8",
+    "744d589148a54a93bfd6c066fce258a6",
+    INDEXNOW_KEY,
+}
 
 
 @core.route(f"/{INDEXNOW_KEY}.txt")
@@ -226,8 +231,9 @@ INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "1452be41003e41c59435f150f75f55d8")
 @main.route("/<key>.txt")
 def indexnow_key(key=None):
     valid_key = os.getenv("INDEXNOW_KEY", INDEXNOW_KEY)
+    valid_keys = KNOWN_INDEXNOW_KEYS | {valid_key}
     requested = key or INDEXNOW_KEY
-    if requested in (INDEXNOW_KEY, valid_key):
+    if requested in valid_keys:
         return (
             requested,
             200,

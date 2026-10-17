@@ -272,7 +272,7 @@ def create_app(test_config=None):
         if app.url_map.is_endpoint_expecting(endpoint, "lang_code"):
             values["lang_code"] = lang
 
-    INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "1452be41003e41c59435f150f75f55d8")
+    INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "744d589148a54a93bfd6c066fce258a6")
     EXEMPT_PREFIXES = ("/static", "/api", "/webhook", "/email/track")
     EXEMPT_PATHS = {
         "/sitemap.xml",
@@ -287,6 +287,7 @@ def create_app(test_config=None):
         "/manifest.json",
         "/sw.js",
         "/1452be41003e41c59435f150f75f55d8.txt",
+        "/744d589148a54a93bfd6c066fce258a6.txt",
         f"/{INDEXNOW_KEY}.txt",
     }
 
