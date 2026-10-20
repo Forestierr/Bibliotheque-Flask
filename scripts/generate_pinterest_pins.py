@@ -10,6 +10,7 @@ Design épuré, professionnel et minimaliste pour la communauté enseignante :
 """
 
 import os
+import math
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -53,8 +54,7 @@ def draw_shadowed_box(base_img, xy, radius=16, fill=(255, 255, 255, 255), shadow
     return draw
 
 def draw_header_badge_and_titles(draw, badge_text, title_line1, title_line2="", subtitle=""):
-    """En-tête propre : Badge pilule + Titre principal + Sous-titre."""
-    # Badge pilule supérieur
+    """En-tête propre et scolaire : Badge pilule + Titre principal + Sous-titre."""
     badge_font = get_font(18, bold=True)
     badge_bbox = badge_font.getbbox(badge_text)
     badge_w = badge_bbox[2] - badge_bbox[0]
@@ -67,7 +67,6 @@ def draw_header_badge_and_titles(draw, badge_text, title_line1, title_line2="", 
     draw.rounded_rectangle([bx0, by0, bx1, by1], radius=999, fill=(255, 255, 255, 255), outline=(226, 232, 240, 255), width=2)
     draw.text(((WIDTH - badge_w) // 2, by0 + 8), badge_text, fill=(30, 58, 138, 255), font=badge_font)
 
-    # Titre principal (44px)
     title_font = get_font(44, bold=True)
     if title_line2:
         t1_bbox = title_font.getbbox(title_line1)
@@ -84,7 +83,6 @@ def draw_header_badge_and_titles(draw, badge_text, title_line1, title_line2="", 
         draw.text(((WIDTH - t1_w) // 2, 140), title_line1, fill=(15, 23, 42, 255), font=title_font)
         sub_y = 205
 
-    # Sous-titre
     if subtitle:
         sub_font = get_font(22, bold=False)
         sub_bbox = sub_font.getbbox(subtitle)
@@ -105,6 +103,81 @@ def draw_footer_branding(draw):
     bbox2 = sub_foot_font.getbbox(text2)
     w2 = bbox2[2] - bbox2[0]
     draw.text(((WIDTH - w2) // 2, 1438), text2, fill=(100, 116, 139, 255), font=sub_foot_font)
+
+
+# =========================================================================
+# DESSIN VECTORIEL DES ICÔNES DE GENRES LITTÉRAIRES
+# =========================================================================
+def draw_genre_icon(draw, code, cx, cy, color):
+    """Dessine une véritable icône pédagogique soignée pour remplacer les simples carrés."""
+    if code == "ROM":  # Roman : Livre ouvert avec pages et reliure
+        w, h = 13, 10
+        draw.polygon([(cx, cy + h), (cx - w, cy + h - 2), (cx - w, cy - h + 2), (cx, cy - h)], fill=(255, 255, 255, 255), outline=color, width=2)
+        draw.polygon([(cx, cy + h), (cx + w, cy + h - 2), (cx + w, cy - h + 2), (cx, cy - h)], fill=(255, 255, 255, 255), outline=color, width=2)
+        draw.line([(cx, cy - h), (cx, cy + h)], fill=color, width=2)
+        draw.line([(cx - w + 3, cy - 3), (cx - 3, cy - 4)], fill=color, width=1)
+        draw.line([(cx - w + 3, cy + 3), (cx - 3, cy + 2)], fill=color, width=1)
+        draw.line([(cx + 3, cy - 4), (cx + w - 3, cy - 3)], fill=color, width=1)
+        draw.line([(cx + 3, cy + 2), (cx + w - 3, cy + 3)], fill=color, width=1)
+
+    elif code == "BD":  # Bande Dessinée : Bulle de dialogue avec queue
+        w, h = 13, 10
+        draw.rounded_rectangle([cx - w, cy - h, cx + w, cy + h - 3], radius=5, fill=(255, 255, 255, 255), outline=color, width=2)
+        draw.polygon([(cx - 3, cy + h - 3), (cx - 8, cy + h + 4), (cx + 2, cy + h - 3)], fill=(255, 255, 255, 255))
+        draw.line([(cx - 3, cy + h - 3), (cx - 8, cy + h + 4)], fill=color, width=2)
+        draw.line([(cx - 8, cy + h + 4), (cx + 2, cy + h - 3)], fill=color, width=2)
+        for dx in [-5, 0, 5]:
+            draw.ellipse([cx + dx - 1, cy - 2, cx + dx + 1, cy], fill=color)
+
+    elif code == "ALB":  # Album : Palette d'artiste avec taches de couleur
+        draw.ellipse([cx - 13, cy - 10, cx + 13, cy + 10], fill=(255, 255, 255, 255), outline=color, width=2)
+        draw.ellipse([cx + 4, cy - 3, cx + 8, cy + 1], fill=color)
+        taches = [
+            (cx - 7, cy - 4, (239, 68, 68, 255)),
+            (cx - 2, cy - 6, (245, 158, 11, 255)),
+            (cx - 7, cy + 2, (59, 130, 246, 255)),
+            (cx - 1, cy + 4, (16, 185, 129, 255)),
+        ]
+        for tx, ty, tcol in taches:
+            draw.ellipse([tx - 2, ty - 2, tx + 2, ty + 2], fill=tcol)
+
+    elif code == "DOC":  # Documentaire : Loupe d'observation
+        r = 8
+        draw.ellipse([cx - 10, cy - 10, cx - 10 + 2*r, cy - 10 + 2*r], fill=(255, 255, 255, 255), outline=color, width=2)
+        draw.line([(cx - 10 + int(r * 1.5), cy - 10 + int(r * 1.5)), (cx + 10, cy + 10)], fill=color, width=4)
+
+    elif code == "MNG":  # Manga : Étoile scintillante / Shōnen
+        points = []
+        for i in range(10):
+            r = 12 if i % 2 == 0 else 5
+            angle = i * math.pi / 5 - math.pi / 2
+            points.append((cx + r * math.cos(angle), cy + r * math.sin(angle)))
+        draw.polygon(points, fill=(254, 240, 138, 255), outline=color, width=2)
+
+    elif code == "CNT":  # Conte : Couronne ou château féerique
+        draw.polygon([
+            (cx - 12, cy - 3), (cx - 12, cy + 8), (cx + 12, cy + 8), (cx + 12, cy - 3),
+            (cx + 6, cy + 2), (cx, cy - 8), (cx - 6, cy + 2)
+        ], fill=(254, 243, 199, 255), outline=color, width=2)
+        draw.ellipse([cx - 2, cy + 1, cx + 2, cy + 5], fill=(239, 68, 68, 255))
+
+    elif code == "POE":  # Poésie : Plume calligraphique et goutte d'encre
+        draw.line([(cx - 7, cy + 9), (cx + 8, cy - 9)], fill=color, width=2)
+        draw.polygon([
+            (cx - 5, cy + 6), (cx + 5, cy - 8), (cx + 10, cy - 8),
+            (cx + 6, cy + 1), (cx - 2, cy + 8)
+        ], fill=(255, 255, 255, 255), outline=color, width=1)
+        draw.ellipse([cx - 9, cy + 9, cx - 6, cy + 12], fill=color)
+
+    elif code == "REV":  # Presse : Journal d'actualités
+        draw.rectangle([cx - 11, cy - 10, cx + 11, cy + 10], fill=(255, 255, 255, 255), outline=color, width=2)
+        draw.rectangle([cx - 8, cy - 7, cx + 8, cy - 3], fill=color)
+        draw.line([(cx - 8, cy + 1), (cx - 2, cy + 1)], fill=color, width=1)
+        draw.line([(cx - 8, cy + 4), (cx - 2, cy + 4)], fill=color, width=1)
+        draw.line([(cx - 8, cy + 7), (cx - 2, cy + 7)], fill=color, width=1)
+        draw.line([(cx + 2, cy + 1), (cx + 8, cy + 1)], fill=color, width=1)
+        draw.line([(cx + 2, cy + 4), (cx + 8, cy + 4)], fill=color, width=1)
+        draw.line([(cx + 2, cy + 7), (cx + 8, cy + 7)], fill=color, width=1)
 
 
 # =========================================================================
@@ -189,31 +262,44 @@ def generate_pin_passeport():
     draw.text((right_x0 + 40, right_y0 + 80), "Tamponne ou coche chaque genre exploré", fill=(100, 116, 139, 255), font=p_font_class)
     draw.line([(right_x0 + 20, right_y0 + 110), (right_x1 - 20, right_y0 + 110)], fill=(37, 99, 235, 255), width=2)
 
-    # Grille des 8 genres
+    # Grille des 8 genres avec de vraies icônes et teintes pastel scolaires
     genres = [
-        ("Roman", "ROM", True), ("Bande Dessinée", "BD", True),
-        ("Album", "ALB", True), ("Documentaire", "DOC", False),
-        ("Manga", "MNG", True), ("Conte", "CNT", False),
-        ("Poésie", "POE", False), ("Presse", "REV", False)
+        ("Roman", "ROM", True, (239, 246, 255, 255), (191, 219, 254, 255), (37, 99, 235, 255)),
+        ("Bande Dessinée", "BD", True, (240, 249, 255, 255), (186, 230, 253, 255), (2, 132, 199, 255)),
+        ("Album", "ALB", True, (254, 252, 232, 255), (254, 240, 138, 255), (217, 119, 6, 255)),
+        ("Documentaire", "DOC", False, (240, 253, 244, 255), (187, 247, 208, 255), (5, 150, 105, 255)),
+        ("Manga", "MNG", True, (245, 243, 255, 255), (221, 214, 254, 255), (124, 58, 237, 255)),
+        ("Conte", "CNT", False, (255, 241, 242, 255), (254, 205, 211, 255), (225, 29, 72, 255)),
+        ("Poésie", "POE", False, (255, 247, 237, 255), (254, 215, 170, 255), (234, 88, 12, 255)),
+        ("Presse", "REV", False, (240, 253, 250, 255), (153, 246, 228, 255), (13, 148, 136, 255)),
     ]
     gw = (right_x1 - right_x0 - 55) // 2
     gh = 70
     gy0 = right_y0 + 130
-    for idx, (g_name, g_code, stamped) in enumerate(genres):
+    for idx, (g_name, g_code, stamped, bg_col, border_col, accent_col) in enumerate(genres):
         col = idx % 2
         row = idx // 2
         gx = right_x0 + 25 + col * (gw + 15)
         gy = gy0 + row * (gh + 12)
-        draw.rounded_rectangle([gx, gy, gx + gw, gy + gh], radius=8, fill=(248, 250, 252, 255), outline=(203, 213, 225, 255), width=1)
-        draw.text((gx + 12, gy + 14), g_name, fill=(15, 23, 42, 255), font=get_font(14, bold=True))
-        # Stamp badge
-        stamp_box = [gx + gw - 48, gy + 12, gx + gw - 12, gy + 48]
+        # Carte pastel scolaire
+        draw.rounded_rectangle([gx, gy, gx + gw, gy + gh], radius=10, fill=bg_col, outline=border_col, width=2)
+        # Véritable icône vectorielle à gauche (remplace le carré vide)
+        draw_genre_icon(draw, g_code, gx + 26, gy + gh // 2, accent_col)
+        # Intitulé du genre
+        draw.text((gx + 48, gy + 14), g_name, fill=(15, 23, 42, 255), font=get_font(14, bold=True))
+        # Sous-repère scolaire
+        draw.text((gx + 48, gy + 38), f"Genre {g_code}", fill=accent_col, font=get_font(11, bold=True))
+
+        # Tampon circulaire pédagogique
+        scx = gx + gw - 28
+        scy = gy + gh // 2
+        sr = 16
         if stamped:
-            draw.rounded_rectangle(stamp_box, radius=6, fill=(239, 246, 255, 255), outline=(37, 99, 235, 255), width=2)
-            draw.text((gx + gw - 42, gy + 18), "✓", fill=(37, 99, 235, 255), font=get_font(18, bold=True))
+            draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=(255, 255, 255, 255), outline=accent_col, width=2)
+            draw.text((scx - 7, scy - 10), "✓", fill=accent_col, font=get_font(16, bold=True))
         else:
-            draw.rounded_rectangle(stamp_box, radius=6, fill=(255, 255, 255, 255), outline=(203, 213, 225, 255), width=1)
-            draw.text((gx + gw - 44, gy + 20), g_code, fill=(148, 163, 184, 255), font=get_font(11, bold=True))
+            draw.ellipse([scx - sr, scy - sr, scx + sr, scy + sr], fill=(255, 255, 255, 255), outline=(203, 213, 225, 255), width=1)
+            draw.text((scx - 11, scy - 6), "TAM", fill=(148, 163, 184, 255), font=get_font(9, bold=True))
 
     # Boîte 3 lectures préférées
     top3_box = [right_x0 + 25, right_y1 - 180, right_x1 - 25, right_y1 - 25]
@@ -319,6 +405,7 @@ def generate_pin_marque_pages():
     draw_r.rounded_rectangle(box_r, radius=14, outline=(226, 232, 240, 255), width=2)
 
     draw_r.text((85 + 75, card_y + 35), "FICHE D'EMPRUNT", fill=(30, 58, 138, 255), font=get_font(20, bold=True))
+    draw_genre_icon(draw_r, "ROM", 85 + 45, card_y + 48, (30, 58, 138, 255))
     draw_r.text((85 + 70, card_y + 70), "Bibliothèque de la classe de CM1", fill=(100, 116, 139, 255), font=get_font(14, bold=False))
     draw_r.line([(85 + 25, card_y + 100), (85 + card_w - 25, card_y + 100)], fill=(37, 99, 235, 255), width=2)
 
@@ -348,6 +435,7 @@ def generate_pin_marque_pages():
     draw_v.rounded_rectangle(box_v, radius=14, outline=(226, 232, 240, 255), width=2)
 
     draw_v.text((535 + 85, card_y + 35), "AVIS DE LECTURE", fill=(30, 58, 138, 255), font=get_font(20, bold=True))
+    draw_genre_icon(draw_v, "MNG", 535 + 50, card_y + 48, (217, 119, 6, 255))
     draw_v.text((535 + 95, card_y + 70), "Partage ton impression", fill=(100, 116, 139, 255), font=get_font(14, bold=False))
     draw_v.line([(535 + 25, card_y + 100), (535 + card_w - 25, card_y + 100)], fill=(37, 99, 235, 255), width=2)
 
