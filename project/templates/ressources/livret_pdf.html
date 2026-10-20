@@ -1,0 +1,1393 @@
+<!-- templates/ressources/livret_pdf.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Convertisseur PDF en Livret A5 imprimable gratuit | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Transformez n'importe quel document PDF en livret A5 prêt à imprimer. Imposition automatique pour piqûre à cheval, cahiers cousus ou spirale. Entièrement gratuit.") }}{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer" />
+<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer" />
+{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": {{ _("Convertisseur PDF en Livret A5 imprimable")|tojson }},
+  "description": {{ _("Outil gratuit d'imposition PDF pour créer des livrets A5 pliables et agrafés sur feuilles A4.")|tojson }},
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "All",
+  "url": "https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer",
+  "isAccessibleForFree": true,
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ressources_editor.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+
+<style>
+/* Styles spécifiques pour le studio d'imposition PDF */
+.booklet-studio-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 65px);
+    background: #f1f5f9;
+}
+
+.booklet-toolbar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--res-border, #e2e8f0);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 52px;
+    z-index: 40;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    flex-wrap: wrap;
+}
+
+.booklet-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+@media screen and (max-width: 1023px) {
+    .booklet-body {
+        flex-direction: column;
+        overflow: visible;
+    }
+    .booklet-sidebar {
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--res-border, #e2e8f0);
+    }
+}
+
+.booklet-sidebar {
+    width: 380px;
+    max-width: 100%;
+    background: #ffffff;
+    border-right: 1px solid var(--res-border, #e2e8f0);
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-sizing: border-box;
+}
+
+.booklet-stage-container {
+    flex: 1;
+    overflow: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    background: #e2e8f0;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 500px;
+}
+
+.booklet-stage-view {
+    flex: 1;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.booklet-stage-view canvas {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    border-radius: 4px;
+    max-width: 100%;
+    height: auto;
+}
+
+.booklet-dropzone {
+    margin: auto;
+    text-align: center;
+    max-width: 440px;
+    padding: 2.5rem 1.5rem;
+    border: 2px dashed #94a3b8;
+    border-radius: 12px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.booklet-dropzone:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+    transform: translateY(-2px);
+}
+
+.booklet-dropzone.is-dragover {
+    border-color: #2563eb;
+    background: #dbeafe;
+}
+
+.booklet-order-bar {
+    padding: 0.65rem 1.25rem;
+    background: #ffffff;
+    border-top: 1px solid #cbd5e1;
+    font-size: 0.8rem;
+    color: #475569;
+    border-radius: 8px;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Modale Guide des reliures */
+.guide-modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 780px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* Schémas SVG */
+.il {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin: 10px auto;
+}
+.il .s { stroke: #0f172a; fill: none; stroke-width: 1.3; }
+.il .f { fill: #f1f5f9; stroke: #0f172a; stroke-width: 1.2; }
+.il .t { stroke: #2563eb; fill: none; stroke-width: 2; stroke-linecap: round; }
+.il .a { fill: #2563eb; }
+.il text { fill: #64748b; font-size: 11px; font-family: system-ui, sans-serif; }
+
+#pdesc {
+    font-size: 0.82rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    line-height: 1.45;
+}
+
+#pdesc b {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #1e293b;
+}
+
+.hint {
+    display: block;
+    color: #64748b;
+    font-size: 0.72rem;
+    margin-top: 3px;
+    line-height: 1.35;
+}
+
+/* Sélecteur Mode Normal vs Avancé */
+.mode-pill-toggle {
+    display: flex;
+    background: #e2e8f0;
+    border-radius: 999px;
+    padding: 3px;
+    margin-bottom: 1rem;
+}
+
+.mode-pill-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 999px;
+    cursor: pointer;
+    color: #475569;
+    transition: all 0.15s ease;
+    text-align: center;
+}
+
+.mode-pill-btn.is-active {
+    background: #ffffff;
+    color: #2563eb;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+fieldset {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin: 0 0 1rem;
+    padding: 0.75rem 0.9rem;
+    background: #f8fafc;
+}
+
+legend {
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0 6px;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+label.ck {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: #1e293b;
+    margin-top: 6px;
+    cursor: pointer;
+}
+</style>
+{% endblock %}
+
+{% block navbar %}
+<div class="no-print">
+    {{ navbar(current_user, _("Studio de Ressources")) }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="booklet-studio-wrapper">
+    <!-- Barre d'outils supérieure -->
+    <div class="booklet-toolbar no-print">
+        <div class="studio-toolbar-title">
+            <a href="{{ url_for('ressource.index') }}">
+                <i class="fas fa-arrow-left"></i>
+                <span>{{ _("Toutes les ressources") }}</span>
+            </a>
+            <span class="has-text-grey-light">/</span>
+            <span class="has-text-weight-bold">{{ _("Convertisseur PDF en Livret A5") }}</span>
+        </div>
+
+        <div class="is-flex is-align-items-center" style="gap: 0.6rem; flex-wrap: wrap;">
+            <!-- Navigation des feuilles / doubles pages -->
+            <div class="buttons has-addons are-small mb-0">
+                <button type="button" class="button is-light" id="prev" title="{{ _('Page / Feuille précédente') }}">
+                    <span class="icon is-small"><i class="fas fa-chevron-left"></i></span>
+                </button>
+                <span class="button is-static has-text-weight-bold" id="nav" style="min-width: 120px;">–</span>
+                <button type="button" class="button is-light" id="next" title="{{ _('Page / Feuille suivante') }}">
+                    <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
+                </button>
+            </div>
+
+            <!-- Mode de vue : Feuilles imprimées vs Livre fini -->
+            <div class="select is-small">
+                <select id="vm" title="{{ _('Type de prévisualisation') }}">
+                    <option value="s">{{ _("Feuilles d'impression") }}</option>
+                    <option value="b">{{ _("Livre fini (Double-page)") }}</option>
+                </select>
+            </div>
+
+            <!-- Filtre recto / verso -->
+            <div class="select is-small" id="viewSelectWrap">
+                <select id="view" title="{{ _('Faces à afficher') }}">
+                    <option value="both">{{ _("Recto + Verso") }}</option>
+                    <option value="recto">{{ _("Recto seul") }}</option>
+                    <option value="verso">{{ _("Verso seul") }}</option>
+                </select>
+            </div>
+
+            <!-- Options rapides -->
+            <label class="checkbox is-size-7 mr-2" style="user-select: none;">
+                <input type="checkbox" id="nums" checked> {{ _("Numéros") }}
+            </label>
+            <label class="checkbox is-size-7 mr-3" style="user-select: none;" id="lblGuides">
+                <input type="checkbox" id="guides" checked> {{ _("Repères") }}
+            </label>
+
+            <!-- Boutons d'export -->
+            <button type="button" class="button is-small is-light" id="dl1" title="{{ _('Télécharge uniquement la feuille visible pour tester l\'alignement et le retournement') }}">
+                <span class="icon is-small"><i class="fas fa-print"></i></span>
+                <span>{{ _("Feuille d'essai") }}</span>
+            </button>
+            <button type="button" class="button is-link is-rounded has-text-weight-bold" id="dl">
+                <span class="icon is-small"><i class="fas fa-download"></i></span>
+                <span>{{ _("Télécharger le livret PDF") }}</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Corps de travail : Sidebar + Stage Canvas -->
+    <div class="booklet-body">
+        <aside class="booklet-sidebar no-print">
+            <!-- Sélecteur de mode : Simple vs Avancé -->
+            <div class="mode-pill-toggle">
+                <button type="button" class="mode-pill-btn is-active" id="btnModeSimple" onclick="setAppMode('simple')">
+                    <i class="fas fa-magic mr-1"></i>{{ _("Mode Simple") }}
+                </button>
+                <button type="button" class="mode-pill-btn" id="btnModeAdvanced" onclick="setAppMode('advanced')">
+                    <i class="fas fa-sliders-h mr-1"></i>{{ _("Mode Avancé") }}
+                </button>
+            </div>
+
+            <!-- Actions Fichier -->
+            <div class="buttons are-small mb-2">
+                <button type="button" class="button is-link is-light is-fullwidth has-text-weight-bold" id="open">
+                    <span class="icon is-small"><i class="fas fa-folder-open"></i></span>
+                    <span>{{ _("Ouvrir un document PDF") }}</span>
+                </button>
+                <div class="is-flex" style="width: 100%; gap: 0.5rem;">
+                    <button type="button" class="button is-white is-small is-flex-grow-1" id="demo" style="border: 1px solid #cbd5e1;">
+                        <span class="icon is-small"><i class="fas fa-file-alt"></i></span>
+                        <span>{{ _("PDF d'essai (16 p.)") }}</span>
+                    </button>
+                    <button type="button" class="button is-white is-small is-flex-grow-1" id="gb" style="border: 1px solid #cbd5e1;">
+                        <span class="icon is-small"><i class="fas fa-book"></i></span>
+                        <span>{{ _("Guide des reliures") }}</span>
+                    </button>
+                </div>
+            </div>
+            <input type="file" id="file" accept="application/pdf" style="display: none;">
+
+            <!-- État / Informations du document -->
+            <div id="info" class="notification is-light p-3 is-size-7 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0; line-height: 1.45;">
+                {{ _("Aucun document chargé.") }}
+            </div>
+
+            <!-- ==================== MODE SIMPLE ==================== -->
+            <div id="simpleControls">
+                <div class="studio-section mb-3">
+                    <div class="studio-section-title">
+                        <i class="fas fa-book-open"></i>
+                        <span>{{ _("Réglages du Livret") }}</span>
+                    </div>
+
+                    <!-- Format papier -->
+                    <div class="field mb-3">
+                        <label class="label is-small">{{ _("Format de papier à imprimer") }}</label>
+                        <div class="control">
+                            <div class="select is-small is-fullwidth">
+                                <select id="simpleFormatSelect" onchange="onSimpleFormatChange(this.value)">
+                                    <option value="A4" selected>{{ _("A4 (Feuilles standard d'école → Livret A5)") }}</option>
+                                    <option value="A3">{{ _("A3 (Grand format → Livret A4)") }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Type de livret -->
+                    <div class="field mb-3">
+                        <label class="label is-small">{{ _("Type de livret") }}</label>
+                        <div class="control">
+                            <div class="select is-small is-fullwidth">
+                                <select id="simpleBindingSelect" onchange="onSimpleBindingChange(this.value)">
+                                    <option value="staple" selected>{{ _("Livret agrafé au pli (Piqûre à cheval - Standard)") }}</option>
+                                    <option value="staple3">{{ _("Livret agrafé (3 agrafes)") }}</option>
+                                    <option value="kettle">{{ _("Cahiers cousus (Cahiers de 16 pages)") }}</option>
+                                    <option value="wire">{{ _("Spirale / Wire-o (Feuilles non pliées)") }}</option>
+                                    <option value="ring">{{ _("Classeur 2 trous") }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emplacement des pages blanches de complément -->
+                    <div class="field mb-3">
+                        <label class="label is-small">{{ _("Pages blanches d'appoint (pour multiple de 4)") }}</label>
+                        <div class="control">
+                            <div class="select is-small is-fullwidth">
+                                <select id="simpleBlankPos" onchange="onSimpleBlankChange(this.value)">
+                                    <option value="end" selected>{{ _("À la fin du livret") }}</option>
+                                    <option value="last">{{ _("Avant la 4e de couverture (garde le dos)") }}</option>
+                                    <option value="first">{{ _("Après la première page (page de garde)") }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Repères simples -->
+                    <div class="field mb-2">
+                        <label class="label is-small">{{ _("Repères imprimés") }}</label>
+                        <label class="ck">
+                            <input type="checkbox" id="simpleFold" checked onchange="onSimpleToggle('fold', this.checked)">
+                            <span>{{ _("Ligne de pliage centrale discrète") }}</span>
+                        </label>
+                        <label class="ck">
+                            <input type="checkbox" id="simpleHole" checked onchange="onSimpleToggle('hole', this.checked)">
+                            <span>{{ _("Repères d'agrafage ou de reliure") }}</span>
+                        </label>
+                    </div>
+
+                    <!-- Astuce impression bienveillante -->
+                    <div class="notification is-info is-light p-2 mt-3 is-size-7">
+                        <i class="fas fa-lightbulb mr-1"></i>
+                        <strong>{{ _("Conseil d'impression :") }}</strong>
+                        {{ _("Choisissez toujours « Taille réelle (100 %%) », « Recto-Verso » et retournement sur le « Bord court ».")|replace("%%", "%") }}
+                    </div>
+
+                    <button type="button" class="button is-ghost is-small p-0 mt-2 has-text-grey" onclick="setAppMode('advanced')">
+                        <span class="icon is-small"><i class="fas fa-cog"></i></span>
+                        <span>{{ _("Besoin de réglages millimétriques ? Passer en mode avancé") }} &rarr;</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ==================== MODE AVANCÉ ==================== -->
+            <div id="advancedControls" style="display: none;">
+                <div class="notification is-warning is-light p-2 is-size-7 mb-3">
+                    <i class="fas fa-sliders-h mr-1"></i>
+                    {{ _("Mode expert : ajustez chaque millimètre, les repères de coupe, la compensation d'épaisseur et les marges.") }}
+                </div>
+                <div id="ctl"></div>
+            </div>
+        </aside>
+
+        <!-- Espace Canvas Prévisualisation -->
+        <main class="booklet-stage-container" id="stageContainer">
+            <div class="booklet-stage-view" id="stage">
+                <div class="booklet-dropzone" id="empty" onclick="$('#file').click()">
+                    <div style="font-size: 2.8rem; color: #3b82f6; margin-bottom: 0.5rem;">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 class="title is-5 mb-2" style="color: #0f172a;">{{ _("Déposez votre fichier PDF ici") }}</h3>
+                    <p class="is-size-6 has-text-grey mb-3">
+                        {{ _("ou cliquez pour sélectionner un document depuis votre ordinateur.") }}
+                    </p>
+                    <span class="button is-small is-link is-rounded has-text-weight-semibold">
+                        <i class="fas fa-upload mr-1"></i>{{ _("Choisir un fichier") }}
+                    </span>
+                    <p class="is-size-7 has-text-grey-light mt-3">
+                        {{ _("100 %% sécurisé et instantané : le traitement s'effectue directement dans votre navigateur sans envoyer vos données sur un serveur externe.")|replace("%%", "%") }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="booklet-order-bar" id="orderBar">
+                <span id="order"></span>
+                <span class="tag is-info is-light" id="orderBadge">Aperçu direct</span>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modale Guide des reliures -->
+<div class="modal" id="guideModal">
+    <div class="modal-background" onclick="$('#guideModal').classList.remove('is-active')"></div>
+    <div class="modal-card" style="max-width: 820px; width: 92%;">
+        <header class="modal-card-head" style="background: #ffffff; border-bottom: 1px solid #e2e8f0;">
+            <p class="modal-card-title has-text-weight-bold" style="color: #0f172a; font-size: 1.2rem;">
+                <i class="fas fa-book mr-2" style="color: #2563eb;"></i>{{ _("Guide complet des reliures de livret") }}
+            </p>
+            <button class="delete" aria-label="close" onclick="$('#guideModal').classList.remove('is-active')"></button>
+        </header>
+        <section class="modal-card-body" id="gc" style="line-height: 1.6; font-size: 0.9rem;">
+            <!-- Contenu dynamique du guide généré en JS -->
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end; background: #f8fafc;">
+            <button type="button" class="button is-link is-rounded has-text-weight-bold" onclick="$('#guideModal').classList.remove('is-active')">
+                {{ _("Fermer") }}
+            </button>
+        </footer>
+    </div>
+</div>
+
+<!-- Section éditoriale pédagogique sous le studio (SEO & Conseils d'impression) -->
+<section class="section py-6 no-print" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container" style="max-width: 960px; margin: 0 auto;">
+
+        <div class="content mb-6">
+            <h2 class="title is-3" style="color: #1e293b;">
+                {{ _("Comment imprimer et fabriquer un livret A5 en classe ?") }}
+            </h2>
+            <p class="is-size-6 has-text-grey">
+                {{ _("L'imposition est l'étape technique qui consiste à réorganiser l'ordre des pages pour que, une fois les feuilles pliées en deux et imbriquées, l'histoire ou le cours se lise dans le bon ordre (de la page 1 à la fin).") }}
+            </p>
+
+            <div class="columns is-multiline my-4">
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-link">
+                            <i class="fas fa-print mr-2"></i>{{ _("1. Impression Recto-Verso") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Dans les paramètres de votre imprimante, sélectionnez « Taille réelle (100 %%) », « Recto-Verso » et retournement sur le « Bord court ».")|replace("%%", "%") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-success-dark">
+                            <i class="fas fa-fold mr-2"></i>{{ _("2. Pliage au centre") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Pliez chaque feuille en deux sur la ligne de pli imprimée. Imbriquez ensuite les feuilles les unes dans les autres, de la feuille 1 vers l'intérieur.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-warning-dark">
+                            <i class="fas fa-paperclip mr-2"></i>{{ _("3. Agrafage au pli") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Ouvrez le livret au centre et agrafez sur les repères à l'aide d'une agrafeuse à long bras (ou agrafeuse classique posée ouverte sur une gomme).") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passerelle vers Livres en Classe (Lead Magnet CTA) -->
+        <div class="box my-6" style="border-radius: 16px; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 2.5rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <span class="tag is-warning is-light has-text-weight-bold mb-2">
+                        <i class="fas fa-book-open mr-1"></i> {{ _("Faites voyager les livres dans votre classe") }}
+                    </span>
+                    <h3 class="title is-3 has-text-white mb-2">
+                        {{ _("Gérez votre bibliothèque scolaire sans effort") }}
+                    </h3>
+                    <p class="is-size-6" style="opacity: 0.95; line-height: 1.6;">
+                        {{ _("En complément de vos livrets et fiches de lecture, découvrez Livres en Classe : le logiciel de gestion de bibliothèque scolaire le plus simple au monde. Scan de codes-barres par caméra, gestion des emprunts et suivi des élèves.") }}
+                    </p>
+                </div>
+                <div class="column is-4 has-text-centered">
+                    <a href="{{ url_for('auth.signup') }}" 
+                       class="button is-warning is-medium is-rounded has-text-weight-bold"
+                       style="box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
+                        <span class="icon"><i class="fas fa-sparkles"></i></span>
+                        <span>{{ _("Essayer gratuitement") }}</span>
+                    </a>
+                    <p class="is-size-7 mt-2" style="opacity: 0.85;">
+                        {{ _("Création de compte en 30 secondes") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Pédagogique -->
+        <div class="content mt-6">
+            <h3 class="title is-4" style="color: #1e293b;">{{ _("Questions fréquentes sur la création de livrets PDF") }}</h3>
+            
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Pourquoi mon livret doit-il avoir un nombre de pages multiple de 4 ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Une feuille pliée en deux comporte obligatoirement 4 pages (2 au recto, 2 au verso). Si votre document d'origine contient par exemple 14 pages, l'outil ajoute automatiquement 2 pages blanches pour compléter le cahier à 16 pages.") }}</p>
+            </div>
+
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Mon imprimante imprime le verso à l'envers, comment corriger ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Dans le mode avancé (ou les paramètres de votre pilote d'imprimante), basculez l'option de retournement entre « Bord court » et « Bord long ». Le bouton « Feuille d'essai » vous permet de faire un test sur 1 seule feuille.") }}</p>
+            </div>
+
+            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
+                <h4 class="title is-6 mb-1">{{ _("Mes fichiers PDF sont-ils envoyés sur Internet ?") }}</h4>
+                <p class="is-size-6 has-text-grey">{{ _("Non. L'ensemble de la conversion, de la prévisualisation et de la génération du livret est réalisé localement dans votre navigateur grâce aux bibliothèques JavaScript pdf-lib et pdf.js. Aucun document ne quitte votre appareil.") }}</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =========================================================================
+     MOTEUR D'IMPOSITION ET LOGIQUE JAVASCRIPT
+     ========================================================================= -->
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const MM = 72 / 25.4, $ = s => document.querySelector(s);
+const FM = { A4: [210, 297], A3: [297, 420], A5: [148, 210], Letter: [215.9, 279.4], Tabloid: [279.4, 431.8] };
+const SG = [[0, 'Tout en un'], [4, '4 (1 feuille)'], [8, '8 (2 feuilles)'], [12, '12'], [16, '16'], [20, '20'], [24, '24'], [32, '32']];
+
+// Modèle de configuration
+const G = [
+    ['Feuille', [
+        ['fmt', 'sel', 'Format', ['A4', 'A3', 'A5', 'Letter', 'Tabloid', 'Perso']],
+        ['ori', 'sel', 'Orientation', ['Paysage', 'Portrait']],
+        ['cw', 'num', 'Perso : largeur (mm)', 210],
+        ['ch', 'num', 'Perso : hauteur (mm)', 297]
+    ]],
+    ['Reliure', [
+        ['pre', 'sel', 'Modèle de reliure', [
+            ['custom', 'Personnalisé'],
+            ['staple', 'Agrafé (piqûre à cheval)'],
+            ['staple3', 'Agrafé, 3 agrafes'],
+            ['kettle', 'Cahiers cousus (chaînette)'],
+            ['cords', 'Cahiers cousus sur ficelles'],
+            ['coptic', 'Reliure copte'],
+            ['perfect', 'Dos carré collé (feuillets pliés)'],
+            ['japan', 'Reliure japonaise'],
+            ['wire', 'Spirale / wire-o'],
+            ['ring', 'Classeur 2 trous']
+        ]]
+    ]],
+    ['Disposition', [
+        ['mode', 'sel', 'Mode', [['book', 'Livret (cahiers pliés)'], ['stack', 'Pile à couper'], ['nup', 'Pages à la suite']]],
+        ['sig', 'sel', 'Pages par cahier', SG, 'b'],
+        ['rows', 'num', 'Rangées par feuille (livret : cahiers à couper)', 1],
+        ['cols', 'num', 'Colonnes', 2, 'n'],
+        ['dup', 'chk', 'Recto-verso', 1, 'n'],
+        ['flip', 'sel', 'Retournement de la feuille', [['s', 'Bord court (standard livret)'], ['l', 'Bord long']]],
+        ['rtl', 'chk', 'Lecture droite → gauche (Manga/Arabe)', 0],
+        ['from', 'num', 'Première page', 1],
+        ['to', 'num', 'Dernière page (0 = fin)', 0],
+        ['bl', 'num', 'Pages blanches au début', 0],
+        ['bp', 'sel', 'Pages blanches de complément', [['end', 'À la fin'], ['last', 'Avant la 4e de couverture'], ['first', 'Après la première page']], 'b']
+    ]],
+    ['Marges et échelle', [
+        ['m', 'num', 'Marge de feuille (mm)', 5],
+        ['gx', 'num', 'Gouttière horizontale (mm)', 0],
+        ['gy', 'num', 'Gouttière verticale (mm)', 6],
+        ['pad', 'num', 'Marge intérieure de page (mm)', 0],
+        ['bind', 'num', 'Marge de reliure en plus (mm)', 0, 'b'],
+        ['fit', 'sel', 'Mise à l’échelle', [['fit', 'Ajuster à la page'], ['fill', 'Remplir (rogner)'], ['none', 'Taille réelle']]],
+        ['sc', 'num', 'Échelle (%)', 100],
+        ['ox', 'num', 'Décalage horizontal (mm)', 0],
+        ['oy', 'num', 'Décalage vertical (mm)', 0],
+        ['creep', 'num', 'Compensation d’épaisseur (mm par feuille)', 0, 'b'],
+        ['bdx', 'num', 'Correction verso, horizontale (mm)', 0],
+        ['bdy', 'num', 'Correction verso, verticale (mm)', 0]
+    ]],
+    ['Repères', [
+        ['cut', 'chk', 'Lignes de coupe', 1],
+        ['cutl', 'sel', 'Longueur des coupes', [['f', 'Toute la feuille'], ['t', 'Traits courts en bordure']]],
+        ['fold', 'chk', 'Ligne de pli', 1, 'b'],
+        ['mil', 'num', 'Zone de fraisage du dos (mm de chaque côté)', 0, 'b'],
+        ['crop', 'chk', 'Repères de coupe aux coins', 0],
+        ['cropl', 'num', 'Longueur des repères (mm)', 4],
+        ['hole', 'chk', 'Points de reliure (couture, agrafes, trous)', 1],
+        ['hp', 'sel', 'Modèle de points', [
+            ['even', 'Réguliers'],
+            ['staple2', '2 agrafes'],
+            ['staple3', '3 agrafes'],
+            ['kettle', 'Chaînette + stations'],
+            ['cords', 'Ficelles + chaînettes'],
+            ['pitch', 'Spirale / wire-o (pas fixe)'],
+            ['ring2', 'Classeur 2 trous']
+        ]],
+        ['hn', 'num', 'Nombre de points ou de ficelles', 4],
+        ['ho', 'num', 'Marge avant le premier point (mm)', 25],
+        ['kt', 'num', 'Distance des chaînettes au bord (mm)', 15],
+        ['pt', 'num', 'Pas de la spirale (mm)', 8.47],
+        ['hx', 'num', 'Distance du trou au bord de reliure (mm)', 10, 'n'],
+        ['hc', 'text', 'Positions perso depuis le haut (mm, virgules)', ''],
+        ['hs', 'sel', 'Symbole', [['d', 'Point'], ['x', 'Croix'], ['t', 'Trait']]],
+        ['hd', 'num', 'Diamètre du point (mm)', 1.5],
+        ['gline', 'chk', 'Ligne au bord de reliure', 0, 'n'],
+        ['frame', 'chk', 'Cadre autour de chaque page', 0],
+        ['lab', 'chk', 'Étiquette de feuille', 1],
+        ['col', 'color', 'Couleur des repères', '#000000'],
+        ['th', 'num', 'Épaisseur des traits (mm)', 0.2]
+    ]]
+];
+
+// Génération dynamique du formulaire avancé
+let h = '';
+for (const [g, fs] of G) {
+    h += `<fieldset><legend>${g}</legend>`;
+    for (const [k, t, lb, v, m] of fs) {
+        const a = `id="w_${k}"${m ? ` data-m="${m}"` : ''}`;
+        if (t == 'sel') {
+            h += `<div class="field mb-2" ${a}><label class="label is-small">${lb}</label><div class="control"><div class="select is-small is-fullwidth"><select id="f_${k}">${v.map(o => { o = [].concat(o); return `<option value="${o[0]}">${o[o.length - 1]}</option>`; }).join('')}</select></div></div></div>`;
+        } else if (t == 'chk') {
+            h += `<label class="ck" ${a}><input type="checkbox" id="f_${k}"${v ? ' checked' : ''}><span>${lb}</span></label>`;
+        } else {
+            h += `<div class="field mb-2" ${a}><label class="label is-small">${lb}</label><div class="control"><input class="input is-small" type="${t == 'num' ? 'number' : t}" id="f_${k}" value="${v}"${t == 'num' ? ' step="any" min="0"' : ''}></div></div>`;
+        }
+    }
+    h += '</fieldset>';
+}
+$('#ctl').innerHTML = h;
+
+const rd = () => {
+    const S = {};
+    for (const [, fs] of G) {
+        for (const [k, t] of fs) {
+            const e = $('#f_' + k);
+            S[k] = t == 'chk' ? e.checked : t == 'num' ? (parseFloat(e.value) || 0) : e.value;
+        }
+    }
+    S.sig = +S.sig;
+    S.rows = Math.max(1, Math.round(S.rows));
+    S.cols = Math.max(1, Math.round(S.cols));
+    return S;
+};
+
+let SRC, DOC, SZ = [], NAME = 'livret', S, R, cur = 1, curB = 0;
+
+const PD = {
+    custom: ['Personnalisé', 'Aucun modèle appliqué : réglez chaque option manuellement.'],
+    staple: ['Agrafé (piqûre à cheval)', 'Un seul cahier : toutes les feuilles sont imbriquées, pliées en deux et agrafées sur le pli central.'],
+    staple3: ['Agrafé, 3 agrafes', 'Comme l’agrafé simple, avec une agrafe centrale en plus pour les grands formats ou livrets épais.'],
+    kettle: ['Cahiers cousus (point de chaînette)', 'Le livre est découpé en cahiers de 16 pages (4 feuilles imbriquées) cousus sur leur pli.'],
+    cords: ['Cahiers cousus sur ficelles', 'La couture passe autour de ficelles ou rubans placés en travers du dos.'],
+    coptic: ['Reliure copte', 'Cahiers cousus entre eux par une couture apparente sur le dos, s’ouvrant parfaitement à plat.'],
+    perfect: ['Dos carré collé', 'Feuillets pliés empilés dans l’ordre, dos fraisé puis collé sous une couverture.'],
+    japan: ['Reliure japonaise', 'Feuilles empilées non pliées, percées de 4 trous le long du bord de reliure et cousues en surjet.'],
+    wire: ['Spirale / wire-o', 'Feuilles empilées avec perforation à pas fixe (wire-o). S’ouvre à 360°.'],
+    ring: ['Classeur 2 trous (ISO 838)', 'Deux trous espacés de 80 mm pour classeur scolaire classique.']
+};
+
+const GL = [
+    ['Pages blanches de complément', 'Un livret compte toujours un multiple de 4 pages. Les pages manquantes sont ajoutées vides.'],
+    ['Cahier (signature)', 'Groupe de feuilles pliées ensemble formant une section du livre.'],
+    ['Retournement bord court', 'Standard pour un livret paysage imprimé en recto-verso (se tourne comme les pages d’un livre).'],
+    ['Marge de reliure', 'Espace supplémentaire réservé le long du pli pour la couture ou la colle.']
+];
+
+const HK = {
+    mode: S => ({ book: 'Ordre de lecture reconstitué pour pliage en livret.', stack: 'Pile à couper et superposer.', nup: 'Pages à la suite.' }[S.mode]),
+    sig: () => 'Multiple de 4. « Tout en un » pour un seul cahier agrafé.',
+    rows: S => S.mode == 'book' ? 'Plusieurs cahiers l’un sous l’autre sur la feuille.' : 'Nombre de pages en hauteur.',
+    flip: () => 'Bord court recommandé pour livret A5 sur A4.',
+    fit: () => 'Ajuster à la page sans déformation.',
+    gy: () => 'Gouttière entre les rangées.',
+    creep: () => 'Compensation du décalage des pages intérieures.',
+    bind: () => 'Surface en plus près du pli.',
+    hp: S => 'Modèle de répartition des points de perçage ou agrafes.',
+    bp: () => 'Emplacement des pages blanches de complément.',
+    hc: () => 'Positions personnalisées en millimètres.',
+    hx: () => 'Distance du trou au bord.',
+    mil: () => 'Zone de fraisage du dos.'
+};
+
+const SV = (a, b, ca, cb) => `<svg class="il" viewBox="0 0 520 178" role="img" aria-label="${ca} ; ${cb}"><g>${a}</g><g transform="translate(270 0)">${b}</g><text x="125" y="172" text-anchor="middle">${ca}</text><text x="395" y="172" text-anchor="middle">${cb}</text></svg>`;
+const fy = f => 10 + f * 140;
+
+const spine = (n, ys, mode) => {
+    let o = ''; const w = 210 / n, cx = i => 20 + w * (i + .5);
+    for (let i = 0; i < n; i++) o += `<rect class="f" x="${20 + w * i}" y="10" width="${w}" height="140"/>`;
+    if (mode == 'c') for (const y of ys.slice(1, -1)) o += `<rect class="f" x="14" y="${fy(y) - 3}" width="222" height="6"/>`;
+    for (let i = 0; i < n; i++) ys.forEach((y, j) => {
+        if (j && mode != 'p') o += `<line class="t" x1="${cx(i)}" x2="${cx(i)}" y1="${fy(ys[j - 1])}" y2="${fy(y)}"${(i + j) % 2 ? ' stroke-dasharray="3 4" opacity=".45"' : ''}/>`;
+        o += `<circle class="s" r="2.5" cx="${cx(i)}" cy="${fy(y)}"/>`;
+    });
+    return o;
+};
+
+const cah = (k, s) => {
+    let o = ''; const h = 140 / k, st = Math.min(8, h / (2 * s + 4));
+    for (let c = 0; c < k; c++) {
+        const y0 = 10 + h * c;
+        for (let i = 0; i < s; i++) {
+            const q = i * st, t = y0 + 3 + q, b = y0 + h - 3 - q;
+            o += `<path class="s" d="M210 ${t}H${70 + q}Q${55 + q} ${t} ${55 + q} ${(t + b) / 2}Q${55 + q} ${b} ${70 + q} ${b}H210"/>`;
+        }
+    }
+    return o;
+};
+
+const flat = ys => '<rect class="f" x="30" y="10" width="92" height="140"/><rect class="f" x="128" y="10" width="92" height="140"/><line class="s" x1="125" x2="125" y1="4" y2="156" stroke-dasharray="4 3"/>' + ys.map(y => `<rect class="a" x="116" y="${fy(y) - 1.5}" width="18" height="3"/>`).join('');
+const stp = '<path class="t" stroke-width="3" d="M46 80H100"/>';
+
+const ILL = {
+    staple: SV(flat([.25, .75]), cah(1, 4) + stp, 'Feuille ouverte, 2 agrafes', 'Coupe : feuilles imbriquées'),
+    staple3: SV(flat([.2, .5, .8]), cah(1, 4) + stp, 'Feuille ouverte, 3 agrafes', 'Coupe : feuilles imbriquées'),
+    kettle: SV(spine(4, [.08, .29, .5, .71, .92], 'k'), cah(3, 3), 'Dos : fil et chaînettes', 'Dessus : cahiers reliés')
+};
+
+for (const k in HK) {
+    const el = $('#w_' + k);
+    if (el) el.insertAdjacentHTML('beforeend', '<small class="hint" id="h_' + k + '"></small>');
+}
+const preWrap = $('#w_pre');
+if (preWrap) preWrap.insertAdjacentHTML('afterend', '<div id="pdesc"></div>');
+
+// Remplissage du guide
+$('#gc').innerHTML = '<h2>Guide pratique des reliures</h2><p>Le mode simple configure tout automatiquement pour les livrets agrafés. Pour les reliures artisanales cousues ou perforées, explorez les techniques ci-dessous :</p>' +
+    Object.entries(PD).filter(([k]) => k != 'custom').map(([k, v]) => `<h3>${v[0]}</h3><p>${v[1]}</p>${ILL[k] || ''}`).join('') +
+    '<h3>Vocabulaire</h3><ul>' + GL.map(g => `<li><strong>${g[0]}</strong> : ${g[1]}</li>`).join('') + '</ul>';
+
+const BK = { mode: 'book', ori: 'Paysage', rows: 1, m: 5, gx: 0, gy: 6, fold: true, mil: 0, bind: 0, flip: 's', hole: true, hd: 1.5, gline: false };
+const SN = { mode: 'nup', ori: 'Portrait', cols: 1, rows: 1, dup: true, m: 4, gx: 0, gy: 0, fold: false, mil: 0, bind: 0, hole: true, gline: false };
+const PR = {
+    staple: { ...BK, sig: 0, hp: 'staple2', hs: 't' },
+    staple3: { ...BK, sig: 0, hp: 'staple3', hs: 't' },
+    kettle: { ...BK, sig: 16, hp: 'kettle', hn: 5, kt: 15, hs: 'd' },
+    cords: { ...BK, sig: 16, hp: 'cords', hn: 3, ho: 35, kt: 15, hs: 'd' },
+    coptic: { ...BK, sig: 16, hp: 'kettle', hn: 4, kt: 12, hs: 'd' },
+    perfect: { ...BK, sig: 4, hole: false, mil: 3, bind: 5 },
+    japan: { ...SN, hp: 'even', hn: 4, ho: 25, hx: 10, hs: 'd', hd: 3, gline: true },
+    wire: { ...SN, hp: 'pitch', pt: 8.47, ho: 10, hx: 6, hs: 'd', hd: 4 },
+    ring: { ...SN, hp: 'ring2', hx: 12, hs: 'd', hd: 6 }
+};
+
+function applyPre(v) {
+    const p = PR[v];
+    if (!p) return;
+    for (const k in p) {
+        const e = $('#f_' + k);
+        if (!e) continue;
+        typeof p[k] == 'boolean' ? e.checked = p[k] : e.value = p[k];
+    }
+}
+
+function hpos(ch) {
+    if (S.hc && S.hc.trim()) return S.hc.split(/[,;\s]+/).map(Number).filter(v => v >= 0 && v <= ch).map(v => ({ v }));
+    const n = Math.max(1, Math.round(S.hn)), ev = (a, b, m) => Array.from({ length: m }, (_, i) => m > 1 ? a + i * (b - a) / (m - 1) : (a + b) / 2), p = S.hp;
+    if (p == 'staple2') return [.25, .75].map(f => ({ v: ch * f }));
+    if (p == 'staple3') return [.2, .5, .8].map(f => ({ v: ch * f }));
+    if (p == 'kettle') return ev(S.kt, ch - S.kt, Math.max(2, n)).map(v => ({ v }));
+    if (p == 'cords') return [{ v: S.kt }, { v: ch - S.kt }, ...ev(S.ho, ch - S.ho, n).map(v => ({ v, c: 1 }))];
+    if (p == 'pitch') { const st = Math.max(S.pt, 1), m = Math.max(1, Math.floor((ch - 2 * S.ho) / st) + 1), s0 = (ch - (m - 1) * st) / 2; return Array.from({ length: m }, (_, i) => ({ v: s0 + i * st })); }
+    if (p == 'ring2') return [ch / 2 - 40, ch / 2 + 40].map(v => ({ v }));
+    return ev(S.ho, ch - S.ho, n).map(v => ({ v }));
+}
+
+const CACHE = new Map(), PEND = new Set();
+
+function dims(S) {
+    let [w, h] = S.fmt == 'Perso' ? [S.cw || 210, S.ch || 297] : FM[S.fmt];
+    if (S.ori == 'Paysage' && w < h || S.ori == 'Portrait' && w > h) [w, h] = [h, w];
+    return [w, h];
+}
+
+function build(S) {
+    const T0 = SZ.length;
+    if (!T0) return null;
+    const a = Math.min(Math.max(1, S.from) - 1, T0 - 1), b = S.to > 0 ? Math.min(S.to, T0) : T0;
+    const P = Array(Math.max(0, Math.round(S.bl))).fill(-1).concat(Array.from({ length: Math.max(1, b - a) }, (_, i) => a + i));
+    const need = S.mode == 'book' ? (4 - P.length % 4) % 4 : 0;
+    if (need) P.splice(S.bp == 'last' ? Math.max(0, P.length - 1) : S.bp == 'first' ? Math.min(1, P.length) : P.length, 0, ...Array(need).fill(-1));
+    const T = P.length, book = S.mode == 'book', cols = book ? 2 : S.cols, rows = S.rows, L = S.flip == 'l', sides = [];
+    const [W, H] = dims(S), cw = Math.max(1, (W - 2 * S.m - (cols - 1) * S.gx) / cols), ch = Math.max(1, (H - 2 * S.m - (rows - 1) * S.gy) / rows);
+    let sheets = 0, padn = 0, sigs = [];
+
+    if (book) {
+        const sz = S.sig > 0 ? S.sig : Math.ceil(T / 4) * 4;
+        for (let s = 0; s < T; s += sz) sigs.push({ a: s, n: Math.ceil(Math.min(sz, T - s) / 4) * 4 });
+        padn = sigs.reduce((x, s) => x + s.n, 0) - T;
+        const pg = k => k < T ? P[k] : -1;
+        for (let g = 0; g < sigs.length; g += rows) {
+            const grp = sigs.slice(g, g + rows), ns = Math.max(...grp.map(s => s.n / 4));
+            for (let j = 0; j < ns; j++) {
+                sheets++;
+                for (const f of [0, 1]) {
+                    const cells = [];
+                    for (let r = 0; r < rows; r++) {
+                        const s = grp[f && L ? rows - 1 - r : r];
+                        if (!s || j >= s.n / 4) continue;
+                        const { a, n } = s;
+                        const pr = !f ? [a + n - 1 - 2 * j, a + 2 * j] : L ? [a + n - 2 - 2 * j, a + 2 * j + 1] : [a + 2 * j + 1, a + n - 2 - 2 * j];
+                        if (S.rtl) pr.reverse();
+                        pr.forEach((k, c) => cells.push({ r, c, p: pg(k), rot: f && L ? 180 : 0, d: j, sg: g + (f && L ? rows - 1 - r : r) }));
+                    }
+                    sides.push({ sh: sheets, face: f, cells });
+                }
+            }
+        }
+    } else {
+        const n = cols * rows, sd = S.dup ? 2 : 1, K = Math.ceil(T / (n * sd));
+        sheets = K; padn = K * n * sd - T;
+        for (let k = 0; k < K; k++) {
+            for (let f = 0; f < sd; f++) {
+                const cells = [];
+                for (let i = 0; i < n; i++) {
+                    let r = i / cols | 0, c = i % cols;
+                    const lf = S.mode == 'stack' ? i * K + k : k * n + i, x = lf * sd + f;
+                    let pc = S.rtl ? cols - 1 - c : c, pr = r, rot = 0;
+                    if (f) { if (L) { pr = rows - 1 - r; rot = 180; } else pc = cols - 1 - pc; }
+                    cells.push({ r: pr, c: pc, p: x < T ? P[x] : -1, rot, d: 0 });
+                }
+                sides.push({ sh: k + 1, face: f, cells });
+            }
+        }
+    }
+    return { sides, sheets, T0, T, padn, pad: need, sigs, g: { W, H, cols, rows, cw, ch }, book };
+}
+
+function prims(sd) {
+    const { W, H, cols, rows, cw, ch } = R.g, o = [], book = R.book, L = S.flip == 'l', cx = c => S.m + c * (cw + S.gx), cy = r => S.m + r * (ch + S.gy);
+    const ln = (x1, y1, x2, y2, d) => o.push({ t: 'l', x1, y1, x2, y2, d });
+
+    for (const e of sd.cells) {
+        const x = cx(e.c), y = cy(e.r);
+        o.push({ t: 'cell', x, y, w: cw, h: ch });
+        if (e.p < 0) { o.push({ t: 'blank', x, y, w: cw, h: ch }); continue; }
+        let l = S.pad, rr = S.pad;
+        if (book) { if (e.c == 0) rr += S.bind; else l += S.bind; }
+        const sdx = book ? (e.c == 0 ? 1 : -1) * S.creep * e.d : 0;
+        const c = { x: x + l + sdx, y: y + S.pad, w: Math.max(1, cw - l - rr), h: Math.max(1, ch - 2 * S.pad) };
+        const [pw, ph] = SZ[e.p], k = (S.fit == 'fit' ? Math.min(c.w / pw, c.h / ph) : S.fit == 'fill' ? Math.max(c.w / pw, c.h / ph) : 1) * S.sc / 100, w = pw * k, hh = ph * k;
+        o.push({ t: 'page', p: e.p, rot: e.rot, x: c.x + (c.w - w) / 2 + S.ox, y: c.y + (c.h - hh) / 2 + S.oy, w, h: hh, cx: c.x, cy: c.y, cw: c.w, ch: c.h });
+    }
+
+    if (S.cut) {
+        const f = S.cutl == 'f', e = 4;
+        for (let r = 0; r < rows - 1; r++) { const y = cy(r) + ch + S.gy / 2; f ? ln(0, y, W, y, 1) : (ln(0, y, e, y, 1), ln(W - e, y, W, y, 1)); }
+        if (!book) for (let c = 0; c < cols - 1; c++) { const x = cx(c) + cw + S.gx / 2; f ? ln(x, 0, x, H, 1) : (ln(x, 0, x, e, 1), ln(x, H - e, x, H, 1)); }
+    }
+    if (book && S.fold) for (let r = 0; r < rows; r++) ln(W / 2, cy(r) - 3, W / 2, cy(r) + ch + 3, 2);
+    if (S.crop) {
+        const q = S.cropl, f = 1.5;
+        for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+            const x = cx(c), y = cy(r);
+            for (const [px, sx] of [[x, -1], [x + cw, 1]]) for (const [py, sy] of [[y, -1], [y + ch, 1]]) {
+                ln(px + sx * f, py, px + sx * (f + q), py);
+                ln(px, py + sy * f, px, py + sy * (f + q));
+            }
+        }
+    }
+    const bx = (e, f) => (!!S.rtl !== (!!f && !L)) ? cx(e.c) + cw - S.hx : cx(e.c) + S.hx;
+    if (book && S.mil > 0) for (let r = 0; r < rows; r++) for (const q of [-1, 1]) ln(W / 2 + q * S.mil, cy(r), W / 2 + q * S.mil, cy(r) + ch, 2);
+    if (S.hole) {
+        const hs = hpos(ch);
+        if (book) {
+            for (let r = 0; r < rows; r++) for (const q of hs) {
+                let y = cy(r) + q.v; if (L && sd.face) y = H - y;
+                o.push({ t: 'h', x: W / 2, y, s: q.c ? 't' : S.hs, r: S.hd / 2 });
+            }
+        } else {
+            for (const e of sd.cells) for (const q of hs) {
+                o.push({ t: 'h', x: bx(e, sd.face), y: (sd.face && L) ? cy(e.r) + ch - q.v : cy(e.r) + q.v, s: q.c ? 't' : S.hs, r: S.hd / 2 });
+            }
+        }
+    }
+    if (S.frame) for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) o.push({ t: 'r', x: cx(c), y: cy(r), w: cw, h: ch });
+    if (S.lab) o.push({ t: 'tx', x: W / 2, y: H - 2, s: `Feuille ${sd.sh}/${R.sheets} · ${sd.face ? 'verso' : 'recto'}` });
+    return o;
+}
+
+function bmp(p) {
+    if (CACHE.has(p)) return CACHE.get(p);
+    if (PEND.has(p)) return;
+    PEND.add(p);
+    DOC.getPage(p + 1).then(pg => {
+        const v0 = pg.getViewport({ scale: 1 }), vp = pg.getViewport({ scale: 800 / Math.max(v0.width, v0.height) });
+        const cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+        return pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise.then(() => {
+            CACHE.set(p, cv);
+            sched();
+        });
+    }).catch(() => {});
+}
+
+let tm;
+const sched = () => { cancelAnimationFrame(tm); tm = requestAnimationFrame(render); };
+
+function draw(cv, sd) {
+    const c = cv.getContext('2d'), s = cv.width / R.g.W, o = prims(sd), G = $('#guides').checked, N = $('#nums').checked, lw = Math.max(S.th * s, 1);
+    c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, cv.height);
+    const dash = d => c.setLineDash(d == 1 ? [2.5 * s, 1.5 * s] : d == 2 ? [1.2 * s, 1.2 * s] : []);
+
+    for (const e of o) {
+        c.save(); c.strokeStyle = c.fillStyle = S.col; c.lineWidth = lw;
+        if (e.t == 'cell') {
+            if (G) { c.strokeStyle = '#94a3b8'; c.lineWidth = 1; c.setLineDash([3 * s, 2 * s]); c.strokeRect(e.x * s, e.y * s, e.w * s, e.h * s); }
+        } else if (e.t == 'blank') {
+            c.fillStyle = '#f1f5f9'; c.fillRect(e.x * s, e.y * s, e.w * s, e.h * s);
+            c.fillStyle = '#94a3b8'; c.font = `${5 * s}px system-ui, sans-serif`; c.textAlign = 'center';
+            c.fillText('page blanche', (e.x + e.w / 2) * s, (e.y + e.h / 2) * s);
+        } else if (e.t == 'page') {
+            c.beginPath(); c.rect(e.cx * s, e.cy * s, e.cw * s, e.ch * s); c.clip(); c.save();
+            c.translate((e.x + e.w / 2) * s, (e.y + e.h / 2) * s);
+            if (e.rot) c.rotate(Math.PI);
+            const im = bmp(e.p);
+            if (im) c.drawImage(im, -e.w * s / 2, -e.h * s / 2, e.w * s, e.h * s);
+            else { c.fillStyle = '#e2e8f0'; c.fillRect(-e.w * s / 2, -e.h * s / 2, e.w * s, e.h * s); }
+            c.strokeStyle = 'rgba(0,0,0,.15)'; c.lineWidth = 1; c.strokeRect(-e.w * s / 2, -e.h * s / 2, e.w * s, e.h * s);
+            c.restore();
+            if (N) {
+                const t = String(e.p + 1), bw = (3.4 + t.length * 2.8) * s;
+                c.fillStyle = 'rgba(37,99,235,.92)'; c.fillRect(e.cx * s, e.cy * s, bw, 6 * s);
+                c.fillStyle = '#fff'; c.font = `bold ${4.2 * s}px system-ui, sans-serif`; c.textAlign = 'left';
+                c.fillText(t, e.cx * s + 1.5 * s, e.cy * s + 4.4 * s);
+            }
+        } else if (e.t == 'l') {
+            dash(e.d); c.beginPath(); c.moveTo(e.x1 * s, e.y1 * s); c.lineTo(e.x2 * s, e.y2 * s); c.stroke();
+        } else if (e.t == 'r') {
+            c.strokeRect(e.x * s, e.y * s, e.w * s, e.h * s);
+        } else if (e.t == 'h') {
+            const X = e.x * s, Y = e.y * s, r = Math.max(e.r * s, 1.5);
+            c.beginPath();
+            if (e.s == 'd') c.arc(X, Y, r, 0, 7), c.fill();
+            else if (e.s == 'x') { c.moveTo(X - 1.5 * s, Y - 1.5 * s); c.lineTo(X + 1.5 * s, Y + 1.5 * s); c.moveTo(X - 1.5 * s, Y + 1.5 * s); c.lineTo(X + 1.5 * s, Y - 1.5 * s); c.stroke(); }
+            else { c.moveTo(X - 3 * s, Y); c.lineTo(X + 3 * s, Y); c.stroke(); }
+        } else if (e.t == 'tx') {
+            c.fillStyle = '#64748b'; c.font = `${2.8 * s}px system-ui, sans-serif`; c.textAlign = 'center';
+            c.fillText(e.s, e.x * s, e.y * s);
+        }
+        c.restore();
+    }
+}
+
+function render() {
+    if (!R) return;
+    const b = $('#vm').value == 'b' && R.book;
+    $('#viewSelectWrap').style.display = b ? 'none' : 'block';
+    $('#lblGuides').style.display = b ? 'none' : 'inline-flex';
+    b ? renderBook() : renderSheets();
+}
+
+function renderSheets() {
+    const st = $('#stage');
+    st.innerHTML = '';
+    const all = R.sides.filter(x => x.sh == cur), v = $('#view').value;
+    let show = v == 'both' ? all : all.filter(x => x.face == (v == 'recto' ? 0 : 1));
+    if (!show.length) show = all;
+    const n = show.length, { W, H } = R.g, dpr = window.devicePixelRatio || 1;
+    const maxW = Math.max(140, Math.min((st.clientWidth - 48 - (n - 1) * 20) / n, Math.max(st.clientHeight - 48, 320) * W / H));
+
+    for (const sd of show) {
+        const cv = document.createElement('canvas');
+        cv.style.width = maxW + 'px';
+        cv.style.height = (maxW * H / W) + 'px';
+        cv.width = Math.round(maxW * dpr);
+        cv.height = Math.round(maxW * H / W * dpr);
+        st.append(cv);
+        draw(cv, sd);
+    }
+    $('#nav').textContent = `Feuille ${cur} / ${R.sheets}`;
+    $('#order').textContent = all.map(sd => {
+        const rs = [];
+        for (const e of sd.cells.slice().sort((a, b) => a.r - b.r || a.c - b.c)) {
+            (rs[e.r] = rs[e.r] || []).push(e.p < 0 ? 'vide' : e.p + 1);
+        }
+        return (sd.face ? 'Verso' : 'Recto') + ' : ' + rs.filter(Boolean).map(r => r.join(' · ')).join(' / ');
+    }).join('   —   ');
+    $('#orderBadge').textContent = `${R.sheets} feuilles (${R.sides.length} faces)`;
+}
+
+function bookSpreads() {
+    const rc = S.rtl ? 0 : 1, br = S.flip == 'l' ? rc : 1 - rc, seq = [];
+    R.sigs.forEach((s, si) => {
+        const nl = s.n / 2, lv = Array.from({ length: nl }, () => ({}));
+        for (const sd of R.sides) for (const e of sd.cells) {
+            if (e.sg !== si) continue;
+            const j = e.d, t = nl - 1 - j;
+            if (!sd.face) {
+                if (e.c == rc) lv[j].r = e.p; else lv[t].v = e.p;
+            } else {
+                if (e.c == br) lv[j].v = e.p; else lv[t].r = e.p;
+            }
+        }
+        lv.forEach(l => seq.push(l.r, l.v));
+    });
+    let prev = -2; const bad = new Set();
+    seq.forEach((p, i) => {
+        if (p === undefined || p < 0) return;
+        if (prev != -2 && p != prev + 1) bad.add(i);
+        prev = p;
+    });
+    const it = i => i >= 0 && i < seq.length ? { p: seq[i], i } : null, sp = [];
+    for (let i = -1; i < seq.length; i += 2) {
+        const a = it(i), b = it(i + 1);
+        sp.push(S.rtl ? [b, a] : [a, b]);
+    }
+    return { seq, sp, bad };
+}
+
+function renderBook() {
+    const st = $('#stage');
+    st.innerHTML = '';
+    const { cw, ch } = R.g, B = bookSpreads(), dpr = window.devicePixelRatio || 1;
+    curB = Math.min(Math.max(0, curB), B.sp.length - 1);
+    const w = Math.max(220, Math.min(st.clientWidth - 48, Math.max(st.clientHeight - 48, 320) * 2 * cw / ch)), h = w * ch / (2 * cw);
+    const cv = document.createElement('canvas');
+    cv.style.width = w + 'px'; cv.style.height = h + 'px'; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    st.append(cv);
+
+    const c = cv.getContext('2d'), pw = cv.width / 2, ph = cv.height, N = $('#nums').checked;
+    c.fillStyle = '#fff'; c.fillRect(0, 0, cv.width, ph);
+
+    B.sp[curB].forEach((e, i) => {
+        const x = i * pw;
+        if (!e) {
+            c.fillStyle = '#cbd5e1'; c.fillRect(x, 0, pw, ph); return;
+        }
+        if (e.p === undefined || e.p < 0) {
+            c.fillStyle = '#f8fafc'; c.fillRect(x, 0, pw, ph);
+            c.fillStyle = '#94a3b8'; c.font = `${pw / 14}px system-ui, sans-serif`; c.textAlign = 'center';
+            c.fillText(e.p < 0 ? 'page vide' : '?', x + pw / 2, ph / 2);
+        } else {
+            const im = bmp(e.p), [a, b] = SZ[e.p], k = Math.min(pw / a, ph / b), dw = a * k, dh = b * k;
+            if (im) c.drawImage(im, x + (pw - dw) / 2, (ph - dh) / 2, dw, dh);
+            else { c.fillStyle = '#f1f5f9'; c.fillRect(x + (pw - dw) / 2, (ph - dh) / 2, dw, dh); }
+        }
+        if (N && e.p >= 0) {
+            const t = 'p. ' + (e.p + 1), fs = ph / 22;
+            c.font = `bold ${fs}px system-ui, sans-serif`; const bw = c.measureText(t).width + fs;
+            c.fillStyle = B.bad.has(e.i) ? '#dc2626' : 'rgba(37,99,235,.92)';
+            const bx = i ? x + pw - bw : x;
+            c.fillRect(bx, 0, bw, fs * 1.5);
+            c.fillStyle = '#fff'; c.textAlign = 'left';
+            c.fillText(t, bx + fs / 2, fs * 1.1);
+        }
+    });
+
+    // Ombrage de pliure de livre 3D
+    const g = c.createLinearGradient(pw - pw / 12, 0, pw + pw / 12, 0);
+    g.addColorStop(0, 'rgba(0,0,0,0)');
+    g.addColorStop(.5, 'rgba(0,0,0,.22)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = g; c.fillRect(pw - pw / 12, 0, pw / 6, ph);
+    c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 1; c.strokeRect(.5, .5, cv.width - 1, ph - 1);
+
+    $('#nav').textContent = `Double page ${curB + 1} / ${B.sp.length}`;
+    const nm = e => !e ? '—' : e.p < 0 ? 'vide' : e.p === undefined ? '?' : e.p + 1, sp = B.sp[curB];
+    $('#order').textContent = `${nm(sp[0])} | ${nm(sp[1])}  —  ` + (B.bad.size ? `⚠ Ordre incorrect : vérifiez le mode ou le retournement.` : `✓ Ordre de lecture parfait.`);
+    $('#orderBadge').textContent = `Page ${curB * 2 + 1}-${curB * 2 + 2}`;
+}
+
+function upd() {
+    S = rd();
+    const descEl = $('#pdesc');
+    if (descEl) {
+        descEl.innerHTML = '<b>' + (PD[S.pre] || PD.custom)[0] + '</b>' + (PD[S.pre] || PD.custom)[1] + (ILL[S.pre] ? ILL[S.pre] : '');
+    }
+    for (const k in HK) {
+        const el = $('#h_' + k);
+        if (el) el.textContent = HK[k](S);
+    }
+    for (const [, fs] of G) {
+        for (const [k, , , , m] of fs) {
+            if (m) {
+                const el = $('#w_' + k);
+                if (el) el.style.display = (m == 'b') == (S.mode == 'book') ? '' : 'none';
+            }
+        }
+    }
+
+    R = build(S);
+    if (!R) return;
+    cur = Math.min(Math.max(1, cur), R.sheets);
+    const g = R.g, z0 = SZ[0] || [210, 297], cwi = g.cw - 2 * S.pad - (R.book ? S.bind : 0), chi = g.ch - 2 * S.pad;
+    const kk = (S.fit == 'fit' ? Math.min(cwi / z0[0], chi / z0[1]) : S.fit == 'fill' ? Math.max(cwi / z0[0], chi / z0[1]) : 1) * S.sc / 100;
+    const nb = R.padn + R.pad;
+
+    $('#info').innerHTML = `<strong>${R.T0} page(s) source</strong> → <strong>${R.sheets} feuille(s) de papier</strong> (${R.sides.length} faces).<br>` +
+        `Page finie : <strong>${g.cw.toFixed(1)} × ${g.ch.toFixed(1)} mm</strong> (échelle ${Math.round(kk * 100)} %)${nb ? ` · ${nb} page(s) blanche(s) ajoutée(s)` : ''}.<br>` +
+        `<span class="tag is-info is-light mt-1"><i class="fas fa-print mr-1"></i> Impression : 100% taille réelle, Recto-Verso (${S.flip == 'l' ? 'bord long' : 'bord court'})</span>`;
+
+    const versoOpt = $('#view').querySelector('[value=verso]');
+    if (versoOpt) versoOpt.disabled = !R.book && !S.dup;
+    const bookOpt = $('#vm').querySelector('[value=b]');
+    if (bookOpt) bookOpt.disabled = !R.book;
+    if (!R.book) $('#vm').value = 's';
+    render();
+}
+
+async function load(buf, name) {
+    $('#info').innerHTML = '<span class="icon is-small mr-1"><i class="fas fa-spinner fa-spin"></i></span> Lecture du fichier PDF en cours…';
+    try {
+        SRC = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+        DOC = await pdfjsLib.getDocument({ data: new Uint8Array(buf).slice() }).promise;
+        SZ = [];
+        for (let i = 1; i <= DOC.numPages; i++) {
+            const vp = (await DOC.getPage(i)).getViewport({ scale: 1 });
+            SZ.push([vp.width / MM, vp.height / MM]);
+        }
+        CACHE.clear();
+        PEND.clear();
+        NAME = name.replace(/\.pdf$/i, '');
+        cur = 1;
+        const e = $('#empty');
+        if (e) e.remove();
+        upd();
+    } catch (e) {
+        $('#info').innerHTML = `<span class="has-text-danger"><i class="fas fa-exclamation-triangle mr-1"></i> Erreur : impossible de lire ce fichier PDF (${e.message || e})</span>`;
+    }
+}
+
+async function demo() {
+    const d = await PDFLib.PDFDocument.create();
+    const f = await d.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    const { rgb } = PDFLib;
+
+    for (let i = 1; i <= 16; i++) {
+        const p = d.addPage([595.28, 841.89]);
+        p.drawRectangle({ x: 30, y: 30, width: 535, height: 781, borderColor: rgb(.14, .38, .92), borderWidth: 3 });
+        p.drawText(`Page ${i}`, { x: 190, y: 440, size: 55, font: f, color: rgb(.06, .09, .16) });
+        p.drawText(`Document d'exemple pour livret A5`, { x: 140, y: 380, size: 20, font: f, color: rgb(.28, .39, .51) });
+        p.drawText(`Livres en Classe`, { x: 220, y: 80, size: 16, font: f, color: rgb(.14, .38, .92) });
+    }
+    load(await d.save(), 'exemple-livret');
+}
+
+async function exp(only) {
+    if (!R) {
+        alert("Veuillez d'abord charger un document PDF ou utiliser le PDF d'essai.");
+        return;
+    }
+    const btn = only ? $('#dl1') : $('#dl');
+    const btx = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Génération…';
+
+    try {
+        const { PDFDocument, StandardFonts, rgb, degrees, pushGraphicsState, popGraphicsState, moveTo, lineTo, closePath, clip, endPath } = PDFLib;
+        const out = await PDFDocument.create();
+        const font = await out.embedFont(StandardFonts.Helvetica);
+        const sides = only ? R.sides.filter(s => s.sh == cur) : R.sides;
+        const pgs = SRC.getPages();
+        const used = [...new Set(sides.flatMap(s => s.cells.map(c => c.p).filter(p => p >= 0)))].filter(p => {
+            try { return !!pgs[p].node.Contents(); } catch (e) { return false; }
+        });
+        const emb = await out.embedPages(used.map(p => pgs[p]), used.map(p => {
+            const b = pgs[p].getCropBox();
+            return { left: b.x, bottom: b.y, right: b.x + b.width, top: b.y + b.height };
+        }));
+        const M = new Map(used.map((p, i) => [p, emb[i]]));
+        const RT = new Map(used.map(p => [p, ((pgs[p].getRotation().angle % 360) + 360) % 360]));
+        const H = R.g.H, X = x => x * MM, Y = y => (H - y) * MM, th = Math.max(S.th, .05) * MM;
+        const hx = S.col, col = rgb(parseInt(hx.slice(1, 3), 16) / 255, parseInt(hx.slice(3, 5), 16) / 255, parseInt(hx.slice(5, 7), 16) / 255);
+
+        for (const sd of sides) {
+            const pg = out.addPage([R.g.W * MM, H * MM]);
+            const line = (a, b, c, d, dd) => pg.drawLine({ start: { x: X(a), y: Y(b) }, end: { x: X(c), y: Y(d) }, thickness: th, color: col, ...(dd ? { dashArray: dd == 1 ? [2.5 * MM, 1.5 * MM] : [1.2 * MM, 1.2 * MM] } : {}) });
+
+            for (const e of prims(sd)) {
+                if (e.t == 'page' && M.has(e.p)) {
+                    const ep = M.get(e.p), cc = (360 - (e.rot + RT.get(e.p)) % 360) % 360, sw = cc % 180 !== 0;
+                    const bw = e.w * MM, bh = e.h * MM, sx = (sw ? bh : bw) / ep.width, sy = (sw ? bw : bh) / ep.height;
+                    const ox = X(e.x) + (cc == 90 || cc == 180 ? bw : 0), oy = Y(e.y + e.h) + (cc == 180 || cc == 270 ? bh : 0);
+                    pg.pushOperators(pushGraphicsState(), moveTo(X(e.cx), Y(e.cy + e.ch)), lineTo(X(e.cx + e.cw), Y(e.cy + e.ch)), lineTo(X(e.cx + e.cw), Y(e.cy)), lineTo(X(e.cx), Y(e.cy)), closePath(), clip(), endPath());
+                    pg.drawPage(ep, { x: ox, y: oy, xScale: sx, yScale: sy, rotate: degrees(cc) });
+                    pg.pushOperators(popGraphicsState());
+                } else if (e.t == 'l') {
+                    line(e.x1, e.y1, e.x2, e.y2, e.d);
+                } else if (e.t == 'r') {
+                    pg.drawRectangle({ x: X(e.x), y: Y(e.y + e.h), width: e.w * MM, height: e.h * MM, borderColor: col, borderWidth: th });
+                } else if (e.t == 'h') {
+                    if (e.s == 'd') pg.drawCircle({ x: X(e.x), y: Y(e.y), size: Math.max(e.r, .2) * MM, color: col });
+                    else if (e.s == 'x') { line(e.x - 1.5, e.y - 1.5, e.x + 1.5, e.y + 1.5); line(e.x - 1.5, e.y + 1.5, e.x + 1.5, e.y - 1.5); }
+                    else line(e.x - 3, e.y, e.x + 3, e.y);
+                } else if (e.t == 'tx') {
+                    const z = 2.6 * MM;
+                    pg.drawText(e.s, { x: X(e.x) - font.widthOfTextAtSize(e.s, z) / 2, y: Y(e.y), size: z, font, color: rgb(.45, .45, .45) });
+                }
+            }
+        }
+        const bytes = await out.save();
+        const fn = NAME + (only ? '-feuille' + cur : '-livret-A5') + '.pdf';
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+        a.download = fn;
+        a.click();
+    } catch (e) {
+        alert("Échec de l'export : " + (e.message || e));
+    }
+    btn.disabled = false;
+    btn.innerHTML = btx;
+}
+
+// Commutateur Mode Simple / Mode Avancé
+function setAppMode(mode) {
+    const isAdv = mode === 'advanced';
+    $('#btnModeSimple').classList.toggle('is-active', !isAdv);
+    $('#btnModeAdvanced').classList.toggle('is-active', isAdv);
+    $('#simpleControls').style.display = isAdv ? 'none' : 'block';
+    $('#advancedControls').style.display = isAdv ? 'block' : 'none';
+}
+
+// Synchroniseurs Mode Simple -> Mode Avancé
+function onSimpleFormatChange(fmt) {
+    const fFmt = $('#f_fmt');
+    if (fFmt) {
+        fFmt.value = fmt;
+        upd();
+    }
+}
+
+function onSimpleBindingChange(bnd) {
+    const fPre = $('#f_pre');
+    if (fPre) {
+        fPre.value = bnd;
+        applyPre(bnd);
+        upd();
+    }
+}
+
+function onSimpleBlankChange(pos) {
+    const fBp = $('#f_bp');
+    if (fBp) {
+        fBp.value = pos;
+        upd();
+    }
+}
+
+function onSimpleToggle(prop, val) {
+    const fEl = $('#f_' + prop);
+    if (fEl) {
+        fEl.checked = val;
+        upd();
+    }
+}
+
+// Événements et listeners
+$('#ctl').addEventListener('input', e => {
+    if (e.target.id == 'f_pre') applyPre(e.target.value);
+    upd();
+});
+$('#view').onchange = $('#vm').onchange = render;
+$('#nums').onchange = $('#guides').onchange = render;
+
+const bk = () => $('#vm').value == 'b' && R && R.book;
+$('#prev').onclick = () => { if (!R) return; if (bk()) { curB--; render(); } else if (cur > 1) { cur--; render(); } };
+$('#next').onclick = () => { if (!R) return; if (bk()) { curB++; render(); } else if (cur < R.sheets) { cur++; render(); } };
+
+document.addEventListener('keydown', e => {
+    if (e.target.matches('input, select, textarea')) return;
+    if (e.key == 'ArrowLeft') $('#prev').click();
+    if (e.key == 'ArrowRight') $('#next').click();
+});
+
+$('#open').onclick = () => $('#file').click();
+$('#gb').onclick = () => $('#guideModal').classList.add('is-active');
+$('#demo').onclick = demo;
+$('#dl').onclick = () => exp(false);
+$('#dl1').onclick = () => exp(true);
+
+$('#file').onchange = async e => {
+    const f = e.target.files[0];
+    if (f) load(await f.arrayBuffer(), f.name);
+};
+
+// Drag and drop
+const stageContainer = $('#stageContainer');
+['dragenter', 'dragover'].forEach(eventName => {
+    stageContainer.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const dropzone = $('#empty');
+        if (dropzone) dropzone.classList.add('is-dragover');
+    }, false);
+});
+['dragleave', 'drop'].forEach(eventName => {
+    stageContainer.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        const dropzone = $('#empty');
+        if (dropzone) dropzone.classList.remove('is-dragover');
+    }, false);
+});
+stageContainer.addEventListener('drop', async e => {
+    const f = e.dataTransfer.files[0];
+    if (f && /pdf$/i.test(f.type || f.name)) {
+        load(await f.arrayBuffer(), f.name);
+    }
+});
+
+window.addEventListener('resize', () => R && render());
+
+// Initialisation par défaut
+applyPre('staple');
+upd();
+</script>
+{% endblock %}

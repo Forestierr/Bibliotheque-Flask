@@ -186,6 +186,23 @@ def passeport():
     )
 
 
+@ressource.route("/ressources/convertisseur-pdf-livret-a5-a-imprimer")
+def convertisseur_pdf_livret():
+    """Outil d'imposition PDF en livret A5 imprimable (gratuit)."""
+    return render_template("ressources/livret_pdf.html")
+
+
+@ressource.route("/ressources/livret-pdf")
+@ressource.route("/ressources/imposition-pdf")
+@ressource.route("/ressources/booklet")
+def redirect_livret_pdf():
+    """Redirections 301 permanentes vers l'URL canonique optimisée."""
+    args = request.args.to_dict()
+    return redirect(
+        url_for("ressource.convertisseur_pdf_livret", **args), code=301
+    )
+
+
 @ressource.route("/ressources/<path:ressource_slug>")
 def ressource_article(ressource_slug):
     """Fallback pour d'éventuels guides éditoriaux statiques."""

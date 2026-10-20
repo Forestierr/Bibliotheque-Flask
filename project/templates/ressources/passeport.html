@@ -2,7 +2,38 @@
 
 {% extends "ressources/base_editor.html" %}
 
-{% block studio_title %}{{ _("Passeport de Lecture") }}{% endblock %}
+{% block title %}{{ _("Passeport de lecture à imprimer (Livret A5 pliable) | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Générez et imprimez un passeport de lecture pliable en livret A5 pour l'école primaire : autoportrait, suivi des genres littéraires et lectures préférées.") }}{% endblock %}
+{% block ressource_id %}passeport-de-lecture-a-imprimer{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/passeport-de-lecture-a-imprimer" />
+<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/passeport-de-lecture-a-imprimer" />
+{% endblock %}
+
+{% block head_extra %}
+{{ super() }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Passeport de lecture pliable en livret A5 pour l'école primaire",
+  "description": "Livret individuel de lecteur avec page de profil, suivi des genres littéraires et carnet d'avis.",
+  "learningResourceType": "Printable Resource",
+  "educationalLevel": "Cycles 2 et 3 (CP, CE1, CE2, CM1, CM2)",
+  "inLanguage": "fr",
+  "isAccessibleForFree": true,
+  "url": "https://livresenclasse.com/fr/ressources/passeport-de-lecture-a-imprimer",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+{% endblock %}
+
+{% block studio_title %}{{ _("Passeport de Lecture (Livret A5)") }}{% endblock %}
 {% block sheet_orientation %}landscape{% endblock %}
 {% block page_orientation %}landscape{% endblock %}
 
@@ -17,14 +48,22 @@
         <div class="theme-swatch green" data-theme="green" title="{{ _('Vert Sauge') }}"></div>
         <div class="theme-swatch gold" data-theme="gold" title="{{ _('Ocre Doux') }}"></div>
         <div class="theme-swatch purple" data-theme="purple" title="{{ _('Bordeaux') }}"></div>
+        <div class="theme-swatch coral" data-theme="coral" title="{{ _('Corail Vif') }}"></div>
         <div class="theme-swatch monochrome" data-theme="monochrome" title="{{ _('Noir & Blanc (Éco)') }}"></div>
     </div>
 </div>
 
 <div class="studio-section">
     <div class="studio-section-title">
-        <i class="fas fa-pen"></i>
-        <span>{{ _("Informations de la classe") }}</span>
+        <i class="fas fa-user-edit"></i>
+        <span>{{ _("Identité & Classe") }}</span>
+    </div>
+
+    <div class="field">
+        <label class="label is-small">{{ _("Nom & Prénom de l'élève") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="passportStudent" placeholder="{{ _('Ex: Léo Martin (ou laisser vide pour remplir à la main)') }}">
+        </div>
     </div>
 
     <div class="field">
@@ -42,7 +81,7 @@
     </div>
 
     <div class="field">
-        <label class="label is-small">{{ _("Objectif de lecture par défaut") }}</label>
+        <label class="label is-small">{{ _("Mon défi / objectif de lecture") }}</label>
         <div class="control">
             <input class="input is-small" type="text" data-bind="passportGoal" value="{{ _('Découvrir au moins 1 livre de chaque genre !') }}">
         </div>
@@ -52,40 +91,41 @@
 
 {% block sheet_content %}
 <div class="passeport-container">
+    <div class="passeport-fold-indicator no-print">
+        <i class="fas fa-cut"></i>
+        <span>{{ _("Pliage central (Livret A5)") }}</span>
+    </div>
+
     <!-- Volet Gauche : Page d'Identité du Lecteur -->
-    <div class="passeport-panel">
-        <div style="text-align: center; border-bottom: 1.5px solid var(--res-primary); padding-bottom: 0.5rem;">
-            <p style="font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: var(--res-primary-dark); text-transform: uppercase;">
-                {{ _("Livret individuel de lecture") }}
+    <div class="passeport-panel panel-left">
+        <div class="passeport-header">
+            <p class="passeport-badge-sub">
+                <i class="fas fa-passport mr-1"></i>{{ _("Livret individuel de lecture") }}
             </p>
-            <h2 class="editable" style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0.2rem 0;">{{ _("PASSEPORT DE LECTEUR") }}</h2>
-            <p class="editable" id="passportSchool" style="font-size: 0.75rem; color: #475569;">{{ _("École élémentaire • Classe de CM1") }}</p>
+            <h2 class="editable passeport-main-title">{{ _("PASSEPORT DE LECTEUR") }}</h2>
+            <p class="editable passeport-school-name" id="passportSchool">{{ _("École élémentaire • Classe de CM1") }}</p>
         </div>
 
-        <div style="display: flex; gap: 5mm; margin: 0.8rem 0; flex: 1;">
+        <div class="passeport-identity-row">
             <!-- Cadre Photo / Autoportrait -->
-            <div style="width: 85px; height: 110px; border: 1px dashed #94a3b8; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 0.65rem; color: #64748b; flex-shrink: 0; background: #f8fafc; padding: 4px;">
-                <i class="fas fa-camera" style="font-size: 1.2rem; margin-bottom: 4px; color: #94a3b8;"></i>
+            <div class="passeport-photo-box">
+                <i class="fas fa-user-circle" style="font-size: 1.8rem; margin-bottom: 4px; color: #94a3b8;"></i>
                 <span>{{ _("Photo ou autoportrait") }}</span>
             </div>
 
             <!-- Champs d'identité -->
-            <div style="flex: 1; font-size: 0.75rem; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("NOM :") }}</span>
-                    <div style="border-bottom: 1px dotted #94a3b8; height: 18px;"></div>
+            <div class="passeport-identity-fields">
+                <div class="passeport-field-group">
+                    <span class="passeport-field-label">{{ _("Élève :") }}</span>
+                    <div class="editable passeport-field-line" id="passportStudent" style="font-weight: 700; color: #0f172a;"></div>
                 </div>
-                <div>
-                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("PRÉNOM :") }}</span>
-                    <div style="border-bottom: 1px dotted #94a3b8; height: 18px;"></div>
+                <div class="passeport-field-group">
+                    <span class="passeport-field-label">{{ _("Année scolaire :") }}</span>
+                    <div class="editable passeport-field-line" id="passportYear">2026 - 2027</div>
                 </div>
-                <div>
-                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("ANNÉE SCOLAIRE :") }}</span>
-                    <div class="editable" id="passportYear" style="font-weight: 700; color: #1e293b;">2026 - 2027</div>
-                </div>
-                <div>
-                    <span style="color: #64748b; font-size: 0.68rem; font-weight: 600;">{{ _("MON OBJECTIF :") }}</span>
-                    <div class="editable" id="passportGoal" style="font-size: 0.7rem; font-weight: 600; color: var(--res-primary-dark);">
+                <div class="passeport-field-group">
+                    <span class="passeport-field-label">{{ _("Mon objectif :") }}</span>
+                    <div class="editable passeport-field-line" id="passportGoal" style="font-size: 0.68rem; font-weight: 600; color: var(--res-primary-dark);">
                         {{ _("Découvrir au moins 1 livre de chaque genre !") }}
                     </div>
                 </div>
@@ -93,55 +133,209 @@
         </div>
 
         <!-- Zone de signature officielle -->
-        <div style="border-top: 1px solid #e2e8f0; padding-top: 0.5rem; display: flex; justify-content: space-between; font-size: 0.7rem;">
+        <div class="passeport-signatures">
             <div>
                 <span style="color: #64748b; font-weight: 600;">{{ _("Signature de l'élève :") }}</span>
-                <div style="border-bottom: 1px dotted #94a3b8; width: 120px; height: 18px;"></div>
+                <div style="border-bottom: 1.5px dotted #94a3b8; width: 110px; height: 16px;"></div>
             </div>
             <div style="text-align: right;">
-                <span style="color: #64748b; font-weight: 600;">{{ _("Signature de l'enseignant(e) :") }}</span>
-                <div style="border-bottom: 1px dotted #94a3b8; width: 120px; height: 18px;"></div>
+                <span style="color: #64748b; font-weight: 600;">{{ _("Signature enseignant(e) :") }}</span>
+                <div style="border-bottom: 1.5px dotted #94a3b8; width: 110px; height: 16px; margin-left: auto;"></div>
             </div>
         </div>
     </div>
 
     <!-- Volet Droit : Suivi des Genres Littéraires -->
-    <div class="passeport-panel">
-        <div style="text-align: center; border-bottom: 1.5px solid var(--res-primary); padding-bottom: 0.5rem;">
-            <h3 class="editable" style="font-size: 1.05rem; font-weight: 800; color: var(--res-primary-dark); text-transform: uppercase;">
+    <div class="passeport-panel panel-right">
+        <div class="passeport-header">
+            <p class="passeport-badge-sub">
+                <i class="fas fa-compass mr-1"></i>{{ _("Exploration & Découvertes") }}
+            </p>
+            <h3 class="editable" style="font-size: 1.05rem; font-weight: 800; color: var(--res-primary-dark); text-transform: uppercase; margin: 0.2rem 0;">
                 {{ _("PARCOURS DES GENRES LITTÉRAIRES") }}
             </h3>
-            <p style="font-size: 0.7rem; color: #64748b;">{{ _("Coche ou tamponne chaque genre exploré au cours de l'année") }}</p>
+            <p style="font-size: 0.68rem; color: #64748b;">{{ _("Coche ou tamponne chaque genre exploré au cours de l'année") }}</p>
         </div>
 
         <!-- Grille de 8 genres -->
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 3.5mm; margin: 0.6rem 0; flex: 1;">
+        <div class="passeport-genres-grid">
             {% for code, label in [
-                ('ROM', 'Roman'),
-                ('BD', 'Bande Dessinée'),
-                ('ALB', 'Album'),
-                ('DOC', 'Documentaire'),
-                ('MNG', 'Manga'),
-                ('CNT', 'Conte'),
-                ('POE', 'Poésie / Théâtre'),
-                ('REV', 'Revue / Presse')
+                ('ROM', _('Roman')),
+                ('BD', _('Bande Dessinée')),
+                ('ALB', _('Album')),
+                ('DOC', _('Documentaire')),
+                ('MNG', _('Manga')),
+                ('CNT', _('Conte')),
+                ('POE', _('Poésie / Théâtre')),
+                ('REV', _('Revue / Presse'))
             ] %}
-            <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 5px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; height: 100%; box-sizing: border-box; background: #f8fafc;">
+            <div class="passeport-genre-item">
                 <span class="editable" style="font-size: 0.68rem; font-weight: 700; color: #1e293b;">{{ label }}</span>
-                <div style="width: 24px; height: 24px; border: 1px dashed var(--res-primary); border-radius: 4px; display: flex; align-items: center; justify-content: center; background: white;">
-                    <span style="font-size: 0.6rem; color: #94a3b8;">{{ code }}</span>
+                <div class="passeport-genre-code">
+                    <span>{{ code }}</span>
                 </div>
             </div>
             {% endfor %}
         </div>
 
         <!-- Mes lectures préférées -->
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px 8px; font-size: 0.68rem; color: #334155;">
-            <p style="font-weight: 700; margin-bottom: 2px;">{{ _("Mes 3 lectures préférées cette année :") }}</p>
-            <div style="border-bottom: 1px dotted #cbd5e1; height: 16px;"></div>
-            <div style="border-bottom: 1px dotted #cbd5e1; height: 16px;"></div>
-            <div style="border-bottom: 1px dotted #cbd5e1; height: 16px;"></div>
+        <div class="passeport-top3-box">
+            <p style="font-weight: 700; margin-bottom: 2px;">
+                <i class="fas fa-heart mr-1" style="color: #e11d48;"></i>{{ _("Mes 3 lectures préférées cette année :") }}
+            </p>
+            <div style="border-bottom: 1px dotted #cbd5e1; height: 15px;"></div>
+            <div style="border-bottom: 1px dotted #cbd5e1; height: 15px;"></div>
+            <div style="border-bottom: 1px dotted #cbd5e1; height: 15px;"></div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block studio_extra_content %}
+<section class="section py-6" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Encart Partage Pinterest & Sauvegarde -->
+        <div class="box mb-6" style="border-radius: 16px; border: 1px solid #bfdbfe; background: #eff6ff; padding: 2rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-3 has-text-centered">
+                    <img src="{{ url_for('static', filename='image/pinterest/passeport-de-lecture-a-imprimer.png') }}" 
+                         alt="{{ _('Visuel Pinterest Passeport de lecture à imprimer') }}" 
+                         style="max-height: 220px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;"
+                         data-pin-media="https://livresenclasse.com/static/image/pinterest/passeport-de-lecture-a-imprimer.png"
+                         data-pin-description="{{ _('Passeport de lecture pliable en livret A5 pour vos élèves : à télécharger et imprimer gratuitement !') }}"
+                         onclick="openPinterestShare('passeport')">
+                </div>
+                <div class="column is-9">
+                    <span class="tag is-danger is-light has-text-weight-bold mb-2">
+                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                    </span>
+                    <h3 class="title is-4 mb-2" style="color: #1e3a8a;">
+                        {{ _("Sauvegardez ce passeport de lecture pour votre classe") }}
+                    </h3>
+                    <p class="subtitle is-6 has-text-grey mb-4">
+                        {{ _("Épinglez ce modèle sur votre tableau Pinterest pour stimuler le goût de lire et proposer un carnet de lecture mignon et gratifiant à vos élèves.") }}
+                    </p>
+                    <div class="buttons">
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ 'https://livresenclasse.com/fr/ressources/passeport-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=lead_magnets&mtm_content=passeport_lecture'|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/passeport-de-lecture-a-imprimer.png'|urlencode }}&description={{ 'Le passeport de lecture pliable A5 pour vos élèves : à télécharger et imprimer gratuitement ! Idéal CP, CE1, CE2, CM1, CM2. #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           id="pin-button-pass"
+                           class="button is-danger is-rounded has-text-weight-bold"
+                           onclick="trackPinterestClick('passeport-de-lecture-a-imprimer')">
+                            <span class="icon"><i class="fab fa-pinterest"></i></span>
+                            <span>{{ _("Épingler sur Pinterest") }}</span>
+                        </a>
+                        <button type="button" class="button is-link is-light is-rounded has-text-weight-semibold" onclick="triggerStudioPrint()">
+                            <span class="icon"><i class="fas fa-print"></i></span>
+                            <span>{{ _("Imprimer directement") }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide Pédagogique -->
+        <div class="content mb-6">
+            <h2 class="title is-3" style="color: #1e293b;">
+                {{ _("Comment utiliser le passeport de lecture en classe ?") }}
+            </h2>
+            <p>
+                {{ _("Le passeport de lecture est un livret d'autonomie stimulant : imprimé sur une seule feuille A4 paysage, il se plie simplement en deux pour former un véritable carnet A5 que l'élève conserve tout au long de l'année.") }}
+            </p>
+
+            <div class="columns is-multiline my-4">
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-link">
+                            <i class="fas fa-id-badge mr-2"></i>{{ _("1. Fierté et appropriation") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("En dessinant son autoportrait et en signant son contrat de lecteur, l'élève s'investit personnellement dans son parcours de lecture.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-success-dark">
+                            <i class="fas fa-compass mr-2"></i>{{ _("2. Découverte de genres") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Inciter les enfants à sortir de leur zone de confort (BD, romans, contes, documentaires) grâce aux 8 tampons à collectionner.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-warning-dark">
+                            <i class="fas fa-star mr-2"></i>{{ _("3. Bilan positif") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("En fin d'année scolaire, le passeport devient un magnifique souvenir que chaque enfant emporte avec fierté à la maison.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passerelle vers Livres en Classe (Lead Magnet CTA) -->
+        <div class="box my-6" style="border-radius: 16px; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; padding: 2.5rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <span class="tag is-warning is-light has-text-weight-bold mb-2">
+                        <i class="fas fa-book-reader mr-1"></i> {{ _("Suivi des lectures simplifié") }}
+                    </span>
+                    <h3 class="title is-3 has-text-white mb-2">
+                        {{ _("Gérez votre bibliothèque de classe sans paperasse") }}
+                    </h3>
+                    <p class="is-size-6" style="opacity: 0.95; line-height: 1.6;">
+                        {{ _("Avec Livres en Classe, suivez les emprunts en 1 scan, visualisez les livres préférés de vos élèves et imprimez leurs bilans en 1 clic.") }}
+                    </p>
+                </div>
+                <div class="column is-4 has-text-centered">
+                    <a href="{{ url_for('auth.signup') }}" 
+                       class="button is-warning is-medium is-rounded has-text-weight-bold"
+                       style="box-shadow: 0 4px 14px rgba(0,0,0,0.25);"
+                       onclick="trackCtaLogiciel('depuis-passeport')">
+                        <span class="icon"><i class="fas fa-sparkles"></i></span>
+                        <span>{{ _("Essayer gratuitement") }}</span>
+                    </a>
+                    <p class="is-size-7 mt-2" style="opacity: 0.85;">
+                        {{ _("Création de compte en 30 secondes") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function trackPinterestClick(resourceName) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Ressources', 'Clic_Pinterest', resourceName]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function trackCtaLogiciel(source) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Conversion', 'CTA_Logiciel', source]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function openPinterestShare(resource) {
+    const btn = document.getElementById('pin-button-pass');
+    if (btn) btn.click();
+}
+</script>
 {% endblock %}

@@ -333,20 +333,24 @@
 .a4-sheet.portrait {
     width: 210mm;
     min-height: 297mm;
+    max-height: 297mm;
     padding: 10mm;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* Paysage A4 : 297mm x 210mm */
 .a4-sheet.landscape {
     width: 297mm;
     min-height: 210mm;
+    max-height: 210mm;
     padding: 10mm;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* Documents multi-pages (ex: codes-barres) */
@@ -803,27 +807,205 @@
     margin-top: 4px;
 }
 
-/* --- 5. Passeport de Lecture (Double Volet A5) --- */
+/* --- 5. Passeport de Lecture (Double Volet A5 Pliable) --- */
 .passeport-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8mm;
+    gap: 0;
     height: 100%;
     flex: 1;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
+}
+
+/* Ligne guide de pliage centrale discrète */
+.passeport-container::before {
+    content: '';
+    position: absolute;
+    top: -4mm;
+    bottom: -4mm;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    border-left: 1.5px dashed #94a3b8;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.passeport-fold-indicator {
+    position: absolute;
+    top: -8mm;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: #94a3b8;
+    background: #ffffff;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    z-index: 11;
 }
 
 .passeport-panel {
     border: 2px solid var(--res-primary, #2563eb);
-    border-radius: 6px;
-    padding: 6mm;
+    border-radius: 8px;
+    padding: 5mm;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     background: #ffffff;
     height: 100%;
     box-sizing: border-box;
+    position: relative;
+}
+
+.passeport-panel.panel-left {
+    margin-right: 4mm;
+}
+
+.passeport-panel.panel-right {
+    margin-left: 4mm;
+}
+
+.passeport-header {
+    text-align: center;
+    border-bottom: 2px solid var(--res-primary, #2563eb);
+    padding-bottom: 0.4rem;
+}
+
+.passeport-badge-sub {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--res-primary-dark, #1d4ed8);
+    text-transform: uppercase;
+}
+
+.passeport-main-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0.2rem 0;
+    letter-spacing: 0.5px;
+}
+
+.passeport-school-name {
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+.passeport-identity-row {
+    display: flex;
+    gap: 4.5mm;
+    margin: 0.6rem 0;
+    flex: 1;
+}
+
+.passeport-photo-box {
+    width: 82px;
+    height: 104px;
+    border: 1.5px dashed #94a3b8;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.62rem;
+    color: #64748b;
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.passeport-identity-fields {
+    flex: 1;
+    font-size: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.passeport-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.passeport-field-label {
+    color: #64748b;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.passeport-field-line {
+    border-bottom: 1.5px dotted #94a3b8;
+    min-height: 18px;
+    display: flex;
+    align-items: flex-end;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.passeport-signatures {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+}
+
+.passeport-genres-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 3mm;
+    margin: 0.5rem 0;
+    flex: 1;
+}
+
+.passeport-genre-item {
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    height: 100%;
+    box-sizing: border-box;
+    background: #f8fafc;
+    transition: border-color 0.15s ease;
+}
+
+.passeport-genre-code {
+    width: 26px;
+    height: 26px;
+    border: 1.5px dashed var(--res-primary, #3b82f6);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--res-primary-dark, #1d4ed8);
+}
+
+.passeport-top3-box {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 0.68rem;
+    color: #334155;
 }
 
 /* --- 6. Étiquettes de Bacs & Tranches --- */
@@ -1047,7 +1229,7 @@
         display: none !important;
     }
 
-    /* 4. Format de la feuille A4 pour l'impression */
+    /* 4. Format de la feuille A4 pour l'impression (Zéro page blanche garantie) */
     .a4-sheet {
         box-shadow: none !important;
         border: none !important;
@@ -1064,26 +1246,26 @@
         break-after: avoid !important;
     }
 
-    /* Remplissage propre d'une page A4 portrait physique (zone utile ~194mm x 281mm avec 8mm de marge) */
+    /* Remplissage propre d'une page A4 portrait physique (zone utile 194mm x 281mm avec 8mm de marge) */
     .a4-sheet.portrait {
         width: 100% !important;
-        height: 275mm !important;
-        min-height: 275mm !important;
-        max-height: 275mm !important;
+        height: 280mm !important;
+        min-height: 280mm !important;
+        max-height: 280mm !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow: visible !important;
+        overflow: hidden !important;
     }
 
-    /* Remplissage propre d'une page A4 paysage physique (zone utile ~281mm x 194mm avec 8mm de marge) */
+    /* Remplissage propre d'une page A4 paysage physique (zone utile 281mm x 194mm avec 8mm de marge) */
     .a4-sheet.landscape {
         width: 100% !important;
-        height: 188mm !important;
-        min-height: 188mm !important;
-        max-height: 188mm !important;
+        height: 192mm !important;
+        min-height: 192mm !important;
+        max-height: 192mm !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow: visible !important;
+        overflow: hidden !important;
     }
 
     /* Documents multi-pages (ex: codes-barres) */
@@ -1097,6 +1279,37 @@
         break-inside: auto !important;
         page-break-after: auto !important;
         break-after: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Mode toute la classe pour les diplômes */
+    .diplome-multi-container {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .diplome-page {
+        width: 100% !important;
+        height: 192mm !important;
+        min-height: 192mm !important;
+        max-height: 192mm !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .diplome-page:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+
+    .passeport-fold-indicator {
+        display: none !important;
     }
 
     .editable {

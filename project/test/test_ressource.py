@@ -36,6 +36,7 @@ def test_ressources_index_anonymous(client):
     html = response.get_data(as_text=True)
     assert "Outils et Ressources pour la Classe" in html
     assert "Diplômes de Lecture" in html
+    assert "Convertisseur PDF en Livret A5" in html
     assert "https://www.bdrp.ch/lien-pedagogique/logiciel-de-gestion-de-bibliotheque-de-classe" in html
     assert "https://www.bdrp.ch/" in html
     assert "https://cnlj.bnf.fr/" in html
@@ -54,6 +55,9 @@ def test_ressources_301_redirects(client):
         ("/ressources/charte", "/fr/ressources/charte-coin-lecture-a-imprimer"),
         ("/ressources/bingo", "/fr/ressources/defi-lecture-bingo-a-imprimer"),
         ("/ressources/passeport", "/fr/ressources/passeport-de-lecture-a-imprimer"),
+        ("/ressources/livret-pdf", "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"),
+        ("/ressources/imposition-pdf", "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"),
+        ("/ressources/booklet", "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"),
     ]
     for old_url, expected_dest in redirects:
         res = client.get(old_url)
@@ -414,6 +418,16 @@ def test_lead_magnets_seo_and_matomo_tracking(client):
             "fiche-de-lecture-a-imprimer",
             "fiche_lecture",
         ),
+        (
+            "/ressources/passeport-de-lecture-a-imprimer",
+            "passeport-de-lecture-a-imprimer",
+            "passeport_lecture",
+        ),
+        (
+            "/ressources/charte-coin-lecture-a-imprimer",
+            "charte-coin-lecture-a-imprimer",
+            "charte_lecture",
+        ),
     ]
 
     for url, res_id, mtm_content in lead_magnets:
@@ -437,3 +451,49 @@ def test_lead_magnets_seo_and_matomo_tracking(client):
         assert "mtm_source" in html
         assert mtm_content in html
         assert f'data-ressource-id="{res_id}"' in html
+
+
+def test_pinterest_generated_images_exist(client):
+    """Vérifie que les 5 visuels Pinterest existent sur le serveur et sont servis en 200."""
+    pins = [
+        "passeport-de-lecture-a-imprimer.png",
+        "fiche-de-lecture-a-imprimer.png",
+        "marque-pages-a-imprimer.png",
+        "charte-coin-lecture-a-imprimer.png",
+        "diplome-de-lecture-a-imprimer.png",
+    ]
+    for pin in pins:
+        resp = client.get(f"/static/image/pinterest/{pin}")
+        assert resp.status_code == 200, f"Le visuel {pin} doit être servi en HTTP 200"
+        assert resp.content_type == "image/png"
+        assert len(resp.data) > 10000, f"Le visuel {pin} semble vide ou corrompu"
+
+
+def test_convertisseur_pdf_livret(client):
+    """Vérifie l'accès au studio de conversion PDF en livret A5, ses scripts et métadonnées."""
+    resp = client.get("/ressources/convertisseur-pdf-livret-a5-a-imprimer")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # Titre et présence de l'outil
+    assert "Convertisseur PDF en Livret A5" in html
+    assert "pdf-lib" in html
+    assert "pdf.min.js" in html
+    assert "Mode Simple" in html
+    assert "Mode Avancé" in html
+
+    # Structured Data WebApplication
+    assert '"@type": "WebApplication"' in html
+    assert "applicationCategory" in html
+
+    # Vérification que c'est bien gratuit et accessible publiquement
+    assert "Outil 100% gratuit" in html or "100%" in html or "Gratuit" in html
+
+    # Vérification présence dans sitemap.xml
+    res_sitemap = client.get("/sitemap.xml")
+    assert res_sitemap.status_code == 200
+    assert (
+        "https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"
+        in res_sitemap.get_data(as_text=True)
+    )
+

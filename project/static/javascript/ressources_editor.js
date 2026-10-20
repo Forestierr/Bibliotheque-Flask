@@ -53,29 +53,43 @@ function makeElementEditable(el) {
  * Synchronisation bidirectionnelle entre les inputs de la sidebar et les éléments de la feuille A4
  */
 function initTwoWayDataBinding() {
-    // 1. Sidebar Inputs -> Sheet Elements
+    // 1. Sidebar Inputs -> Sheet Elements (par ID ou par classe partagée)
     const boundInputs = document.querySelectorAll('[data-bind]');
     boundInputs.forEach(input => {
-        const targetId = input.getAttribute('data-bind');
-        const targetEl = document.getElementById(targetId);
-
-        if (!targetEl) return;
+        const targetKey = input.getAttribute('data-bind');
 
         const updateTarget = () => {
-            if (input.type === 'checkbox') {
-                targetEl.style.display = input.checked ? '' : 'none';
-            } else {
-                targetEl.textContent = input.value;
+            const val = input.value;
+            const isChecked = input.checked;
+
+            // Cible par ID direct
+            const targetEl = document.getElementById(targetKey);
+            if (targetEl) {
+                if (input.type === 'checkbox') {
+                    targetEl.style.display = isChecked ? '' : 'none';
+                } else {
+                    targetEl.textContent = val;
+                }
             }
 
-            // Si c'est le champ destinataire du diplôme, vérifier la cohérence avec le selecteur d'élèves
-            if (targetId === 'diplomeRecipient') {
+            // Cibles multiples par classe (ex: synchronisation des 4 cartes d'une planche)
+            const classElements = document.querySelectorAll(`.${targetKey}, [data-bind-group="${targetKey}"]`);
+            classElements.forEach(el => {
+                if (input.type === 'checkbox') {
+                    el.style.display = isChecked ? '' : 'none';
+                } else {
+                    el.textContent = val;
+                }
+            });
+
+            // Si c'est le champ destinataire du diplôme, vérifier la cohérence avec le sélecteur d'élèves
+            if (targetKey === 'diplomeRecipient') {
                 const studentSelector = document.getElementById('studentSelector');
                 if (studentSelector) {
                     let matched = false;
                     for (let opt of studentSelector.options) {
                         const optName = opt.getAttribute('data-name');
-                        if (optName && optName.trim().toLowerCase() === input.value.trim().toLowerCase()) {
+                        if (optName && optName.trim().toLowerCase() === val.trim().toLowerCase()) {
                             studentSelector.value = opt.value;
                             matched = true;
                             break;
@@ -103,36 +117,55 @@ function initTwoWayDataBinding() {
             const el = e.target.closest('.editable');
             if (!el) return;
 
-            // Si l'élément est relié à un input de la barre latérale
-            if (el.id) {
-                const boundInput = document.querySelector(`[data-bind="${el.id}"]`);
-                if (boundInput) {
-                    const text = el.innerText !== undefined ? el.innerText.trim() : el.textContent.trim();
-                    boundInput.value = text;
+            const text = el.innerText !== undefined ? el.innerText.trim() : el.textContent.trim();
 
-                    // Si c'est le nom de l'élève sur le diplôme
-                    if (el.id === 'diplomeRecipient') {
-                        const studentSelector = document.getElementById('studentSelector');
-                        if (studentSelector) {
-                            let matched = false;
-                            for (let opt of studentSelector.options) {
-                                const optName = opt.getAttribute('data-name');
-                                if (optName && optName.trim().toLowerCase() === text.toLowerCase()) {
-                                    studentSelector.value = opt.value;
-                                    matched = true;
-                                    break;
-                                }
-                            }
-                            if (!matched) {
-                                studentSelector.value = '';
-                            }
+            // Recherche de l'input correspondant via ID ou classe de groupe
+            let boundInput = null;
+            if (el.id) {
+                boundInput = document.querySelector(`[data-bind="${el.id}"]`);
+            }
+            if (!boundInput) {
+                const groupKey = el.getAttribute('data-bind-group');
+                if (groupKey) {
+                    boundInput = document.querySelector(`[data-bind="${groupKey}"]`);
+                }
+            }
+
+            if (boundInput) {
+                boundInput.value = text;
+            }
+
+            // Si l'élément fait partie d'un groupe multi-cartes (ex: titre commun de fiches avis)
+            const groupKey = el.getAttribute('data-bind-group') || (el.id && document.querySelector(`[data-bind="${el.id}"]`) ? el.id : null);
+            if (groupKey) {
+                document.querySelectorAll(`.${groupKey}, [data-bind-group="${groupKey}"]`).forEach(sibling => {
+                    if (sibling !== el) {
+                        sibling.textContent = text;
+                    }
+                });
+            }
+
+            // Si c'est le nom de l'élève sur le diplôme
+            if (el.id === 'diplomeRecipient') {
+                const studentSelector = document.getElementById('studentSelector');
+                if (studentSelector) {
+                    let matched = false;
+                    for (let opt of studentSelector.options) {
+                        const optName = opt.getAttribute('data-name');
+                        if (optName && optName.trim().toLowerCase() === text.toLowerCase()) {
+                            studentSelector.value = opt.value;
+                            matched = true;
+                            break;
                         }
+                    }
+                    if (!matched) {
+                        studentSelector.value = '';
                     }
                 }
             }
         });
 
-        // 4. Observer les ajouts dynamiques dans la feuille (ex: génération dynamique de codes-barres)
+        // 4. Observer les ajouts dynamiques dans la feuille
         const observer = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
                 mutation.addedNodes.forEach(function (node) {
@@ -160,7 +193,7 @@ function initThemeSwatches() {
 
     const themeColors = {
         gold: { primary: '#f59e0b', dark: '#b45309' },
-        blue: { primary: '#3b82f6', dark: '#1d4ed8' },
+        blue: { primary: '#2563eb', dark: '#1d4ed8' },
         green: { primary: '#10b981', dark: '#047857' },
         purple: { primary: '#8b5cf6', dark: '#6d28d9' },
         coral: { primary: '#f43f5e', dark: '#be123c' },
@@ -176,6 +209,8 @@ function initThemeSwatches() {
             if (themeColors[theme]) {
                 sheet.style.setProperty('--res-primary', themeColors[theme].primary);
                 sheet.style.setProperty('--res-primary-dark', themeColors[theme].dark);
+                document.documentElement.style.setProperty('--res-primary', themeColors[theme].primary);
+                document.documentElement.style.setProperty('--res-primary-dark', themeColors[theme].dark);
             }
         });
     });

@@ -471,16 +471,20 @@ function selectStudentById(id) {
 function switchDiplomeMode(mode) {
     const singleControls = document.getElementById('singleStudentControls');
     const allView = document.getElementById('allDiplomesView');
-    const singleSheet = document.getElementById('singleDiplomeSheet');
+    const singleSheet = document.getElementById('singleDiplomeView');
+    const sheet = document.getElementById('printableSheet');
 
     if (mode === 'all') {
         if (singleControls) singleControls.style.display = 'none';
         if (singleSheet) singleSheet.style.display = 'none';
         if (allView) allView.style.display = 'block';
+        if (sheet) sheet.classList.add('multi-page');
+        syncAllDiplomesCommonFields();
     } else {
         if (singleControls) singleControls.style.display = 'block';
         if (singleSheet) singleSheet.style.display = 'block';
         if (allView) allView.style.display = 'none';
+        if (sheet) sheet.classList.remove('multi-page');
     }
 }
 

@@ -370,6 +370,21 @@
                 </div>
             </div>
 
+            <!-- 9. Convertisseur PDF en Livret A5 -->
+            <div class="column is-4 res-item" data-category="organisation">
+                <div class="studio-card">
+                    <span class="studio-card-badge">{{ _("Outil PDF Gratuit") }}</span>
+                    <div class="studio-icon" style="background: #e0f2fe; color: #0284c7;">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h2 class="studio-title">{{ _("Convertisseur PDF en Livret A5") }}</h2>
+                    <p class="studio-desc">{{ _("Transformez n'importe quel document PDF en livret A5 imprimable (imposition recto-verso, agrafé ou plié). Prévisualisez le livret fini et téléchargez votre PDF.") }}</p>
+                    <a href="{{ url_for('ressource.convertisseur_pdf_livret') }}" class="button is-link is-light studio-btn">
+                        {{ _("Créer un livret A5") }}
+                    </a>
+                </div>
+            </div>
+
         </div>
 
         <hr class="my-6">
