@@ -66,6 +66,7 @@
     .tag-selection { background: hsl(145, 50%, 94%); color: hsl(145, 40%, 38%); }
     .tag-organisation { background: hsl(38, 70%, 94%); color: hsl(38, 50%, 38%); }
     .tag-pedagogie { background: hsl(270, 50%, 95%); color: hsl(270, 40%, 50%); }
+    .tag-communaute { background: hsl(340, 70%, 95%); color: hsl(340, 60%, 45%); }
     .blog-title-link {
         font-size: 1.1rem;
         font-weight: 700;
@@ -152,6 +153,21 @@
 
         <!-- Grille articles -->
         <div class="columns is-multiline">
+
+            <div class="column is-6">
+                <div class="blog-card">
+                    <div class="blog-card-body">
+                        <span class="blog-tag tag-communaute">{{ _("Communauté") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='cap-100-classes') }}" class="blog-title-link">{{ _("Cap des 100 classes franchi : merci pour votre confiance !") }}</a>
+                        <p class="blog-excerpt">{{ _("Plus de 100 enseignants utilisent désormais Livres en classe. Retour sur cette étape symbolique, nos chiffres clés et notre feuille de route.") }}</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> {{ _("3 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Actualités") }}</span>
+                        </div>
+                        <a href="{{ url_for('main.blog_article', article_slug='cap-100-classes') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
 
             <div class="column is-6">
                 <div class="blog-card">

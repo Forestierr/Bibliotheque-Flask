@@ -145,6 +145,21 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .ressource-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+        border-color: hsl(217, 71%, 70%);
+    }
+    .ressource-card.is-featured {
+        border: 2px solid hsl(217, 71%, 80%);
+        background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+        box-shadow: 0 3px 12px rgba(37, 99, 235, 0.07);
+    }
+    .ressource-card.is-featured:hover {
+        border-color: hsl(217, 71%, 60%);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.14);
     }
     @media (max-width: 768px) {
         .modal-card {
@@ -364,43 +379,118 @@
         <p class="has-text-grey mb-5">{{ _("Une sélection de portails institutionnels et d'outils gratuits pour approfondir la gestion de votre bibliothèque de classe.") }}</p>
 
         <div class="columns is-multiline mb-6">
+            <!-- 1. BDRP (Mise en avant avec lien vers notre fiche outil) -->
             <div class="column is-6">
-                <div class="ressource-card">
-                    <h3 class="has-text-weight-bold">{{ _("Eduscol — Lire et écrire au cycle 2") }}</h3>
-                    <p class="is-size-7 has-text-grey">{{ _("La ressource officielle de l'Éducation nationale sur l'apprentissage de la lecture au CP et CE1.") }}</p>
-                    <a href="https://eduscol.education.fr/721/lire-et-ecrire-au-cycle-2" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
-                        {{ _("Consulter Eduscol") }}
-                    </a>
+                <div class="ressource-card is-featured">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                        <span class="tag is-link is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem;">
+                            <i class="fas fa-check-circle mr-1"></i>{{ _("Outil référencé") }}
+                        </span>
+                        <span class="tag is-info is-light is-rounded" style="font-size: 0.72rem;">
+                            {{ _("Suisse romande") }}
+                        </span>
+                    </div>
+                    <h3 class="has-text-weight-bold" style="color: hsl(217, 71%, 35%);">{{ _("BDRP — Banque de données de ressources pédagogiques") }}</h3>
+                    <p class="is-size-7 has-text-grey">{{ _("Plateforme institutionnelle collaborative soutenue par la HEP Vaud et largement utilisée en Suisse romande pour partager des ressources, séquences et projets pédagogiques.") }}</p>
+                    <div class="mt-auto pt-3 is-flex is-flex-direction-column" style="gap: 0.5rem;">
+                        <a href="https://www.bdrp.ch/lien-pedagogique/logiciel-de-gestion-de-bibliotheque-de-classe" target="_blank" rel="noopener" class="button is-small is-link is-light has-text-weight-bold" style="justify-content: flex-start; width: 100%;">
+                            <span class="icon is-small"><i class="fas fa-external-link-alt"></i></span>
+                            <span>{{ _("Voir notre fiche outil sur la BDRP") }} &rarr;</span>
+                        </a>
+                        <a href="https://www.bdrp.ch/" target="_blank" rel="noopener" class="is-size-7 has-text-grey-dark has-text-weight-medium">
+                            {{ _("Accéder au portail BDRP") }} &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
 
+            <!-- 2. BnF / CNLJ -->
             <div class="column is-6">
                 <div class="ressource-card">
-                    <h3 class="has-text-weight-bold">{{ _("BNF — Littérature jeunesse") }}</h3>
-                    <p class="is-size-7 has-text-grey">{{ _("Le portail de la Bibliothèque nationale de France : sélections et bibliographies par tranche d'âge.") }}</p>
-                    <a href="https://www.bnf.fr/fr/la-litterature-de-jeunesse" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
-                        {{ _("Consulter la BNF") }}
-                    </a>
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                        <span class="tag is-light is-rounded" style="font-size: 0.72rem; color: hsl(0, 0%, 40%);">
+                            {{ _("France") }}
+                        </span>
+                    </div>
+                    <h3 class="has-text-weight-bold">{{ _("BnF / CNLJ — Centre national de la littérature pour la jeunesse") }}</h3>
+                    <p class="is-size-7 has-text-grey">{{ _("Le service expert de la Bibliothèque nationale de France dédié au livre pour enfants : sélections thématiques, bibliographies critiques et conseils de lecture.") }}</p>
+                    <div class="mt-auto pt-2">
+                        <a href="https://cnlj.bnf.fr/" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                            {{ _("Consulter le CNLJ / BnF") }} &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
 
+            <!-- 3. Constellations -->
             <div class="column is-6">
                 <div class="ressource-card">
-                    <h3 class="has-text-weight-bold">{{ _("Réseau Canopé — Bibliothèque de classe") }}</h3>
-                    <p class="is-size-7 has-text-grey">{{ _("Fiches conseils et repères méthodologiques pour aménager un coin lecture en école primaire.") }}</p>
-                    <a href="https://www.reseau-canope.fr" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
-                        {{ _("Consulter Canopé") }}
-                    </a>
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                        <span class="tag is-light is-rounded" style="font-size: 0.72rem; color: hsl(0, 0%, 40%);">
+                            {{ _("Québec") }}
+                        </span>
+                    </div>
+                    <h3 class="has-text-weight-bold">{{ _("Constellations — Ministère de l'Éducation du Québec") }}</h3>
+                    <p class="is-size-7 has-text-grey">{{ _("L'outil officiel indispensable pour les enseignants québécois : une banque de données commentée de plus de 12 000 livres jeunesse indexés par niveau scolaire, genre littéraire et pistes pédagogiques.") }}</p>
+                    <div class="mt-auto pt-2">
+                        <a href="https://constellations.education.gouv.qc.ca/" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                            {{ _("Consulter Constellations") }} &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
 
+            <!-- 4. Ricochet -->
             <div class="column is-6">
                 <div class="ressource-card">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                        <span class="tag is-light is-rounded" style="font-size: 0.72rem; color: hsl(0, 0%, 40%);">
+                            {{ _("Suisse / Francophonie") }}
+                        </span>
+                    </div>
                     <h3 class="has-text-weight-bold">{{ _("Ricochet — Base de données jeunesse") }}</h3>
                     <p class="is-size-7 has-text-grey">{{ _("Base de recherche collaborative pour trouver des ouvrages jeunesse par niveau, thème ou genre.") }}</p>
-                    <a href="https://www.ricochet-jeunes.org" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
-                        {{ _("Consulter Ricochet") }}
-                    </a>
+                    <div class="mt-auto pt-2">
+                        <a href="https://www.ricochet-jeunes.org" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                            {{ _("Consulter Ricochet") }} &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Eduscol -->
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                        <span class="tag is-light is-rounded" style="font-size: 0.72rem; color: hsl(0, 0%, 40%);">
+                            {{ _("France") }}
+                        </span>
+                    </div>
+                    <h3 class="has-text-weight-bold">{{ _("Eduscol — Lire et écrire au cycle 2") }}</h3>
+                    <p class="is-size-7 has-text-grey">{{ _("La ressource officielle de l'Éducation nationale sur l'apprentissage de la lecture au CP et CE1.") }}</p>
+                    <div class="mt-auto pt-2">
+                        <a href="https://eduscol.education.fr/721/lire-et-ecrire-au-cycle-2" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                            {{ _("Consulter Eduscol") }} &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Canopé -->
+            <div class="column is-6">
+                <div class="ressource-card">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-1">
+                        <span class="tag is-light is-rounded" style="font-size: 0.72rem; color: hsl(0, 0%, 40%);">
+                            {{ _("France") }}
+                        </span>
+                    </div>
+                    <h3 class="has-text-weight-bold">{{ _("Réseau Canopé — Bibliothèque de classe") }}</h3>
+                    <p class="is-size-7 has-text-grey">{{ _("Fiches conseils et repères méthodologiques pour aménager un coin lecture en école primaire.") }}</p>
+                    <div class="mt-auto pt-2">
+                        <a href="https://www.reseau-canope.fr" target="_blank" rel="noopener" class="is-size-7 has-text-link has-text-weight-semibold">
+                            {{ _("Consulter Canopé") }} &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

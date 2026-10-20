@@ -209,9 +209,10 @@
                                 <div class="has-text-right" style="flex-shrink: 0;">
                                     <div class="is-size-4 has-text-weight-bold" style="color: #2563eb; line-height: 1.1;">
                                         30.- <small class="is-size-7">{{ currency }} {{ _("TTC") }} / {{ _("an") }}</small>
+                                        <span class="tag is-info is-light is-rounded has-text-weight-semibold ml-1" style="font-size: 0.72rem; vertical-align: middle;">~30 €</span>
                                     </div>
                                     <div class="is-size-7 has-text-dark has-text-weight-semibold">
-                                        {{ _("soit 2.50 CHF par mois") }}
+                                        {{ _("soit 2.50 CHF (~2.50 €) par mois") }}
                                     </div>
                                 </div>
                             </div>
@@ -229,6 +230,7 @@
                                 <div class="has-text-right" style="flex-shrink: 0;">
                                     <div class="is-size-4 has-text-weight-bold has-text-dark" style="line-height: 1.1;">
                                         3.- <small class="is-size-7">{{ currency }} {{ _("TTC") }} / {{ _("mois") }}</small>
+                                        <span class="tag is-light is-rounded has-text-weight-semibold ml-1" style="font-size: 0.72rem; vertical-align: middle; color: hsl(0, 0%, 40%);">~3 €</span>
                                     </div>
                                     <div class="is-size-7 has-text-grey">
                                         {{ _("sans frais cachés ni pénalités") }}
@@ -410,8 +412,8 @@
         <div class="has-text-centered mt-6 pt-5" style="border-top: 1px solid hsl(0, 0%, 88%);">
             <p class="is-size-7 has-text-grey mb-2">
                 <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
-                {{ _("Paiement 100%% sécurisé par carte bancaire via Stripe.")|replace("%%", "%") }}
-                {{ _("Tarifs nets en Francs Suisses (CHF) toutes taxes comprises (TTC), sans engagement contraignant ni frais cachés.") }}
+                {{ _("Paiement 100%% sécurisé par carte bancaire via Stripe en CHF ou Euros.")|replace("%%", "%") }}
+                {{ _("Cartes bancaires françaises, suisses et internationales (CB, Visa, Mastercard) acceptées sans frais bancaires supplémentaires.") }}
             </p>
             <p class="is-size-7">
                 <a href="{{ url_for('main.mentions_legales') }}" class="has-text-link has-text-weight-semibold" style="text-decoration: underline;">

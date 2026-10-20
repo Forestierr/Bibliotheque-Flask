@@ -30,11 +30,19 @@ def client(app):
 
 
 def test_ressources_index_anonymous(client):
-    """Vérifie que la page index des ressources est accessible publiquement."""
+    """Vérifie que la page index des ressources est accessible publiquement et contient les ressources recommandées et backlinks SEO."""
     response = client.get("/ressources")
     assert response.status_code == 200
-    assert "Outils et Ressources pour la Classe" in response.get_data(as_text=True)
-    assert "Diplômes de Lecture" in response.get_data(as_text=True)
+    html = response.get_data(as_text=True)
+    assert "Outils et Ressources pour la Classe" in html
+    assert "Diplômes de Lecture" in html
+    assert "https://www.bdrp.ch/lien-pedagogique/logiciel-de-gestion-de-bibliotheque-de-classe" in html
+    assert "https://www.bdrp.ch/" in html
+    assert "https://cnlj.bnf.fr/" in html
+    assert "https://constellations.education.gouv.qc.ca/" in html
+    assert "BDRP — Banque de données de ressources pédagogiques" in html
+    assert "BnF / CNLJ — Centre national de la littérature pour la jeunesse" in html
+    assert "Constellations — Ministère de l'Éducation du Québec" in html
 
 
 def test_ressources_301_redirects(client):
