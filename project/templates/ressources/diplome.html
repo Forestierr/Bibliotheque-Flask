@@ -206,21 +206,70 @@
 {% block sheet_content %}
 <!-- Mode individuel (1 diplôme) -->
 <div id="singleDiplomeView" class="diplome-frame">
-    <!-- En-tête : Sceau classique & Titre -->
+    <!-- En-tête : Titre & Mention -->
     <div class="diplome-header">
-        <div class="diplome-seal">
-            <i class="fas fa-book-open"></i>
-        </div>
         <h1 class="diplome-title editable" id="diplomeTitle">{{ _("DIPLÔME DE LECTURE") }}</h1>
         <p class="diplome-subtitle editable" id="diplomeSubtitle">{{ _("Décerné avec toutes les félicitations de la classe à") }}</p>
     </div>
 
-    <!-- Nom du lauréat & Motif -->
+    <!-- Nom du lauréat avec couronnes de lauriers dorées -->
     <div class="diplome-body">
-        <div class="diplome-recipient editable" id="diplomeRecipient">
-            {% if student %}{{ student.firstname }} {{ student.name }}{% else %}{{ _("Thomas Dubois") }}{% endif %}
+        <div class="diplome-recipient-wrapper">
+            <svg class="diplome-laurel diplome-laurel-left" viewBox="0 0 100 160" fill="currentColor" aria-hidden="true">
+                <!-- Tige centrale courbée -->
+                <path d="M72,155 C58,125 44,90 48,50 C50,30 58,15 65,5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <!-- Paires de feuilles de laurier ciselées -->
+                <path d="M65,5 C60,0 52,4 52,10 C52,16 60,14 65,5 Z" />
+                <path d="M65,5 C70,2 78,8 75,14 C72,20 66,16 65,5 Z" />
+                <path d="M56,22 C48,16 38,18 36,25 C34,32 44,32 56,22 Z" />
+                <path d="M58,26 C68,22 78,28 78,36 C78,44 68,40 58,26 Z" />
+                <path d="M50,45 C40,38 30,40 28,48 C26,56 36,56 50,45 Z" />
+                <path d="M53,49 C64,46 74,52 74,60 C74,68 64,64 53,49 Z" />
+                <path d="M47,72 C36,65 24,68 22,76 C20,84 32,84 47,72 Z" />
+                <path d="M51,76 C63,74 72,80 71,90 C70,98 60,93 51,76 Z" />
+                <path d="M48,102 C36,94 24,98 22,107 C20,116 32,116 48,102 Z" />
+                <path d="M53,106 C66,105 74,112 73,122 C72,130 62,124 53,106 Z" />
+                <path d="M57,130 C46,124 35,128 34,138 C33,146 44,146 57,130 Z" />
+                <path d="M64,133 C77,133 84,140 83,150 C82,158 72,152 64,133 Z" />
+            </svg>
+
+            <div class="diplome-recipient-center">
+                <div class="diplome-recipient editable" id="diplomeRecipient">
+                    {% if student %}{{ student.firstname }} {{ student.name }}{% else %}{{ _("Thomas Dubois") }}{% endif %}
+                </div>
+            </div>
+
+            <svg class="diplome-laurel diplome-laurel-right" viewBox="0 0 100 160" fill="currentColor" aria-hidden="true">
+                <g transform="translate(100,0) scale(-1,1)">
+                    <path d="M72,155 C58,125 44,90 48,50 C50,30 58,15 65,5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M65,5 C60,0 52,4 52,10 C52,16 60,14 65,5 Z" />
+                    <path d="M65,5 C70,2 78,8 75,14 C72,20 66,16 65,5 Z" />
+                    <path d="M56,22 C48,16 38,18 36,25 C34,32 44,32 56,22 Z" />
+                    <path d="M58,26 C68,22 78,28 78,36 C78,44 68,40 58,26 Z" />
+                    <path d="M50,45 C40,38 30,40 28,48 C26,56 36,56 50,45 Z" />
+                    <path d="M53,49 C64,46 74,52 74,60 C74,68 64,64 53,49 Z" />
+                    <path d="M47,72 C36,65 24,68 22,76 C20,84 32,84 47,72 Z" />
+                    <path d="M51,76 C63,74 72,80 71,90 C70,98 60,93 51,76 Z" />
+                    <path d="M48,102 C36,94 24,98 22,107 C20,116 32,116 48,102 Z" />
+                    <path d="M53,106 C66,105 74,112 73,122 C72,130 62,124 53,106 Z" />
+                    <path d="M57,130 C46,124 35,128 34,138 C33,146 44,146 57,130 Z" />
+                    <path d="M64,133 C77,133 84,140 83,150 C82,158 72,152 64,133 Z" />
+                </g>
+            </svg>
         </div>
-        <p class="diplome-reason editable" id="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.') }}{% endif %}</p>
+
+        <p class="diplome-reason editable" id="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('Valorisez les progrès et fêtez chaque palier de lecture !') }}{% endif %}</p>
+
+        <!-- Sceau / Médaille avec rubans -->
+        <div class="diplome-rosette">
+            <div class="rosette-ribbon-tails">
+                <span class="ribbon-tail tail-left"></span>
+                <span class="ribbon-tail tail-right"></span>
+            </div>
+            <div class="rosette-circle">
+                <i class="fas fa-trophy"></i>
+            </div>
+        </div>
     </div>
 
     <!-- Pied de page : Date & Signatures -->
@@ -247,12 +296,47 @@
     <div class="diplome-page">
         <div class="diplome-frame">
             <div class="diplome-header">
-                <div class="diplome-seal"><i class="fas fa-book-open"></i></div>
                 <h1 class="diplome-title class-diplome-title">{{ _("DIPLÔME DE LECTURE") }}</h1>
                 <p class="diplome-subtitle class-diplome-subtitle">{{ _("Décerné avec toutes les félicitations de la classe à") }}</p>
             </div>
             <div class="diplome-body">
-                <div class="diplome-recipient editable">{{ s.firstname }} {{ s.name }}</div>
+                <div class="diplome-recipient-wrapper">
+                    <svg class="diplome-laurel diplome-laurel-left" viewBox="0 0 100 160" fill="currentColor" aria-hidden="true">
+                        <path d="M72,155 C58,125 44,90 48,50 C50,30 58,15 65,5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path d="M65,5 C60,0 52,4 52,10 C52,16 60,14 65,5 Z" />
+                        <path d="M65,5 C70,2 78,8 75,14 C72,20 66,16 65,5 Z" />
+                        <path d="M56,22 C48,16 38,18 36,25 C34,32 44,32 56,22 Z" />
+                        <path d="M58,26 C68,22 78,28 78,36 C78,44 68,40 58,26 Z" />
+                        <path d="M50,45 C40,38 30,40 28,48 C26,56 36,56 50,45 Z" />
+                        <path d="M53,49 C64,46 74,52 74,60 C74,68 64,64 53,49 Z" />
+                        <path d="M47,72 C36,65 24,68 22,76 C20,84 32,84 47,72 Z" />
+                        <path d="M51,76 C63,74 72,80 71,90 C70,98 60,93 51,76 Z" />
+                        <path d="M48,102 C36,94 24,98 22,107 C20,116 32,116 48,102 Z" />
+                        <path d="M53,106 C66,105 74,112 73,122 C72,130 62,124 53,106 Z" />
+                        <path d="M57,130 C46,124 35,128 34,138 C33,146 44,146 57,130 Z" />
+                        <path d="M64,133 C77,133 84,140 83,150 C82,158 72,152 64,133 Z" />
+                    </svg>
+                    <div class="diplome-recipient-center">
+                        <div class="diplome-recipient editable">{{ s.firstname }} {{ s.name }}</div>
+                    </div>
+                    <svg class="diplome-laurel diplome-laurel-right" viewBox="0 0 100 160" fill="currentColor" aria-hidden="true">
+                        <g transform="translate(100,0) scale(-1,1)">
+                            <path d="M72,155 C58,125 44,90 48,50 C50,30 58,15 65,5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            <path d="M65,5 C60,0 52,4 52,10 C52,16 60,14 65,5 Z" />
+                            <path d="M65,5 C70,2 78,8 75,14 C72,20 66,16 65,5 Z" />
+                            <path d="M56,22 C48,16 38,18 36,25 C34,32 44,32 56,22 Z" />
+                            <path d="M58,26 C68,22 78,28 78,36 C78,44 68,40 58,26 Z" />
+                            <path d="M50,45 C40,38 30,40 28,48 C26,56 36,56 50,45 Z" />
+                            <path d="M53,49 C64,46 74,52 74,60 C74,68 64,64 53,49 Z" />
+                            <path d="M47,72 C36,65 24,68 22,76 C20,84 32,84 47,72 Z" />
+                            <path d="M51,76 C63,74 72,80 71,90 C70,98 60,93 51,76 Z" />
+                            <path d="M48,102 C36,94 24,98 22,107 C20,116 32,116 48,102 Z" />
+                            <path d="M53,106 C66,105 74,112 73,122 C72,130 62,124 53,106 Z" />
+                            <path d="M57,130 C46,124 35,128 34,138 C33,146 44,146 57,130 Z" />
+                            <path d="M64,133 C77,133 84,140 83,150 C82,158 72,152 64,133 Z" />
+                        </g>
+                    </svg>
+                </div>
                 <p class="diplome-reason editable">
                     {% if s.read_count > 0 %}
                         {{ _("pour avoir franchi avec brio le palier de") }} {{ s.read_count }} {{ _("livres lus dans la bibliothèque de classe !") }}
@@ -260,6 +344,17 @@
                         {{ _("pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.") }}
                     {% endif %}
                 </p>
+
+                <!-- Sceau / Médaille avec rubans -->
+                <div class="diplome-rosette">
+                    <div class="rosette-ribbon-tails">
+                        <span class="ribbon-tail tail-left"></span>
+                        <span class="ribbon-tail tail-right"></span>
+                    </div>
+                    <div class="rosette-circle">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
             </div>
             <div class="diplome-footer">
                 <div class="diplome-sign-box">

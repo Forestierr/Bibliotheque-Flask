@@ -37,7 +37,10 @@ def test_ressources_index_anonymous(client):
     assert "Outils et Ressources pour la Classe" in html
     assert "Diplômes de Lecture" in html
     assert "Convertisseur PDF en Livret A5" in html
-    assert "https://www.bdrp.ch/lien-pedagogique/logiciel-de-gestion-de-bibliotheque-de-classe" in html
+    assert (
+        "https://www.bdrp.ch/lien-pedagogique/logiciel-de-gestion-de-bibliotheque-de-classe"
+        in html
+    )
     assert "https://www.bdrp.ch/" in html
     assert "https://cnlj.bnf.fr/" in html
     assert "https://constellations.education.gouv.qc.ca/" in html
@@ -55,9 +58,18 @@ def test_ressources_301_redirects(client):
         ("/ressources/charte", "/fr/ressources/charte-coin-lecture-a-imprimer"),
         ("/ressources/bingo", "/fr/ressources/defi-lecture-bingo-a-imprimer"),
         ("/ressources/passeport", "/fr/ressources/passeport-de-lecture-a-imprimer"),
-        ("/ressources/livret-pdf", "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"),
-        ("/ressources/imposition-pdf", "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"),
-        ("/ressources/booklet", "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"),
+        (
+            "/ressources/livret-pdf",
+            "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer",
+        ),
+        (
+            "/ressources/imposition-pdf",
+            "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer",
+        ),
+        (
+            "/ressources/booklet",
+            "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer",
+        ),
     ]
     for old_url, expected_dest in redirects:
         res = client.get(old_url)
@@ -496,4 +508,3 @@ def test_convertisseur_pdf_livret(client):
         "https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"
         in res_sitemap.get_data(as_text=True)
     )
-

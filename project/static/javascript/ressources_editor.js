@@ -200,20 +200,31 @@ function initThemeSwatches() {
         monochrome: { primary: '#334155', dark: '#0f172a' }
     };
 
+    function applyTheme(theme) {
+        if (themeColors[theme]) {
+            sheet.style.setProperty('--res-primary', themeColors[theme].primary);
+            sheet.style.setProperty('--res-primary-dark', themeColors[theme].dark);
+            document.documentElement.style.setProperty('--res-primary', themeColors[theme].primary);
+            document.documentElement.style.setProperty('--res-primary-dark', themeColors[theme].dark);
+            sheet.setAttribute('data-theme', theme);
+        }
+    }
+
     swatches.forEach(swatch => {
         swatch.addEventListener('click', function () {
             swatches.forEach(s => s.classList.remove('is-active'));
             this.classList.add('is-active');
 
             const theme = this.getAttribute('data-theme');
-            if (themeColors[theme]) {
-                sheet.style.setProperty('--res-primary', themeColors[theme].primary);
-                sheet.style.setProperty('--res-primary-dark', themeColors[theme].dark);
-                document.documentElement.style.setProperty('--res-primary', themeColors[theme].primary);
-                document.documentElement.style.setProperty('--res-primary-dark', themeColors[theme].dark);
-            }
+            applyTheme(theme);
         });
     });
+
+    // Appliquer le thème actif dès l'ouverture de la page
+    const activeSwatch = document.querySelector('.theme-swatch.is-active');
+    if (activeSwatch) {
+        applyTheme(activeSwatch.getAttribute('data-theme'));
+    }
 }
 
 /**

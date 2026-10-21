@@ -109,6 +109,12 @@ def test_sitemap_contains_cap_100_classes(client):
     assert "https://livresenclasse.com/fr/blog/cap-100-classes" in xml
     assert "https://livresenclasse.com/en/blog/cap-100-classes" in xml
     assert "https://livresenclasse.com/de/blog/cap-100-classes" in xml
-    assert 'hreflang="fr" href="https://livresenclasse.com/fr/blog/cap-100-classes"' in xml
-    assert 'hreflang="en" href="https://livresenclasse.com/en/blog/cap-100-classes"' in xml
-    assert 'hreflang="de" href="https://livresenclasse.com/de/blog/cap-100-classes"' in xml
+    assert (
+        'hreflang="fr" href="https://livresenclasse.com/fr/blog/cap-100-classes"' in xml
+    )
+    assert (
+        'hreflang="en" href="https://livresenclasse.com/en/blog/cap-100-classes"' in xml
+    )
+    assert (
+        'hreflang="de" href="https://livresenclasse.com/de/blog/cap-100-classes"' in xml
+    )

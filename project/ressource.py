@@ -198,9 +198,7 @@ def convertisseur_pdf_livret():
 def redirect_livret_pdf():
     """Redirections 301 permanentes vers l'URL canonique optimisée."""
     args = request.args.to_dict()
-    return redirect(
-        url_for("ressource.convertisseur_pdf_livret", **args), code=301
-    )
+    return redirect(url_for("ressource.convertisseur_pdf_livret", **args), code=301)
 
 
 @ressource.route("/ressources/<path:ressource_slug>")
