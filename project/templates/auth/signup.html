@@ -136,11 +136,15 @@
                             <span class="icon"><i class="fas fa-check"></i></span>
                             <span><strong>{{ max_scans|default(30) }}</strong> {{ _("scans de codes-barres par semaine") }}</span>
                         </li>
+                        <li class="benefit-item" style="color: hsl(0, 0%, 55%);">
+                            <span class="icon has-text-grey-light"><i class="fas fa-lock"></i></span>
+                            <span>{{ _("Exports Excel & étiquettes de bacs réservés au mode Premium") }}</span>
+                        </li>
                     </ul>
 
                     <div class="pt-4 mt-4" style="border-top: 1px dashed #cbd5e1; font-size: 0.85rem; color: hsl(0, 0%, 45%); line-height: 1.55;">
                         <span class="icon has-text-warning-dark mr-1"><i class="fas fa-star"></i></span>
-                        {{ _("Besoin d'aller plus loin ? Un mode") }} <a href="{{ url_for('subscription.tarifs') }}" target="_blank" class="has-text-weight-semibold has-text-link">{{ _("Premium avec accès illimité") }}</a> {{ _("est également disponible à tout moment.") }}
+                        {{ _("Besoin d'aller plus loin ? Le mode") }} <a href="{{ url_for('subscription.tarifs') }}" target="_blank" class="has-text-weight-semibold has-text-link">{{ _("Premium avec accès illimité") }}</a> {{ _("(scans illimités, exports Excel, étiquettes)") }} {{ _("est disponible à tout moment.") }}
                     </div>
                 </div>
 

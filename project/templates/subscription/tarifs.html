@@ -246,8 +246,9 @@
 
                     <div class="price-tag">
                         3.- <small>{{ currency }} {{ _("TTC") }} / {{ _("mois") }}</small>
+                        <span class="tag is-light is-rounded has-text-weight-semibold ml-1" style="font-size: 0.8rem; vertical-align: middle; color: hsl(0, 0%, 40%);">~3 €</span>
                     </div>
-                    <p class="is-size-7 has-text-grey mb-4">{{ _("Facturé chaque mois, résiliation en 1 clic sans frais cachés") }}</p>
+                    <p class="is-size-7 has-text-grey mb-4">{{ _("Facturé chaque mois, résiliation en 1 clic sans frais cachés. Paiement en CHF ou Euros.") }}</p>
 
                     <ul class="feature-list">
                         <li>
@@ -315,9 +316,10 @@
 
                     <div class="price-tag has-text-link">
                         30.- <small>{{ currency }} {{ _("TTC") }} / {{ _("an") }}</small>
+                        <span class="tag is-info is-light is-rounded has-text-weight-semibold ml-1" style="font-size: 0.8rem; vertical-align: middle;">~30 €</span>
                     </div>
                     <p class="is-size-7 has-text-dark has-text-weight-semibold mb-4">
-                        {{ _("Soit seulement 2.50 CHF par mois") }}
+                        {{ _("Soit seulement 2.50 CHF (~2.50 €) par mois") }}
                     </p>
 
                     <ul class="feature-list">
@@ -478,14 +480,36 @@
                     </p>
                 </div>
             </div>
+            <div class="column is-6">
+                <div class="box" style="height: 100%;">
+                    <h4 class="title is-5 mb-2">
+                        <span class="icon has-text-link mr-1"><i class="fas fa-euro-sign"></i></span>
+                        {{ _("Puis-je payer en Euros depuis la France ?") }}
+                    </h4>
+                    <p class="is-size-6 has-text-grey">
+                        {{ _("Oui, absolument ! Stripe accepte toutes les cartes bancaires (CB, Visa, Mastercard) françaises, suisses ou internationales. Le montant équivalent en Euros (~3 €/mois ou ~30 €/an) est débité sans frais cachés.") }}
+                    </p>
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="box" style="height: 100%;">
+                    <h4 class="title is-5 mb-2">
+                        <span class="icon has-text-link mr-1"><i class="fas fa-credit-card"></i></span>
+                        {{ _("Quels moyens de paiement sont acceptés ?") }}
+                    </h4>
+                    <p class="is-size-6 has-text-grey">
+                        {{ _("Nous acceptons toutes les cartes bancaires courantes : Carte Bancaire (CB), Visa, Mastercard et American Express. Le paiement est entièrement sécurisé par l'infrastructure Stripe certifiée PCI-DSS niveau 1.") }}
+                    </p>
+                </div>
+            </div>
         </div>
 
         <!-- Réassurance légale & Lien vers CGV / Mentions Légales -->
         <div class="has-text-centered mt-6 pt-5" style="border-top: 1px solid hsl(0, 0%, 88%);">
             <p class="is-size-7 has-text-grey mb-2">
                 <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span>
-                {{ _("Paiement 100%% sécurisé par carte bancaire via Stripe.")|replace("%%", "%") }}
-                {{ _("Tarifs nets en Francs Suisses (CHF) toutes taxes comprises (TTC), sans engagement contraignant ni frais cachés.") }}
+                {{ _("Paiement 100%% sécurisé par carte bancaire via Stripe en CHF ou Euros.")|replace("%%", "%") }}
+                {{ _("Cartes bancaires françaises, suisses et internationales (CB, Visa, Mastercard) acceptées sans frais supplémentaires.") }}
             </p>
             <p class="is-size-7">
                 <a href="{{ url_for('main.mentions_legales') }}" class="has-text-link has-text-weight-semibold" style="text-decoration: underline;">

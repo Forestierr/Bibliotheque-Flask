@@ -28,8 +28,14 @@
         </div>
     </nav>
 
-    <div class="container">
-        <i>{{ _("Crée-toi un compte et fais augmenter ces chiffres !") }}</i>
+    <div class="container has-text-centered mt-3">
+        <p class="is-size-6 has-text-grey-dark has-text-weight-medium">
+            {% if infos.n_users and infos.n_users > 0 %}
+                {{ _("Rejoins les %(count)s collègues qui simplifient la gestion de leur coin lecture au quotidien.", count=infos.n_users) }}
+            {% else %}
+                {{ _("Crée ton compte gratuitement et gagne du temps dès aujourd'hui.") }}
+            {% endif %}
+        </p>
     </div>
 </div>
 {% endmacro %}

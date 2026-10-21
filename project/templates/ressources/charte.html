@@ -2,6 +2,38 @@
 
 {% extends "ressources/base_editor.html" %}
 
+{% block title %}{{ _("Charte du coin lecture à imprimer (A4 / A3 gratuit) | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Affiche personnalisable des 5 règles d'or du coin lecture avec contrat de signatures pour les élèves. Prête à imprimer pour la classe.") }}{% endblock %}
+{% block og_image %}https://livresenclasse.com/static/image/pinterest/charte-coin-lecture-a-imprimer.png{% endblock %}
+{% block ressource_id %}charte-coin-lecture-a-imprimer{% endblock %}
+
+{% block hreflang %}
+<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/charte-coin-lecture-a-imprimer" />
+<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/charte-coin-lecture-a-imprimer" />
+{% endblock %}
+
+{% block head_extra %}
+{{ super() }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Charte du coin lecture à imprimer avec contrat de signatures",
+  "description": "Affiche des 5 règles de vie du coin bibliothèque de classe avec contrat d'engagement des élèves.",
+  "learningResourceType": "Printable Resource",
+  "educationalLevel": "Cycles 1, 2 et 3 (Maternelle, CP, CE1, CE2, CM1, CM2)",
+  "inLanguage": "fr",
+  "isAccessibleForFree": true,
+  "url": "https://livresenclasse.com/fr/ressources/charte-coin-lecture-a-imprimer",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+{% endblock %}
+
 {% block studio_title %}{{ _("Charte du Coin Lecture") }}{% endblock %}
 {% block sheet_orientation %}portrait{% endblock %}
 
@@ -12,8 +44,8 @@
         <span>{{ _("Style & Thème") }}</span>
     </div>
     <div class="theme-swatches">
-        <div class="theme-swatch blue is-active" data-theme="blue" title="{{ _('Bleu Écolier') }}"></div>
-        <div class="theme-swatch green" data-theme="green" title="{{ _('Vert Sérénité') }}"></div>
+        <div class="theme-swatch green is-active" data-theme="green" title="{{ _('Vert Sérénité') }}"></div>
+        <div class="theme-swatch blue" data-theme="blue" title="{{ _('Bleu Écolier') }}"></div>
         <div class="theme-swatch gold" data-theme="gold" title="{{ _('Jaune Chaleureux') }}"></div>
         <div class="theme-swatch purple" data-theme="purple" title="{{ _('Violet Douceur') }}"></div>
         <div class="theme-swatch coral" data-theme="coral" title="{{ _('Corail Tonique') }}"></div>
@@ -35,7 +67,7 @@
     <div class="field">
         <label class="label is-small">{{ _("Sous-titre / Nom de classe") }}</label>
         <div class="control">
-            <input class="input is-small" type="text" data-bind="charteSubtitle" value="{{ _('Les 5 règles d\'or de la classe de CE2-CM1') }}">
+            <input class="input is-small" type="text" data-bind="charteSubtitle" value="{{ _('5 règles d\'or pour des livres respectés et une classe sereine') }}">
         </div>
     </div>
 </div>
@@ -48,6 +80,9 @@
 
     <div class="field">
         <label class="label is-small">1. {{ _("Mains propres & soin") }}</label>
+        <div class="control mb-1">
+            <input class="input is-small has-text-weight-bold" type="text" data-bind="ruleTitle1" value="{{ _('Mains propres') }}" placeholder="{{ _('Titre court') }}">
+        </div>
         <div class="control">
             <input class="input is-small" type="text" data-bind="rule1" value="{{ _('Je prends soin des livres : je tourne les pages avec délicatesse et des mains propres.') }}">
         </div>
@@ -55,6 +90,9 @@
 
     <div class="field">
         <label class="label is-small">2. {{ _("Silence & chuchotement") }}</label>
+        <div class="control mb-1">
+            <input class="input is-small has-text-weight-bold" type="text" data-bind="ruleTitle2" value="{{ _('Chuchoter au calme') }}" placeholder="{{ _('Titre court') }}">
+        </div>
         <div class="control">
             <input class="input is-small" type="text" data-bind="rule2" value="{{ _('Je respecte le calme du lieu : je lis silencieusement ou je chuchote pour ne pas déranger mes camarades.') }}">
         </div>
@@ -62,6 +100,9 @@
 
     <div class="field">
         <label class="label is-small">3. {{ _("Rangement & bacs") }}</label>
+        <div class="control mb-1">
+            <input class="input is-small has-text-weight-bold" type="text" data-bind="ruleTitle3" value="{{ _('Ranger les livres') }}" placeholder="{{ _('Titre court') }}">
+        </div>
         <div class="control">
             <input class="input is-small" type="text" data-bind="rule3" value="{{ _('Je range chaque livre à sa place en respectant son bac et sa couleur de classement.') }}">
         </div>
@@ -69,6 +110,9 @@
 
     <div class="field">
         <label class="label is-small">4. {{ _("Livre abîmé / hôpital") }}</label>
+        <div class="control mb-1">
+            <input class="input is-small has-text-weight-bold" type="text" data-bind="ruleTitle4" value="{{ _('Hôpital des livres') }}" placeholder="{{ _('Titre court') }}">
+        </div>
         <div class="control">
             <input class="input is-small" type="text" data-bind="rule4" value="{{ _('Si un livre est abîmé ou une page détachée, je le signale immédiatement pour qu\'il soit réparé.') }}">
         </div>
@@ -76,6 +120,9 @@
 
     <div class="field">
         <label class="label is-small">5. {{ _("Marque-page & autonomie") }}</label>
+        <div class="control mb-1">
+            <input class="input is-small has-text-weight-bold" type="text" data-bind="ruleTitle5" value="{{ _('Utiliser un marque-page') }}" placeholder="{{ _('Titre court') }}">
+        </div>
         <div class="control">
             <input class="input is-small" type="text" data-bind="rule5" value="{{ _('J\'utilise un marque-page pour retrouver ma lecture sans corner les pages des livres.') }}">
         </div>
@@ -87,61 +134,237 @@
 <div class="charte-container">
     <!-- En-tête -->
     <div class="charte-header">
-        <div style="font-size: 2.5rem; color: var(--res-primary); margin-bottom: 0.25rem;">
-            <i class="fas fa-book-reader"></i>
-        </div>
         <h1 class="charte-title editable" id="charteTitle">{{ _("LA CHARTE DU COIN LECTURE") }}</h1>
-        <p class="charte-subtitle editable" id="charteSubtitle">{{ _("Les 5 règles d'or de la classe de CE2-CM1") }}</p>
+        <p class="charte-subtitle editable" id="charteSubtitle">{{ _("5 règles d'or pour des livres respectés et une classe sereine") }}</p>
     </div>
 
     <!-- Règles rédigées avec clarté -->
     <div class="charte-rules-list">
-        <div class="charte-rule-item">
+        <div class="charte-rule-item charte-pill-sage">
             <div class="charte-rule-num">1</div>
-            <div class="charte-rule-text editable" id="rule1">
-                {{ _("Je prends soin des livres : je tourne les pages avec délicatesse et des mains propres.") }}
+            <div class="charte-rule-icon">
+                <i class="fas fa-hands-wash"></i>
+            </div>
+            <div class="charte-rule-content">
+                <div class="charte-rule-title editable" id="ruleTitle1">{{ _("Mains propres") }}</div>
+                <div class="charte-rule-text editable" id="rule1">
+                    {{ _("Je prends soin des livres : je tourne les pages avec délicatesse et des mains propres.") }}
+                </div>
             </div>
         </div>
 
-        <div class="charte-rule-item">
+        <div class="charte-rule-item charte-pill-slate">
             <div class="charte-rule-num">2</div>
-            <div class="charte-rule-text editable" id="rule2">
-                {{ _("Je respecte le calme du lieu : je lis silencieusement ou je chuchote pour ne pas déranger mes camarades.") }}
+            <div class="charte-rule-icon">
+                <i class="fas fa-volume-mute"></i>
+            </div>
+            <div class="charte-rule-content">
+                <div class="charte-rule-title editable" id="ruleTitle2">{{ _("Chuchoter au calme") }}</div>
+                <div class="charte-rule-text editable" id="rule2">
+                    {{ _("Je respecte le calme du lieu : je lis silencieusement ou je chuchote pour ne pas déranger mes camarades.") }}
+                </div>
             </div>
         </div>
 
-        <div class="charte-rule-item">
+        <div class="charte-rule-item charte-pill-sage">
             <div class="charte-rule-num">3</div>
-            <div class="charte-rule-text editable" id="rule3">
-                {{ _("Je range chaque livre à sa place en respectant son bac et sa couleur de classement.") }}
+            <div class="charte-rule-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="charte-rule-content">
+                <div class="charte-rule-title editable" id="ruleTitle3">{{ _("Ranger les livres") }}</div>
+                <div class="charte-rule-text editable" id="rule3">
+                    {{ _("Je range chaque livre à sa place en respectant son bac et sa couleur de classement.") }}
+                </div>
             </div>
         </div>
 
-        <div class="charte-rule-item">
+        <div class="charte-rule-item charte-pill-slate">
             <div class="charte-rule-num">4</div>
-            <div class="charte-rule-text editable" id="rule4">
-                {{ _("Si un livre est abîmé ou une page détachée, je le signale immédiatement pour qu'il soit réparé.") }}
+            <div class="charte-rule-icon">
+                <i class="fas fa-briefcase-medical"></i>
+            </div>
+            <div class="charte-rule-content">
+                <div class="charte-rule-title editable" id="ruleTitle4">{{ _("Hôpital des livres") }}</div>
+                <div class="charte-rule-text editable" id="rule4">
+                    {{ _("Si un livre est abîmé ou une page détachée, je le signale immédiatement pour qu'il soit réparé.") }}
+                </div>
             </div>
         </div>
 
-        <div class="charte-rule-item">
+        <div class="charte-rule-item charte-pill-sage">
             <div class="charte-rule-num">5</div>
-            <div class="charte-rule-text editable" id="rule5">
-                {{ _("J'utilise un marque-page pour retrouver ma lecture sans corner les pages des livres.") }}
+            <div class="charte-rule-icon">
+                <i class="fas fa-bookmark"></i>
+            </div>
+            <div class="charte-rule-content">
+                <div class="charte-rule-title editable" id="ruleTitle5">{{ _("Utiliser un marque-page") }}</div>
+                <div class="charte-rule-text editable" id="rule5">
+                    {{ _("J'utilise un marque-page pour retrouver ma lecture sans corner les pages des livres.") }}
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Signatures & Contrat de classe -->
     <div class="charte-signatures">
-        <div>
-            <p style="font-weight: 700; margin-bottom: 2rem;">{{ _("Signature des élèves de la classe :") }}</p>
-            <div style="border-bottom: 1px dotted #94a3b8; width: 350px;"></div>
+        <div class="charte-sig-block">
+            <div class="charte-sig-dots">..................................................................</div>
+            <div class="charte-sig-label">{{ _("Signature des élèves") }}</div>
         </div>
-        <div style="text-align: right;">
-            <p style="font-weight: 700; margin-bottom: 2rem;">{{ _("Signature de l'enseignant(e) :") }}</p>
-            <div style="border-bottom: 1px dotted #94a3b8; width: 180px; margin-left: auto;"></div>
+        <div class="charte-sig-block">
+            <div class="charte-sig-dots">..................................................................</div>
+            <div class="charte-sig-label">{{ _("Signature de l'enseignant(e)") }}</div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block studio_extra_content %}
+<section class="section py-6" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+    <div class="container" style="max-width: 960px; margin: 0 auto;">
+
+        <!-- Encart Partage Pinterest & Sauvegarde -->
+        <div class="box mb-6" style="border-radius: 16px; border: 1px solid #bbf7d0; background: #f0fdf4; padding: 2rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-3 has-text-centered">
+                    <img src="{{ url_for('static', filename='image/pinterest/charte-coin-lecture-a-imprimer.png') }}" 
+                         alt="{{ _('Visuel Pinterest Charte du coin lecture à imprimer') }}" 
+                         style="max-height: 220px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); cursor: pointer;"
+                         data-pin-media="https://livresenclasse.com/static/image/pinterest/charte-coin-lecture-a-imprimer.png"
+                         data-pin-description="{{ _('La Charte du Coin Lecture à imprimer (Affiche A4/A3 avec contrat de signatures des élèves). Idéal climat de classe et respect des livres.') }}"
+                         onclick="openPinterestShare('charte')">
+                </div>
+                <div class="column is-9">
+                    <span class="tag is-danger is-light has-text-weight-bold mb-2">
+                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                    </span>
+                    <h3 class="title is-4 mb-2" style="color: #14532d;">
+                        {{ _("Sauvegardez cette charte pour votre classe") }}
+                    </h3>
+                    <p class="subtitle is-6 has-text-grey mb-4">
+                        {{ _("Épinglez cette affiche sur votre tableau Pinterest pour préparer la rentrée ou poser les règles d'or du coin lecture avec vos élèves.") }}
+                    </p>
+                    <div class="buttons">
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ 'https://livresenclasse.com/fr/ressources/charte-coin-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=lead_magnets&mtm_content=charte_lecture'|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/charte-coin-lecture-a-imprimer.png'|urlencode }}&description={{ 'La Charte du Coin Lecture : affiche avec contrat de signatures des élèves à imprimer gratuitement pour l école. #TeamPE #GestionDeClasse #CoinLecture #Cycle2 #Cycle3'|urlencode }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           id="pin-button-charte"
+                           class="button is-danger is-rounded has-text-weight-bold"
+                           onclick="trackPinterestClick('charte-coin-lecture-a-imprimer')">
+                            <span class="icon"><i class="fab fa-pinterest"></i></span>
+                            <span>{{ _("Épingler sur Pinterest") }}</span>
+                        </a>
+                        <button type="button" class="button is-link is-light is-rounded has-text-weight-semibold" onclick="triggerStudioPrint()">
+                            <span class="icon"><i class="fas fa-print"></i></span>
+                            <span>{{ _("Imprimer directement") }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide Pédagogique -->
+        <div class="content mb-6">
+            <h2 class="title is-3" style="color: #1e293b;">
+                {{ _("Comment faire vivre la charte du coin lecture ?") }}
+            </h2>
+            <p>
+                {{ _("Une charte affichée n'a d'impact que si elle est co-construite et validée par les élèves. L'affiche intègre une zone de signature officielle qui transforme les règles en un véritable pacte de confiance.") }}
+            </p>
+
+            <div class="columns is-multiline my-4">
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-success-dark">
+                            <i class="fas fa-signature mr-2"></i>{{ _("1. Le rituel de signature") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("En début d'année ou après chaque vacances, chaque élève vient signer l'affiche devant ses camarades, marquant son engagement formel.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-info">
+                            <i class="fas fa-hospital-alt mr-2"></i>{{ _("2. L'hôpital des livres") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Associez la règle n°4 à un bac dédié « Hôpital des livres » où les élèves déposent spontanément les ouvrages abîmés sans crainte d'être grondés.") }}
+                        </p>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="p-4" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; height: 100%;">
+                        <h3 class="title is-5 mb-2 has-text-primary">
+                            <i class="fas fa-volume-down mr-2"></i>{{ _("3. Climat serein") }}
+                        </h3>
+                        <p class="is-size-6 has-text-grey-dark">
+                            {{ _("Le coin lecture devient un havre de calme respecté de tous, propice à la concentration et au plaisir de lire.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Passerelle vers Livres en Classe (Lead Magnet CTA) -->
+        <div class="box my-6" style="border-radius: 16px; background: linear-gradient(135deg, #065f46 0%, #059669 100%); color: white; padding: 2.5rem;">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <span class="tag is-warning is-light has-text-weight-bold mb-2">
+                        <i class="fas fa-heart mr-1"></i> {{ _("Fini les livres égarés !") }}
+                    </span>
+                    <h3 class="title is-3 has-text-white mb-2">
+                        {{ _("Suivez les prêts de vos élèves en toute simplicité") }}
+                    </h3>
+                    <p class="is-size-6" style="opacity: 0.95; line-height: 1.6;">
+                        {{ _("Avec le scan ultra-rapide de Livres en Classe, vos élèves enregistrent leurs emprunts en autonomie. Vous savez en temps réel qui a quel livre.") }}
+                    </p>
+                </div>
+                <div class="column is-4 has-text-centered">
+                    <a href="{{ url_for('auth.signup') }}" 
+                       class="button is-warning is-medium is-rounded has-text-weight-bold"
+                       style="box-shadow: 0 4px 14px rgba(0,0,0,0.25);"
+                       onclick="trackCtaLogiciel('depuis-charte')">
+                        <span class="icon"><i class="fas fa-sparkles"></i></span>
+                        <span>{{ _("Essayer gratuitement") }}</span>
+                    </a>
+                    <p class="is-size-7 mt-2" style="opacity: 0.85;">
+                        {{ _("Création de compte en 30 secondes") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function trackPinterestClick(resourceName) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Ressources', 'Clic_Pinterest', resourceName]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function trackCtaLogiciel(source) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', 'Conversion', 'CTA_Logiciel', source]);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function openPinterestShare(resource) {
+    const btn = document.getElementById('pin-button-charte');
+    if (btn) btn.click();
+}
+</script>
 {% endblock %}

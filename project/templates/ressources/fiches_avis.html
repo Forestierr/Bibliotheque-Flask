@@ -1,7 +1,10 @@
+<!-- templates/ressources/fiches_avis.html -->
+
 {% extends "ressources/base_editor.html" %}
 
 {% block title %}{{ _("Fiches coup de cœur et avis de lecture à imprimer (A4) | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("4 fiches de recommandation de lecture par page A4 pour l'école primaire : fanions coup de cœur, étoiles et avis à glisser dans les livres. Gratuit et modifiable.") }}{% endblock %}
+{% block og_image %}https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png{% endblock %}
 {% block ressource_id %}fiche-de-lecture-a-imprimer{% endblock %}
 
 {% block hreflang %}
@@ -58,7 +61,25 @@
     <div class="field">
         <label class="label is-small">{{ _("Titre du fanion") }}</label>
         <div class="control">
-            <input class="input is-small" type="text" id="inputFicheTitle" value="{{ _('COUP DE CŒUR DE LECTEUR') }}" oninput="updateFicheTitles(this.value)">
+            <input class="input is-small" type="text" data-bind="ficheTitle" value="{{ _('COUP DE CŒUR DE LECTEUR') }}">
+        </div>
+    </div>
+    <div class="field">
+        <label class="label is-small">{{ _("Sous-titre / Conseil") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="ficheSubtitle" value="{{ _('Conseil et partage entre camarades') }}">
+        </div>
+    </div>
+    <div class="field">
+        <label class="label is-small">{{ _("Amorce de l'avis") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="fichePrompt" value="{{ _('Ce qui m\'a plu dans cette histoire :') }}">
+        </div>
+    </div>
+    <div class="field">
+        <label class="label is-small">{{ _("Consigne au bas du fanion") }}</label>
+        <div class="control">
+            <input class="input is-small" type="text" data-bind="ficheFooter" value="{{ _('À insérer dans le livre pour laisser dépasser l\'onglet en rayon.') }}">
         </div>
     </div>
 </div>
@@ -68,44 +89,59 @@
 <div class="fiches-avis-grid">
     {% for i in range(4) %}
     <div class="fiche-avis-card">
-        <div style="text-align: center; border-bottom: 2px solid var(--res-primary, #e11d48); padding-bottom: 0.4rem; margin-bottom: 0.5rem;">
-            <h2 class="fiche-title-text editable" style="font-size: 0.88rem; font-weight: 800; color: var(--res-primary-dark, #9f1239); text-transform: uppercase; letter-spacing: 0.5px;">
-                {{ _("COUP DE CŒUR DE LECTEUR") }}
+        <!-- Fanion / Onglet dépassant en haut du livre -->
+        <div class="fiche-fanion-wrapper">
+            <div class="fiche-fanion-ribbon ribbon-variant-{{ i }}">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="fiche-cut-guide" title="{{ _('Ligne de découpe du fanion') }}">
+                <i class="fas fa-cut mr-1"></i><span>{{ _("découper") }}</span>
+            </div>
+        </div>
+
+        <div class="fiche-header-block">
+            <h2 class="ficheTitle editable" data-bind-group="ficheTitle">
+                {{ _("FANION COUP DE CŒUR") }}
             </h2>
-            <p class="editable" style="font-size: 0.68rem; color: #64748b;">{{ _("Conseil et partage entre camarades") }}</p>
+            <p class="ficheSubtitle editable" data-bind-group="ficheSubtitle">{{ _("Conseil et partage entre camarades") }}</p>
         </div>
 
-        <div style="font-size: 0.75rem; color: #1e293b; display: flex; flex-direction: column; gap: 0.35rem;">
-            <div>
-                <span style="font-weight: 700; font-size: 0.7rem; color: #475569;">{{ _("Conseillé par :") }}</span>
-                <span style="border-bottom: 1px dotted #94a3b8; display: inline-block; width: 140px;">&nbsp;</span>
+        <!-- 5 Étoiles bien visibles -->
+        <div class="fiche-rating-block">
+            <span class="fiche-stars">★ ★ ★ ★ ★</span>
+        </div>
+
+        <!-- Métadonnées à remplir -->
+        <div class="fiche-meta-block">
+            <div class="fiche-meta-item">
+                <span class="fiche-meta-label">{{ _("Conseillé par :") }}</span>
+                <span class="fiche-dotted-line"></span>
             </div>
-            <div>
-                <span style="font-weight: 700; font-size: 0.7rem; color: #475569;">{{ _("Titre du livre :") }}</span>
-                <span style="border-bottom: 1px dotted #94a3b8; display: inline-block; width: 135px;">&nbsp;</span>
+            <div class="fiche-meta-item">
+                <span class="fiche-meta-label">{{ _("Titre du livre :") }}</span>
+                <span class="fiche-dotted-line"></span>
             </div>
-            <div>
-                <span style="font-weight: 700; font-size: 0.7rem; color: #475569;">{{ _("Auteur :") }}</span>
-                <span style="border-bottom: 1px dotted #94a3b8; display: inline-block; width: 170px;">&nbsp;</span>
+            <div class="fiche-meta-item">
+                <span class="fiche-meta-label">{{ _("Auteur :") }}</span>
+                <span class="fiche-dotted-line"></span>
             </div>
         </div>
 
-        <div style="text-align: center; margin: 0.3rem 0;">
-            <span style="font-size: 0.68rem; font-weight: 600; color: #64748b;">{{ _("Note :") }}</span>
-            <span style="font-size: 0.9rem; color: #cbd5e1; letter-spacing: 2px;">★ ★ ★ ★ ★</span>
-        </div>
-
-        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-around; margin: 0.4rem 0;">
-            <p class="editable" style="font-size: 0.75rem; font-weight: 700; color: #1e293b; margin-bottom: 2px;">
+        <!-- Amorce de l'avis et lignes d'écriture -->
+        <div class="fiche-body-block">
+            <p class="fichePrompt editable" data-bind-group="fichePrompt">
                 {{ _("Ce qui m'a plu dans cette histoire :") }}
             </p>
-            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
-            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
-            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
-            <div style="border-bottom: 1px dotted #94a3b8; height: 24px;"></div>
+            <div class="fiche-write-line"></div>
+            <div class="fiche-write-line"></div>
+            <div class="fiche-write-line"></div>
+            <div class="fiche-write-line"></div>
+            <div class="fiche-write-line"></div>
+            <div class="fiche-write-line"></div>
         </div>
 
-        <div class="editable" style="margin-top: auto; padding-top: 0.35rem; border-top: 1px solid #f1f5f9; font-size: 0.65rem; color: #64748b; text-align: center;">
+        <!-- Consigne au bas du fanion -->
+        <div class="ficheFooter editable" data-bind-group="ficheFooter">
             {{ _("À insérer dans le livre pour laisser dépasser l'onglet en rayon.") }}
         </div>
     </div>
@@ -222,7 +258,6 @@
                 </div>
                 <div class="column is-4 has-text-centered">
                     <a href="{{ url_for('auth.signup') }}" 
-                       id="cta-logiciel-fa"
                        class="button is-warning is-medium is-rounded has-text-weight-bold"
                        style="box-shadow: 0 4px 14px rgba(0,0,0,0.25);"
                        onclick="trackCtaLogiciel('depuis-fiches-avis')">
@@ -236,33 +271,12 @@
             </div>
         </div>
 
-        <!-- FAQ Pédagogique -->
-        <div class="content mt-6">
-            <h3 class="title is-4" style="color: #1e293b;">{{ _("Questions fréquentes sur les fiches coup de cœur") }}</h3>
-            
-            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
-                <h4 class="title is-6 mb-1">{{ _("Puis-je changer le titre « Coup de cœur » ?") }}</h4>
-                <p class="is-size-6 has-text-grey">{{ _("Oui, vous pouvez saisir « Mon conseil de lecture », « Livre à ne pas manquer ! » ou tout autre texte adapté à votre projet dans la colonne de gauche.") }}</p>
-            </div>
-
-            <div class="box mb-3" style="border-radius: 10px; border: 1px solid #e2e8f0;">
-                <h4 class="title is-6 mb-1">{{ _("Faut-il plastifier ces fiches ?") }}</h4>
-                <p class="is-size-6 has-text-grey">{{ _("Si vous souhaitez que chaque élève conserve son avis ou que l'avis reste attaché définitivement au livre, le papier simple ou bristol suffit. Pour un usage réutilisable, une plastification fine avec feutre effaçable est possible.") }}</p>
-            </div>
-        </div>
-
     </div>
 </section>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-function updateFicheTitles(val) {
-    document.querySelectorAll('.fiche-title-text').forEach(el => {
-        el.textContent = val;
-    });
-}
-
 function trackPinterestClick(resourceName) {
     try {
         if (typeof _paq !== 'undefined') {

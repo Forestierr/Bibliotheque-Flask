@@ -1,0 +1,227 @@
+<!-- templates/blog/de/cap-100-classes.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Cap des 100 classes franchi : merci pour votre confiance !") }}{% endblock %}
+{% block meta_description %}{{ _("Plus de 100 enseignants et classes font confiance à Livres en classe au quotidien en Suisse, en France et au Canada. Retour sur cette étape symbolique, quelques chiffres clés et notre feuille de route.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('de', external=True) }}"
+  },
+  "headline": "Meilenstein von 100 Klassen erreicht: Danke für Ihr Vertrauen!",
+  "description": "Über 100 Lehrpersonen und Klassen nutzen Livres en classe mittlerweile täglich in der Schweiz, in Frankreich und in Kanada. Ein Meilenstein und ein Ausblick auf kommende Neuerungen.",
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Person",
+    "name": "Robin Forestier",
+    "jobTitle": "Gründer von Livres en classe"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "de",
+  "datePublished": "2026-10-20",
+  "dateModified": "2026-10-20"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Inhaltsverzeichnis (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Die Geschichte des Projekts</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Herzerwärmende Zahlen</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Wachstum durch Ihr Feedback</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Wie geht es weiter?</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Schlusswort</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Startseite</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">100 Klassen Meilenstein</a></li>
+                      </ul>
+                    </nav>
+
+                    <span class="tag is-info is-light is-rounded mb-3" style="font-weight: 600; letter-spacing: 0.5px;">
+                        <i class="fas fa-heart mr-2" style="color: #f14668;"></i> Community-Update
+                    </span>
+
+                    <h1 class="title is-1 mb-5">Meilenstein von 100 Klassen erreicht: Danke für Ihr Vertrauen!</h1>
+                    <p class="subtitle is-5 has-text-grey">Lesezeit: 3 Min. | Von Robin Forestier, Gründer von Livres en classe</p>
+
+                    <div class="content is-medium mt-6">
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            Vor zwei Jahren war <strong>Livres en classe</strong> nur ein kleines Wochenendprojekt, um meiner Mutter – einer Grundschullehrerin – unter die Arme zu greifen, die viel zu viel Zeit damit verbrachte, Buchausleihen mühsam von Hand in fliegenden Heften zu notieren.
+                        </p>
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            Heute haben wir einen symbolischen Meilenstein erreicht, der mir besonders am Herzen liegt: <strong>Über 100 Lehrpersonen und Schulklassen</strong> nutzen Livres en classe mittlerweile täglich in der Schweiz, in Frankreich und in Kanada.
+                        </p>
+
+                        <hr class="my-6">
+
+                        <!-- Mobile Inhaltsverzeichnis -->
+                        <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Die Geschichte des Projekts</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Herzerwärmende Zahlen</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Wachstum durch Ihr Feedback</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Wie geht es weiter?</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Schlusswort</a></li>
+                            </ul>
+                        </div>
+
+                        <h2 id="section-1">1. Von einer Wochenendidee zu einem geschätzten Begleiter im Schulalltag</h2>
+                        <p>
+                            Die Geschichte begann ganz einfach vor einem großen Bücherstapel auf einem Lehrertisch. Angesichts der wöchentlichen Mühsal mit verlegten Karteikarten, falsch geschriebenen Buchtiteln und unauffindbaren Ausleihen stellte sich eine naheliegende Frage: <em>Warum sollte die Organisation einer Leseecke so kompliziert sein, wenn wir alle ein Smartphone in der Tasche tragen?</em>
+                        </p>
+                        <p>
+                            Das ursprüngliche Ziel war bescheiden: Eine ultra-einfache Weboberfläche ohne komplizierte Installation zu schaffen, mit der man ein Buch in zwei Sekunden scannen und einem Schülernamen zuordnen kann. Zwei Jahre später stieß diese kleine familiäre Hilfe auf große Resonanz bei vielen Lehrkräften und Schulen, die nach einer menschlichen, intuitiven und werbefreien Lösung suchten.
+                        </p>
+
+                        <h2 id="section-2" class="mt-6">2. Einige herzerwärmende Zahlen</h2>
+                        <p>
+                            Hinter dieser Marke von 100 Nutzerinnen und Nutzern steht vor allem ein lebendiger Schulalltag mit eingespielten Leseritualen:
+                        </p>
+
+                        <!-- Kennzahlen-Karten -->
+                        <div class="columns is-multiline my-4">
+                            <div class="column is-4">
+                                <div class="box has-text-centered p-4" style="background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%); border: 1px solid #d0e4ff; border-radius: 12px; height: 100%;">
+                                    <div class="is-size-2 has-text-link mb-2"><i class="fas fa-book"></i></div>
+                                    <div class="title is-3 has-text-link mb-1">+10.000</div>
+                                    <p class="is-size-6 has-text-grey-dark"><strong>Bücher erfasst</strong> in Ihren Klassenbibliotheken</p>
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div class="box has-text-centered p-4" style="background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%); border: 1px solid #c6f6d5; border-radius: 12px; height: 100%;">
+                                    <div class="is-size-2 has-text-success mb-2"><i class="fas fa-user-graduate"></i></div>
+                                    <div class="title is-3 has-text-success mb-1">~1.000</div>
+                                    <p class="is-size-6 has-text-grey-dark"><strong>Selbstständige Schüler</strong>, die eigenständig Geschichten entdecken</p>
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div class="box has-text-centered p-4" style="background: linear-gradient(135deg, #fdf4ff 0%, #ffffff 100%); border: 1px solid #f3d9fa; border-radius: 12px; height: 100%;">
+                                    <div class="is-size-2 has-text-purple mb-2" style="color: #9b51e0;"><i class="fas fa-barcode"></i></div>
+                                    <div class="title is-3 mb-1" style="color: #9b51e0;">+1.000</div>
+                                    <p class="is-size-6 has-text-grey-dark"><strong>Ausleihen und Rückgaben</strong> per einfachem Barcode-Scan verwaltet</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p>
+                            Zu wissen, dass Ihnen dieses Werkzeug hilft, wertvolle Zeit für das Wesentliche zu gewinnen – nämlich <strong>die Lesefreude Ihrer Schülerinnen und Schüler zu wecken</strong> –, ist die schönste Belohnung.
+                        </p>
+
+                        <h2 id="section-3" class="mt-6">3. Ein Projekt, das durch Ihr Feedback wächst</h2>
+                        <p>
+                            Dass die Plattform heute an diesem Punkt steht, verdanken wir in erster Linie Ihnen. Ihre Verbesserungsvorschläge, Ihr wertschätzendes Feedback und die Mundpropaganda im Lehrerzimmer haben dazu beigetragen, die Anwendung genau an die praktischen Bedürfnisse des Schulalltags anzupassen.
+                        </p>
+                        <p>
+                            Ein riesiges Dankeschön gilt unseren <strong>«Gründungsmitgliedern»</strong> sowie allen, die die Plattform von Beginn an genutzt, neue Funktionen erprobt und wertvolle pädagogische Impulse geteilt haben.
+                        </p>
+
+                        <h2 id="section-4" class="mt-6">4. Und wie geht es weiter?</h2>
+                        <p>
+                            Die Entwicklung geht aktiv weiter! Die nächsten Schritte zielen darauf ab, Ihren Schulalltag noch weiter zu erleichtern:
+                        </p>
+                        <ul>
+                            <li><strong>Erweiterte Suche und Buchdetails</strong>: Kontinuierliche Verbesserungen der Suchfunktion und detaillierte Ansichten für Kinder- und Jugendliteratur (altersgerechte Zusammenfassungen, Lesestufen).</li>
+                            <li><strong>Neue Etiketten und Druckvorlagen</strong>: Neue Vorlagen für Kistenaufkleber, Barcode-Bögen und druckbare Leseübersichten, um die Eigenverantwortung der Kinder zu stärken.</li>
+                            <li><strong>Geteilte Ressourcen und Praxis-Tipps</strong>: Praxisnahe Leitfäden und Materialien für die Einrichtung und lebendige Organisation von Leseecken im Klassenzimmer.</li>
+                        </ul>
+
+                        <h2 id="section-5" class="mt-6">5. Schlusswort</h2>
+                        <p>
+                            Nochmals herzlichen Dank für Ihre Begeisterung und Ihr Vertrauen. Viel Freude beim Lesen in all Ihren Klassen!
+                        </p>
+
+                        <!-- Robin Signatur -->
+                        <div class="box mt-5 p-5" style="border-left: 4px solid #3273dc; background: #fafbfc;">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-48x48">
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #3273dc; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">
+                                            RF
+                                        </div>
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-5 mb-1" style="color: #2c3e50;">Robin</p>
+                                    <p class="subtitle is-6 has-text-grey">Gründer von Livres en classe</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Box -->
+                        <div class="box has-background-white-bis has-text-centered p-5 my-6" style="border: 1px solid #eef0f5; border-radius: 12px;">
+                            <h3 class="title is-4">Sind Sie noch nicht dabei?</h3>
+                            <p class="mb-4">Erstellen Sie Ihr kostenloses Konto in 2 Minuten und vereinfachen Sie die Verwaltung Ihrer Klassenbibliothek noch heute.</p>
+                            <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Livres en classe kostenlos ausprobieren</a>
+                        </div>
+
+                        <!-- Empfohlene Artikel -->
+                        <hr class="my-6">
+                        <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                            <h3 class="title is-4 mb-4">📚 Weitere interessante Artikel...</h3>
+                            <div class="columns">
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">VOLLSTÄNDIGER LEITFADEN</p>
+                                        <p class="has-text-weight-bold has-text-dark">Der ultimative Leitfaden zur Erstellung und Verwaltung einer Klassenbibliothek</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">PÄDAGOGIK</p>
+                                        <p class="has-text-weight-bold has-text-dark">Wie man Schüler für das Lesen begeistert: Tipps und Routinen</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- End content -->
+                </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

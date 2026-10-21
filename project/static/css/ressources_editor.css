@@ -332,21 +332,27 @@
 /* Portrait A4 : 210mm x 297mm */
 .a4-sheet.portrait {
     width: 210mm;
+    height: 297mm;
     min-height: 297mm;
+    max-height: 297mm;
     padding: 10mm;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* Paysage A4 : 297mm x 210mm */
 .a4-sheet.landscape {
     width: 297mm;
+    height: 210mm;
     min-height: 210mm;
+    max-height: 210mm;
     padding: 10mm;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 /* Documents multi-pages (ex: codes-barres) */
@@ -427,15 +433,15 @@
     width: 100%;
     height: 100%;
     flex: 1;
-    border: 3.5px solid var(--res-primary, #b45309);
-    outline: 1.5px solid var(--res-primary, #b45309);
-    outline-offset: 6px;
-    border-radius: 6px;
-    padding: 10mm 16mm;
+    border: 4.5px solid var(--res-primary, #b45309);
+    outline: 2px solid var(--res-primary, #b45309);
+    outline-offset: 8px;
+    border-radius: 14px;
+    padding: 12mm 18mm;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     text-align: center;
     position: relative;
     background: #ffffff;
@@ -446,67 +452,128 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.diplome-seal {
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    background: var(--res-primary, #d97706);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.7rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    border: 2px solid white;
-    outline: 2px solid var(--res-primary, #d97706);
-    margin: 0 auto 0.4rem auto;
+    margin-top: 0.2rem;
 }
 
 .diplome-title {
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--res-primary-dark, #78350f);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 'Playfair Display', Georgia, serif;
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--res-primary-dark, #1e3a8a);
     text-transform: uppercase;
     margin: 0.1rem 0;
 }
 
 .diplome-subtitle {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: #475569;
     font-style: italic;
-    margin-bottom: 0.4rem;
+    margin-top: 0.2rem;
 }
 
 .diplome-body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-evenly;
     width: 100%;
-    margin: 0.6rem 0;
+    flex: 1;
+    margin: 0.8rem 0;
+}
+
+.diplome-recipient-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    width: 100%;
+    margin: 0.4rem 0;
+}
+
+.diplome-recipient-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .diplome-recipient {
     font-family: 'Playfair Display', Georgia, serif;
-    font-size: 2.6rem;
+    font-size: 3.2rem;
     font-weight: 700;
     color: #0f172a;
-    border-bottom: 2px solid var(--res-primary, #d97706);
+    border-bottom: 2.5px solid var(--res-primary, #d97706);
     padding: 0.2rem 2.5rem;
-    margin: 0.4rem 0 0.8rem 0;
-    min-width: 300px;
+    margin: 0.2rem 0 0.4rem 0;
+    min-width: 360px;
     display: inline-block;
 }
 
+.diplome-laurel {
+    width: 75px;
+    height: 120px;
+    color: var(--res-primary, #d97706);
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 5px rgba(217, 119, 6, 0.2));
+}
+
 .diplome-reason {
-    font-size: 1.2rem;
-    line-height: 1.55;
+    font-size: 1.35rem;
+    line-height: 1.6;
     color: #334155;
-    max-width: 82%;
-    margin: 0 auto;
+    max-width: 84%;
+    margin: 0.5rem auto;
+}
+
+/* Sceau / Médaille avec rubans dorés et marine */
+.diplome-rosette {
+    position: relative;
+    margin: 0.6rem auto 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rosette-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fde047 0%, #d97706 100%);
+    border: 3.5px solid #ffffff;
+    box-shadow: 0 0 0 2.5px var(--res-primary, #d97706), 0 4px 12px rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.7rem;
+    position: relative;
+    z-index: 2;
+}
+
+.rosette-ribbon-tails {
+    position: absolute;
+    top: 42px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 1;
+}
+
+.ribbon-tail {
+    width: 18px;
+    height: 38px;
+    background: #1e3a8a;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.ribbon-tail.tail-left {
+    transform: rotate(18deg);
+}
+
+.ribbon-tail.tail-right {
+    transform: rotate(-18deg);
 }
 
 .diplome-footer {
@@ -515,19 +582,19 @@
     justify-content: space-between;
     align-items: flex-end;
     margin-top: auto;
-    padding-top: 1.2rem;
+    padding-top: 1.5rem;
 }
 
 .diplome-sign-box {
     text-align: center;
-    min-width: 200px;
+    min-width: 240px;
 }
 
 .diplome-sign-line {
-    border-top: 1px solid #64748b;
-    margin-top: 3rem;
-    padding-top: 0.35rem;
-    font-size: 0.88rem;
+    border-top: 1.5px solid #64748b;
+    margin-top: 2.2rem;
+    padding-top: 0.4rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #475569;
 }
@@ -568,15 +635,17 @@
 .marque-pages-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 5mm;
+    gap: 4.5mm;
     height: 100%;
+    flex: 1;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .marque-page-card {
-    border: 1px dashed #94a3b8;
+    border: 1.5px dashed #94a3b8;
     border-radius: 4px;
-    padding: 4mm;
+    padding: 3.5mm 3.5mm;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -584,70 +653,99 @@
     box-sizing: border-box;
     position: relative;
     page-break-inside: avoid;
+    height: 100%;
+}
+
+.mp-face {
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mp-accent-bar {
+    height: 5px;
+    background: var(--res-primary, #0ea5e9);
+    border-radius: 3px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.mp-accent-top {
+    margin-bottom: 0.35rem;
+}
+
+.mp-accent-bottom {
+    margin-top: 0.35rem;
 }
 
 .mp-header {
     text-align: center;
-    border-bottom: 1.5px solid var(--res-primary, #2563eb);
-    padding-bottom: 0.35rem;
-    margin-bottom: 0.4rem;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.3rem;
 }
 
 .mp-title {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     font-weight: 800;
-    color: var(--res-primary-dark, #1e40af);
+    color: #1e3a8a;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .mp-school {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #64748b;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .mp-dates-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.68rem;
-    margin: 0.4rem 0;
+    font-size: 0.65rem;
+    margin: 0.2rem 0;
+    flex: 1;
 }
 
 .mp-dates-table th, .mp-dates-table td {
     border: 1px solid #cbd5e1;
-    padding: 3px 4px;
+    padding: 2px 3px;
     text-align: center;
 }
 
 .mp-dates-table th {
-    background: #f8fafc;
-    font-weight: 600;
-    color: #475569;
+    background: #e0f2fe;
+    font-weight: 700;
+    color: #1e3a8a;
+    font-size: 0.65rem;
 }
 
 .mp-dates-table td {
-    height: 19px;
+    height: 22px;
 }
 
 .mp-rating {
     text-align: center;
-    margin: 0.3rem 0;
+    margin: 0.25rem 0;
 }
 
 .mp-stars {
-    font-size: 0.95rem;
-    color: #cbd5e1;
-    letter-spacing: 3px;
+    font-size: 1.15rem;
+    color: #f59e0b;
+    letter-spacing: 2px;
+    white-space: nowrap !important;
+    display: inline-block;
 }
 
 .mp-notes-box {
     border: 1px solid #e2e8f0;
     border-radius: 4px;
     background: #f8fafc;
-    padding: 4px 6px;
-    font-size: 0.65rem;
-    line-height: 1.35;
+    padding: 3px 5px;
+    font-size: 0.62rem;
+    line-height: 1.3;
     color: #475569;
     margin-top: auto;
 }
@@ -661,94 +759,149 @@
 
 /* --- 3. Charte du Coin Lecture --- */
 .charte-container {
-    border: 4px solid var(--res-primary, #3b82f6);
+    border: 2px solid #e2e8f0;
     border-radius: 16px;
-    padding: 8mm 10mm;
+    padding: 10mm 12mm;
     height: 100%;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
-    background: white;
+    background: #ffffff;
 }
 
 .charte-header {
     text-align: center;
-    border-bottom: 3px double var(--res-primary, #3b82f6);
-    padding-bottom: 0.7rem;
+    padding-bottom: 0.5rem;
     margin-bottom: 0.8rem;
 }
 
 .charte-title {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--res-primary-dark, #1d4ed8);
-    margin-bottom: 0.2rem;
+    font-size: 2.3rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
 }
 
 .charte-subtitle {
     font-size: 1.05rem;
-    color: #64748b;
-    font-weight: 600;
+    color: #475569;
+    font-weight: 500;
 }
 
 .charte-rules-list {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.9rem;
     flex: 1;
     justify-content: space-around;
+    margin: 0.5rem 0;
 }
 
 .charte-rule-item {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-left: 6px solid var(--res-primary, #3b82f6);
-    border-radius: 10px;
-    padding: 0.8rem 1.2rem;
+    gap: 1.25rem;
+    border-radius: 18px;
+    padding: 0.85rem 1.4rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease;
+}
+
+.charte-rule-item.charte-pill-sage {
+    background: #9ab49d;
+    color: #0f172a;
+}
+
+.charte-rule-item.charte-pill-slate {
+    background: #8aa0bb;
+    color: #0f172a;
+}
+
+/* Thème monochrome / économique */
+[data-current-theme="monochrome"] .charte-rule-item {
+    background: #ffffff !important;
+    border: 2px solid #0f172a !important;
+    color: #0f172a !important;
 }
 
 .charte-rule-num {
-    width: 42px;
-    height: 42px;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #0f172a;
+    min-width: 28px;
+    text-align: center;
+}
+
+.charte-rule-icon {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: var(--res-primary, #3b82f6);
-    color: white;
-    font-weight: 800;
-    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.75);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.35rem;
+    color: #0f172a;
     flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.charte-rule-content {
+    flex: 1;
+}
+
+.charte-rule-title {
+    font-size: 1.22rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
 }
 
 .charte-rule-text {
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 0.82rem;
+    font-weight: 500;
     color: #1e293b;
     line-height: 1.35;
+    margin-top: 2px;
+    opacity: 0.95;
 }
 
 .charte-signatures {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-top: 1rem;
-    padding-top: 0.8rem;
-    border-top: 1px solid #cbd5e1;
+    margin-top: 1.2rem;
+    padding-top: 0.6rem;
+}
+
+.charte-sig-block {
+    text-align: center;
+    width: 44%;
+}
+
+.charte-sig-dots {
+    letter-spacing: 2px;
+    color: #475569;
     font-size: 0.85rem;
-    color: #64748b;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 4px;
+}
+
+.charte-sig-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
 }
 
 /* --- 4. Défi / Bingo Lecture --- */
 .bingo-container {
     border: 3px solid var(--res-primary, #8b5cf6);
     border-radius: 12px;
-    padding: 7mm;
+    padding: 5mm 6mm;
     height: 100%;
     flex: 1;
     display: flex;
@@ -762,8 +915,8 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    gap: 3.5mm;
-    margin: 0.6rem 0;
+    gap: 3mm;
+    margin: 0.4rem 0;
     flex: 1;
     height: 100%;
     width: 100%;
@@ -771,59 +924,527 @@
 }
 
 .bingo-cell {
-    border: 2px solid var(--res-border);
+    border: 1.8px solid var(--res-border);
     border-radius: 8px;
     background: #ffffff;
-    padding: 6px 8px;
+    padding: 5px 6px 4px 6px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     text-align: center;
-    font-size: 0.76rem;
-    line-height: 1.25;
-    font-weight: 600;
-    color: #334155;
-    transition: background 0.15s;
+    transition: background 0.15s, border-color 0.15s;
     box-sizing: border-box;
     height: 100%;
+    overflow: hidden;
+    position: relative;
 }
 
-.bingo-cell.star-cell {
-    background: #fef3c7;
-    border-color: #f59e0b;
-    color: #b45309;
+.bingo-cell:hover {
+    border-color: var(--res-primary, #8b5cf6);
+}
+
+.bingo-cell-header {
+    font-size: 0.72rem;
+    line-height: 1.22;
+    font-weight: 600;
+    color: #1e293b;
+    width: 100%;
+    min-height: 2.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bingo-cell-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: var(--res-primary, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    margin: auto 0;
+    flex-shrink: 0;
+    border: 1px solid #e2e8f0;
+}
+
+.bingo-cell-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    margin-top: 0;
+    padding-top: 2px;
+}
+
+.bingo-book-input {
+    display: flex;
+    align-items: baseline;
+    font-size: 0.67rem;
+    color: #64748b;
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+    flex: 1;
+    text-align: left;
+}
+
+.bingo-book-lbl {
+    font-weight: 700;
+    margin-right: 2px;
+    color: #475569;
+    font-size: 0.65rem;
+}
+
+.bingo-book-dots {
+    letter-spacing: 1px;
+    color: #cbd5e1;
+    overflow: hidden;
+    text-overflow: clip;
 }
 
 .bingo-checkbox {
-    width: 18px;
-    height: 18px;
-    border: 1.5px solid #94a3b8;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #94a3b8;
     border-radius: 4px;
-    margin-top: 4px;
+    background: #ffffff;
+    flex-shrink: 0;
+    cursor: pointer;
+    box-sizing: border-box;
 }
 
-/* --- 5. Passeport de Lecture (Double Volet A5) --- */
+.bingo-cell.star-cell {
+    background: #fffbeb;
+    border-color: #f59e0b;
+    border-width: 2px;
+}
+
+.bingo-cell.star-cell .bingo-cell-header {
+    color: #92400e;
+}
+
+.bingo-cell.star-cell .bingo-cell-icon {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #fde68a;
+    font-size: 1.05rem;
+}
+
+.bingo-cell.star-cell .bingo-book-lbl {
+    color: #b45309;
+}
+
+.bingo-cell.star-cell .bingo-book-dots {
+    color: #fcd34d;
+}
+
+.bingo-cell.star-cell .bingo-checkbox {
+    border-color: #d97706;
+}
+
+/* --- 5. Passeport de Lecture (Double Volet A5 Pliable) --- */
 .passeport-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8mm;
+    gap: 0;
     height: 100%;
     flex: 1;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
+}
+
+/* Ligne guide de pliage centrale discrète */
+.passeport-container::before {
+    content: '';
+    position: absolute;
+    top: -4mm;
+    bottom: -4mm;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    border-left: 1.5px dashed #94a3b8;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.passeport-fold-indicator {
+    position: absolute;
+    top: -8mm;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: #94a3b8;
+    background: #ffffff;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    z-index: 11;
 }
 
 .passeport-panel {
     border: 2px solid var(--res-primary, #2563eb);
-    border-radius: 6px;
-    padding: 6mm;
+    border-radius: 8px;
+    padding: 4.5mm 5mm;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     background: #ffffff;
     height: 100%;
     box-sizing: border-box;
+    position: relative;
+}
+
+.passeport-panel.panel-left {
+    margin-right: 4mm;
+}
+
+.passeport-panel.panel-right {
+    margin-left: 4mm;
+}
+
+.passeport-header {
+    text-align: center;
+    border-bottom: 2px solid var(--res-primary, #2563eb);
+    padding-bottom: 0.35rem;
+}
+
+.passeport-badge-sub {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--res-primary-dark, #1d4ed8);
+    text-transform: uppercase;
+}
+
+.passeport-main-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0.15rem 0;
+    letter-spacing: 0.5px;
+}
+
+.passeport-school-name {
+    font-size: 0.72rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Bloc d'identité compact et équilibré */
+.passeport-identity-row {
+    display: flex;
+    gap: 4mm;
+    margin: 0.35rem 0;
+    flex: none;
+    align-items: stretch;
+}
+
+.passeport-photo-box {
+    width: 82px;
+    height: 100px;
+    border: 1.5px dashed #94a3b8;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.62rem;
+    color: #64748b;
+    flex-shrink: 0;
+    background: #f8fafc;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.passeport-photo-box i {
+    font-size: 2rem;
+    margin-bottom: 4px;
+    color: #94a3b8;
+}
+
+.passeport-identity-fields {
+    flex: 1;
+    font-size: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3px;
+}
+
+.passeport-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.passeport-field-label {
+    color: #64748b;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+.passeport-field-line {
+    border-bottom: 1.5px dotted #94a3b8;
+    min-height: 18px;
+    display: flex;
+    align-items: flex-end;
+    font-weight: 600;
+    color: #1e293b;
+    padding-bottom: 1px;
+}
+
+/* Profil & Préférences de lecture */
+.passeport-profil-box {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 7px;
+    background: #f8fafc;
+    padding: 5px 8px;
+    margin: 0.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.passeport-box-header {
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+}
+
+.passeport-tags-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin: 1px 0;
+}
+
+.profil-tag {
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-size: 0.58rem;
+    font-weight: 600;
+    color: #334155;
+    background: #ffffff;
+}
+
+.passeport-fav-book-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 1px;
+}
+
+.passeport-fav-book-row .passeport-field-line {
+    min-height: 16px;
+}
+
+/* Encadré Défi Lecture */
+.passeport-defi-box {
+    border: 1.5px solid #cbd5e1;
+    border-radius: 7px;
+    background: #ffffff;
+    padding: 5px 8px;
+    margin: 0.25rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.passeport-defi-title {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+}
+
+.passeport-defi-text {
+    font-size: 0.64rem;
+    font-weight: 600;
+    color: #334155;
+    line-height: 1.3;
+}
+
+.passeport-milestones {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.milestone-badge {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    background: #f8fafc;
+    padding: 2px 6px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+/* Signatures */
+.passeport-signatures {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.35rem;
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+}
+
+.passeport-sign-col {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.passeport-sign-label {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.62rem;
+}
+
+.passeport-sign-dotline {
+    border-bottom: 1.5px dotted #94a3b8;
+    width: 110px;
+    height: 15px;
+}
+
+/* Volet Droit : Parcours des genres */
+.passeport-genres-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+    margin: 0.35rem 0;
+    flex: 1;
+    justify-content: space-around;
+}
+
+.passeport-genre-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.passeport-genre-pill {
+    flex: 1;
+    border-radius: 999px;
+    padding: 0.28rem 0.8rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.passeport-genre-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #334155;
+    border-radius: 4px;
+    background: #ffffff;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Pastels scolaires pour chaque genre */
+.pill-roman {
+    background: #fecdd3;
+    color: #9f1239;
+}
+
+.pill-bd {
+    background: #bbf7d0;
+    color: #166534;
+}
+
+.pill-album {
+    background: #fef08a;
+    color: #854d0e;
+}
+
+.pill-manga {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.pill-conte {
+    background: #bae6fd;
+    color: #075985;
+}
+
+.pill-poesie {
+    background: #e9d5ff;
+    color: #6b21a8;
+}
+
+.pill-doc {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.pill-presse {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
+/* Thème monochrome économique */
+[data-current-theme="monochrome"] .passeport-genre-pill,
+.a4-sheet[data-theme="monochrome"] .passeport-genre-pill {
+    background: #ffffff !important;
+    border: 1.5px solid #0f172a !important;
+    color: #0f172a !important;
+}
+
+.passeport-top3-box {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 0.65rem;
+    color: #334155;
+    margin-top: auto;
+}
+
+.top3-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+.top3-num {
+    font-size: 0.65rem;
+    color: #475569;
+    min-width: 14px;
+}
+
+.top3-line {
+    flex: 1;
+    border-bottom: 1.5px dotted #cbd5e1;
+    min-height: 15px;
 }
 
 /* --- 6. Étiquettes de Bacs & Tranches --- */
@@ -900,12 +1521,11 @@
     box-sizing: border-box;
 }
 
-/* --- 7. Fiches Coup de Cœur --- */
+/* --- 7. Fiches Coup de Cœur (Fanions marque-pages A4) --- */
 .fiches-avis-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 6mm;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4mm;
     height: 100%;
     flex: 1;
     width: 100%;
@@ -913,15 +1533,165 @@
 }
 
 .fiche-avis-card {
-    border: 2px dashed #f43f5e;
-    border-radius: 12px;
-    padding: 6mm;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 6px;
+    padding: 3mm 3.5mm;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: #fff;
+    background: #ffffff;
     height: 100%;
     box-sizing: border-box;
+    position: relative;
+    page-break-inside: avoid;
+    transition: border-color 0.2s;
+}
+
+.fiche-avis-card:hover {
+    border-color: var(--res-primary, #f43f5e);
+}
+
+.fiche-fanion-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.3rem;
+}
+
+.fiche-fanion-ribbon {
+    width: 44px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+.ribbon-variant-0 {
+    background: var(--res-primary, #f43f5e);
+}
+
+.ribbon-variant-1 {
+    background: var(--res-primary-dark, #be123c);
+}
+
+.ribbon-variant-2 {
+    background: linear-gradient(135deg, var(--res-primary, #f43f5e), var(--res-primary-dark, #be123c));
+}
+
+.ribbon-variant-3 {
+    background: #ffffff;
+    border: 2px dashed var(--res-primary, #94a3b8);
+    color: var(--res-primary, #94a3b8);
+    box-shadow: none;
+}
+
+.fiche-cut-guide {
+    font-size: 0.58rem;
+    color: #94a3b8;
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+}
+
+.fiche-header-block {
+    text-align: center;
+    border-bottom: 2px solid var(--res-primary, #f43f5e);
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
+    transition: border-color 0.25s;
+}
+
+.ficheTitle {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--res-primary-dark, #be123c);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0;
+    transition: color 0.25s;
+}
+
+.ficheSubtitle {
+    font-size: 0.58rem;
+    color: #64748b;
+    margin-top: 1px;
+}
+
+.fiche-rating-block {
+    text-align: center;
+    margin: 0.2rem 0;
+}
+
+.fiche-stars {
+    font-size: 0.95rem;
+    color: #f59e0b;
+    letter-spacing: 2px;
+}
+
+.a4-sheet[data-theme="monochrome"] .fiche-stars {
+    color: #475569;
+}
+
+.fiche-meta-block {
+    font-size: 0.65rem;
+    color: #1e293b;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+.fiche-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.fiche-meta-label {
+    font-weight: 700;
+    font-size: 0.62rem;
+    color: #475569;
+}
+
+.fiche-dotted-line {
+    border-bottom: 1.5px dotted #94a3b8;
+    height: 14px;
+    display: block;
+    width: 100%;
+}
+
+.fiche-body-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 0.2rem 0;
+}
+
+.fichePrompt {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--res-primary-dark, #1e293b);
+    margin-bottom: 2px;
+    transition: color 0.25s;
+}
+
+.fiche-write-line {
+    border-bottom: 1.5px dotted #cbd5e1;
+    height: 18px;
+}
+
+.ficheFooter {
+    margin-top: auto;
+    padding-top: 0.25rem;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.58rem;
+    color: #64748b;
+    text-align: center;
 }
 
 /* --- 8. Codes-barres Custom --- */
@@ -1047,7 +1817,7 @@
         display: none !important;
     }
 
-    /* 4. Format de la feuille A4 pour l'impression */
+    /* 4. Format de la feuille A4 pour l'impression (Zéro page blanche garantie) */
     .a4-sheet {
         box-shadow: none !important;
         border: none !important;
@@ -1064,26 +1834,26 @@
         break-after: avoid !important;
     }
 
-    /* Remplissage propre d'une page A4 portrait physique (zone utile ~194mm x 281mm avec 8mm de marge) */
+    /* Remplissage propre d'une page A4 portrait physique (zone utile 194mm x 281mm avec 8mm de marge) */
     .a4-sheet.portrait {
         width: 100% !important;
-        height: 275mm !important;
-        min-height: 275mm !important;
-        max-height: 275mm !important;
+        height: 280mm !important;
+        min-height: 280mm !important;
+        max-height: 280mm !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow: visible !important;
+        overflow: hidden !important;
     }
 
-    /* Remplissage propre d'une page A4 paysage physique (zone utile ~281mm x 194mm avec 8mm de marge) */
+    /* Remplissage propre d'une page A4 paysage physique (zone utile 281mm x 194mm avec 8mm de marge) */
     .a4-sheet.landscape {
         width: 100% !important;
-        height: 188mm !important;
-        min-height: 188mm !important;
-        max-height: 188mm !important;
+        height: 192mm !important;
+        min-height: 192mm !important;
+        max-height: 192mm !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow: visible !important;
+        overflow: hidden !important;
     }
 
     /* Documents multi-pages (ex: codes-barres) */
@@ -1097,6 +1867,37 @@
         break-inside: auto !important;
         page-break-after: auto !important;
         break-after: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Mode toute la classe pour les diplômes */
+    .diplome-multi-container {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .diplome-page {
+        width: 100% !important;
+        height: 192mm !important;
+        min-height: 192mm !important;
+        max-height: 192mm !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .diplome-page:last-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+
+    .passeport-fold-indicator {
+        display: none !important;
     }
 
     .editable {
