@@ -71,6 +71,7 @@ translations = {
     "Le livre que vous souhaitiez éditer n'existe pas.": "Das Buch, das Sie bearbeiten möchten, existiert nicht.",
     "Veuillez ajouter un titre au livre.": "Bitte geben Sie dem Buch einen Titel.",
     "Le livre que vous souhaitiez dupliquer n'existe pas.": "Das Buch, das Sie duplizieren möchten, existiert nicht.",
+    "L'exemplaire a été dupliqué avec succès !": "Das Exemplar wurde erfolgreich dupliziert!",
     "Le livre reste dans la bibliothèque.": "Das Buch bleibt in der Bibliothek.",
     "L'élève n'existe pas.": "Der Schüler existiert nicht.",
     "Le livre a été supprimé.": "Das Buch wurde gelöscht.",

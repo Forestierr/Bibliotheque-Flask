@@ -71,6 +71,7 @@ translations = {
     "Le livre que vous souhaitiez éditer n'existe pas.": "The book you wanted to edit does not exist.",
     "Veuillez ajouter un titre au livre.": "Please give the book a title.",
     "Le livre que vous souhaitiez dupliquer n'existe pas.": "The book you wanted to duplicate does not exist.",
+    "L'exemplaire a été dupliqué avec succès !": "The copy has been successfully duplicated!",
     "Le livre reste dans la bibliothèque.": "The book stays in the library.",
     "L'élève n'existe pas.": "The student does not exist.",
     "Le livre a été supprimé.": "The book has been deleted.",

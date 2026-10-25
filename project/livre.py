@@ -584,6 +584,7 @@ def livre_duplique(id):
 
     db.session.commit()
 
+    flash(_("L'exemplaire a été dupliqué avec succès !"), "success")
     return redirect(url_for("livre.livre_infos", id=new_book.id))
 
 
