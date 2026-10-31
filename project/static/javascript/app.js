@@ -25,8 +25,25 @@ window.addEventListener("online", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js")
-      .then((reg) => console.log("[Service Worker] Registered", reg))
+    navigator.serviceWorker.register("/sw.js", { scope: "/" })
+      .then(async (reg) => {
+        console.log("[Service Worker] Registered", reg);
+
+        // Periodic Background Sync (Android Chrome / Edge)
+        if ("periodicSync" in reg) {
+          try {
+            const status = await navigator.permissions.query({ name: "periodic-background-sync" });
+            if (status.state === "granted") {
+              await reg.periodicSync.register("refresh-library", {
+                minInterval: 24 * 60 * 60 * 1000
+              });
+              console.log("[SW] Periodic background sync registered.");
+            }
+          } catch (err) {
+            console.log("[SW] Periodic sync not supported:", err);
+          }
+        }
+      })
       .catch((err) => console.log("[Service Worker] Registration failed", err));
   });
 }
