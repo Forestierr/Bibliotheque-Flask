@@ -13,6 +13,10 @@
     <meta property="og:description" content="{% block og_description %}{{ _("Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics.") }}{% endblock %}"/>
     <title>{% block title %}{{ _("Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe") }}{% endblock %}</title>
 
+    {% block meta_robots %}
+    <meta name="robots" content="index, follow" />
+    {% endblock %}
+
     <!-- SEO & Multilingual Alternates -->
     {% block canonical %}
     <link rel="canonical" href="{{ lang_url(get_locale(), external=True) }}" />
