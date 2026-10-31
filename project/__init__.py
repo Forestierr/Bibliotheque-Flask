@@ -115,6 +115,24 @@ def create_app(test_config=None):
         "de": "de_DE",
     }
 
+    NON_CANONICAL_PARAMS = {
+        "lang",
+        "next",
+        "plan_type",
+        "plan",
+        "ref",
+        "source",
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_term",
+        "utm_content",
+        "gclid",
+        "fbclid",
+        "h-captcha-response",
+        "_gl",
+    }
+
     def lang_url(target_lang, external=False):
         """Génère l'URL canonique ou alternative dans la langue spécifiée."""
         if not has_request_context():
@@ -124,7 +142,11 @@ def create_app(test_config=None):
             return url_for("main.index", lang_code=target_lang, _external=external)
         view_args = dict(request.view_args or {})
         view_args["lang_code"] = target_lang
-        args = {k: v for k, v in request.args.items() if k != "lang"}
+        args = {
+            k: v
+            for k, v in request.args.items()
+            if k.lower() not in NON_CANONICAL_PARAMS
+        }
         args.update(view_args)
         args["_external"] = external
         try:

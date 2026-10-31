@@ -221,11 +221,11 @@ def test_robots():
 
 def test_bing_indexnow():
     print("=== Testing Bing Webmaster & IndexNow ===")
-    r = client.get("/1452be41003e41c59435f150f75f55d8.txt")
+    r = client.get("/744d589148a54a93bfd6c066fce258a6.txt")
     assert r.status_code == 200, f"Expected 200, got {r.status_code}"
     assert "text/plain" in r.content_type
     key_content = r.get_data(as_text=True).strip()
-    assert key_content == "1452be41003e41c59435f150f75f55d8", (
+    assert key_content == "744d589148a54a93bfd6c066fce258a6", (
         f"Unexpected content: {key_content}"
     )
 
@@ -234,7 +234,7 @@ def test_bing_indexnow():
     assert r_home.status_code == 200
     html = r_home.get_data(as_text=True)
     assert (
-        '<meta name="msvalidate.01" content="1452be41003e41c59435f150f75f55d8"/>'
+        '<meta name="msvalidate.01" content="744d589148a54a93bfd6c066fce258a6"/>'
         in html
     )
     print("Bing Webmaster & IndexNow verified successfully.")
