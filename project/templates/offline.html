@@ -1,0 +1,39 @@
+<!-- templates/offline.html -->
+<!-- Page de fallback hors ligne — servie par le Service Worker -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block meta_robots %}<meta name="robots" content="noindex, nofollow" />{% endblock %}
+
+{% block title %}{{ _("Vous êtes hors ligne | Ma bibliothèque") }}{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="columns is-multiline is-centered is-vcentered" style="min-height: 60vh;">
+
+        <div class="column is-full has-text-centered">
+            <span style="font-size: 5rem; display: block; margin-bottom: 1rem;">📚</span>
+            <h1 class="title is-2">{{ _("Vous êtes hors ligne") }}</h1>
+            <p class="subtitle is-5 mt-3">
+                {{ _("Vérifiez votre connexion internet et réessayez.") }}
+            </p>
+            <p class="has-text-grey mt-2">
+                {{ _("L'application nécessite une connexion pour accéder à votre bibliothèque.") }}
+            </p>
+
+            <div class="mt-5">
+                <button
+                    class="button is-primary is-medium"
+                    onclick="window.location.reload()"
+                >
+                    <span class="icon"><i class="fas fa-rotate-right"></i></span>
+                    <span>{{ _("Réessayer") }}</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

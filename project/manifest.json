@@ -2,6 +2,8 @@
   "id": "com.livresenclasse",
   "name": "Ma bibliothèque",
   "short_name": "Ma biblio",
+  "lang": "fr",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,17 +12,42 @@
   "background_color": "#FFFFFF",
   "display_override": ["window-controls-overlay"],
   "description": "Gérez votre bibliothèque de classe simplement",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "categories": [
     "education",
     "productivity",
     "utilities"
+  ],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "scope_extensions": [
+    { "origin": "https://livresenclasse.com" }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+livresenclasse",
+      "url": "/?action=%s"
+    }
   ],
   "icons": [
     {
       "src": "/static/image/icons/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/image/icons/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/static/image/icons/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/static/image/icons/web-app-manifest-512x512.png",
@@ -40,21 +67,21 @@
       "src": "/static/image/screenshots/dashboard_2.webp",
       "sizes": "388x840",
       "type": "image/webp",
-      "platform": "ios",
+      "form_factor": "narrow",
       "label": "Dashboard de ma bibliothèque"
     },
     {
       "src": "/static/image/screenshots/livre_2.webp",
       "sizes": "385x834",
       "type": "image/webp",
-      "platform": "ios",
+      "form_factor": "narrow",
       "label": "Une gestion simplifiée de vos livres"
     },
     {
       "src": "/static/image/screenshots/eleve_2.webp",
       "sizes": "388x840",
       "type": "image/webp",
-      "platform": "ios",
+      "form_factor": "narrow",
       "label": "Une gestion simplifiée de vos élèves"
     },
     {
