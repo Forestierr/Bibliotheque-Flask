@@ -205,6 +205,22 @@ def robots():
     )
 
 
+@core.route("/.well-known/assetlinks.json")
+@main.route("/.well-known/assetlinks.json")
+def assetlinks():
+    """Digital Asset Links pour la verification TWA Android (Google Play)."""
+    return send_file("static/.well-known/assetlinks.json", mimetype="application/json")
+
+
+@core.route("/.well-known/apple-app-site-association")
+@main.route("/.well-known/apple-app-site-association")
+def apple_app_site_association():
+    """Apple App Site Association pour les Universal Links iOS."""
+    return send_file(
+        "static/.well-known/apple-app-site-association", mimetype="application/json"
+    )
+
+
 @core.route("/llms.txt")
 @core.route("/llms")
 @main.route("/llms.txt")
@@ -493,7 +509,17 @@ def serve_manifest():
 @core.route("/sw.js")
 @main.route("/sw.js")
 def serve_sw():
-    return send_file("static/javascript/sw.js", mimetype="application/javascript")
+    response = send_file("static/javascript/sw.js", mimetype="application/javascript")
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Service-Worker-Allowed"] = "/"
+    return response
+
+
+@core.route("/offline")
+@main.route("/offline")
+def offline():
+    """Page de fallback affichee par le Service Worker quand hors ligne."""
+    return render_template("offline.html"), 200
 
 
 @core.route("/api/student_books_read")
