@@ -216,7 +216,9 @@ def assetlinks():
 @main.route("/.well-known/apple-app-site-association")
 def apple_app_site_association():
     """Apple App Site Association pour les Universal Links iOS."""
-    return send_file("static/.well-known/apple-app-site-association", mimetype="application/json")
+    return send_file(
+        "static/.well-known/apple-app-site-association", mimetype="application/json"
+    )
 
 
 @core.route("/llms.txt")
