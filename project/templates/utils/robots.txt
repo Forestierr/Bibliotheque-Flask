@@ -1,17 +1,43 @@
 User-agent: *
 Allow: /
 Allow: /llms.txt
-Disallow: /contact
+
+# Espaces privés & gestion de classe (réservés aux utilisateurs connectés)
 Disallow: /admin
-Disallow: /livre
-Disallow: /eleve
-Disallow: /reglage
-Disallow: /dashboard
-Disallow: /*/contact
 Disallow: /*/admin
-Disallow: /*/livre
-Disallow: /*/eleve
-Disallow: /*/reglage
+Disallow: /dashboard
 Disallow: /*/dashboard
+Disallow: /livre
+Disallow: /*/livre
+Disallow: /eleve
+Disallow: /*/eleve
+Disallow: /emprunt
+Disallow: /*/emprunt
+Disallow: /reglage
+Disallow: /*/reglage
+Disallow: /export
+Disallow: /*/export
+
+# Flux de paiement et tunnels Stripe
+Disallow: /paiement
+Disallow: /*/paiement
+Disallow: /subscription/create-checkout-session
+Disallow: /*/subscription/create-checkout-session
+Disallow: /subscription/portal
+Disallow: /*/subscription/portal
+Disallow: /subscription/success
+Disallow: /*/subscription/success
+Disallow: /subscription/cancel
+Disallow: /*/subscription/cancel
+
+# APIs, Webhooks & utilitaires techniques
+Disallow: /api/
+Disallow: /webhook/
+Disallow: /email/track/
+
+# Paramètres d'URL créant des doublons ou des boucles de crawl
+Disallow: /*?*next=*
+Disallow: /*?*plan_type=*
+Disallow: /*?*plan=*
 
 Sitemap: https://livresenclasse.com/sitemap.xml
