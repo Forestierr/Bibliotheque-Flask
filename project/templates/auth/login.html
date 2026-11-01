@@ -78,7 +78,7 @@
 
                 {% include "utils/flash_message.html" %}
 
-                <form method="POST" action="{{ url_for('auth.login_post') }}" id="loginForm">
+                <form method="POST" action="{{ url_for('auth.login_post') }}" id="loginForm" hx-boost="false">
                     {% include 'utils/csrf.html' %}
                     <div class="field">
                         <label class="label">{{ _("Email") }}</label>

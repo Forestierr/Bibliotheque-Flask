@@ -20,7 +20,6 @@ window.addEventListener("offline", () => {
 // Optionally, notify when back online
 window.addEventListener("online", () => {
   console.log("✅ Connexion rétablie !");
-  alert("Vous êtes de nouveau en ligne !");
 });
 
 if ("serviceWorker" in navigator) {
@@ -57,16 +56,40 @@ window.addEventListener('beforeinstallprompt', (e) => {
     window.dispatchEvent(new Event('app-installable'));
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+// Window Controls Overlay & Navbar alignment (Windows PWA titlebar)
+function updateNavbarControls() {
     const nav = document.querySelector('.navbar');
     if (nav && 'windowControlsOverlay' in navigator) {
         const { x } = navigator.windowControlsOverlay.getTitlebarAreaRect();
         if (x === 0) {
             nav.classList.add('search-controls-right');
+            nav.classList.remove('search-controls-left');
         } else {
             nav.classList.add('search-controls-left');
+            nav.classList.remove('search-controls-right');
         }
     } else if (nav) {
         nav.classList.add('search-controls-right');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", updateNavbarControls);
+document.addEventListener("htmx:load", updateNavbarControls);
+if (document.readyState !== "loading") {
+    updateNavbarControls();
+}
+
+// Non-blocking Toast notification for HTMX network errors
+document.addEventListener("htmx:sendError", () => {
+    console.warn("⚠️ [HTMX] Erreur de transmission réseau / hors ligne.");
+    if (!document.getElementById("htmx-network-toast")) {
+        const toast = document.createElement("div");
+        toast.id = "htmx-network-toast";
+        toast.className = "notification is-warning is-light";
+        toast.style.cssText = "position: fixed; bottom: 20px; right: 20px; z-index: 10000; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 350px;";
+        toast.innerHTML = '<button class="delete"></button><strong>Connexion interrompue</strong><br>Impossible d\'effectuer l\'action. Vérifiez votre réseau.';
+        toast.querySelector(".delete").addEventListener("click", () => toast.remove());
+        document.body.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 6000);
     }
 });

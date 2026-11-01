@@ -498,16 +498,33 @@
     renderChart(result.labels, result.data);
   });
 
-  // Initial load (last 365 days)
-  window.addEventListener('DOMContentLoaded', async () => {
+  // Initial load (last 365 days) - compatible DOMContentLoaded & HTMX load
+  async function initDashboardChart() {
+    const chartCanvas = document.getElementById('studentBooksChart');
+    if (!chartCanvas) return;
+    const dateToEl = document.getElementById('date_to');
+    const dateFromEl = document.getElementById('date_from');
+    if (!dateToEl || !dateFromEl) return;
+
     const today = new Date();
     const priorDate = new Date();
     priorDate.setDate(today.getDate() - 365);
-    document.getElementById('date_to').value = today.toISOString().slice(0,10);
-    document.getElementById('date_from').value = priorDate.toISOString().slice(0,10);
-    const result = await fetchStudentBooks(priorDate.toISOString().slice(0,10), today.toISOString().slice(0,10));
-    renderChart(result.labels, result.data);
-  });
+    if (!dateToEl.value) dateToEl.value = today.toISOString().slice(0,10);
+    if (!dateFromEl.value) dateFromEl.value = priorDate.toISOString().slice(0,10);
+    try {
+      const result = await fetchStudentBooks(dateFromEl.value, dateToEl.value);
+      renderChart(result.labels, result.data);
+    } catch(err) {
+      console.warn("Chart load error:", err);
+    }
+  }
+
+  if (document.readyState !== 'loading') {
+    initDashboardChart();
+  } else {
+    document.addEventListener('DOMContentLoaded', initDashboardChart);
+  }
+  document.body.addEventListener('htmx:load', initDashboardChart);
 </script>
 
 <style>

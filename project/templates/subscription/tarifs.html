@@ -210,7 +210,7 @@
                         <p class="is-size-6 has-text-grey" style="line-height: 1.5; margin-bottom: 0;">{{ _("Vous bénéficiez d'un accès illimité à toutes les fonctionnalités de Livres en Classe.") }}</p>
                     </div>
                     <div style="flex-shrink: 0;">
-                        <form action="{{ url_for('subscription.portal') }}" method="POST" style="margin: 0;">
+                        <form action="{{ url_for('subscription.portal') }}" method="POST" style="margin: 0;" hx-boost="false">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="button is-link is-light is-rounded has-text-weight-bold" style="white-space: nowrap;">
                                 <span class="icon"><i class="fas fa-credit-card"></i></span>

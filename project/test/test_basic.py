@@ -207,3 +207,27 @@ def test_contact_page_post_captcha_validation(client, monkeypatch):
     assert res.status_code == 200
     html = res.get_data(as_text=True)
     assert "Veuillez compléter le CAPTCHA." in html
+
+
+def test_pwa_htmx_boost_and_progress_bar(client):
+    """Vérifie que hx-boost et la barre de progression HTMX sont intégrés dans le layout."""
+    res = client.get("/fr/")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert '<body hx-boost="true">' in html
+    assert 'class="htmx-progress-bar"' in html
+    assert 'id="wrapper"' in html
+    assert "htmx:afterOnLoad" in html
+    assert "stopScanner" in html
+
+
+def test_service_worker_v5_and_cdn_caching(client):
+    """Vérifie que sw.js est servi avec le cache v5 et les règles de mise en cache CDN."""
+    res = client.get("/sw.js")
+    assert res.status_code == 200
+    sw_code = res.get_data(as_text=True)
+    assert "livres-en-classe-v5" in sw_code
+    assert "cdnjs.cloudflare.com" in sw_code
+    assert "unpkg.com" in sw_code
+    assert "kit.fontawesome.com" in sw_code
+    assert "HX-Request" in sw_code

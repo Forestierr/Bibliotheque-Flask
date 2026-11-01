@@ -122,7 +122,8 @@
     </style>
 </head>
 
-<body>
+<body hx-boost="true">
+<div class="htmx-progress-bar" aria-hidden="true"></div>
 
 <!-- Matomo -->
 <script>
@@ -141,30 +142,30 @@
 <!-- End Matomo Code -->
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Get all "navbar-burger" elements
+    function initNavbarBurger() {
       const $navbarBurgers = Array.prototype.slice.call(
         document.querySelectorAll(".navbar-burger"),
         0
       );
 
-      // Add a click event on each of them
       $navbarBurgers.forEach((el) => {
-        el.addEventListener("click", () => {
-          // Get the target from the "data-target" attribute
-          const target = el.dataset.target;
-          const $target = document.getElementById(target);
-
-          // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-          el.classList.toggle("is-active");
-          $target.classList.toggle("is-active");
-        });
+        if (!el.dataset.hasBurgerListener) {
+          el.dataset.hasBurgerListener = "true";
+          el.addEventListener("click", () => {
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+            el.classList.toggle("is-active");
+            if ($target) $target.classList.toggle("is-active");
+          });
+        }
       });
-    });
+    }
+    document.addEventListener("DOMContentLoaded", initNavbarBurger);
+    document.body.addEventListener("htmx:load", initNavbarBurger);
 </script>
 
 <section class="hero is-fullheight">
-    <div id="wrpper">
+    <div id="wrapper">
        <div class="hero-head block">
             {# Navbar #}
             {% block navbar %}
@@ -218,6 +219,22 @@
     document.body.addEventListener('htmx:afterSwap', attachDeleteHandlers);
 
     // Configurer HTMX pour inclure le token CSRF dans toutes les requêtes
+    // Synchroniser Matomo Analytics sur les navigations boostées par HTMX
+    document.body.addEventListener('htmx:afterOnLoad', (evt) => {
+        if (window._paq && evt.detail && evt.detail.successful) {
+            window._paq.push(['setCustomUrl', window.location.href]);
+            window._paq.push(['setDocumentTitle', document.title]);
+            window._paq.push(['trackPageView']);
+        }
+    });
+
+    // Libérer la caméra si on quitte la page de scan via HTMX
+    document.body.addEventListener('htmx:beforeSwap', () => {
+        if (typeof stopScanner === 'function') {
+            try { stopScanner(); } catch (e) {}
+        }
+    });
+
     document.body.addEventListener('htmx:configRequest', (event) => {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
         if (csrfToken) {

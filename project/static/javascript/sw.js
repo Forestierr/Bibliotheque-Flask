@@ -1,28 +1,31 @@
 // sw.js
 // Service Worker for PWA — livresenclasse.com
 
-const CACHE_NAME = "livres-en-classe-v4";
+const CACHE_NAME = "livres-en-classe-v5";
 const OFFLINE_URL = "/offline";
 
 const STATIC_ASSETS = [
   "/offline",
   "/static/css/style.css",
   "/static/javascript/app.js",
+  "/static/image/icons/favicon-96x96.png",
+  "/static/image/icons/logo-w-512x512.png",
   "/static/image/icons/web-app-manifest-192x192.png",
   "/static/image/icons/web-app-manifest-512x512.png",
   "/static/image/icons/apple-touch-icon.png",
   "/static/image/icons/favicon.svg",
-  "/manifest.json"
+  "/manifest.json",
+  "https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.4/css/bulma.min.css",
+  "https://unpkg.com/htmx.org@2.0.4",
+  "https://kit.fontawesome.com/222094ca6a.js"
 ];
 
 // ─── Install : précache TOUT de façon garantie ────────────────────────────────
 self.addEventListener("install", (event) => {
-  console.log("[Service Worker] Installing v4...");
-  // skipWaiting APRÈS le précache pour éviter les races
+  console.log("[Service Worker] Installing v5...");
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log("[Service Worker] Pre-caching shell...");
-      // On cache chaque asset individuellement pour qu'une erreur ne bloque pas tout
+      console.log("[Service Worker] Pre-caching shell & core dependencies...");
       await Promise.allSettled(
         STATIC_ASSETS.map((url) =>
           fetch(url, { cache: "no-store" })
@@ -40,7 +43,7 @@ self.addEventListener("install", (event) => {
 
 // ─── Activate : nettoyage des anciens caches ───────────────────────────────────
 self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating v4...");
+  console.log("[Service Worker] Activating v5...");
   event.waitUntil(
     caches.keys()
       .then((keys) =>
@@ -62,11 +65,37 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignorer non-GET et hors-scope
+  // Ignorer non-GET et hors protocole HTTP(S)
   if (request.method !== "GET") return;
   if (!url.protocol.startsWith("http")) return;
 
-  // 1. Navigation HTML → Network-First avec fallback /offline
+  // 1. Dépendances CDN externes (Bulma, HTMX, FontAwesome) → Cache-First
+  const isCDN =
+    url.hostname === "cdnjs.cloudflare.com" ||
+    url.hostname === "unpkg.com" ||
+    url.hostname === "kit.fontawesome.com" ||
+    url.hostname === "ka-f.fontawesome.com";
+
+  if (isCDN) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) =>
+        cache.match(request).then((cached) => {
+          if (cached) return cached;
+          return fetch(request)
+            .then((networkRes) => {
+              if (networkRes && networkRes.status === 200) {
+                cache.put(request, networkRes.clone());
+              }
+              return networkRes;
+            })
+            .catch(() => cached);
+        })
+      )
+    );
+    return;
+  }
+
+  // 2. Navigation HTML classique → Network-First avec fallback /offline
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -84,7 +113,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2. Assets statiques → Stale-While-Revalidate
+  // 3. Navigation HTMX (HX-Request) → Network-First avec fallback hors-ligne
+  if (request.headers.get("HX-Request") === "true") {
+    event.respondWith(
+      fetch(request).catch(() =>
+        caches.match(OFFLINE_URL).then((offline) =>
+          offline ||
+          new Response(
+            "<div class='notification is-warning'>Vous êtes hors ligne. Vérifiez votre connexion.</div>",
+            { headers: { "Content-Type": "text/html; charset=utf-8" } }
+          )
+        )
+      )
+    );
+    return;
+  }
+
+  // 4. Assets statiques locaux → Stale-While-Revalidate
   const isStatic =
     url.pathname.startsWith("/static/") ||
     url.pathname === "/manifest.json" ||
@@ -108,16 +153,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 3. Tout le reste → Network-Only (API, Stripe, hCaptcha, CDN)
+  // 5. Tout le reste → Network-Only (API, Stripe, hCaptcha)
 });
 
 // ─── Periodic Background Sync ─────────────────────────────────────────────────
 self.addEventListener("periodicsync", (event) => {
   if (event.tag === "refresh-library") {
-    // Le navigateur réveille le SW périodiquement pour rafraîchir le cache
     event.waitUntil(
       caches.open(CACHE_NAME).then(async (cache) => {
-        // Rafraîchit les assets statiques en arrière-plan
         await Promise.allSettled(
           STATIC_ASSETS.map((url) =>
             fetch(url, { cache: "no-store" })

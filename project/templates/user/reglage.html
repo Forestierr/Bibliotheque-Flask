@@ -352,7 +352,7 @@
                             {# Membre fondateur : aucun bouton #}
                         {% elif user.is_canceling %}
                             {% if user.stripe_customer_id %}
-                            <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;">
+                            <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
                                 {% include 'utils/csrf.html' %}
                                 <button type="submit" class="button is-warning is-outlined is-rounded">
                                     <span class="icon"><i class="fas fa-undo"></i></span>
@@ -365,7 +365,7 @@
                             </a>
                             {% endif %}
                         {% elif user.plan == 'premium' and user.stripe_subscription_status == 'active' %}
-                            <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;">
+                            <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
                                 {% include 'utils/csrf.html' %}
                                 <button type="submit" class="button is-link is-outlined is-rounded">
                                     <span class="icon"><i class="fas fa-credit-card"></i></span>
@@ -509,7 +509,7 @@
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste complète de tous les livres enregistrés dans votre bibliothèque.") }}</p>
                             {% if current_user.is_premium %}
-                            <a href="{{ url_for('export.export_books') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                            <a href="{{ url_for('export.export_books') }}" hx-boost="false" download class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
@@ -539,7 +539,7 @@
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("Historique des livres lus et empruntés classé par élève.") }}</p>
                             {% if current_user.is_premium %}
-                            <a href="{{ url_for('export.export_students_reads') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                            <a href="{{ url_for('export.export_students_reads') }}" hx-boost="false" download class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
@@ -569,7 +569,7 @@
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("La liste des emprunts actifs non encore retournés.") }}</p>
                             {% if current_user.is_premium %}
-                            <a href="{{ url_for('export.export_active_loans') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                            <a href="{{ url_for('export.export_active_loans') }}" hx-boost="false" download class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
@@ -599,7 +599,7 @@
                             </div>
                             <p class="is-size-6 has-text-grey mb-4" style="flex:1;">{{ _("L'ensemble de tous les prêts réalisés depuis la création de la bibliothèque.") }}</p>
                             {% if current_user.is_premium %}
-                            <a href="{{ url_for('export.export_all_loans') }}" class="button is-link is-outlined is-fullwidth is-rounded">
+                            <a href="{{ url_for('export.export_all_loans') }}" hx-boost="false" download class="button is-link is-outlined is-fullwidth is-rounded">
                                 <span class="icon"><i class="fas fa-file-excel"></i></span>
                                 <span>{{ _("Télécharger (Excel)") }}</span>
                             </a>
