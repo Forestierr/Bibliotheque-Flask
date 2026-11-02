@@ -65,6 +65,9 @@ class User(UserMixin, db.Model):
     stripe_price_id = db.Column(db.String(120), nullable=True)
     subscription_end_at = db.Column(db.DateTime, nullable=True)
     last_scan_reset_at = db.Column(db.DateTime, nullable=True)
+    show_book_covers = db.Column(
+        db.Boolean, default=True, server_default="1", nullable=False
+    )
 
     def check_and_reset_weekly_scans(self) -> bool:
         """
@@ -353,6 +356,7 @@ class Book(db.Model):
     type = db.Column(db.String(100))
     isbn = db.Column(db.String(100), nullable=True)
     barcode = db.Column(db.String(100), nullable=True, index=True)
+    image_url = db.Column(db.String(500), nullable=True)
 
     user_id = db.Column(
         db.Integer, ForeignKey("user.id")

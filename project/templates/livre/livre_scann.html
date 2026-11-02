@@ -235,6 +235,87 @@
             border-color: #60a5fa !important;
             font-weight: bold;
         }
+
+        /* Overlay progression et feedback du scan */
+        .scan-progress-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            animation: fadeInProgress 0.25s ease forwards;
+        }
+
+        @keyframes fadeInProgress {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .scan-progress-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.75rem 1.5rem;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            color: #1e293b;
+        }
+
+        .scan-progress-badge-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-family: monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #bfdbfe;
+            margin-bottom: 1rem;
+        }
+
+        .scan-progress-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .scan-progress-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1.25rem;
+            min-height: 22px;
+            line-height: 1.4;
+        }
+
+        .scan-progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scan-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            border-radius: 10px;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 25%;
+        }
     </style>
 
     {% if not current_user.is_premium %}
@@ -248,6 +329,22 @@
     <div class="container is-max-desktop scanner-container" id="scanner-container">
         <!-- Zone de flux vidéo injectée dynamiquement -->
         <div id="scanner-viewport"></div>
+
+        <!-- Overlay progression et statut du scan -->
+        <div id="scan-progress-overlay" class="scan-progress-overlay" style="display: none;">
+            <div class="scan-progress-card">
+                <div class="scan-progress-badge-code">
+                    <i class="fas fa-barcode"></i>
+                    <span id="scan-progress-code">978...</span>
+                </div>
+                <div class="scan-progress-title" id="scan-progress-title">{{ _("Code-barres détecté") }}</div>
+                <div class="scan-progress-desc" id="scan-progress-desc">{{ _("Vérification dans votre classe...") }}</div>
+                <div class="scan-progress-bar-container">
+                    <div class="scan-progress-bar-fill" id="scan-progress-bar-fill" style="width: 25%;"></div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Viseur / Hologramme de référence -->
         <div class="scanner-viewfinder-overlay">
@@ -528,12 +625,28 @@
             // Arrêt immédiat de la détection pour économiser les ressources
             stopScanner();
 
-            // Court délai de 400ms pour laisser voir la confirmation verte
+            // Affichage de l'overlay de progression avec état
+            const overlay = document.getElementById('scan-progress-overlay');
+            const codeEl = document.getElementById('scan-progress-code');
+            const titleEl = document.getElementById('scan-progress-title');
+            const descEl = document.getElementById('scan-progress-desc');
+            const barFill = document.getElementById('scan-progress-bar-fill');
+
+            if (overlay && codeEl && titleEl && descEl && barFill) {
+                codeEl.textContent = code;
+                titleEl.textContent = {{ _("Code-barres détecté !")|tojson }};
+                descEl.textContent = {{ _("Vérification dans votre classe...")|tojson }};
+                barFill.style.width = "30%";
+                overlay.style.display = "flex";
+            }
+
+            // Court délai de 300ms pour laisser voir la confirmation
             setTimeout(() => {
                 fetch("{{ url_for('livre.livre_exist', isbn='CODE_PARAM') }}".replace("CODE_PARAM", encodeURIComponent(code)))
                     .then(response => {
                         if (response.status === 403) {
                             return response.json().then(errData => {
+                                if (overlay) overlay.style.display = "none";
                                 showScanPaywallModal(errData.message);
                                 throw new Error("scan_quota_reached");
                             });
@@ -542,30 +655,50 @@
                     })
                     .then(data => {
                         if (data.error) {
-                            console.info("Livre non trouvé en base :", code);
-                            if (data.is_isbn || isISBN(code)) {
-                                window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}&from_scan=1`;
-                            } else {
-                                window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}&from_scan=1`;
-                            }
+                            console.info("Livre non trouvé en base locale :", code);
+                            if (barFill) barFill.style.width = "75%";
+                            if (titleEl) titleEl.textContent = {{ _("Livre non catalogué")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Recherche des métadonnées et de la couverture (BnF, Google Books)...")|tojson }};
+
+                            setTimeout(() => {
+                                if (barFill) barFill.style.width = "95%";
+                                if (data.is_isbn || isISBN(code)) {
+                                    window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}&from_scan=1`;
+                                } else {
+                                    window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}&from_scan=1`;
+                                }
+                            }, 350);
                             return;
                         }
 
-                        if (data.multiple) {
-                            window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
-                        } else {
-                            window.location.href = `/livre/${data.id}/edit`;
-                        }
+                        if (barFill) barFill.style.width = "100%";
+                        if (titleEl) titleEl.textContent = {{ _("Livre trouvé dans votre classe !")|tojson }};
+                        if (descEl) descEl.textContent = {{ _("Ouverture de la fiche...")|tojson }};
+
+                        setTimeout(() => {
+                            if (data.multiple) {
+                                window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
+                            } else {
+                                window.location.href = `/livre/${data.id}/edit`;
+                            }
+                        }, 300);
                     })
                     .catch(error => {
                         console.error("Erreur de recherche du livre :", error);
-                        setTimeout(() => {
-                            isProcessingDetection = false;
-                            resetScannerUI();
-                            startScanner();
-                        }, 1500);
+                        if (error.message !== "scan_quota_reached") {
+                            if (titleEl) titleEl.textContent = {{ _("Erreur de connexion")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Reprise du scanner...")|tojson }};
+                            if (barFill) barFill.style.background = "#ef4444";
+                            setTimeout(() => {
+                                if (overlay) overlay.style.display = "none";
+                                if (barFill) barFill.style.background = "linear-gradient(90deg, #3b82f6, #06b6d4)";
+                                isProcessingDetection = false;
+                                resetScannerUI();
+                                startScanner();
+                            }, 1200);
+                        }
                     });
-            }, 400);
+            }, 300);
         }
 
         function handleDetectedCode(rawCode) {

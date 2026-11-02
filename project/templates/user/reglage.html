@@ -234,6 +234,76 @@
             font-size: 0.95rem !important;
         }
     }
+    .settings-floating-bar {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(0);
+        z-index: 1000;
+        width: calc(100% - 2rem);
+        max-width: 580px;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid hsl(217, 71%, 75%);
+        border-radius: 9999px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+        padding: 0.65rem 1.25rem;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+    .settings-floating-bar.is-hidden {
+        transform: translateX(-50%) translateY(140%) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        display: block !important;
+    }
+    .settings-floating-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .settings-floating-info {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: hsl(210, 40%, 20%);
+        font-size: 0.92rem;
+    }
+    .settings-floating-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+        display: inline-block;
+        animation: pulse-dot 1.8s infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.25); opacity: 0.7; }
+    }
+    .settings-floating-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    @media screen and (max-width: 768px) {
+        .settings-floating-bar {
+            bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+            padding: 0.5rem 0.85rem;
+            border-radius: 14px;
+        }
+        .settings-floating-inner {
+            flex-direction: row;
+            gap: 0.4rem;
+        }
+        .is-small-mobile {
+            font-size: 0.8rem !important;
+            padding: 0.35rem 0.65rem !important;
+            height: auto !important;
+        }
+    }
 </style>
 
 <section class="section">
@@ -384,8 +454,9 @@
             <div class="settings-card">
                 <h2 class="title is-4 mb-4">{{ _("Informations personnelles & Sécurité") }}</h2>
 
-                <form method="POST" action="{{ url_for('auth.reglage') }}">
+                <form id="settings-form" method="POST" action="{{ url_for('auth.reglage') }}">
                     {% include 'utils/csrf.html' %}
+                    <input type="hidden" name="next" id="settings-next-input" value="">
 
                     <div class="field">
                         <label class="label">{{ _("Nom d'affichage") }}</label>
@@ -420,7 +491,7 @@
 
                     <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
 
-                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Changer de mot de passe") }}</h3>
+                                        <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Changer de mot de passe") }}</h3>
                     <p class="has-text-grey is-size-7 mb-4">{{ _("Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot de passe.") }}</p>
 
                     <div class="field">
@@ -452,6 +523,26 @@
                     </div>
 
                     <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
+
+                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Affichage & Préférences") }}</h3>
+                    <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="field">
+                            <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+                                <label class="checkbox has-text-weight-bold" style="cursor: pointer; display: flex; align-items: center; gap: 0.6rem; color: hsl(210, 40%, 20%);">
+                                    <input type="checkbox" name="show_book_covers" value="1" {% if user.show_book_covers %}checked{% endif %} style="transform: scale(1.2); cursor: pointer;">
+                                    <span>{{ _("Afficher les images de couverture des livres") }}</span>
+                                </label>
+                                {% if user.show_book_covers %}
+                                    <span class="tag is-success is-light is-rounded">{{ _("Activé") }}</span>
+                                {% else %}
+                                    <span class="tag is-grey is-light is-rounded">{{ _("Mode compact") }}</span>
+                                {% endif %}
+                            </div>
+                            <p class="has-text-grey is-size-7 ml-5" style="line-height: 1.5;">
+                                {{ _("Affiche l'illustration de la couverture des livres sur la liste de tous vos livres, la gestion des emprunts et les fiches détaillées d'un livre ou d'un élève. Décochez pour conserver l'affichage textuel classique.") }}
+                            </p>
+                        </div>
+                    </div>
 
                     <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Communications & Newsletter") }}</h3>
                     <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
@@ -686,6 +777,25 @@
             </div>
         </div>
 
+        <!-- Barre flottante d'enregistrement (visible dès qu'un réglage est modifié) -->
+        <div id="settings-floating-bar" class="settings-floating-bar is-hidden">
+            <div class="settings-floating-inner">
+                <div class="settings-floating-info">
+                    <span class="settings-floating-dot"></span>
+                    <span class="has-text-weight-bold is-size-7-mobile">{{ _("Modifications non enregistrées") }}</span>
+                </div>
+                <div class="settings-floating-actions">
+                    <button type="button" class="button is-small-mobile is-light is-rounded" id="settings-btn-cancel">
+                        <span>{{ _("Annuler") }}</span>
+                    </button>
+                    <button type="button" class="button is-small-mobile is-link is-rounded has-text-weight-bold" id="settings-btn-save-floating">
+                        <span class="icon is-small"><i class="fas fa-check"></i></span>
+                        <span>{{ _("Enregistrer") }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -804,45 +914,297 @@
     </div>
 </div>
 
+<!-- Modale Confirmation : Modifications non enregistrées -->
+<div id="modalUnsavedSettings" class="modal">
+    <div class="modal-background" onclick="closeModal('modalUnsavedSettings')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden; max-width: 520px;">
+        <header class="modal-card-head" style="background: #fffbeb;">
+            <p class="modal-card-title has-text-warning-dark">
+                <span class="icon mr-2"><i class="fas fa-exclamation-triangle"></i></span>
+                {{ _("Modifications non enregistrées") }}
+            </p>
+            <button class="delete" aria-label="close" onclick="closeModal('modalUnsavedSettings')"></button>
+        </header>
+        <section class="modal-card-body">
+            <p class="mb-3" style="color: hsl(0, 0%, 20%); font-weight: 500;">
+                {{ _("Vous avez modifié des réglages sur votre compte sans les enregistrer.") }}
+            </p>
+            <p class="has-text-grey is-size-7">
+                {{ _("Si vous quittez cette page maintenant, vos modifications seront perdues. Souhaitez-vous enregistrer vos modifications avant de partir ?") }}
+            </p>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="button is-light is-rounded" id="btn-modal-cancel">
+                {{ _("Annuler et rester") }}
+            </button>
+            <button type="button" class="button is-danger is-outlined is-rounded" id="btn-discard-and-leave">
+                {{ _("Quitter sans enregistrer") }}
+            </button>
+            <button type="button" class="button is-link is-rounded has-text-weight-bold" id="btn-save-and-continue">
+                <span class="icon is-small"><i class="fas fa-save"></i></span>
+                <span>{{ _("Enregistrer et continuer") }}</span>
+            </button>
+        </footer>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
-    function switchSettingsTab(tabName) {
-        document.getElementById('tabContentCompte').style.display = 'none';
-        document.getElementById('tabContentExport').style.display = 'none';
-        document.getElementById('tabContentDanger').style.display = 'none';
+    // Fonctions globales accessibles depuis les attributs HTML onclick
+    window.switchSettingsTab = function(tabName) {
+        var cCompte = document.getElementById('tabContentCompte');
+        var cExport = document.getElementById('tabContentExport');
+        var cDanger = document.getElementById('tabContentDanger');
+        var bCompte = document.getElementById('tabBtnCompte');
+        var bExport = document.getElementById('tabBtnExport');
+        var bDanger = document.getElementById('tabBtnDanger');
 
-        document.getElementById('tabBtnCompte').classList.remove('is-active');
-        document.getElementById('tabBtnExport').classList.remove('is-active');
-        document.getElementById('tabBtnDanger').classList.remove('is-active');
+        if (cCompte) cCompte.style.display = 'none';
+        if (cExport) cExport.style.display = 'none';
+        if (cDanger) cDanger.style.display = 'none';
 
-        if (tabName === 'compte') {
-            document.getElementById('tabContentCompte').style.display = 'block';
-            document.getElementById('tabBtnCompte').classList.add('is-active');
-        } else if (tabName === 'export') {
-            document.getElementById('tabContentExport').style.display = 'block';
-            document.getElementById('tabBtnExport').classList.add('is-active');
-        } else if (tabName === 'danger') {
-            document.getElementById('tabContentDanger').style.display = 'block';
-            document.getElementById('tabBtnDanger').classList.add('is-active');
+        if (bCompte) bCompte.classList.remove('is-active');
+        if (bExport) bExport.classList.remove('is-active');
+        if (bDanger) bDanger.classList.remove('is-active');
+
+        if (tabName === 'compte' && cCompte) {
+            cCompte.style.display = 'block';
+            if (bCompte) bCompte.classList.add('is-active');
+        } else if (tabName === 'export' && cExport) {
+            cExport.style.display = 'block';
+            if (bExport) bExport.classList.add('is-active');
+        } else if (tabName === 'danger' && cDanger) {
+            cDanger.style.display = 'block';
+            if (bDanger) bDanger.classList.add('is-active');
         }
-    }
+    };
 
-    function openModal(id) {
-        document.getElementById(id).classList.add('is-active');
-    }
+    window.openModal = function(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.add('is-active');
+    };
 
-    function closeModal(id) {
-        document.getElementById(id).classList.remove('is-active');
-    }
+    window.closeModal = function(id) {
+        var el = document.getElementById(id);
+        if (el) el.classList.remove('is-active');
+    };
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal.is-active').forEach(function (m) {
-                m.classList.remove('is-active');
+    // Encapsulation complète de la logique des réglages et du suivi des modifications
+    (function() {
+        function initSettings() {
+            var settingsForm = document.getElementById('settings-form');
+            if (!settingsForm) return;
+
+            // Éviter les doubles liaisons d'écouteurs sur le même nœud DOM
+            if (settingsForm.dataset.initialized === "true") return;
+            settingsForm.dataset.initialized = "true";
+
+            // Nettoyage de toute instance résiduelle précédente
+            if (typeof window._settingsPageCleanup === 'function') {
+                window._settingsPageCleanup();
+                window._settingsPageCleanup = null;
+            }
+
+            var isDirty = false;
+            var pendingNavigationUrl = null;
+
+            var floatingBar = document.getElementById('settings-floating-bar');
+            var btnCancel = document.getElementById('settings-btn-cancel');
+            var btnSaveFloating = document.getElementById('settings-btn-save-floating');
+            var nextInput = document.getElementById('settings-next-input');
+            var btnModalCancel = document.getElementById('btn-modal-cancel');
+            var btnDiscard = document.getElementById('btn-discard-and-leave');
+            var btnSaveAndContinue = document.getElementById('btn-save-and-continue');
+
+            function checkDirty() {
+                if (!settingsForm) return false;
+                var dirty = false;
+                var elements = settingsForm.elements;
+
+                for (var i = 0; i < elements.length; i++) {
+                    var el = elements[i];
+                    if (!el.name || el.type === 'hidden' || el.type === 'submit' || el.type === 'button') continue;
+
+                    // Mot de passe : considéré modifié dès qu'au moins 1 caractère est saisi
+                    if (el.type === 'password') {
+                        if (el.value.length > 0) {
+                            dirty = true;
+                            break;
+                        }
+                        continue;
+                    }
+
+                    // Cases à cocher : compare l'état checked avec defaultChecked natif
+                    if (el.type === 'checkbox' || el.type === 'radio') {
+                        if (el.checked !== el.defaultChecked) {
+                            dirty = true;
+                            break;
+                        }
+                        continue;
+                    }
+
+                    // Menu déroulant select : compare l'option sélectionnée avec defaultSelected natif
+                    if (el.tagName === 'SELECT') {
+                        var selectChanged = false;
+                        for (var j = 0; j < el.options.length; j++) {
+                            if (el.options[j].selected !== el.options[j].defaultSelected) {
+                                selectChanged = true;
+                                break;
+                            }
+                        }
+                        if (selectChanged) {
+                            dirty = true;
+                            break;
+                        }
+                        continue;
+                    }
+
+                    // Champs texte / email : compare value avec defaultValue natif
+                    if (el.value !== el.defaultValue) {
+                        dirty = true;
+                        break;
+                    }
+                }
+
+                isDirty = dirty;
+                if (floatingBar) {
+                    if (isDirty) {
+                        floatingBar.classList.remove('is-hidden');
+                    } else {
+                        floatingBar.classList.add('is-hidden');
+                    }
+                }
+                return isDirty;
+            }
+
+            function resetSettingsForm() {
+                if (settingsForm) {
+                    settingsForm.reset();
+                }
+                isDirty = false;
+                pendingNavigationUrl = null;
+                if (floatingBar) {
+                    floatingBar.classList.add('is-hidden');
+                }
+            }
+
+            settingsForm.addEventListener('input', checkDirty);
+            settingsForm.addEventListener('change', checkDirty);
+
+            settingsForm.addEventListener('submit', function() {
+                isDirty = false;
+                if (floatingBar) floatingBar.classList.add('is-hidden');
             });
+
+            if (btnCancel) {
+                btnCancel.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    resetSettingsForm();
+                });
+            }
+
+            if (btnSaveFloating) {
+                btnSaveFloating.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    settingsForm.requestSubmit();
+                });
+            }
+
+            function onBeforeUnload(e) {
+                if (isDirty) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                    return '';
+                }
+            }
+            window.addEventListener('beforeunload', onBeforeUnload);
+
+            function onDocumentClickCapture(e) {
+                if (!isDirty) return;
+
+                var link = e.target.closest('a');
+                if (!link) return;
+
+                // Ne pas intercepter les liens à l'intérieur de la modale elle-même
+                if (link.closest('#modalUnsavedSettings')) return;
+
+                var href = link.getAttribute('href');
+                if (!href || href === '#' || href.startsWith('javascript:') || href.startsWith('#')) return;
+                if (link.getAttribute('download') !== null) return;
+
+                // Stopper l'événement avant le swap HTMX boost
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
+                pendingNavigationUrl = link.href;
+                window.openModal('modalUnsavedSettings');
+            }
+            document.addEventListener('click', onDocumentClickCapture, true);
+
+            function onDocumentKeyDown(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.is-active').forEach(function (m) {
+                        m.classList.remove('is-active');
+                    });
+                }
+            }
+            document.addEventListener('keydown', onDocumentKeyDown);
+
+            if (btnModalCancel) {
+                btnModalCancel.addEventListener('click', function() {
+                    pendingNavigationUrl = null;
+                    window.closeModal('modalUnsavedSettings');
+                });
+            }
+
+            if (btnDiscard) {
+                btnDiscard.addEventListener('click', function() {
+                    isDirty = false;
+                    window.closeModal('modalUnsavedSettings');
+                    if (pendingNavigationUrl) {
+                        window.location.href = pendingNavigationUrl;
+                    }
+                });
+            }
+
+            if (btnSaveAndContinue) {
+                btnSaveAndContinue.addEventListener('click', function() {
+                    if (pendingNavigationUrl && nextInput) {
+                        nextInput.value = pendingNavigationUrl;
+                    }
+                    isDirty = false;
+                    window.closeModal('modalUnsavedSettings');
+                    settingsForm.requestSubmit();
+                });
+            }
+
+            window._settingsPageCleanup = function() {
+                document.removeEventListener('click', onDocumentClickCapture, true);
+                window.removeEventListener('beforeunload', onBeforeUnload);
+                document.removeEventListener('keydown', onDocumentKeyDown);
+                isDirty = false;
+                pendingNavigationUrl = null;
+            };
         }
-    });
+
+        // Lancement immédiat si le DOM est déjà prêt, ou sur DOMContentLoaded / htmx:load
+        if (document.readyState !== 'loading') {
+            initSettings();
+        } else {
+            document.addEventListener('DOMContentLoaded', initSettings);
+        }
+        document.body.addEventListener('htmx:load', initSettings);
+
+        // Nettoyage automatique avant un swap HTMX lors d'un départ de la page
+        document.body.addEventListener('htmx:beforeSwap', function() {
+            if (typeof window._settingsPageCleanup === 'function') {
+                window._settingsPageCleanup();
+                window._settingsPageCleanup = null;
+            }
+        });
+    })();
 </script>
 {% endblock %}

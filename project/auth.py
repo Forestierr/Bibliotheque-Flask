@@ -345,6 +345,7 @@ def reglage():
             user.name = name
 
         user.newsletter_subscribed = newsletter_subscribed
+        user.show_book_covers = "show_book_covers" in request.form
 
         preferred_language = request.form.get("preferred_language")
         if preferred_language in ["fr", "en", "de"]:
@@ -366,6 +367,10 @@ def reglage():
 
         db.session.commit()
         flash(_("Vos informations ont été mises à jour."), "success")
+
+        next_url = request.form.get("next")
+        if next_url and next_url.startswith("/") and not next_url.startswith("//"):
+            return redirect(next_url)
 
     user = db.session.get(User, current_user.id)
 

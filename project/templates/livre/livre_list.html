@@ -4,13 +4,91 @@
 
 {% include "utils/flash_message.html" %}
 
+<style>
+.book-row-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 6px 0;
+}
+.book-cover-thumb-link {
+    flex-shrink: 0;
+    display: block;
+}
+.book-cover-thumb-wrapper {
+    width: 48px;
+    height: 68px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.book-cover-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.book-cover-placeholder {
+    color: #94a3b8;
+    font-size: 1.15rem;
+}
+.book-row-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+</style>
+
 <div class="container block">
     {% for book in books %}
         <hr style="margin: 5px 0 5px 0"/>
         <div class="container" style="margin-bottom: 10px">
+            {% if current_user.is_authenticated and current_user.show_book_covers %}
+            <div class="book-row-item">
+                <a href="/livre/{{ book.Book.id }}" class="book-cover-thumb-link" tabindex="-1">
+                    <div class="book-cover-thumb-wrapper">
+                        {% if book.Book.image_url %}
+                            <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" class="book-cover-thumb" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'book-cover-placeholder\'><i class=\'fas fa-book\'></i></div>';">
+                        {% else %}
+                            <div class="book-cover-placeholder"><i class="fas fa-book"></i></div>
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="book-row-content">
+                    <div class="columns" style="margin-bottom: 0;">
+                        <div class="column">
+                            <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold">{{ book.Book.title }}</a>
+                        </div>
+                        <div class="column is-hidden-mobile has-text-right">
+                            <p>{{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}</p>
+                        </div>
+                    </div>
+
+                    {% if book.Student != None %}
+                        <p>{{ _("Emprunté par :") }} <a href="/eleve/{{ book.Student.id }}" class="has-text-dark">{{ book.Student.name }} {{ book.Student.firstname }}</a></p>
+                    {% else %}
+                        <p>{{ _("Disponible") }}</p>
+                    {% endif %}
+
+                    {# Tags #}
+                    {% if book.tags != None %}
+                        {% set tag_list = book.tags.split(',') %}
+                        <div class="tags" style="margin-top: 4px; margin-bottom: 0;">
+                            {% for tag in tag_list %}
+                                <span class="tag is-info is-light is-rounded">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
             <div class="columns" style="margin-bottom: 0;">
                 <div class="column">
-                    <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold	">{{ book.Book.title }}</a>
+                    <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold">{{ book.Book.title }}</a>
                 </div>
                 <div class="column is-hidden-mobile has-text-right">
                     <p>{{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}</p>
@@ -22,20 +100,21 @@
             {% else %}
                 <p>{{ _("Disponible") }}</p>
             {% endif %}
+
+            {# Tags #}
+            {% if book.tags != None %}
+                {% set tag_list = book.tags.split(',') %}
+                <div class="tags" style="margin: 0">
+                    {% for tag in tag_list %}
+                        <span class="tag is-info is-rounded">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endif %}
         </div>
 
-        {# Tags #}
-        {% if book.tags != None %}
-            {% set tag_list = book.tags.split(',') %}
-            <div class="tags" style="margin: 0">
-                {% for tag in tag_list %}
-                    <span class="tag is-info is-rounded">{{ tag }}</span>
-                {% endfor %}
-            </div>
-        {% endif %}
-
         {# Add hr if last element #}
-        {%  if loop.last %}
+        {% if loop.last %}
         <hr style="margin: 5px 0 5px 0" />
         {% endif %}
     {% endfor %}

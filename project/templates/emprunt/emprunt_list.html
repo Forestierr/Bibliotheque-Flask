@@ -27,9 +27,18 @@
         {% endif %}
         <hr style="margin: 5px 0 5px 0"/>
         <div class="container {% if is_blurred %}loan-blurred{% endif %}" style="margin-bottom: 10px">
-            <div class="columns is-mobile" style="margin-bottom: 0;">
+            <div class="columns is-mobile is-vcentered" style="margin-bottom: 0;">
                 <div class="column">
-                    <a href="{{ url_for('livre.livre_infos', id=loan.Book.id) }}" class="has-text-weight-bold {% if loan.Loan.date_return == None %}has-text-danger{% endif %}">{{ loan.Book.title }}</a>
+                    <div class="is-flex is-align-items-center" style="gap: 12px;">
+                        {% if current_user.show_book_covers and loan.Book.image_url %}
+                        <a href="{{ url_for('livre.livre_infos', id=loan.Book.id) }}" tabindex="-1" style="flex-shrink: 0;">
+                            <img src="{{ loan.Book.image_url }}" alt="{{ loan.Book.title }}" style="width: 38px; height: 54px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15);" loading="lazy" onerror="this.parentElement.style.display='none';">
+                        </a>
+                        {% endif %}
+                        <div>
+                            <a href="{{ url_for('livre.livre_infos', id=loan.Book.id) }}" class="has-text-weight-bold {% if loan.Loan.date_return == None %}has-text-danger{% endif %}">{{ loan.Book.title }}</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="column has-text-right">
                     <a href="{{ url_for('eleve.eleve_infos', id=loan.Student.id) }}">{{ loan.Student.name }} {{ loan.Student.firstname }}</a>
