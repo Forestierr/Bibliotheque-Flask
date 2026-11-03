@@ -33,7 +33,7 @@
                 {% if current_user.show_book_covers and book.image_url %}
                 <div class="column is-narrow has-text-centered mb-3-mobile">
                     <figure class="image" style="display: inline-block; max-width: 150px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08);">
-                        <img src="{{ book.image_url }}" alt="{{ book.title }}" style="max-height: 220px; width: auto; object-fit: contain; display: block;" onerror="this.closest('.column').style.display='none';">
+                        <img src="{{ book.image_url }}" alt="{{ book.title }}" style="max-height: 220px; width: auto; object-fit: contain; display: block;" decoding="async" onerror="this.closest('.column').style.display='none';">
                     </figure>
                 </div>
                 {% endif %}

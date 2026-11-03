@@ -2,6 +2,7 @@
 // Service Worker for PWA — livresenclasse.com
 
 const CACHE_NAME = "livres-en-classe-v5";
+const COVERS_CACHE_NAME = "livres-en-classe-covers-v1";
 const OFFLINE_URL = "/offline";
 
 const STATIC_ASSETS = [
@@ -49,7 +50,7 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key !== CACHE_NAME)
+            .filter((key) => key !== CACHE_NAME && key !== COVERS_CACHE_NAME)
             .map((key) => {
               console.log("[SW] Deleting old cache:", key);
               return caches.delete(key);
@@ -59,6 +60,25 @@ self.addEventListener("activate", (event) => {
       .then(() => self.clients.claim())
   );
 });
+
+// ─── Gestion de la taille du cache des couvertures (LRU) ──────────────────────
+let isTrimmingCovers = false;
+async function trimCache(cacheName, maxItems = 500) {
+  if (isTrimmingCovers) return;
+  isTrimmingCovers = true;
+  try {
+    const cache = await caches.open(cacheName);
+    const keys = await cache.keys();
+    if (keys.length > maxItems) {
+      const toDelete = keys.slice(0, keys.length - maxItems);
+      await Promise.all(toDelete.map((k) => cache.delete(k)));
+    }
+  } catch (e) {
+    // Continuer silencieusement en cas d'erreur
+  } finally {
+    isTrimmingCovers = false;
+  }
+}
 
 // ─── Fetch : stratégies par type de requête ───────────────────────────────────
 self.addEventListener("fetch", (event) => {
@@ -85,6 +105,36 @@ self.addEventListener("fetch", (event) => {
             .then((networkRes) => {
               if (networkRes && networkRes.status === 200) {
                 cache.put(request, networkRes.clone());
+              }
+              return networkRes;
+            })
+            .catch(() => cached);
+        })
+      )
+    );
+    return;
+  }
+
+  // 1b. Images de couverture de livres (BnF, OpenLibrary, Google Books, couvertures externes) → Cache-First
+  const isBookCover =
+    (url.hostname === "openapi.bnf.fr" && url.pathname.includes("/couverture/")) ||
+    url.hostname === "covers.openlibrary.org" ||
+    (url.hostname.includes("google") && url.pathname.includes("/books/")) ||
+    (request.destination === "image" && url.origin !== self.location.origin);
+
+  if (isBookCover) {
+    event.respondWith(
+      caches.open(COVERS_CACHE_NAME).then((cache) =>
+        cache.match(request).then((cached) => {
+          if (cached) return cached;
+          return fetch(request)
+            .then((networkRes) => {
+              if (
+                networkRes &&
+                (networkRes.ok || networkRes.type === "opaque" || networkRes.status === 200)
+              ) {
+                cache.put(request, networkRes.clone());
+                trimCache(COVERS_CACHE_NAME, 500);
               }
               return networkRes;
             })

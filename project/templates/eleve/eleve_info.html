@@ -40,7 +40,7 @@
                         <div class="is-flex is-align-items-center" style="gap: 12px;">
                             {% if current_user.show_book_covers and book.Book.image_url %}
                             <a href="/livre/{{ book.Book.id }}" tabindex="-1" style="flex-shrink: 0;">
-                                <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" style="width: 38px; height: 54px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15);" loading="lazy" onerror="this.parentElement.style.display='none';">
+                                <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" style="width: 38px; height: 54px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15);" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none';">
                             </a>
                             {% endif %}
                             <div>
@@ -144,7 +144,7 @@
                         <div class="is-flex is-align-items-center" style="gap: 12px;">
                             {% if current_user.show_book_covers and book.Book.image_url %}
                             <a href="/livre/{{ book.Book.id }}" tabindex="-1" style="flex-shrink: 0;">
-                                <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" style="width: 38px; height: 54px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15);" loading="lazy" onerror="this.parentElement.style.display='none';">
+                                <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" style="width: 38px; height: 54px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15);" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none';">
                             </a>
                             {% endif %}
                             <div>

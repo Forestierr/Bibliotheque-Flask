@@ -231,3 +231,15 @@ def test_service_worker_v5_and_cdn_caching(client):
     assert "unpkg.com" in sw_code
     assert "kit.fontawesome.com" in sw_code
     assert "HX-Request" in sw_code
+
+
+def test_service_worker_book_covers_caching(client):
+    """Vérifie que sw.js inclut la stratégie de mise en cache Cache-First dédiée aux couvertures."""
+    res = client.get("/sw.js")
+    assert res.status_code == 200
+    sw_code = res.get_data(as_text=True)
+    assert "livres-en-classe-covers-v1" in sw_code
+    assert "openapi.bnf.fr" in sw_code
+    assert "covers.openlibrary.org" in sw_code
+    assert "trimCache" in sw_code
+    assert "key !== COVERS_CACHE_NAME" in sw_code
