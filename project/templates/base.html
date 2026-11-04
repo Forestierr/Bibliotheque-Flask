@@ -184,13 +184,13 @@
 
     {% if request.endpoint in ['main.index', 'main.install', 'auth.login', 'auth.signup', 'main.mentions_legales', 'main.apropos'] %}
         {# pass #}
-    {% elif request.endpoint == 'livre.livre_db' %}
+    {% elif request.endpoint == 'livre.livre_db' or (request.endpoint and request.endpoint.startswith('livre.') and request.endpoint != 'livre.livre_scann') %}
         {{ footer_mobile(1) }}
-    {% elif request.endpoint == 'livre.livre_scann' %}
+    {% elif request.endpoint == 'eleve.eleve_db' or request.endpoint == 'eleve.eleve_infos' or (request.endpoint and request.endpoint.startswith('eleve.')) %}
         {{ footer_mobile(2) }}
-    {% elif request.endpoint == 'eleve.eleve_db' or request.endpoint == 'eleve.eleve_infos' %}
+    {% elif request.endpoint == 'livre.livre_scann' %}
         {{ footer_mobile(3) }}
-    {% elif request.endpoint == 'emprunt.emprunt_db' %}
+    {% elif request.endpoint == 'emprunt.emprunt_db' or (request.endpoint and request.endpoint.startswith('emprunt.')) %}
         {{ footer_mobile(4) }}
     {% elif request.endpoint == 'auth.reglage' %}
         {{ footer_mobile(5) }}

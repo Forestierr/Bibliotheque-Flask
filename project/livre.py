@@ -74,7 +74,7 @@ def livre_db():
                 current_user.id,
                 split[0],
                 search_val,
-                "Book.id",
+                "pertinent",
                 "asc",
                 n_books_by_page,
                 page,
@@ -84,7 +84,7 @@ def livre_db():
                 current_user.id,
                 "all",
                 search_query,
-                "Book.id",
+                "pertinent",
                 "asc",
                 n_books_by_page,
                 page,
@@ -467,6 +467,9 @@ def livre_infos(id):
     # Get the tags of the book
     tags = get_book_tags(current_user.id, id)
 
+    default_days = getattr(current_user, "default_loan_duration_days", None) or 14
+    default_expected_date = datetime.now(UTC).date() + timedelta(days=default_days)
+
     return render_template(
         "livre/livre_info.html",
         book=book,
@@ -474,6 +477,7 @@ def livre_infos(id):
         old_loans=old_loans,
         students=students,
         tags=tags,
+        default_expected_date=default_expected_date,
     )
 
 
@@ -1022,7 +1026,7 @@ def search(page=1):
     sort_order = "asc"
     match sort:
         case "pertinent":
-            sort = "Book.id"
+            sort = "pertinent"
         case "az":
             sort = "Book.title"
         case "za":
@@ -1034,7 +1038,7 @@ def search(page=1):
         case "m_emprunte":
             sort = "loan_count"
         case _:
-            sort = "Book.id"
+            sort = "pertinent"
 
     n_books = get_books_count(current_user.id)
 

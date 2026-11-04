@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-04 12:01+0100\n"
+"POT-Creation-Date: 2026-11-04 14:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,22 +140,22 @@ msgstr ""
 msgid "L'élève existe déjà."
 msgstr ""
 
-#: project/emprunt.py:86 project/emprunt.py:173
+#: project/emprunt.py:92 project/emprunt.py:169
 #, python-format
 msgid "Le livre '%(title)s' a bien été marqué comme retourné."
 msgstr ""
 
-#: project/emprunt.py:92 project/emprunt.py:137 project/emprunt.py:141
-#: project/emprunt.py:142 project/emprunt.py:195
+#: project/emprunt.py:98 project/emprunt.py:133 project/emprunt.py:137
+#: project/emprunt.py:138 project/emprunt.py:191
 msgid "Accès non autorisé."
 msgstr ""
 
-#: project/emprunt.py:125 project/emprunt.py:129 project/emprunt.py:130
-#: project/emprunt.py:189
+#: project/emprunt.py:121 project/emprunt.py:125 project/emprunt.py:126
+#: project/emprunt.py:185
 msgid "Emprunt introuvable."
 msgstr ""
 
-#: project/emprunt.py:166
+#: project/emprunt.py:162
 msgid "Livre retourné avec succès."
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Le livre que vous souhaitiez voir n'existe pas."
 msgstr ""
 
-#: project/livre.py:489 project/livre.py:781
+#: project/livre.py:493 project/livre.py:785
 #, python-format
 msgid ""
 "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres"
@@ -171,52 +171,52 @@ msgid ""
 "ou supprimez un livre existant."
 msgstr ""
 
-#: project/livre.py:526
+#: project/livre.py:530
 msgid "Veuillez ajouter un titre."
 msgstr ""
 
-#: project/livre.py:559
+#: project/livre.py:563
 msgid "Le livre : "
 msgstr ""
 
-#: project/livre.py:559
+#: project/livre.py:563
 msgid " a été ajouté à votre bibliothèque."
 msgstr ""
 
-#: project/livre.py:646
+#: project/livre.py:650
 msgid "Le livre que vous souhaitiez éditer n'existe pas."
 msgstr ""
 
-#: project/livre.py:688
+#: project/livre.py:692
 msgid "Veuillez ajouter un titre au livre."
 msgstr ""
 
-#: project/livre.py:790
+#: project/livre.py:794
 msgid "Le livre que vous souhaitiez dupliquer n'existe pas."
 msgstr ""
 
-#: project/livre.py:816
+#: project/livre.py:820
 msgid "L'exemplaire a été dupliqué avec succès !"
 msgstr ""
 
-#: project/livre.py:826
+#: project/livre.py:830
 msgid "Le livre reste dans la bibliothèque."
 msgstr ""
 
-#: project/livre.py:832
+#: project/livre.py:836
 msgid "L'élève n'existe pas."
 msgstr ""
 
-#: project/livre.py:864
+#: project/livre.py:868
 #, python-format
 msgid "Le livre '%(title)s' a bien été prêté à %(name)s."
 msgstr ""
 
-#: project/livre.py:883
+#: project/livre.py:887
 msgid "Le livre a été supprimé."
 msgstr ""
 
-#: project/livre.py:900
+#: project/livre.py:904
 #, python-format
 msgid ""
 "Vous avez atteint votre quota de %(max)s scans gratuits pour cette "
@@ -224,7 +224,7 @@ msgid ""
 "Premium pour scanner en illimité."
 msgstr ""
 
-#: project/livre.py:977
+#: project/livre.py:981
 msgid "Tous les livres ont été supprimés."
 msgstr ""
 
@@ -421,6 +421,7 @@ msgstr ""
 
 #: project/templates/aide.html:198 project/templates/emprunt/emprunt.html:15
 #: project/templates/user/dashboard.html:91
+#: project/templates/utils/footer.html:78
 #: project/templates/utils/navbar.html:386
 msgid "Emprunts"
 msgstr ""
@@ -445,11 +446,13 @@ msgid ""
 "pour saisir manuellement les informations."
 msgstr ""
 
-#: project/templates/aide.html:221 project/templates/livre/livre.html:32
-#: project/templates/livre/livre.html:44
+#: project/templates/aide.html:221 project/templates/livre/livre.html:25
+#: project/templates/livre/livre.html:37
 #: project/templates/livre/livre_scann.html:8
 #: project/templates/user/dashboard.html:113
 #: project/templates/user/dashboard.html:317
+#: project/templates/utils/footer.html:65
+#: project/templates/utils/search_bar.html:37
 msgid "Scanner un livre"
 msgstr ""
 
@@ -1294,7 +1297,7 @@ msgstr ""
 msgid "Prêtez et récupérez des livres d'un simple clic pour un suivi rigoureux."
 msgstr ""
 
-#: project/templates/index.html:464
+#: project/templates/index.html:464 project/templates/livre/livre_info.html:254
 msgid "Historique des emprunts"
 msgstr ""
 
@@ -2689,6 +2692,7 @@ msgstr ""
 
 #: project/templates/components/stats_counter.html:13
 #: project/templates/user/dashboard.html:187
+#: project/templates/utils/footer.html:52
 #: project/templates/utils/navbar.html:378
 msgid "Livres"
 msgstr ""
@@ -2696,6 +2700,7 @@ msgstr ""
 #: project/templates/components/stats_counter.html:19
 #: project/templates/user/dashboard.html:201
 #: project/templates/user/dashboard.html:527
+#: project/templates/utils/footer.html:60
 #: project/templates/utils/navbar.html:382
 msgid "Élèves"
 msgstr ""
@@ -2757,7 +2762,7 @@ msgid "Rechercher un élève"
 msgstr ""
 
 #: project/templates/eleve/eleve_add.html:42
-#: project/templates/eleve/eleve_info.html:125
+#: project/templates/eleve/eleve_info.html:135
 msgid "Illustration élève"
 msgstr ""
 
@@ -2778,14 +2783,14 @@ msgid "Prénom de l'élève"
 msgstr ""
 
 #: project/templates/eleve/eleve_add.html:78
-#: project/templates/eleve/eleve_info.html:72
-#: project/templates/eleve/eleve_info.html:176
-#: project/templates/eleve/eleve_info.html:223
+#: project/templates/eleve/eleve_info.html:107
+#: project/templates/eleve/eleve_info.html:187
+#: project/templates/eleve/eleve_info.html:238
 #: project/templates/livre/livre_ajout.html:155
 #: project/templates/livre/livre_edit.html:158
 #: project/templates/livre/livre_edit.html:185
-#: project/templates/livre/livre_info.html:121
-#: project/templates/livre/livre_info.html:246
+#: project/templates/livre/livre_info.html:145
+#: project/templates/livre/livre_info.html:297
 #: project/templates/user/reglage.html:814
 #: project/templates/user/reglage.html:841
 #: project/templates/user/reglage.html:862
@@ -2799,71 +2804,109 @@ msgstr ""
 msgid "Ajouter"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:17
+#: project/templates/eleve/eleve_info.html:18
 msgid "Nombre de livres lus :"
 msgstr ""
 
 #: project/templates/eleve/eleve_info.html:22
+msgid "Options de l'élève"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:30
+#: project/templates/eleve/eleve_info.html:243
+msgid "Supprimer l'élève"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:40
 msgid "Imprimer un diplôme de lecture"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:26
+#: project/templates/eleve/eleve_info.html:44
 msgid "Carte de lecteur"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:34
+#: project/templates/eleve/eleve_info.html:52
 msgid "Livres actuellement empruntés"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:34
+#: project/templates/eleve/eleve_info.html:52
 #: project/templates/livre/livre_scann.html:482
 msgid "Livre actuellement emprunté"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:58
+#: project/templates/eleve/eleve_info.html:66
 #: project/templates/eleve/eleve_info.html:162
-#: project/templates/livre/livre_info.html:107
-#: project/templates/livre/livre_info.html:232
-msgid "Supprimer l'emprunt ?"
+#: project/templates/emprunt/_loan_row.html:45
+#: project/templates/livre/livre_info.html:103
+msgid "Emprunté le"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:68
-#: project/templates/eleve/eleve_info.html:172
-#: project/templates/livre/livre_info.html:117
-#: project/templates/livre/livre_info.html:242
+#: project/templates/eleve/eleve_info.html:79
+msgid "Retourner le livre"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:82
+#: project/templates/eleve/eleve_info.html:103
+#: project/templates/eleve/eleve_info.html:183
+#: project/templates/eleve/eleve_info.html:195
+#: project/templates/livre/livre_info.html:141
+#: project/templates/livre/livre_info.html:293
 msgid "Supprimer l'emprunt"
 msgstr ""
 
 #: project/templates/eleve/eleve_info.html:93
-#: project/templates/eleve/eleve_info.html:192
-#: project/templates/emprunt/_loan_row.html:45
-#: project/templates/livre/livre_info.html:80
-msgid "Emprunté le"
+#: project/templates/eleve/eleve_info.html:173
+#: project/templates/livre/livre_info.html:131
+#: project/templates/livre/livre_info.html:283
+msgid "Supprimer l'emprunt ?"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:117
+#: project/templates/eleve/eleve_info.html:127
 msgid "ne lit actuellement aucun livre."
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:118
+#: project/templates/eleve/eleve_info.html:128
 msgid "Pour lui assigner un livre, rendez-vous sur la page d'un livre."
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:138
+#: project/templates/eleve/eleve_info.html:148
 msgid "Livres empruntés précédemment"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:138
+#: project/templates/eleve/eleve_info.html:148
 msgid "Livre emprunté précédemment"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:209
+#: project/templates/eleve/eleve_info.html:219
 msgid "Supprimer l'élève ?"
 msgstr ""
 
-#: project/templates/eleve/eleve_info.html:219
-#: project/templates/eleve/eleve_info.html:235
-msgid "Supprimer l'élève"
+#: project/templates/eleve/eleve_info.html:225
+msgid "Êtes-vous sûr de vouloir supprimer la fiche de"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:229
+msgid "Cette action est irréversible."
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:232
+msgid "La suppression de cet élève supprimera également son historique de"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:233
+msgid "emprunt(s) historique(s)"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:233
+msgid "et"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:233
+msgid "emprunt(s) actuellement en cours"
+msgstr ""
+
+#: project/templates/eleve/eleve_info.html:254
+msgid "Supprimer cet élève"
 msgstr ""
 
 #: project/templates/eleve/eleve_list.html:14
@@ -3010,12 +3053,10 @@ msgid "Rendu"
 msgstr ""
 
 #: project/templates/emprunt/_loan_row.html:47
-#: project/templates/livre/livre_info.html:223
 msgid "Emprunté du"
 msgstr ""
 
 #: project/templates/emprunt/_loan_row.html:47
-#: project/templates/livre/livre_info.html:223
 #: project/templates/user/dashboard.html:367
 msgid "au"
 msgstr ""
@@ -3049,7 +3090,7 @@ msgid ""
 msgstr ""
 
 #: project/templates/emprunt/emprunt.html:34
-#: project/templates/livre/livre.html:51
+#: project/templates/livre/livre.html:44
 msgid "Illustration livre"
 msgstr ""
 
@@ -3240,30 +3281,30 @@ msgstr ""
 msgid "Mes Livres"
 msgstr ""
 
-#: project/templates/livre/livre.html:15
+#: project/templates/livre/livre.html:16
 msgid "Mes livres"
 msgstr ""
 
-#: project/templates/livre/livre.html:24 project/templates/livre/livre.html:44
+#: project/templates/livre/livre.html:21 project/templates/livre/livre.html:37
 #: project/templates/livre/livre_ajout.html:8
 msgid "Ajouter un livre"
 msgstr ""
 
-#: project/templates/livre/livre.html:43
+#: project/templates/livre/livre.html:36
 msgid "Vous n'avez pas encore ajouté de livre à votre bibliothèque."
 msgstr ""
 
-#: project/templates/livre/livre.html:44
+#: project/templates/livre/livre.html:37
 msgid "Pour ajouter un livre, cliquez sur le bouton"
 msgstr ""
 
-#: project/templates/livre/livre.html:44
+#: project/templates/livre/livre.html:37
 #: project/templates/utils/app_install.html:29
 msgid "ou"
 msgstr ""
 
-#: project/templates/livre/livre.html:61
-msgid "Rechercher un livre"
+#: project/templates/livre/livre.html:54
+msgid "Chercher un titre, auteur..."
 msgstr ""
 
 #: project/templates/livre/livre_ajout.html:13
@@ -3393,7 +3434,6 @@ msgid "Modifier un livre"
 msgstr ""
 
 #: project/templates/livre/livre_edit.html:13
-#: project/templates/livre/livre_info.html:270
 msgid "Modifier le livre"
 msgstr ""
 
@@ -3427,131 +3467,137 @@ msgstr ""
 msgid "Supprimer le livre"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:26
+#: project/templates/livre/livre_info.html:30
 msgid "Emprunté"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:30
-#: project/templates/livre/livre_list.html:74
+#: project/templates/livre/livre_info.html:34
+#: project/templates/livre/livre_list.html:64
 #: project/templates/livre/livre_list.html:101
 msgid "Disponible"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:42
+#: project/templates/livre/livre_info.html:46
 #, python-format
 msgid "Prêté %(count)s fois"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:63
+#: project/templates/livre/livre_info.html:60
+msgid "Modifier"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:62
+msgid "Dupliquer le livre"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:64
+msgid "Dupliquer"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:83
 msgid "Actuellement prêté à"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:74
+#: project/templates/livre/livre_info.html:95
 msgid "Rendre le livre"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:84
+#: project/templates/livre/livre_info.html:107
+#: project/templates/user/dashboard.html:263
 #, python-format
-msgid "En retard de %(days)s jour(s) (prévu le %(date)s)"
+msgid "En retard de %(days)s jour(s)"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:88
+#: project/templates/livre/livre_info.html:111
 #, python-format
 msgid "À rendre le %(date)s (bientôt)"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:91
+#: project/templates/livre/livre_info.html:114
 msgid "Retour prévu le"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:96
+#: project/templates/livre/livre_info.html:120
 msgid "Supprimer ce prêt"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:131
+#: project/templates/livre/livre_info.html:155
 msgid "Prêter ce livre à un élève"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:136
+#: project/templates/livre/livre_info.html:160
 msgid "Choisir l'élève"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:143
+#: project/templates/livre/livre_info.html:167
 msgid "-- Sélectionner un élève --"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:155
+#: project/templates/livre/livre_info.html:179
 msgid "Durée du prêt"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:158
-msgid "1 semaine (défaut)"
-msgstr ""
-
-#: project/templates/livre/livre_info.html:160
-msgid "2 semaines (défaut)"
-msgstr ""
-
-#: project/templates/livre/livre_info.html:162
-msgid "3 semaines (défaut)"
-msgstr ""
-
-#: project/templates/livre/livre_info.html:164
-msgid "1 mois (défaut)"
-msgstr ""
-
-#: project/templates/livre/livre_info.html:166
-msgid "jours (défaut)"
-msgstr ""
-
-#: project/templates/livre/livre_info.html:171
+#: project/templates/livre/livre_info.html:182
+#: project/templates/livre/livre_info.html:202
 msgid "1 semaine"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:179
+#: project/templates/livre/livre_info.html:184
+#: project/templates/livre/livre_info.html:209
 msgid "2 semaines"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:184
+#: project/templates/livre/livre_info.html:186
+msgid "3 semaines"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:188
+#: project/templates/livre/livre_info.html:216
 msgid "1 mois"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:189
+#: project/templates/livre/livre_info.html:190
+#: project/templates/user/reglage.html:562
+msgid "jours"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:223
 msgid "Date libre"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:199
+#: project/templates/livre/livre_info.html:234
 msgid "Date de retour prévue :"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:206
+#: project/templates/livre/livre_info.html:241
 msgid "Confirmer le prêt"
 msgstr ""
 
-#: project/templates/livre/livre_info.html:214
-msgid "Anciens emprunts :"
+#: project/templates/livre/livre_info.html:267
+#, python-format
+msgid "Du %(start)s au %(end)s"
 msgstr ""
 
 #: project/templates/livre/livre_info.html:271
-msgid "Dupliquer le livre"
+msgid "Supprimer cet historique"
 msgstr ""
 
-#: project/templates/livre/livre_list.html:67
-#: project/templates/livre/livre_list.html:94
+#: project/templates/livre/livre_list.html:49
+#: project/templates/livre/livre_list.html:86
 #: project/templates/user/dashboard.html:296
 msgid "Prêté"
 msgstr ""
 
-#: project/templates/livre/livre_list.html:67
-#: project/templates/livre/livre_list.html:94
+#: project/templates/livre/livre_list.html:49
+#: project/templates/livre/livre_list.html:86
 #: project/templates/user/dashboard.html:296
 msgid "fois"
 msgstr ""
 
-#: project/templates/livre/livre_list.html:72
-#: project/templates/livre/livre_list.html:99
-#: project/templates/utils/search_preview.html:9
-msgid "Emprunté par :"
+#: project/templates/livre/livre_list.html:57
+#: project/templates/livre/livre_list.html:94
+#: project/templates/livre/livre_scann.html:495
+msgid "Emprunté par"
 msgstr ""
 
 #: project/templates/livre/livre_scann.html:324
@@ -3675,10 +3721,6 @@ msgstr ""
 
 #: project/templates/livre/livre_scann.html:468
 msgid "Guide complet du scanner"
-msgstr ""
-
-#: project/templates/livre/livre_scann.html:495
-msgid "Emprunté par"
 msgstr ""
 
 #: project/templates/livre/livre_scann.html:498
@@ -6812,11 +6854,6 @@ msgstr ""
 msgid "Voir tous les emprunts"
 msgstr ""
 
-#: project/templates/user/dashboard.html:263
-#, python-format
-msgid "En retard de %(days)s jour(s)"
-msgstr ""
-
 #: project/templates/user/dashboard.html:272
 msgid "Enregistrer le retour"
 msgstr ""
@@ -6963,6 +7000,7 @@ msgid "Mon Compte"
 msgstr ""
 
 #: project/templates/user/reglage.html:354
+#: project/templates/utils/footer.html:86
 msgid "Compte"
 msgstr ""
 
@@ -7148,10 +7186,6 @@ msgstr ""
 
 #: project/templates/user/reglage.html:552
 msgid "Durée habituelle d'un prêt"
-msgstr ""
-
-#: project/templates/user/reglage.html:562
-msgid "jours"
 msgstr ""
 
 #: project/templates/user/reglage.html:563
@@ -7503,6 +7537,14 @@ msgstr ""
 msgid "Plan du site"
 msgstr ""
 
+#: project/templates/utils/footer.html:45
+msgid "Navigation mobile"
+msgstr ""
+
+#: project/templates/utils/footer.html:69
+msgid "Scan"
+msgstr ""
+
 #: project/templates/utils/navbar.html:329
 msgid "Logo Livres en Classe"
 msgstr ""
@@ -7592,5 +7634,9 @@ msgstr ""
 
 #: project/templates/utils/search_preview.html:2
 msgid "Aucun livre trouvé"
+msgstr ""
+
+#: project/templates/utils/search_preview.html:9
+msgid "Emprunté par :"
 msgstr ""
 

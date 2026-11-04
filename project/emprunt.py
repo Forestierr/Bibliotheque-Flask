@@ -69,8 +69,14 @@ def return_loan(id):
     if not next_url or (
         not next_url.startswith("/") and not next_url.startswith(request.host_url)
     ):
-        next_url = url_for("emprunt.emprunt_db")
-    if next_url.endswith(f"/emprunt/{id}"):
+        next_url = (
+            url_for("livre.livre_infos", id=book.id)
+            if book
+            else url_for("emprunt.emprunt_db")
+        )
+
+    # Sécurité anti-boucle : si next_url pointe vers l'URL POST /emprunt/<id>, rediriger vers le livre
+    if f"/emprunt/{id}" in next_url:
         next_url = (
             url_for("livre.livre_infos", id=book.id)
             if book
@@ -91,21 +97,11 @@ def return_loan(id):
         else:
             flash(_("Accès non autorisé."), "error")
 
-    if request.headers.get("HX-Request"):
-        student = (
-            db.session.query(Student).filter(Student.id == loan.student_id).first()
-            if loan
-            else None
-        )
-        loan_item = type(
-            "LoanItem", (), {"Loan": loan, "Book": book, "Student": student}
-        )()
-        return render_template(
-            "emprunt/_loan_row.html",
-            loan=loan_item,
-            just_returned=True,
-            cutoff_date=get_loan_history_cutoff(),
-        )
+    # Si HTMX a boosté le formulaire sans cible spécifique, ordonner la redirection navigateur vers next_url
+    if request.headers.get("HX-Request") and not request.headers.get("HX-Target"):
+        response = make_response("", 200)
+        response.headers["HX-Redirect"] = next_url
+        return response
 
     return redirect(next_url)
 
@@ -264,7 +260,7 @@ def search(page=1):
     sort_order = "asc"
     match sort:
         case "pertinent":
-            sort = "Loan.id"
+            sort = "pertinent"
         case "az":
             sort = "Book.title"
         case "za":
@@ -276,7 +272,7 @@ def search(page=1):
         case "ancien":
             sort = "Loan.date_loan"
         case _:
-            sort = "Loan.id"
+            sort = "pertinent"
 
     n_books = get_loans_count(current_user.id)
 

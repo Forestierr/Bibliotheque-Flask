@@ -4,7 +4,7 @@ query.py: This file contains all the queries to the database.
 
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import and_, func, or_, text
+from sqlalchemy import and_, case, func, or_, text
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import collate
 
@@ -212,6 +212,7 @@ def get_books_student_tags(current_user_id, n_par_page, page) -> list:
         .outerjoin(Student, Loan.student_id == Student.id)
         .outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
         .outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
+        .order_by(Book.id.desc())
         .limit(n_par_page)
         .offset((page - 1) * n_par_page)
         .all()
@@ -437,7 +438,7 @@ Get loans with the book and the student
 def get_loans_with_infos(
     current_user_id,
     actualy_loan=False,
-    sort="Loan.id",
+    sort="pertinent",
     sort_order="asc",
     n_books_by_page=10,
     page=1,
@@ -453,11 +454,18 @@ def get_loans_with_infos(
         Student, Loan.student_id == Student.id
     )
 
-    query = query.order_by(
-        collate(text(sort), "NOCASE").desc()
-        if sort_order == "desc"
-        else collate(text(sort), "NOCASE")
-    )
+    if sort == "pertinent":
+        query = query.order_by(
+            case((Loan.date_return.is_(None), 0), else_=1).asc(),
+            Loan.date_loan.desc(),
+            Loan.id.desc(),
+        )
+    else:
+        query = query.order_by(
+            collate(text(sort), "NOCASE").desc()
+            if sort_order == "desc"
+            else collate(text(sort), "NOCASE")
+        )
 
     n_books = query.count()
 
@@ -794,7 +802,7 @@ Get all the books, sorted.
 
 
 def get_books_sorted(
-    current_user_id, sort="Book.id", sort_order="asc", n_par_page=10, page=1
+    current_user_id, sort="pertinent", sort_order="asc", n_par_page=10, page=1
 ) -> list:
     subquery_tags = (
         db.session.query(
@@ -811,7 +819,7 @@ def get_books_sorted(
         .subquery()
     )
 
-    books = (
+    query = (
         db.session.query(
             Book,
             Student,
@@ -823,14 +831,18 @@ def get_books_sorted(
         .outerjoin(Student, Loan.student_id == Student.id)
         .outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
         .outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
-        .order_by(
+    )
+
+    if sort == "pertinent":
+        query = query.order_by(Book.id.desc())
+    else:
+        query = query.order_by(
             collate(text(sort), "NOCASE").desc()
             if sort_order == "desc"
             else collate(text(sort), "NOCASE")
         )
-        .limit(n_par_page)
-        .offset((page - 1) * n_par_page)
-    )
+
+    books = query.limit(n_par_page).offset((page - 1) * n_par_page)
 
     return books
 
@@ -916,11 +928,24 @@ def search_books_by_types(
             )
         )
 
-    query = query.order_by(
-        collate(text(sort), "NOCASE").desc()
-        if sort_order == "desc"
-        else collate(text(sort), "NOCASE")
-    )
+    if sort == "pertinent":
+        if search_value:
+            clean_search = search_value.strip()
+            relevance = case(
+                (Book.title.ilike(clean_search), 1),
+                (Book.title.ilike(f"{clean_search}%"), 2),
+                (Book.title.ilike(f"%{clean_search}%"), 3),
+                else_=4,
+            )
+            query = query.order_by(relevance.asc(), Book.title.asc(), Book.id.desc())
+        else:
+            query = query.order_by(Book.id.desc())
+    else:
+        query = query.order_by(
+            collate(text(sort), "NOCASE").desc()
+            if sort_order == "desc"
+            else collate(text(sort), "NOCASE")
+        )
 
     n_books = query.count()
 
@@ -1027,11 +1052,18 @@ def search_loans_by_types(
             )
         )
 
-    query = query.order_by(
-        collate(text(sort), "NOCASE").desc()
-        if sort_order == "desc"
-        else collate(text(sort), "NOCASE")
-    )
+    if sort == "pertinent":
+        query = query.order_by(
+            case((Loan.date_return.is_(None), 0), else_=1).asc(),
+            Loan.date_loan.desc(),
+            Loan.id.desc(),
+        )
+    else:
+        query = query.order_by(
+            collate(text(sort), "NOCASE").desc()
+            if sort_order == "desc"
+            else collate(text(sort), "NOCASE")
+        )
 
     n_books = query.count()
 

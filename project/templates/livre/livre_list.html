@@ -4,45 +4,6 @@
 
 {% include "utils/flash_message.html" %}
 
-<style>
-.book-row-item {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    padding: 6px 0;
-}
-.book-cover-thumb-link {
-    flex-shrink: 0;
-    display: block;
-}
-.book-cover-thumb-wrapper {
-    width: 48px;
-    height: 68px;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: #f8fafc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.book-cover-thumb {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-.book-cover-placeholder {
-    color: #94a3b8;
-    font-size: 1.15rem;
-}
-.book-row-content {
-    flex-grow: 1;
-    min-width: 0;
-}
-</style>
-
 <div class="container block">
     {% for book in books %}
         <hr style="margin: 5px 0 5px 0"/>
@@ -52,26 +13,46 @@
                 <a href="/livre/{{ book.Book.id }}" class="book-cover-thumb-link" tabindex="-1">
                     <div class="book-cover-thumb-wrapper">
                         {% if book.Book.image_url %}
-                            <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" class="book-cover-thumb" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML='<div class=\'book-cover-placeholder\'><i class=\'fas fa-book\'></i></div>';">
+                            <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" class="book-cover-thumb" loading="lazy" decoding="async" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="book-cover-placeholder-svg" style="display: none;">
+                                <svg viewBox="0 0 48 64" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="48" height="64" rx="6" fill="#f1f5f9"/>
+                                    <rect width="7" height="64" rx="2" fill="#e2e8f0"/>
+                                    <line x1="7" y1="0" x2="7" y2="64" stroke="#cbd5e1" stroke-width="0.5"/>
+                                    <path d="M18 24C18 22.3431 19.3431 21 21 21H31C32.1046 21 33 21.8954 33 23V39C33 40.1046 32.1046 41 31 41H21C19.3431 41 18 39.6569 18 38V24Z" fill="#cbd5e1"/>
+                                    <path d="M18 35C18 33.8954 18.8954 33 20 33H33V39H21C19.3431 39 18 37.6569 18 36V35Z" fill="#94a3b8"/>
+                                    <line x1="21" y1="26" x2="29" y2="26" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+                                    <line x1="21" y1="29.5" x2="26" y2="29.5" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
                         {% else %}
-                            <div class="book-cover-placeholder"><i class="fas fa-book"></i></div>
+                            <div class="book-cover-placeholder-svg">
+                                <svg viewBox="0 0 48 64" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="48" height="64" rx="6" fill="#f1f5f9"/>
+                                    <rect width="7" height="64" rx="2" fill="#e2e8f0"/>
+                                    <line x1="7" y1="0" x2="7" y2="64" stroke="#cbd5e1" stroke-width="0.5"/>
+                                    <path d="M18 24C18 22.3431 19.3431 21 21 21H31C32.1046 21 33 21.8954 33 23V39C33 40.1046 32.1046 41 31 41H21C19.3431 41 18 39.6569 18 38V24Z" fill="#cbd5e1"/>
+                                    <path d="M18 35C18 33.8954 18.8954 33 20 33H33V39H21C19.3431 39 18 37.6569 18 36V35Z" fill="#94a3b8"/>
+                                    <line x1="21" y1="26" x2="29" y2="26" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+                                    <line x1="21" y1="29.5" x2="26" y2="29.5" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
                         {% endif %}
                     </div>
                 </a>
                 <div class="book-row-content">
-                    <div class="columns" style="margin-bottom: 0;">
-                        <div class="column">
-                            <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold">{{ book.Book.title }}</a>
-                        </div>
-                        <div class="column is-hidden-mobile has-text-right">
-                            <p>{{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}</p>
-                        </div>
+                    <div class="is-flex is-justify-content-space-between is-align-items-baseline" style="gap: 8px;">
+                        <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold" style="color: #1e293b; font-size: 1rem;">{{ book.Book.title }}</a>
+                        <span class="has-text-grey is-size-7" style="white-space: nowrap; flex-shrink: 0;">{{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}</span>
                     </div>
 
                     {% if book.Student != None %}
-                        <p>{{ _("Emprunté par :") }} <a href="/eleve/{{ book.Student.id }}" class="has-text-dark">{{ book.Student.name }} {{ book.Student.firstname }}</a></p>
-                    {% else %}
-                        <p>{{ _("Disponible") }}</p>
+                        <div style="margin-top: 4px; margin-bottom: 2px;">
+                            <span class="tag is-pastel-blue">
+                                <span class="badge-dot badge-dot-blue"></span>
+                                {{ _("Emprunté par") }} <a href="/eleve/{{ book.Student.id }}" class="has-text-weight-semibold ml-1">{% if book.Student.firstname %}{{ book.Student.firstname }} {{ book.Student.name }}{% else %}{{ book.Student.name }}{% endif %}</a>
+                            </span>
+                        </div>
                     {% endif %}
 
                     {# Tags #}
@@ -86,25 +67,24 @@
                 </div>
             </div>
             {% else %}
-            <div class="columns" style="margin-bottom: 0;">
-                <div class="column">
-                    <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold">{{ book.Book.title }}</a>
-                </div>
-                <div class="column is-hidden-mobile has-text-right">
-                    <p>{{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}</p>
-                </div>
+            <div class="is-flex is-justify-content-space-between is-align-items-baseline" style="gap: 8px;">
+                <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold" style="color: #1e293b; font-size: 1rem;">{{ book.Book.title }}</a>
+                <span class="has-text-grey is-size-7" style="white-space: nowrap; flex-shrink: 0;">{{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}</span>
             </div>
 
             {% if book.Student != None %}
-                <p>{{ _("Emprunté par :") }} <a href="/eleve/{{ book.Student.id }}" class="has-text-dark">{{ book.Student.name }} {{ book.Student.firstname }}</a></p>
-            {% else %}
-                <p>{{ _("Disponible") }}</p>
+                <div style="margin-top: 4px; margin-bottom: 2px;">
+                    <span class="tag is-pastel-blue">
+                        <span class="badge-dot badge-dot-blue"></span>
+                        {{ _("Emprunté par") }} <a href="/eleve/{{ book.Student.id }}" class="has-text-weight-semibold ml-1">{% if book.Student.firstname %}{{ book.Student.firstname }} {{ book.Student.name }}{% else %}{{ book.Student.name }}{% endif %}</a>
+                    </span>
+                </div>
             {% endif %}
 
             {# Tags #}
             {% if book.tags != None %}
                 {% set tag_list = book.tags.split(',') %}
-                <div class="tags" style="margin: 0">
+                <div class="tags" style="margin-top: 4px; margin-bottom: 0;">
                     {% for tag in tag_list %}
                         <span class="tag is-info is-rounded">{{ tag }}</span>
                     {% endfor %}

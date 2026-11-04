@@ -106,7 +106,10 @@ def test_livre_edit_student_sets_expected_date(app, client, test_user):
         db.session.add_all([book, student])
         db.session.commit()
 
-        with patch("project.livre.current_user", test_user):
+        with (
+            patch("project.livre.current_user", test_user),
+            patch("flask_login.utils._get_user", return_value=test_user),
+        ):
             # 1. Prêt avec date explicite
             client.post(
                 f"/livre/{book.id}/edit-student",
@@ -132,7 +135,10 @@ def test_livre_edit_student_fallback_duration(app, client, test_user):
 
         today = datetime.now(UTC).date()
 
-        with patch("project.livre.current_user", test_user):
+        with (
+            patch("project.livre.current_user", test_user),
+            patch("flask_login.utils._get_user", return_value=test_user),
+        ):
             # 2. Prêt sans date explicite -> fallback sur default_loan_duration_days (21j)
             client.post(
                 f"/livre/{book.id}/edit-student",
@@ -158,3 +164,57 @@ def test_reglage_updates_default_loan_duration(app, client, test_user):
         assert response.status_code == 200
         updated_user = db.session.get(User, test_user.id)
         assert updated_user.default_loan_duration_days == 28
+
+
+def test_livre_infos_renders_clean_chips_and_loan_history(app, client, test_user):
+    with app.app_context():
+        test_user.default_loan_duration_days = 180
+        db.session.commit()
+
+        book = Book(title="Mon Beau Livre", user_id=test_user.id)
+        student = Student(name="Martin", firstname="Clara", user_id=test_user.id)
+        db.session.add_all([book, student])
+        db.session.commit()
+
+        today = datetime.now(UTC).date()
+        expected_date = today + timedelta(days=180)
+
+        with (
+            patch("project.livre.current_user", test_user),
+            patch("flask_login.utils._get_user", return_value=test_user),
+        ):
+            response = client.get(f"/livre/{book.id}")
+            assert response.status_code == 200
+            html = response.data.decode("utf-8")
+
+            # Pas de mention anxiogène ou polluante '(défaut)'
+            assert "(défaut)" not in html
+            assert "180 jours" in html
+            # '2 semaines' ne doit pas apparaître si le défaut est personnalisé (180j)
+            assert "2 semaines" not in html
+            # La date calculée est pré-remplie dès le rendu serveur
+            assert expected_date.strftime("%Y-%m-%d") in html
+            # Boutons d'action dans le hero
+            assert "Modifier" in html
+            assert "Dupliquer" in html
+
+        # Ajout d'un prêt actif
+        active_loan = Loan(
+            book_id=book.id,
+            student_id=student.id,
+            date_loan=today,
+            expected_return_date=expected_date,
+        )
+        db.session.add(active_loan)
+        db.session.commit()
+
+        with (
+            patch("project.livre.current_user", test_user),
+            patch("flask_login.utils._get_user", return_value=test_user),
+        ):
+            response = client.get(f"/livre/{book.id}")
+            assert response.status_code == 200
+            html = response.data.decode("utf-8")
+            assert "Actuellement prêté à" in html
+            assert "Rendre le livre" in html
+            assert "Clara" in html

@@ -618,3 +618,51 @@ def test_return_loan_quick_json_success(client, app, logged_in_user):
             data = response.get_json()
             assert data["success"] is True
             assert data["loan_id"] == 1
+
+
+def test_return_loan_redirects_to_next_book_page(client, app, logged_in_user):
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 7
+        mock_loan.book_id = 3
+        mock_loan.date_return = None
+
+        mock_book = MagicMock()
+        mock_book.id = 3
+        mock_book.user_id = 1
+        mock_book.title = "Livre 3"
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+        ):
+            mock_session.query().filter().first.side_effect = [mock_loan, mock_book]
+            response = client.post("/emprunt/7", data={"next": "/fr/livre/3"})
+            assert response.status_code == 302
+            assert response.headers.get("Location") == "/fr/livre/3"
+
+
+def test_return_loan_hx_request_issues_hx_redirect(client, app, logged_in_user):
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 7
+        mock_loan.book_id = 3
+        mock_loan.date_return = None
+
+        mock_book = MagicMock()
+        mock_book.id = 3
+        mock_book.user_id = 1
+        mock_book.title = "Livre 3"
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+        ):
+            mock_session.query().filter().first.side_effect = [mock_loan, mock_book]
+            response = client.post(
+                "/emprunt/7",
+                data={"next": "/fr/livre/3"},
+                headers={"HX-Request": "true"},
+            )
+            assert response.status_code == 200
+            assert response.headers.get("HX-Redirect") == "/fr/livre/3"

@@ -1,7 +1,7 @@
-{% macro search_bar(placeholder, list, url_preview, url_search, value="") %}
+{% macro search_bar(placeholder, list, url_preview, url_search, value="", scan_url="") %}
 
 <div class="">
-    <div class="control has-icons-left is-expanded">
+    <div class="control has-icons-left {% if scan_url %}has-icons-right{% endif %} is-expanded">
         <div hx-boost="true">
             <!-- full search when enter is pressed -->
             <div hx-post="{{ url_search }}" hx-trigger="keyup[key=='Enter']" hx-target="#search_list" hx-include="[name='search'], [name='sort'], [name='n_results'], [name='active_loan']">
@@ -17,6 +17,7 @@
                    hx-trigger="keyup changed delay:500ms"
                    hx-target="#search-results"
                    hx-include="[name='sort'], [name='n_results'], [name='active_loan']"
+                   style="height: 44px; {% if scan_url %}padding-right: 2.75rem;{% endif %}"
             />
             {% if list %}
             <datalist id="suggestions">
@@ -29,9 +30,14 @@
 
             </div>
         </div>
-        <span class="icon is-small is-left">
-            <i class="fas fa-search"></i>
+        <span class="icon is-small is-left" style="height: 44px;">
+            <i class="fas fa-search has-text-grey-light"></i>
         </span>
+        {% if scan_url %}
+        <a href="{{ scan_url }}" hx-boost="false" class="icon is-small is-right search-scan-icon-btn" title="{{ _('Scanner un livre') }}" aria-label="{{ _('Scanner un livre') }}" style="height: 44px; width: 2.75rem;">
+            <i class="fas fa-barcode"></i>
+        </a>
+        {% endif %}
     </div>
     <div id="search-results" class="box" style="display: none;">
         <div class="loader"></div>

@@ -6,26 +6,22 @@
     {% for student in students %}
         <hr style="margin: 5px 0 5px 0"/>
         <div class="container" style="margin-bottom: 10px">
-            <div class="columns" style="margin-bottom: 0;">
-                <div class="column">
-                    <a href="/eleve/{{ student.Student.id }}" class="has-text-weight-bold	">{{ student.Student.name }} {{ student.Student.firstname }}</a>
-                </div>
-                <div class="column is-hidden-mobile has-text-right">
-                    <p>{{ _("A lu") }} <strong>{{ student.loan_count }}</strong> {{ _("livres") }}</p>
-                </div>
+            <div class="is-flex is-justify-content-space-between is-align-items-baseline" style="gap: 8px;">
+                <a href="/eleve/{{ student.Student.id }}" class="has-text-weight-bold" style="color: #1e293b; font-size: 1rem;">{{ student.Student.name }} {{ student.Student.firstname }}</a>
+                <span class="has-text-grey is-size-7" style="white-space: nowrap; flex-shrink: 0;">{{ _("A lu") }} <strong>{{ student.loan_count }}</strong> {{ _("livres") }}</span>
             </div>
 
             {% if student.Book != None %}
-                <p>{{ _("Lit actuellement :") }} <a href="/livre/{{ student.Book.id }}">{{ student.Book.title }}</a></p>
+                <p class="is-size-7 mt-1">{{ _("Lit actuellement :") }} <a href="/livre/{{ student.Book.id }}" class="has-text-weight-semibold">{{ student.Book.title }}</a></p>
             {% elif student.last_loan != None %}
-                <p>{{ _("Dernier emprunt :") }} {{ format_date(student.last_loan, format='medium') }}</p>
+                <p class="is-size-7 has-text-grey mt-1">{{ _("Dernier emprunt :") }} {{ format_date(student.last_loan, format='medium') }}</p>
             {% else %}
-                <p>{{ _("N'a jamais emprunté de livre") }}</p>
+                <p class="is-size-7 has-text-grey-light mt-1">{{ _("N'a jamais emprunté de livre") }}</p>
             {% endif %}
         </div>
 
         {# Add hr if last element #}
-        {%  if loop.last %}
+        {% if loop.last %}
         <hr style="margin: 5px 0 5px 0" />
         {% endif %}
     {% endfor %}

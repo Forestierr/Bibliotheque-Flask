@@ -11,18 +11,13 @@
 
 {% block content %}
 
-<h1 class="title is-1">
-    {{ _("Mes élèves") }}
-</h1>
-
-<div class="block">
-    <a href="/eleve/ajout" class="button is-dark is-fullwidth" style="justify-content: flex-start">
-        <div class="icon-text has-text-white">
-            <span class="icon">
-                <i class="fas fa-plus"></i>
-            </span>
-            <span>{{ _("Ajouter un élève") }}</span>
-        </div>
+<div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
+    <h1 class="title is-2 mb-0 is-hidden-touch">
+        {{ _("Mes élèves") }}
+    </h1>
+    <a href="/eleve/ajout" class="button is-primary is-small is-rounded has-text-weight-semibold" style="min-height: 38px; height: 38px; padding: 0 16px;">
+        <span class="icon is-small"><i class="fas fa-plus"></i></span>
+        <span>{{ _("Ajouter un élève") }}</span>
     </a>
 </div>
 
@@ -49,7 +44,7 @@
 </section>
 {% else %}
 
-<div class="block">
+<div class="block mb-3">
     {{ search_bar(_("Rechercher un élève"), False, url_for("eleve.search_preview"), url_for("eleve.search")) }}
 </div>
 

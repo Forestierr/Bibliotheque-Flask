@@ -266,7 +266,7 @@
           </div>
         </div>
         <div class="ml-2" style="flex-shrink: 0;">
-          <form action="{{ url_for('emprunt.return_loan', id=item.Loan.id) }}" method="POST" style="display:inline;">
+          <form action="{{ url_for('emprunt.return_loan', id=item.Loan.id) }}" method="POST" style="display:inline;" hx-boost="false">
             {% include 'utils/csrf.html' %}
             <input type="hidden" name="next" value="{{ url_for('main.dashboard') }}">
             <button type="submit" class="button is-success is-small is-rounded has-text-weight-semibold px-3" style="height: 34px;" title="{{ _('Enregistrer le retour') }}">
