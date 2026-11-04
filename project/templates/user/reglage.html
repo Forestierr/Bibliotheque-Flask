@@ -544,6 +544,31 @@
                         </div>
                     </div>
 
+                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Gestion des Prêts & Retards") }}</h3>
+                    <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="field">
+                            <label class="label has-text-weight-bold" for="default_loan_duration_days" style="color: hsl(210, 40%, 20%);">
+                                <span class="icon is-small mr-1"><i class="fas fa-calendar-alt"></i></span>
+                                {{ _("Durée habituelle d'un prêt") }}
+                            </label>
+                            <div class="columns is-vcentered is-mobile mt-1 mb-1">
+                                <div class="column is-narrow">
+                                    <div class="control has-icons-left">
+                                        <input class="input is-rounded" type="number" id="default_loan_duration_days" name="default_loan_duration_days" min="1" max="180" value="{{ user.default_loan_duration_days or 14 }}" style="width: 110px;">
+                                        <span class="icon is-left has-text-grey"><i class="fas fa-clock"></i></span>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <span class="is-size-6 has-text-weight-semibold">{{ _("jours") }}</span>
+                                    <span class="is-size-7 has-text-grey ml-2">({{ _("ex. : 7 jours = 1 semaine, 14 jours = 2 semaines") }})</span>
+                                </div>
+                            </div>
+                            <p class="has-text-grey is-size-7 mt-1" style="line-height: 1.5;">
+                                {{ _("Cette durée pré-remplira automatiquement la date de retour prévue lors de chaque nouvel emprunt. Les retards seront signalés sur le tableau de bord.") }}
+                            </p>
+                        </div>
+                    </div>
+
                     <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Communications & Newsletter") }}</h3>
                     <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
                         <div class="field">

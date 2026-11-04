@@ -50,8 +50,8 @@
                         hx-trigger="change"
                         hx-target="#search_list"
                         hx-include="[name='search'], [name='n_results'], [name='sort']">
-                        <option class="is-hidden-tablet" value="0" selected>{{ _("Tout") }}</option>
-                        <option class="is-hidden-tablet" value="1">{{ _("Actifs") }}</option>
+                        <option value="0" {% if not only_active_loans %}selected{% endif %}>{{ _("Tous les emprunts") }}</option>
+                        <option value="1" {% if only_active_loans %}selected{% endif %}>{{ _("Emprunts actifs") }}</option>
                     </select>
                 </div>
 

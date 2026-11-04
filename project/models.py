@@ -68,6 +68,9 @@ class User(UserMixin, db.Model):
     show_book_covers = db.Column(
         db.Boolean, default=True, server_default="1", nullable=False
     )
+    default_loan_duration_days = db.Column(
+        db.Integer, default=14, server_default="14", nullable=False
+    )
 
     def check_and_reset_weekly_scans(self) -> bool:
         """
@@ -390,10 +393,35 @@ class Loan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_loan = db.Column(db.Date)
     date_return = db.Column(db.Date)
+    expected_return_date = db.Column(db.Date, nullable=True)
 
     # Foreign keys to link Student and Book
     student_id = db.Column(db.Integer, ForeignKey("student.id"), nullable=False)
     book_id = db.Column(db.Integer, ForeignKey("book.id"), nullable=False)
+
+    @property
+    def is_late(self) -> bool:
+        if self.date_return is not None or not self.expected_return_date:
+            return False
+        return self.expected_return_date < datetime.now(UTC).date()
+
+    @property
+    def days_late(self) -> int:
+        if not self.is_late or not self.expected_return_date:
+            return 0
+        return (datetime.now(UTC).date() - self.expected_return_date).days
+
+    @property
+    def is_due_soon(self) -> bool:
+        """Indique si l'emprunt doit être rendu dans les 3 jours (et non en retard)."""
+        if (
+            self.date_return is not None
+            or not self.expected_return_date
+            or self.is_late
+        ):
+            return False
+        days_left = (self.expected_return_date - datetime.now(UTC).date()).days
+        return 0 <= days_left <= 3
 
 
 class Tags(db.Model):

@@ -10,76 +10,91 @@
 
 {% block content %}
 
-    <h1 class="title is-1">
-        {{ book.title }}
-    </h1>
-    <h3 class="subtitle is-3 block">
-        {{ _("Nombre de fois prêtés :") }} {{ (old_loans|count if old_loans else 0) + (actual_loans|count if actual_loans else 0) }}
-    </h3>
-
-    {% include "utils/flash_message.html" %}
-
-    {% if tags %}
-    <div class="container block">
-        {% for tag in tags %}
-            <span class="tag is-rounded is-dark">{{ tag.name }}</span>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <div class="container block">
-        <div class="box">
-            <div class="columns is-vcentered">
-                {% if current_user.show_book_covers and book.image_url %}
-                <div class="column is-narrow has-text-centered mb-3-mobile">
-                    <figure class="image" style="display: inline-block; max-width: 150px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08);">
-                        <img src="{{ book.image_url }}" alt="{{ book.title }}" style="max-height: 220px; width: auto; object-fit: contain; display: block;" decoding="async" onerror="this.closest('.column').style.display='none';">
-                    </figure>
+    <!-- Header Hero Compact -->
+    <div class="box p-4 mb-4" style="border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div class="is-flex is-align-items-start" style="gap: 16px;">
+            {% if current_user.show_book_covers and book.image_url %}
+            <figure class="image" style="flex-shrink: 0; width: 70px; height: 100px; box-shadow: 0 4px 10px rgba(0,0,0,0.12); border-radius: 6px; overflow: hidden;">
+                <img src="{{ book.image_url }}" alt="{{ book.title }}" style="width: 100%; height: 100%; object-fit: cover;" decoding="async" onerror="this.parentElement.style.display='none';">
+            </figure>
+            {% endif %}
+            <div style="min-width: 0; flex-grow: 1;">
+                <div class="is-flex is-align-items-center is-flex-wrap-wrap mb-1" style="gap: 8px;">
+                    <h1 class="title is-4 mb-0" style="word-break: break-word;">{{ book.title }}</h1>
+                    {% if actual_loans %}
+                        <span class="tag is-info is-light is-rounded has-text-weight-bold">
+                            <i class="fas fa-book-reader mr-1"></i>{{ _("Emprunté") }}
+                        </span>
+                    {% else %}
+                        <span class="tag is-success is-light is-rounded has-text-weight-bold">
+                            <i class="fas fa-check-circle mr-1"></i>{{ _("Disponible") }}
+                        </span>
+                    {% endif %}
+                </div>
+                {% if book.author %}
+                    <p class="subtitle is-6 has-text-grey mb-2">{{ book.author }}</p>
+                {% endif %}
+                <div class="is-flex is-flex-wrap-wrap is-size-7 has-text-grey" style="gap: 12px;">
+                    {% if book.editor %}<span><i class="far fa-building mr-1"></i>{{ book.editor }}</span>{% endif %}
+                    {% if book.year %}<span><i class="far fa-calendar mr-1"></i>{{ book.year }}</span>{% endif %}
+                    {% if book.isbn %}<span><i class="fas fa-barcode mr-1"></i>ISBN: {{ book.isbn }}</span>{% endif %}
+                    {% if book.barcode %}<span class="tag is-info is-light is-small"><i class="fas fa-tag mr-1"></i>{{ book.barcode }}</span>{% endif %}
+                    <span><i class="fas fa-history mr-1"></i>{{ _("Prêté %(count)s fois", count=(old_loans|count if old_loans else 0) + (actual_loans|count if actual_loans else 0)) }}</span>
+                </div>
+                {% if tags %}
+                <div class="mt-2">
+                    {% for tag in tags %}
+                        <span class="tag is-rounded is-small is-dark">{{ tag.name }}</span>
+                    {% endfor %}
                 </div>
                 {% endif %}
-                <div class="column">
-                    <div class="columns is-mobile">
-                        <div class="column is-narrow">
-                            <p>{{ _("Titre :") }} </p>
-                            {% if book.author %}<p>{{ _("Auteur :") }} </p>{% endif %}
-                            {% if book.editor %}<p>{{ _("Editeur :") }} </p>{% endif %}
-                            {% if book.year %}<p>{{ _("Année :") }} </p>{% endif %}
-                            {% if book.isbn %}<p>{{ _("ISBN officiel :") }} </p>{% endif %}
-                            {% if book.barcode %}<p>{{ _("Référence classe :") }} </p>{% endif %}
-                        </div>
-                        <div class="column">
-                            <p><strong>{{ book.title }}</strong></p>
-                            {% if book.author %}<p><strong>{{ book.author }}</strong></p>{% endif %}
-                            {% if book.editor %}<p><strong>{{ book.editor }}</strong></p>{% endif %}
-                            {% if book.year %}<p><strong>{{ book.year }}</strong></p>{% endif %}
-                            {% if book.isbn %}<p><strong>{{ book.isbn }}</strong></p>{% endif %}
-                            {% if book.barcode %}<p><span class="tag is-info is-light has-text-weight-bold"><i class="fas fa-barcode mr-1"></i>{{ book.barcode }}</span></p>{% endif %}
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
+    {% include "utils/flash_message.html" %}
+
     <div class="container block">
         {% if actual_loans %}
-            <h3 class="subtitle is-3">{{ _("Actuellement prêté à :") }}</h3>
-            <hr>
-            <div class="columns" style="margin-bottom: 0;">
-                <div class="column">
-                    <a href="/eleve/{{ actual_loans.Student.id }}">
-                        <h4 class="subtitle is-4">{{ actual_loans.Student.name }} {{ actual_loans.Student.firstname }}</h4>
-                    </a>
+            <div class="box p-4 mb-4" style="border-radius: 12px; border: 1px solid #bfdbfe; background: #f8fafc;">
+                <div class="level is-mobile mb-2">
+                    <div class="level-left">
+                        <span class="icon has-text-link mr-1"><i class="fas fa-user-graduate"></i></span>
+                        <span class="is-size-6 has-text-grey">{{ _("Actuellement prêté à") }} :</span>
+                        <a href="{{ url_for('eleve.eleve_infos', id=actual_loans.Student.id) }}" class="has-text-weight-bold is-size-5 ml-2 has-text-dark">
+                            {{ actual_loans.Student.name }} {{ actual_loans.Student.firstname }}
+                        </a>
+                    </div>
+                    <div class="level-right">
+                        <form action="{{ url_for('emprunt.return_loan', id=actual_loans.Loan.id) }}" method="POST" style="display:inline;">
+                            {% include 'utils/csrf.html' %}
+                            <input type="hidden" name="next" value="{{ url_for('livre.livre_infos', id=book.id) }}">
+                            <button type="submit" class="button is-success is-small is-rounded has-text-weight-semibold px-3" style="height: 38px;">
+                                <span class="icon is-small"><i class="fas fa-check"></i></span>
+                                <span>{{ _("Rendre le livre") }}</span>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <div class="column has-text-right">
-                    <form action="{{ url_for('emprunt.return_loan', id=actual_loans.Loan.id) }}" method="POST" style="display:inline;">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <button type="submit" class="button is-success is-small">
-                            <span class="icon is-small">
-                              <i class="fa-solid fa-calendar-check"></i>
+                <div class="is-flex is-align-items-center is-flex-wrap-wrap is-size-7 has-text-grey pt-2" style="border-top: 1px dashed #cbd5e1; gap: 16px;">
+                    <span><i class="far fa-calendar-alt mr-1"></i>{{ _("Emprunté le") }} : <strong>{{ format_date(actual_loans.Loan.date_loan, format='medium') }}</strong></span>
+                    {% if actual_loans.Loan.expected_return_date %}
+                        {% if actual_loans.Loan.is_late %}
+                            <span class="tag is-danger is-light has-text-weight-bold">
+                                <i class="fas fa-exclamation-circle mr-1"></i>{{ _("En retard de %(days)s jour(s) (prévu le %(date)s)", days=actual_loans.Loan.days_late, date=format_date(actual_loans.Loan.expected_return_date, format='medium')) }}
                             </span>
-                        </button>
-                    </form>
+                        {% elif actual_loans.Loan.is_due_soon %}
+                            <span class="tag is-warning is-light has-text-weight-bold">
+                                <i class="fas fa-clock mr-1"></i>{{ _("À rendre le %(date)s (bientôt)", date=format_date(actual_loans.Loan.expected_return_date, format='medium')) }}
+                            </span>
+                        {% else %}
+                            <span><i class="far fa-calendar-check mr-1"></i>{{ _("Retour prévu le") }} : <strong>{{ format_date(actual_loans.Loan.expected_return_date, format='medium') }}</strong></span>
+                        {% endif %}
+                    {% endif %}
+                    <button class="button is-text is-small has-text-grey showModal p-0 ml-auto" href="#delete-moda-l-0">
+                        <span class="icon is-small"><i class="fas fa-trash"></i></span>
+                        <span>{{ _("Supprimer ce prêt") }}</span>
+                    </button>
                 </div>
             </div>
 
@@ -93,7 +108,7 @@
                     </header>
                     <footer class="modal-card-foot">
                         <form action="{{ url_for('emprunt.delete_loan', id=actual_loans.Loan.id) }}" method="POST" style="display:inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            {% include 'utils/csrf.html' %}
                             <button type="submit" class="button is-normal is-danger is-responsive">
                                 <div class="icon-text">
                                     <span class="icon has-text-info">
@@ -109,42 +124,87 @@
               </div>
               <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
             </div>
-
-            <div class="columns" style="margin-bottom: 0;">
-                <div class="column">
-                    <p>{{ _("Emprunté le") }} {{ format_date(actual_loans.Loan.date_loan, format='medium') }}</p>
-                </div>
-
-                <div class="column has-text-right">
-                    <button class="button is-danger is-small showModal" href="#delete-moda-l-0">
-                        <span class="icon is-small">
-                          <i class="fas fa-trash"></i>
-                        </span>
-                    </button>
-                </div>
-            </div>
-            <hr>
         {% else %}
-            <div class="container block">
-                <h3 class="subtitle is-3">{{ _("Ce livre n'est pas actuellement prêté.") }}</h3>
+            <!-- Formulaire de prêt avec sélection de durée -->
+            <div id="loan-form-card" class="box p-4 mb-4" style="border-radius: 12px; border: 1px solid #e2e8f0;">
+                <h3 class="title is-5 mb-3" style="color: #1e293b;">
+                    {{ _("Prêter ce livre à un élève") }}
+                </h3>
                 <form action="{{ url_for('livre.livre_edit_student', id=book.id) }}" method="post">
-    {% include 'utils/csrf.html' %}
-                    <div class="field">
-                        <label class="label" for="students">{{ _("Prêter le livre à un élève") }}</label>
-                        <div class="select">
-                            <select name="student_id" id="student-select">
-                                {% if student %}
-                                    <option value="{{ student.id }}" selected>{{ student.name }} {{ student.firstname }}</option>
-                                {% endif %}
-                                <option value="">{{ _("-- Le livre se trouve dans la bibliothèque --") }}</option>
-                                {% for student in students %}
-                                    <option value="{{ student.id }}">{{ student.name }} {{ student.firstname }}</option>
-                                {% endfor %}
-                            </select>
+                    {% include 'utils/csrf.html' %}
+                    <div class="field mb-3">
+                        <label class="label is-small" for="student-select">{{ _("Choisir l'élève") }}</label>
+                        <div class="control has-icons-left">
+                            <div class="select is-fullwidth">
+                                <select name="student_id" id="student-select" required style="height: 44px;">
+                                    {% if student %}
+                                        <option value="{{ student.id }}" selected>{{ student.name }} {{ student.firstname }}</option>
+                                    {% endif %}
+                                    <option value="">{{ _("-- Sélectionner un élève --") }}</option>
+                                    {% for s in students %}
+                                        <option value="{{ s.id }}">{{ s.name }} {{ s.firstname }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <span class="icon is-left" style="height: 44px;"><i class="fas fa-user-graduate"></i></span>
                         </div>
                     </div>
+
+                    <!-- Sélecteur rapide de durée -->
+                    <div class="field mb-4">
+                        <label class="label is-small">{{ _("Durée du prêt") }}</label>
+                        {% set default_days = current_user.default_loan_duration_days or 14 %}
+                        {% if default_days == 7 %}
+                            {% set default_label = _("1 semaine (défaut)") %}
+                        {% elif default_days == 14 %}
+                            {% set default_label = _("2 semaines (défaut)") %}
+                        {% elif default_days == 21 %}
+                            {% set default_label = _("3 semaines (défaut)") %}
+                        {% elif default_days == 28 or default_days == 30 %}
+                            {% set default_label = _("1 mois (défaut)") %}
+                        {% else %}
+                            {% set default_label = default_days ~ " " ~ _("jours (défaut)") %}
+                        {% endif %}
+                        <div class="buttons are-small mb-2" id="duration-chips">
+                            {% if default_days != 7 %}
+                                <button type="button" class="button is-rounded duration-chip" data-days="7" onclick="setLoanDuration(7, this)">
+                                    {{ _("1 semaine") }}
+                                </button>
+                            {% endif %}
+                            <button type="button" class="button is-rounded is-link duration-chip" data-days="{{ default_days }}" onclick="setLoanDuration({{ default_days }}, this)">
+                                {{ default_label }}
+                            </button>
+                            {% if default_days != 14 %}
+                                <button type="button" class="button is-rounded duration-chip" data-days="14" onclick="setLoanDuration(14, this)">
+                                    {{ _("2 semaines") }}
+                                </button>
+                            {% endif %}
+                            {% if default_days != 28 and default_days != 30 %}
+                                <button type="button" class="button is-rounded duration-chip" data-days="28" onclick="setLoanDuration(28, this)">
+                                    {{ _("1 mois") }}
+                                </button>
+                            {% endif %}
+                            <button type="button" class="button is-rounded duration-chip" id="chip-custom" onclick="toggleCustomDate(this)">
+                                <span class="icon is-small mr-1"><i class="far fa-calendar-alt"></i></span>
+                                {{ _("Date libre") }}
+                            </button>
+                        </div>
+                        <div id="custom-date-container" style="display: none;" class="mt-2 mb-2">
+                            <div class="control has-icons-left" style="max-width: 220px;">
+                                <input class="input is-small is-rounded" type="date" id="expected_return_date" name="expected_return_date">
+                                <span class="icon is-left is-small"><i class="far fa-calendar"></i></span>
+                            </div>
+                        </div>
+                        <p class="help has-text-grey" id="return-date-help">
+                            {{ _("Date de retour prévue :") }} <strong id="calculated-return-date">-</strong>
+                        </p>
+                    </div>
+
                     <div class="field">
-                        <button class="button is-link">{{ _("Enregistrer") }}</button>
+                        <button type="submit" class="button is-link is-fullwidth has-text-weight-bold" style="height: 44px;">
+                            <span class="icon"><i class="fas fa-check"></i></span>
+                            <span>{{ _("Confirmer le prêt") }}</span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -239,6 +299,68 @@
         if (event.key == 'Escape') {
             for(let modal of modals) {
                 modal.style.display = 'none';
+            }
+        }
+    }
+
+    // Gestion des puces de durée d'emprunt
+    function setLoanDuration(days, chipElement) {
+        document.querySelectorAll('.duration-chip').forEach(c => c.classList.remove('is-link'));
+        if (chipElement) chipElement.classList.add('is-link');
+        const customContainer = document.getElementById('custom-date-container');
+        if (customContainer) customContainer.style.display = 'none';
+
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + days);
+        const yyyy = targetDate.getFullYear();
+        const mm = String(targetDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(targetDate.getDate()).padStart(2, '0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+
+        const dateInput = document.getElementById('expected_return_date');
+        if (dateInput) dateInput.value = dateStr;
+
+        const helpEl = document.getElementById('calculated-return-date');
+        if (helpEl) {
+            helpEl.textContent = targetDate.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+    }
+
+    function toggleCustomDate(chipElement) {
+        document.querySelectorAll('.duration-chip').forEach(c => c.classList.remove('is-link'));
+        if (chipElement) chipElement.classList.add('is-link');
+        const container = document.getElementById('custom-date-container');
+        if (container) container.style.display = 'block';
+        const dateInput = document.getElementById('expected_return_date');
+        if (dateInput) {
+            dateInput.focus();
+            dateInput.addEventListener('change', () => {
+                const val = dateInput.value;
+                if (val) {
+                    const d = new Date(val);
+                    const helpEl = document.getElementById('calculated-return-date');
+                    if (helpEl) helpEl.textContent = d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+                }
+            });
+        }
+    }
+
+    // Initialisation durée par défaut
+    const defaultDays = {{ current_user.default_loan_duration_days or 14 }};
+    const defaultChip = document.querySelector(`.duration-chip[data-days="${defaultDays}"]`);
+    if (defaultChip) {
+        setLoanDuration(defaultDays, defaultChip);
+    }
+
+    // Auto-scroll et focus si action=pret dans l'URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('action') === 'pret') {
+        const studentSelect = document.getElementById('student-select');
+        if (studentSelect) {
+            studentSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            studentSelect.focus();
+            if (studentSelect.parentElement) {
+                studentSelect.parentElement.classList.add('is-focused');
             }
         }
     }

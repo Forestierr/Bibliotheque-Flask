@@ -5,7 +5,7 @@ import os
 import re
 import time
 import xml.etree.ElementTree as ET
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 import requests
 from flask import (
@@ -29,7 +29,7 @@ from .config_plans import (
     MAX_FREE_SCANS,
     PRICE_YEARLY_AMOUNT,
 )
-from .models import Book, BookTags, Loan, Tags
+from .models import Book, BookTags, Loan, Student, Tags
 from .query import (
     get_book_actual_loan,
     get_book_by_id,
@@ -832,14 +832,41 @@ def livre_edit_student(id):
         flash(_("L'élève n'existe pas."), "error")
         return redirect(url_for("livre.livre_infos", id=id))
 
+    date_loan = datetime.now(tz=UTC).date()
+    expected_return_date = None
+    expected_str = request.form.get("expected_return_date")
+    if expected_str:
+        try:
+            expected_return_date = datetime.strptime(
+                expected_str.strip(), "%Y-%m-%d"
+            ).date()
+        except ValueError:
+            expected_return_date = None
+
+    if not expected_return_date:
+        duration_days = getattr(current_user, "default_loan_duration_days", 14) or 14
+        expected_return_date = date_loan + timedelta(days=duration_days)
+
     # Create a new loan
     loan = Loan(
         student_id=student.id,
         book_id=id,
-        date_loan=datetime.now(tz=UTC).date(),
+        date_loan=date_loan,
+        expected_return_date=expected_return_date,
     )
     db.session.add(loan)
     db.session.commit()
+
+    book = get_book_by_id(current_user.id, id)
+    student_name = f"{student.firstname} {student.name}".strip()
+    flash(
+        _(
+            "Le livre '%(title)s' a bien été prêté à %(name)s.",
+            title=book.title if book else "",
+            name=student_name,
+        ),
+        "success",
+    )
 
     return redirect(url_for("livre.livre_infos", id=id))
 
@@ -893,7 +920,36 @@ def livre_exist(isbn):
             db.session.commit()
 
         if len(books) == 1:
-            data = {"id": books[0].id, "multiple": False}
+            book = books[0]
+            active_loan = (
+                db.session.query(Loan)
+                .filter(Loan.book_id == book.id, Loan.date_return.is_(None))
+                .first()
+            )
+            borrower_name = None
+            loan_id = None
+            if active_loan:
+                student = (
+                    db.session.query(Student)
+                    .filter(Student.id == active_loan.student_id)
+                    .first()
+                )
+                if student:
+                    borrower_name = f"{student.firstname} {student.name}".strip()
+                loan_id = active_loan.id
+
+            book_title = (
+                book.title if isinstance(getattr(book, "title", None), str) else ""
+            )
+
+            data = {
+                "id": book.id,
+                "title": book_title,
+                "multiple": False,
+                "is_loaned": active_loan is not None,
+                "loan_id": loan_id,
+                "borrower_name": borrower_name,
+            }
         else:
             data = {"ids": [b.id for b in books], "multiple": True}
         return make_response(jsonify(data), 200)

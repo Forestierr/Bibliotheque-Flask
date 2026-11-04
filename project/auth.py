@@ -347,6 +347,15 @@ def reglage():
         user.newsletter_subscribed = newsletter_subscribed
         user.show_book_covers = "show_book_covers" in request.form
 
+        loan_duration_str = request.form.get("default_loan_duration_days")
+        if loan_duration_str:
+            try:
+                duration_val = int(loan_duration_str)
+                if 1 <= duration_val <= 365:
+                    user.default_loan_duration_days = duration_val
+            except ValueError:
+                pass
+
         preferred_language = request.form.get("preferred_language")
         if preferred_language in ["fr", "en", "de"]:
             user.preferred_language = preferred_language

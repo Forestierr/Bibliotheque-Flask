@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-11-02 22:44+0100\n"
+"POT-Creation-Date: 2026-11-04 12:01+0100\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: de\n"
@@ -31,12 +31,12 @@ msgstr "Ihre Meinung äußern:"
 msgid "Signaler un problème :"
 msgstr "Ein Problem melden:"
 
-#: project/auth.py:76 project/auth.py:147 project/main.py:284
+#: project/auth.py:76 project/auth.py:147 project/main.py:300
 #: project/templates/auth/login.html:161 project/templates/auth/signup.html:272
 msgid "Veuillez compléter le CAPTCHA."
 msgstr "Bitte füllen Sie das CAPTCHA aus."
 
-#: project/auth.py:85 project/auth.py:157 project/main.py:293
+#: project/auth.py:85 project/auth.py:157 project/main.py:309
 msgid "CAPTCHA invalide. Veuillez réessayer."
 msgstr "Ungültiges CAPTCHA. Bitte versuchen Sie es erneut."
 
@@ -98,7 +98,7 @@ msgstr ""
 msgid "Le lien de réinitialisation de mot de passe est invalide ou a expiré."
 msgstr "Der Link zum Zurücksetzen des Passworts ist ungültig oder abgelaufen."
 
-#: project/auth.py:279 project/auth.py:360
+#: project/auth.py:279 project/auth.py:369
 msgid "Vous devez indiquer un nouveau mot de passe."
 msgstr "Sie müssen ein neues Passwort eingeben."
 
@@ -122,15 +122,15 @@ msgstr "Diese E-Mail-Adresse wird bereits verwendet."
 msgid "Un e-mail de vérification a été envoyé à votre nouvelle adresse."
 msgstr "Eine Bestätigungs-E-Mail wurde an Ihre neue E-Mail-Adresse gesendet."
 
-#: project/auth.py:357
+#: project/auth.py:366
 msgid "Votre mot de passe est incorrect."
 msgstr "Ihr Passwort ist falsch."
 
-#: project/auth.py:365
+#: project/auth.py:374
 msgid "Vous devez indiquer votre mot de passe actuel."
 msgstr "Sie müssen Ihr aktuelles Passwort eingeben."
 
-#: project/auth.py:369
+#: project/auth.py:378
 msgid "Vos informations ont été mises à jour."
 msgstr "Ihre Informationen wurden aktualisiert."
 
@@ -145,7 +145,7 @@ msgstr ""
 "Ihre bestehenden Schüler bleiben erhalten. Um weitere hinzuzufügen, "
 "wechseln Sie zu Premium oder löschen Sie einen bestehenden Schüler."
 
-#: project/eleve.py:61 project/main.py:299
+#: project/eleve.py:61 project/main.py:315
 msgid "Veuillez remplir tous les champs."
 msgstr "Bitte füllen Sie alle Felder aus."
 
@@ -153,19 +153,30 @@ msgstr "Bitte füllen Sie alle Felder aus."
 msgid "L'élève existe déjà."
 msgstr "Der Schüler existiert bereits."
 
-#: project/emprunt.py:72 project/emprunt.py:93
+#: project/emprunt.py:86 project/emprunt.py:173
+#, python-format
+msgid "Le livre '%(title)s' a bien été marqué comme retourné."
+msgstr ""
+
+#: project/emprunt.py:92 project/emprunt.py:137 project/emprunt.py:141
+#: project/emprunt.py:142 project/emprunt.py:195
 msgid "Accès non autorisé."
 msgstr "Nicht autorisierter Zugriff."
 
-#: project/emprunt.py:87
+#: project/emprunt.py:125 project/emprunt.py:129 project/emprunt.py:130
+#: project/emprunt.py:189
 msgid "Emprunt introuvable."
 msgstr "Ausleihe nicht gefunden."
+
+#: project/emprunt.py:166
+msgid "Livre retourné avec succès."
+msgstr ""
 
 #: project/livre.py:454
 msgid "Le livre que vous souhaitiez voir n'existe pas."
 msgstr "Das gesuchte Buch existiert nicht."
 
-#: project/livre.py:489 project/livre.py:779
+#: project/livre.py:489 project/livre.py:781
 #, python-format
 msgid ""
 "Vous avez atteint la limite de %(max)s livres du plan gratuit. Vos livres"
@@ -196,27 +207,32 @@ msgstr "Das Buch, das Sie bearbeiten möchten, existiert nicht."
 msgid "Veuillez ajouter un titre au livre."
 msgstr "Bitte geben Sie dem Buch einen Titel."
 
-#: project/livre.py:788
+#: project/livre.py:790
 msgid "Le livre que vous souhaitiez dupliquer n'existe pas."
 msgstr "Das Buch, das Sie duplizieren möchten, existiert nicht."
 
-#: project/livre.py:814
+#: project/livre.py:816
 msgid "L'exemplaire a été dupliqué avec succès !"
 msgstr "Das Exemplar wurde erfolgreich dupliziert!"
 
-#: project/livre.py:824
+#: project/livre.py:826
 msgid "Le livre reste dans la bibliothèque."
 msgstr "Das Buch bleibt in der Bibliothek."
 
-#: project/livre.py:830
+#: project/livre.py:832
 msgid "L'élève n'existe pas."
 msgstr "Der Schüler existiert nicht."
 
-#: project/livre.py:854
+#: project/livre.py:864
+#, python-format
+msgid "Le livre '%(title)s' a bien été prêté à %(name)s."
+msgstr ""
+
+#: project/livre.py:883
 msgid "Le livre a été supprimé."
 msgstr "Das Buch wurde gelöscht."
 
-#: project/livre.py:871
+#: project/livre.py:900
 #, python-format
 msgid ""
 "Vous avez atteint votre quota de %(max)s scans gratuits pour cette "
@@ -227,11 +243,11 @@ msgstr ""
 "erreicht! Ihre Scans werden am Sonntag um Mitternacht zurückgesetzt, oder"
 " wechseln Sie zu Premium für unbegrenztes Scannen."
 
-#: project/livre.py:919
+#: project/livre.py:977
 msgid "Tous les livres ont été supprimés."
 msgstr "Alle Bücher wurden gelöscht."
 
-#: project/main.py:321
+#: project/main.py:337
 msgid ""
 "Votre message a été envoyé avec succès. Vous avez reçu un email de "
 "confirmation."
@@ -239,21 +255,21 @@ msgstr ""
 "Ihre Nachricht wurde erfolgreich gesendet. Sie haben eine "
 "Bestätigungs-E-Mail erhalten."
 
-#: project/main.py:387
+#: project/main.py:403
 msgid "Veuillez renseigner l'objet et la description de votre retour."
 msgstr "Bitte geben Sie Betreff und Beschreibung Ihres Feedbacks an."
 
-#: project/main.py:422
+#: project/main.py:438
 msgid "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 msgstr ""
 "Ihr Feedback wurde erfolgreich übermittelt. Vielen Dank für Ihre "
 "wertvolle Hilfe!"
 
-#: project/main.py:478
+#: project/main.py:494
 msgid "Article non trouvé"
 msgstr "Artikel nicht gefunden"
 
-#: project/main.py:488
+#: project/main.py:504
 msgid "Guide non trouvé"
 msgstr "Leitfaden nicht gefunden"
 
@@ -487,7 +503,7 @@ msgstr ""
 #: project/templates/livre/livre.html:44
 #: project/templates/livre/livre_scann.html:8
 #: project/templates/user/dashboard.html:113
-#: project/templates/user/dashboard.html:263
+#: project/templates/user/dashboard.html:317
 msgid "Scanner un livre"
 msgstr "Buch scannen"
 
@@ -543,7 +559,7 @@ msgstr ""
 msgid "Comment scanner un livre"
 msgstr "Wie man ein Buch scannt"
 
-#: project/templates/aide.html:275 project/templates/livre/livre_scann.html:441
+#: project/templates/aide.html:275 project/templates/livre/livre_scann.html:455
 msgid "Retournez le livre"
 msgstr "Drehen Sie das Buch um"
 
@@ -3069,7 +3085,7 @@ msgstr "Bücher"
 
 #: project/templates/components/stats_counter.html:19
 #: project/templates/user/dashboard.html:201
-#: project/templates/user/dashboard.html:473
+#: project/templates/user/dashboard.html:527
 #: project/templates/utils/navbar.html:382
 msgid "Élèves"
 msgstr "Schüler"
@@ -3104,7 +3120,7 @@ msgstr "Meine Schüler"
 #: project/templates/eleve/eleve_add.html:8
 #: project/templates/eleve/eleve_add.html:36
 #: project/templates/user/dashboard.html:125
-#: project/templates/user/dashboard.html:296
+#: project/templates/user/dashboard.html:350
 msgid "Ajouter un élève"
 msgstr "Schüler hinzufügen"
 
@@ -3160,15 +3176,15 @@ msgstr "Vorname des Schülers"
 #: project/templates/eleve/eleve_info.html:176
 #: project/templates/eleve/eleve_info.html:223
 #: project/templates/livre/livre_ajout.html:155
-#: project/templates/livre/livre_edit.html:149
-#: project/templates/livre/livre_edit.html:176
-#: project/templates/livre/livre_info.html:106
-#: project/templates/livre/livre_info.html:186
-#: project/templates/user/reglage.html:789
-#: project/templates/user/reglage.html:816
-#: project/templates/user/reglage.html:837
-#: project/templates/user/reglage.html:858
-#: project/templates/user/reglage.html:879
+#: project/templates/livre/livre_edit.html:158
+#: project/templates/livre/livre_edit.html:185
+#: project/templates/livre/livre_info.html:121
+#: project/templates/livre/livre_info.html:246
+#: project/templates/user/reglage.html:814
+#: project/templates/user/reglage.html:841
+#: project/templates/user/reglage.html:862
+#: project/templates/user/reglage.html:883
+#: project/templates/user/reglage.html:904
 msgid "Annuler"
 msgstr "Abbrechen"
 
@@ -3194,27 +3210,28 @@ msgid "Livres actuellement empruntés"
 msgstr "Aktuell ausgeliehene Bücher"
 
 #: project/templates/eleve/eleve_info.html:34
+#: project/templates/livre/livre_scann.html:482
 msgid "Livre actuellement emprunté"
 msgstr "Aktuell ausgeliehenes Buch"
 
 #: project/templates/eleve/eleve_info.html:58
 #: project/templates/eleve/eleve_info.html:162
-#: project/templates/livre/livre_info.html:92
-#: project/templates/livre/livre_info.html:172
+#: project/templates/livre/livre_info.html:107
+#: project/templates/livre/livre_info.html:232
 msgid "Supprimer l'emprunt ?"
 msgstr "Ausleihe löschen?"
 
 #: project/templates/eleve/eleve_info.html:68
 #: project/templates/eleve/eleve_info.html:172
-#: project/templates/livre/livre_info.html:102
-#: project/templates/livre/livre_info.html:182
+#: project/templates/livre/livre_info.html:117
+#: project/templates/livre/livre_info.html:242
 msgid "Supprimer l'emprunt"
 msgstr "Ausleihe löschen"
 
 #: project/templates/eleve/eleve_info.html:93
 #: project/templates/eleve/eleve_info.html:192
-#: project/templates/emprunt/emprunt_list.html:49
-#: project/templates/livre/livre_info.html:115
+#: project/templates/emprunt/_loan_row.html:45
+#: project/templates/livre/livre_info.html:80
 msgid "Emprunté le"
 msgstr "Ausgeliehen am"
 
@@ -3377,6 +3394,46 @@ msgstr "Produktbenachrichtigung für Benutzer von"
 msgid "Préférences de notification"
 msgstr "Benachrichtigungseinstellungen"
 
+#: project/templates/emprunt/_loan_row.html:29
+#, fuzzy
+msgid "Rendre ce livre en 1 clic"
+msgstr "Zurück zu Livres en Classe"
+
+#: project/templates/emprunt/_loan_row.html:31
+#: project/templates/user/dashboard.html:274
+#, fuzzy
+msgid "Rendre"
+msgstr "Genre"
+
+#: project/templates/emprunt/_loan_row.html:36
+msgid "Rendu"
+msgstr ""
+
+#: project/templates/emprunt/_loan_row.html:47
+#: project/templates/livre/livre_info.html:223
+msgid "Emprunté du"
+msgstr "Ausgeliehen vom"
+
+#: project/templates/emprunt/_loan_row.html:47
+#: project/templates/livre/livre_info.html:223
+#: project/templates/user/dashboard.html:367
+msgid "au"
+msgstr "bis"
+
+#: project/templates/emprunt/_loan_row.html:54
+#, fuzzy, python-format
+msgid "En retard de %(days)s j"
+msgstr "Test (%(days)sT)"
+
+#: project/templates/emprunt/_loan_row.html:58
+msgid "À rendre sous 3 j"
+msgstr ""
+
+#: project/templates/emprunt/_loan_row.html:62
+#, fuzzy, python-format
+msgid "Retour : %(date)s"
+msgstr "Zurück zur Website"
+
 #: project/templates/emprunt/emprunt.html:9
 msgid "Mes emprunts"
 msgstr "Meine Ausleihen"
@@ -3403,35 +3460,26 @@ msgid "Rechercher un emprunt"
 msgstr "Ausleihe suchen"
 
 #: project/templates/emprunt/emprunt.html:53
-msgid "Tout"
-msgstr "Alle"
+#, fuzzy
+msgid "Tous les emprunts"
+msgstr "Ausleihen ansehen"
 
 #: project/templates/emprunt/emprunt.html:54
-msgid "Actifs"
-msgstr "Aktiv"
+#, fuzzy
+msgid "Emprunts actifs"
+msgstr "Ausleihen"
 
-#: project/templates/emprunt/emprunt_list.html:51
-#: project/templates/livre/livre_info.html:163
-msgid "Emprunté du"
-msgstr "Ausgeliehen vom"
-
-#: project/templates/emprunt/emprunt_list.html:51
-#: project/templates/livre/livre_info.html:163
-#: project/templates/user/dashboard.html:313
-msgid "au"
-msgstr "bis"
-
-#: project/templates/emprunt/emprunt_list.html:64
+#: project/templates/emprunt/emprunt_list.html:38
 msgid "Archives antérieures à 10 mois masquées."
 msgstr "Ausleihen älter als 10 Monate ausgeblendet."
 
-#: project/templates/emprunt/emprunt_list.html:65
+#: project/templates/emprunt/emprunt_list.html:39
 msgid "Passez Premium pour consulter l'historique complet de vos emprunts passés."
 msgstr ""
 "Wechseln Sie zu Premium, um den vollständigen Verlauf vergangener "
 "Ausleihen einzusehen."
 
-#: project/templates/emprunt/emprunt_list.html:68
+#: project/templates/emprunt/emprunt_list.html:42
 msgid "Découvrir les offres Premium"
 msgstr "Premium-Angebote entdecken"
 
@@ -3653,6 +3701,7 @@ msgid "Rechercher un livre"
 msgstr "Buch suchen"
 
 #: project/templates/livre/livre_ajout.html:13
+#: project/templates/livre/livre_scann.html:1051
 msgid "Livre"
 msgstr "Buch"
 
@@ -3768,23 +3817,29 @@ msgid "Étiquettes"
 msgstr "Schlagwörter"
 
 #: project/templates/livre/livre_ajout.html:136
-#: project/templates/livre/livre_edit.html:115
+#: project/templates/livre/livre_edit.html:124
 msgid "Ajouter une étiquette ou une catégorie"
 msgstr "Schlagwort oder Kategorie hinzufügen"
 
 #: project/templates/livre/livre_ajout.html:151
-#: project/templates/livre/livre_edit.html:145
-#: project/templates/livre/livre_info.html:147
-#: project/templates/user/reglage.html:793
+#: project/templates/livre/livre_edit.html:154
+#: project/templates/user/reglage.html:818
 msgid "Enregistrer"
 msgstr "Speichern"
+
+#: project/templates/livre/livre_ajout.html:239
+#: project/templates/livre/livre_edit.html:114
+#: project/templates/livre/livre_edit.html:290
+#, fuzzy
+msgid "Supprimer"
+msgstr "Ja, löschen"
 
 #: project/templates/livre/livre_edit.html:8
 msgid "Modifier un livre"
 msgstr "Buch bearbeiten"
 
 #: project/templates/livre/livre_edit.html:13
-#: project/templates/livre/livre_info.html:210
+#: project/templates/livre/livre_info.html:270
 msgid "Modifier le livre"
 msgstr "Buch bearbeiten"
 
@@ -3804,95 +3859,156 @@ msgstr ""
 msgid "Aperçu de la couverture actuelle"
 msgstr ""
 
-#: project/templates/livre/livre_edit.html:129
+#: project/templates/livre/livre_edit.html:138
 msgid "Élève possédant le livre"
 msgstr "Schüler, der das Buch besitzt"
 
-#: project/templates/livre/livre_edit.html:135
-#: project/templates/livre/livre_info.html:139
+#: project/templates/livre/livre_edit.html:144
 msgid "-- Le livre se trouve dans la bibliothèque --"
 msgstr "-- Das Buch befindet sich in der Bibliothek --"
 
-#: project/templates/livre/livre_edit.html:162
-#: project/templates/livre/livre_edit.html:172
-#: project/templates/livre/livre_edit.html:188
+#: project/templates/livre/livre_edit.html:171
+#: project/templates/livre/livre_edit.html:181
+#: project/templates/livre/livre_edit.html:197
 msgid "Supprimer le livre"
 msgstr "Buch löschen"
 
-#: project/templates/livre/livre_info.html:17
-msgid "Nombre de fois prêtés :"
-msgstr "Anzahl der Ausleihen:"
+#: project/templates/livre/livre_info.html:26
+#, fuzzy
+msgid "Emprunté"
+msgstr "Ausleihen"
 
-#: project/templates/livre/livre_info.html:43
-#: project/templates/ressources/bingo.html:78
-#: project/templates/ressources/bingo.html:93
-#: project/templates/ressources/bingo.html:108
-#: project/templates/ressources/bingo.html:123
-#: project/templates/ressources/bingo.html:139
-#: project/templates/ressources/bingo.html:154
-#: project/templates/ressources/bingo.html:169
-#: project/templates/ressources/bingo.html:184
-#: project/templates/ressources/bingo.html:200
-#: project/templates/ressources/bingo.html:215
-#: project/templates/ressources/bingo.html:230
-#: project/templates/ressources/bingo.html:245
-#: project/templates/ressources/bingo.html:261
-#: project/templates/ressources/bingo.html:276
-#: project/templates/ressources/bingo.html:291
-#: project/templates/ressources/bingo.html:306
-msgid "Titre :"
-msgstr "Titel:"
+#: project/templates/livre/livre_info.html:30
+#: project/templates/livre/livre_list.html:74
+#: project/templates/livre/livre_list.html:101
+msgid "Disponible"
+msgstr "Verfügbar"
 
-#: project/templates/livre/livre_info.html:44
-#: project/templates/ressources/fiches_avis.html:125
-msgid "Auteur :"
-msgstr "Autor:"
+#: project/templates/livre/livre_info.html:42
+#, python-format
+msgid "Prêté %(count)s fois"
+msgstr ""
 
-#: project/templates/livre/livre_info.html:45
-msgid "Editeur :"
-msgstr "Verlag:"
-
-#: project/templates/livre/livre_info.html:46
-msgid "Année :"
-msgstr "Year:"
-
-#: project/templates/livre/livre_info.html:47
-msgid "ISBN officiel :"
-msgstr "Offizielle ISBN:"
-
-#: project/templates/livre/livre_info.html:48
-msgid "Référence classe :"
-msgstr "Klassen-Referenz:"
-
-#: project/templates/livre/livre_info.html:66
-msgid "Actuellement prêté à :"
+#: project/templates/livre/livre_info.html:63
+#, fuzzy
+msgid "Actuellement prêté à"
 msgstr "Aktuell verliehen an:"
 
-#: project/templates/livre/livre_info.html:129
-msgid "Ce livre n'est pas actuellement prêté."
-msgstr "Dieses Buch ist derzeit nicht verliehen."
+#: project/templates/livre/livre_info.html:74
+#, fuzzy
+msgid "Rendre le livre"
+msgstr "Drehen Sie das Buch um"
 
-#: project/templates/livre/livre_info.html:133
-msgid "Prêter le livre à un élève"
+#: project/templates/livre/livre_info.html:84
+#, python-format
+msgid "En retard de %(days)s jour(s) (prévu le %(date)s)"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:88
+#, python-format
+msgid "À rendre le %(date)s (bientôt)"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:91
+#, fuzzy
+msgid "Retour prévu le"
+msgstr "Zurück zur Website"
+
+#: project/templates/livre/livre_info.html:96
+#, fuzzy
+msgid "Supprimer ce prêt"
+msgstr "Alle Ausleihen löschen"
+
+#: project/templates/livre/livre_info.html:131
+#, fuzzy
+msgid "Prêter ce livre à un élève"
 msgstr "Buch an einen Schüler verleihen"
 
-#: project/templates/livre/livre_info.html:154
+#: project/templates/livre/livre_info.html:136
+#, fuzzy
+msgid "Choisir l'élève"
+msgstr "Schüler löschen"
+
+#: project/templates/livre/livre_info.html:143
+#, fuzzy
+msgid "-- Sélectionner un élève --"
+msgstr "Buch scannen"
+
+#: project/templates/livre/livre_info.html:155
+#, fuzzy
+msgid "Durée du prêt"
+msgstr "Plakat-Kopfzeile"
+
+#: project/templates/livre/livre_info.html:158
+#, fuzzy
+msgid "1 semaine (défaut)"
+msgstr "Scans / Woche"
+
+#: project/templates/livre/livre_info.html:160
+#, fuzzy
+msgid "2 semaines (défaut)"
+msgstr "Scans / Woche"
+
+#: project/templates/livre/livre_info.html:162
+#, fuzzy
+msgid "3 semaines (défaut)"
+msgstr "Scans / Woche"
+
+#: project/templates/livre/livre_info.html:164
+msgid "1 mois (défaut)"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:166
+msgid "jours (défaut)"
+msgstr ""
+
+#: project/templates/livre/livre_info.html:171
+#, fuzzy
+msgid "1 semaine"
+msgstr "Scans / Woche"
+
+#: project/templates/livre/livre_info.html:179
+#, fuzzy
+msgid "2 semaines"
+msgstr "Scans / Woche"
+
+#: project/templates/livre/livre_info.html:184
+#, fuzzy
+msgid "1 mois"
+msgstr "Monat"
+
+#: project/templates/livre/livre_info.html:189
+#, fuzzy
+msgid "Date libre"
+msgstr "Rückgabedatum"
+
+#: project/templates/livre/livre_info.html:199
+#, fuzzy
+msgid "Date de retour prévue :"
+msgstr "Feedback-Art"
+
+#: project/templates/livre/livre_info.html:206
+#, fuzzy
+msgid "Confirmer le prêt"
+msgstr "Bestätigen Sie mit 'Hinzufügen'"
+
+#: project/templates/livre/livre_info.html:214
 msgid "Anciens emprunts :"
 msgstr "Frühere Ausleihen:"
 
-#: project/templates/livre/livre_info.html:211
+#: project/templates/livre/livre_info.html:271
 msgid "Dupliquer le livre"
 msgstr "Buch duplizieren"
 
 #: project/templates/livre/livre_list.html:67
 #: project/templates/livre/livre_list.html:94
-#: project/templates/user/dashboard.html:242
+#: project/templates/user/dashboard.html:296
 msgid "Prêté"
 msgstr "Verliehen"
 
 #: project/templates/livre/livre_list.html:67
 #: project/templates/livre/livre_list.html:94
-#: project/templates/user/dashboard.html:242
+#: project/templates/user/dashboard.html:296
 msgid "fois"
 msgstr "Mal"
 
@@ -3901,11 +4017,6 @@ msgstr "Mal"
 #: project/templates/utils/search_preview.html:9
 msgid "Emprunté par :"
 msgstr "Ausgeliehen von:"
-
-#: project/templates/livre/livre_list.html:74
-#: project/templates/livre/livre_list.html:101
-msgid "Disponible"
-msgstr "Verfügbar"
 
 #: project/templates/livre/livre_scann.html:324
 #, python-format
@@ -3920,7 +4031,7 @@ msgid "Code-barres détecté"
 msgstr "Barcode"
 
 #: project/templates/livre/livre_scann.html:341
-#: project/templates/livre/livre_scann.html:638
+#: project/templates/livre/livre_scann.html:712
 #, fuzzy
 msgid "Vérification dans votre classe..."
 msgstr "Aus meiner Klasse auswählen"
@@ -3941,105 +4052,149 @@ msgstr "Taschenlampe"
 msgid "Changer de caméra"
 msgstr "Kamera wechseln"
 
-#: project/templates/livre/livre_scann.html:419
-msgid "Impossible d'accéder à la caméra."
-msgstr "Kamerazugriff nicht möglich."
-
 #: project/templates/livre/livre_scann.html:420
-msgid ""
-"Vérifiez que vous avez autorisé l'accès à la caméra dans votre "
-"navigateur, puis rechargez la page."
+msgid "Caméra inaccessible dans ce navigateur. Utilisez la saisie manuelle :"
 msgstr ""
-"Stellen Sie sicher, dass Sie den Kamerazugriff in Ihrem Browser erlaubt "
-"haben, und laden Sie die Seite neu."
 
 #: project/templates/livre/livre_scann.html:424
-msgid "Voir le guide de dépannage"
-msgstr "Fehlerbehebungshandbuch anzeigen"
+msgid "Saisir le code ISBN ou étiquette classe..."
+msgstr ""
 
-#: project/templates/livre/livre_scann.html:433
+#: project/templates/livre/livre_scann.html:429
+#, fuzzy
+msgid "Valider"
+msgstr "Hilfe"
+
+#: project/templates/livre/livre_scann.html:434
+msgid "Ex: 9782070584628 ou BAC-A-001"
+msgstr ""
+
+#: project/templates/livre/livre_scann.html:437
+#, fuzzy
+msgid "Aide caméra"
+msgstr "Kamera wechseln"
+
+#: project/templates/livre/livre_scann.html:447
 msgid "Comment scanner un livre ?"
 msgstr "Wie scannt man ein Buch?"
 
-#: project/templates/livre/livre_scann.html:441
+#: project/templates/livre/livre_scann.html:455
 msgid "pour voir le verso (4ème de couverture)"
 msgstr "um den Rückumschlag zu sehen"
 
-#: project/templates/livre/livre_scann.html:442
-#: project/templates/user/dashboard.html:375
+#: project/templates/livre/livre_scann.html:456
+#: project/templates/user/dashboard.html:429
 msgid "Le"
 msgstr "Am"
 
-#: project/templates/livre/livre_scann.html:442
+#: project/templates/livre/livre_scann.html:456
 msgid "code-barres"
 msgstr "Barcode"
 
-#: project/templates/livre/livre_scann.html:442
+#: project/templates/livre/livre_scann.html:456
 msgid "l'ISBN officiel (978...) ou votre étiquette de classe (ex : BAC-A-001)"
 msgstr "die offizielle ISBN (978...) oder Ihr Klassenetikett (z.B. KISTE-A-001)"
 
-#: project/templates/livre/livre_scann.html:443
+#: project/templates/livre/livre_scann.html:457
 msgid "Pointez la caméra à"
 msgstr "Richten Sie die Kamera auf"
 
-#: project/templates/livre/livre_scann.html:443
+#: project/templates/livre/livre_scann.html:457
 msgid "environ 15-20 cm"
 msgstr "etwa 15-20 cm"
 
-#: project/templates/livre/livre_scann.html:443
+#: project/templates/livre/livre_scann.html:457
 msgid "du code-barres"
 msgstr "vom Barcode"
 
-#: project/templates/livre/livre_scann.html:444
+#: project/templates/livre/livre_scann.html:458
 msgid "Maintenez l'appareil"
 msgstr "Halten Sie das Gerät"
 
-#: project/templates/livre/livre_scann.html:444
+#: project/templates/livre/livre_scann.html:458
 msgid "stable"
 msgstr "ruhig"
 
-#: project/templates/livre/livre_scann.html:444
+#: project/templates/livre/livre_scann.html:458
 msgid "quelques secondes — le scan est automatique"
 msgstr "ein paar Sekunden — der Scan erfolgt automatisch"
 
-#: project/templates/livre/livre_scann.html:445
+#: project/templates/livre/livre_scann.html:459
 msgid "Si la lumière est faible, utilisez le bouton"
 msgstr "Bei schwachem Licht verwenden Sie die"
 
-#: project/templates/livre/livre_scann.html:445
+#: project/templates/livre/livre_scann.html:459
 msgid "torche"
 msgstr "Taschenlampe"
 
-#: project/templates/livre/livre_scann.html:449
+#: project/templates/livre/livre_scann.html:463
 msgid "Astuce :"
 msgstr "Tipp:"
 
-#: project/templates/livre/livre_scann.html:449
+#: project/templates/livre/livre_scann.html:463
 msgid "Utilisez la mise au point du bouton"
 msgstr "Verwenden Sie den Fokus der Taste"
 
-#: project/templates/livre/livre_scann.html:449
+#: project/templates/livre/livre_scann.html:463
 msgid "si le scan ne fonctionne pas — l'ultra-large"
 msgstr "wenn der Scan nicht funktioniert — das Ultraweitwinkel"
 
-#: project/templates/livre/livre_scann.html:449
+#: project/templates/livre/livre_scann.html:463
 msgid "peut mal détecter à courte distance."
 msgstr "kann auf kurze Distanz schlecht erkennen."
 
-#: project/templates/livre/livre_scann.html:454
+#: project/templates/livre/livre_scann.html:468
 msgid "Guide complet du scanner"
 msgstr "Vollständiger Scanner-Leitfaden"
 
-#: project/templates/livre/livre_scann.html:468
+#: project/templates/livre/livre_scann.html:495
+#, fuzzy
+msgid "Emprunté par"
+msgstr "ausgeliehen von"
+
+#: project/templates/livre/livre_scann.html:498
+#, fuzzy
+msgid "Souhaitez-vous enregistrer le retour de ce livre ?"
+msgstr "Möchten Sie den Empfang von Updates wieder aktivieren?"
+
+#: project/templates/livre/livre_scann.html:505
+#, fuzzy
+msgid "Livre retourné avec succès !"
+msgstr "Das Exemplar wurde erfolgreich dupliziert!"
+
+#: project/templates/livre/livre_scann.html:506
+msgid "Le livre est de nouveau disponible en rayon."
+msgstr ""
+
+#: project/templates/livre/livre_scann.html:513
+#, fuzzy
+msgid "Confirmer le retour"
+msgstr "Bestätigen Sie mit 'Hinzufügen'"
+
+#: project/templates/livre/livre_scann.html:518
+msgid "Voir la fiche"
+msgstr ""
+
+#: project/templates/livre/livre_scann.html:521
+#, fuzzy
+msgid "Scanner un autre"
+msgstr "Buch scannen"
+
+#: project/templates/livre/livre_scann.html:528
+#, fuzzy
+msgid "Continuer à scanner"
+msgstr "Scanner öffnen"
+
+#: project/templates/livre/livre_scann.html:542
 msgid "Limite de scans atteinte"
 msgstr "Scan-Limit erreicht"
 
-#: project/templates/livre/livre_scann.html:477
+#: project/templates/livre/livre_scann.html:551
 #, python-format
 msgid "Vous avez utilisé vos %(max)s scans gratuits pour cette semaine !"
 msgstr "Sie haben Ihre %(max)s kostenlosen Scans für diese Woche aufgebraucht!"
 
-#: project/templates/livre/livre_scann.html:480
+#: project/templates/livre/livre_scann.html:554
 #, python-format
 msgid ""
 "Votre quota de scans sera remis à zéro dimanche à 00h00. Vous pouvez "
@@ -4050,52 +4205,69 @@ msgstr ""
 "können auch für %(price)s CHF/Jahr auf Premium upgraden, um unbegrenzt zu"
 " scannen."
 
-#: project/templates/livre/livre_scann.html:484
+#: project/templates/livre/livre_scann.html:558
 #, python-format
 msgid "Passer Premium (%(price)s.- CHF/an)"
 msgstr "Auf Premium upgraden (%(price)s CHF/Jahr)"
 
-#: project/templates/livre/livre_scann.html:487
+#: project/templates/livre/livre_scann.html:561
 msgid "Ajouter manuellement"
 msgstr "Manuell hinzufügen"
 
-#: project/templates/livre/livre_scann.html:637
+#: project/templates/livre/livre_scann.html:711
 #, fuzzy
 msgid "Code-barres détecté !"
 msgstr "Barcode erkannt!"
 
-#: project/templates/livre/livre_scann.html:660
+#: project/templates/livre/livre_scann.html:734
 #, fuzzy
 msgid "Livre non catalogué"
 msgstr "Bücher im Katalog"
 
-#: project/templates/livre/livre_scann.html:661
+#: project/templates/livre/livre_scann.html:735
 msgid "Recherche des métadonnées et de la couverture (BnF, Google Books)..."
 msgstr ""
 
-#: project/templates/livre/livre_scann.html:675
+#: project/templates/livre/livre_scann.html:751
+msgid "Plusieurs exemplaires trouvés !"
+msgstr ""
+
+#: project/templates/livre/livre_scann.html:752
+msgid "Affichage de la liste..."
+msgstr ""
+
+#: project/templates/livre/livre_scann.html:762
 #, fuzzy
-msgid "Livre trouvé dans votre classe !"
+msgid "Livre disponible dans votre classe !"
 msgstr "gelesenen Büchern in der Klassenbibliothek!"
 
-#: project/templates/livre/livre_scann.html:676
+#: project/templates/livre/livre_scann.html:763
 #, fuzzy
-msgid "Ouverture de la fiche..."
+msgid "Ouverture du prêt..."
 msgstr "Plakat-Kopfzeile"
 
-#: project/templates/livre/livre_scann.html:689
+#: project/templates/livre/livre_scann.html:772
 #, fuzzy
 msgid "Erreur de connexion"
 msgstr "Abmelden"
 
-#: project/templates/livre/livre_scann.html:690
+#: project/templates/livre/livre_scann.html:773
 #, fuzzy
 msgid "Reprise du scanner..."
 msgstr "Scanner-Anleitung"
 
-#: project/templates/livre/livre_scann.html:860
+#: project/templates/livre/livre_scann.html:943
 msgid "Lampe torche non supportée sur cet appareil"
 msgstr "Taschenlampe auf diesem Gerät nicht unterstützt"
+
+#: project/templates/livre/livre_scann.html:1052
+#, fuzzy
+msgid "un élève"
+msgstr "Schüler"
+
+#: project/templates/livre/livre_scann.html:1116
+msgid "Une erreur est survenue lors du retour du livre."
+msgstr ""
 
 #: project/templates/ressources/base_editor.html:20
 #: project/templates/ressources/livret_pdf.html:272
@@ -4240,6 +4412,25 @@ msgstr "Klasse:"
 #: project/templates/ressources/bingo.html:71
 msgid "Lire 15 minutes dans un endroit calme"
 msgstr "15 Minuten an einem ruhigen Ort lesen"
+
+#: project/templates/ressources/bingo.html:78
+#: project/templates/ressources/bingo.html:93
+#: project/templates/ressources/bingo.html:108
+#: project/templates/ressources/bingo.html:123
+#: project/templates/ressources/bingo.html:139
+#: project/templates/ressources/bingo.html:154
+#: project/templates/ressources/bingo.html:169
+#: project/templates/ressources/bingo.html:184
+#: project/templates/ressources/bingo.html:200
+#: project/templates/ressources/bingo.html:215
+#: project/templates/ressources/bingo.html:230
+#: project/templates/ressources/bingo.html:245
+#: project/templates/ressources/bingo.html:261
+#: project/templates/ressources/bingo.html:276
+#: project/templates/ressources/bingo.html:291
+#: project/templates/ressources/bingo.html:306
+msgid "Titre :"
+msgstr "Titel:"
 
 #: project/templates/ressources/bingo.html:81
 #: project/templates/ressources/bingo.html:96
@@ -4729,7 +4920,7 @@ msgid "Saisie libre / Autre élève"
 msgstr "Freie Eingabe / Anderer Schüler"
 
 #: project/templates/ressources/diplome.html:85
-#: project/templates/user/dashboard.html:281
+#: project/templates/user/dashboard.html:335
 msgid "livres lus"
 msgstr "gelesene Bücher"
 
@@ -5175,6 +5366,10 @@ msgstr "Empfohlen von:"
 msgid "Titre du livre :"
 msgstr "Buchtitel:"
 
+#: project/templates/ressources/fiches_avis.html:125
+msgid "Auteur :"
+msgstr "Autor:"
+
 #: project/templates/ressources/fiches_avis.html:161
 msgid "Visuel Pinterest Fiches coup de cœur à imprimer"
 msgstr ""
@@ -5402,10 +5597,10 @@ msgstr "Kisten & Buchrücken"
 #: project/templates/ressources/index.html:297
 #: project/templates/ressources/index.html:338
 #: project/templates/subscription/tarifs.html:393
-#: project/templates/user/reglage.html:596
-#: project/templates/user/reglage.html:626
-#: project/templates/user/reglage.html:656
-#: project/templates/user/reglage.html:686
+#: project/templates/user/reglage.html:621
+#: project/templates/user/reglage.html:651
+#: project/templates/user/reglage.html:681
+#: project/templates/user/reglage.html:711
 #: project/templates/utils/navbar.html:363
 #: project/templates/utils/navbar.html:447
 msgid "Premium"
@@ -5656,12 +5851,12 @@ msgstr ""
 
 #: project/templates/ressources/index.html:570
 #: project/templates/ressources/livret_pdf.html:506
-#: project/templates/user/reglage.html:908
+#: project/templates/user/reglage.html:933
 msgid "Fermer"
 msgstr "Schließen"
 
 #: project/templates/ressources/index.html:573
-#: project/templates/user/reglage.html:911
+#: project/templates/user/reglage.html:936
 msgid "Découvrir les offres Premium (dès 3.- CHF/mois)"
 msgstr "Premium-Angebote entdecken (ab 3.- CHF/Monat)"
 
@@ -7109,7 +7304,7 @@ msgid "scans / semaine"
 msgstr "Scans / Woche"
 
 #: project/templates/subscription/tarifs.html:413
-#: project/templates/user/reglage.html:683
+#: project/templates/user/reglage.html:708
 msgid "Historique des prêts"
 msgstr "Ausleihhistorie"
 
@@ -7282,125 +7477,155 @@ msgid "Augmenter la limite"
 msgstr "Limit erhöhen"
 
 #: project/templates/user/dashboard.html:215
-msgid "Remis à zéro chaque dimanche à 00h00"
+#, fuzzy
+msgid "Remis à zéro chaque dimanche à 00h00 UTC"
 msgstr "Jeden Sonntag um 00:00 Uhr zurückgesetzt"
 
 #: project/templates/user/dashboard.html:215
 msgid "Scans cette semaine"
 msgstr "Scans diese Woche"
 
+#: project/templates/user/dashboard.html:215
+msgid "dimanche 00h"
+msgstr ""
+
 #: project/templates/user/dashboard.html:219
 msgid "Débloquer scans illimités"
 msgstr "Unbegrenzte Scans freischalten"
 
-#: project/templates/user/dashboard.html:232
-#: project/templates/user/dashboard.html:250
-msgid "Meilleurs livres"
-msgstr "Beliebteste Bücher"
+#: project/templates/user/dashboard.html:236
+#, fuzzy
+msgid "Prêts en retard"
+msgstr "Erfasste Ausleihen"
 
-#: project/templates/user/dashboard.html:252
-msgid "Vous n'avez pas encore de livres dans votre bibliothèque."
-msgstr "Sie haben noch keine Bücher in Ihrer Bibliothek."
+#: project/templates/user/dashboard.html:242
+#, fuzzy
+msgid "Voir tous les emprunts"
+msgstr "Ausleihen ansehen"
 
-#: project/templates/user/dashboard.html:257
-msgid "Ajouter un livre à votre bibliothèque"
-msgstr "Buch zu Ihrer Bibliothek hinzufügen"
+#: project/templates/user/dashboard.html:263
+#, fuzzy, python-format
+msgid "En retard de %(days)s jour(s)"
+msgstr "Test (%(days)sT)"
 
-#: project/templates/user/dashboard.html:271
-#: project/templates/user/dashboard.html:289
-msgid "Élèves qui ont le plus lu"
-msgstr "Fleißigste Leser"
+#: project/templates/user/dashboard.html:272
+#, fuzzy
+msgid "Enregistrer le retour"
+msgstr "Änderungen speichern"
 
-#: project/templates/user/dashboard.html:291
-msgid "Vous n'avez pas encore d'élèves dans votre bibliothèque."
-msgstr "Sie haben noch keine Schüler in Ihrer Bibliothek."
-
+#: project/templates/user/dashboard.html:286
 #: project/templates/user/dashboard.html:304
-#: project/templates/user/dashboard.html:324
+#, fuzzy
+msgid "Meilleurs livres"
+msgstr "Meine Bücher"
+
+#: project/templates/user/dashboard.html:306
+#, fuzzy
+msgid "Vous n'avez pas encore de livres dans votre bibliothèque."
+msgstr "Sie haben Ihrer Bibliothek noch kein Buch hinzugefügt."
+
+#: project/templates/user/dashboard.html:311
+#, fuzzy
+msgid "Ajouter un livre à votre bibliothèque"
+msgstr " wurde Ihrer Bibliothek hinzugefügt."
+
+#: project/templates/user/dashboard.html:325
+#: project/templates/user/dashboard.html:343
+#, fuzzy
+msgid "Élèves qui ont le plus lu"
+msgstr "Erkennen Sie die beliebtesten Bücher."
+
+#: project/templates/user/dashboard.html:345
+#, fuzzy
+msgid "Vous n'avez pas encore d'élèves dans votre bibliothèque."
+msgstr "Sie haben Ihrer Bibliothek noch kein Buch hinzugefügt."
+
+#: project/templates/user/dashboard.html:358
+#: project/templates/user/dashboard.html:378
 msgid "Derniers prêts"
 msgstr "Letzte Ausleihen"
 
-#: project/templates/user/dashboard.html:309
+#: project/templates/user/dashboard.html:363
 msgid "emprunté par"
 msgstr "ausgeliehen von"
 
-#: project/templates/user/dashboard.html:313
+#: project/templates/user/dashboard.html:367
 msgid "Du"
 msgstr "Vom"
 
-#: project/templates/user/dashboard.html:315
+#: project/templates/user/dashboard.html:369
 msgid "Prêté le"
 msgstr "Verliehen am"
 
-#: project/templates/user/dashboard.html:326
+#: project/templates/user/dashboard.html:380
 msgid "Vous n'avez pas encore effectué de prêts."
 msgstr "Sie haben noch keine Ausleihen durchgeführt."
 
-#: project/templates/user/dashboard.html:327
+#: project/templates/user/dashboard.html:381
 msgid "Sélectionnez un livre pour le prêter à un élève."
 msgstr "Wählen Sie ein Buch aus, um es an einen Schüler zu verleihen."
 
-#: project/templates/user/dashboard.html:332
+#: project/templates/user/dashboard.html:386
 msgid "Voir mes livres"
 msgstr "Meine Bücher ansehen"
 
-#: project/templates/user/dashboard.html:341
+#: project/templates/user/dashboard.html:395
 msgid "Prêts sur l'année"
 msgstr "Ausleihen im Jahresverlauf"
 
-#: project/templates/user/dashboard.html:360
+#: project/templates/user/dashboard.html:414
 msgid "Lun"
 msgstr "Mo"
 
-#: project/templates/user/dashboard.html:362
+#: project/templates/user/dashboard.html:416
 msgid "Mer"
 msgstr "Mi"
 
-#: project/templates/user/dashboard.html:364
+#: project/templates/user/dashboard.html:418
 msgid "Ven"
 msgstr "Fr"
 
-#: project/templates/user/dashboard.html:366
+#: project/templates/user/dashboard.html:420
 msgid "Dim"
 msgstr "So"
 
-#: project/templates/user/dashboard.html:375
+#: project/templates/user/dashboard.html:429
 msgid "prêts,"
 msgstr "Ausleihen,"
 
-#: project/templates/user/dashboard.html:375
+#: project/templates/user/dashboard.html:429
 msgid "retours"
 msgstr "Rückgaben"
 
-#: project/templates/user/dashboard.html:390
+#: project/templates/user/dashboard.html:444
 msgid "Nombres de prêts :"
 msgstr "Anzahl der Ausleihen:"
 
-#: project/templates/user/dashboard.html:396
+#: project/templates/user/dashboard.html:450
 msgid "moins → plus"
 msgstr "weniger → mehr"
 
-#: project/templates/user/dashboard.html:402
+#: project/templates/user/dashboard.html:456
 msgid "Livres lus par élève"
 msgstr "Gelesene Bücher pro Schüler"
 
-#: project/templates/user/dashboard.html:407
+#: project/templates/user/dashboard.html:461
 msgid "De :"
 msgstr "Von:"
 
-#: project/templates/user/dashboard.html:413
+#: project/templates/user/dashboard.html:467
 msgid "À :"
 msgstr "Bis:"
 
-#: project/templates/user/dashboard.html:419
+#: project/templates/user/dashboard.html:473
 msgid "Afficher"
 msgstr "Anzeigen"
 
-#: project/templates/user/dashboard.html:444
+#: project/templates/user/dashboard.html:498
 msgid "Livres lus"
 msgstr "Gelesene Bücher"
 
-#: project/templates/user/dashboard.html:485
+#: project/templates/user/dashboard.html:539
 msgid "Nombre de livres lus"
 msgstr "Anzahl gelesener Bücher"
 
@@ -7449,7 +7674,7 @@ msgstr "Exporte"
 
 #: project/templates/user/reglage.html:361
 #: project/templates/user/reglage.html:363
-#: project/templates/user/reglage.html:716
+#: project/templates/user/reglage.html:741
 msgid "Zone de danger"
 msgstr "Gefahrenbereich"
 
@@ -7632,22 +7857,47 @@ msgid ""
 msgstr ""
 
 #: project/templates/user/reglage.html:547
+#, fuzzy
+msgid "Gestion des Prêts & Retards"
+msgstr "Ausleihverwaltung"
+
+#: project/templates/user/reglage.html:552
+msgid "Durée habituelle d'un prêt"
+msgstr ""
+
+#: project/templates/user/reglage.html:562
+#, fuzzy
+msgid "jours"
+msgstr "Rückgaben"
+
+#: project/templates/user/reglage.html:563
+msgid "ex. : 7 jours = 1 semaine, 14 jours = 2 semaines"
+msgstr ""
+
+#: project/templates/user/reglage.html:567
+msgid ""
+"Cette durée pré-remplira automatiquement la date de retour prévue lors de"
+" chaque nouvel emprunt. Les retards seront signalés sur le tableau de "
+"bord."
+msgstr ""
+
+#: project/templates/user/reglage.html:572
 msgid "Communications & Newsletter"
 msgstr "Mitteilungen & Newsletter"
 
-#: project/templates/user/reglage.html:553
+#: project/templates/user/reglage.html:578
 msgid "Recevoir la newsletter et les actualités par e-mail"
 msgstr "Newsletter und Neuigkeiten per E-Mail erhalten"
 
-#: project/templates/user/reglage.html:556
+#: project/templates/user/reglage.html:581
 msgid "Abonné"
 msgstr "Abonniert"
 
-#: project/templates/user/reglage.html:558
+#: project/templates/user/reglage.html:583
 msgid "Désabonné"
 msgstr "Abbestellt"
 
-#: project/templates/user/reglage.html:562
+#: project/templates/user/reglage.html:587
 msgid ""
 "Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils "
 "pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous "
@@ -7657,15 +7907,15 @@ msgstr ""
 "Klassenbibliothek und Neuigkeiten per E-Mail. Sie können sich jederzeit "
 "abmelden."
 
-#: project/templates/user/reglage.html:571
+#: project/templates/user/reglage.html:596
 msgid "Enregistrer les modifications"
 msgstr "Änderungen speichern"
 
-#: project/templates/user/reglage.html:582
+#: project/templates/user/reglage.html:607
 msgid "Télécharger vos données"
 msgstr "Ihre Daten herunterladen"
 
-#: project/templates/user/reglage.html:583
+#: project/templates/user/reglage.html:608
 msgid ""
 "Générez et téléchargez facilement vos fichiers au format Excel pour les "
 "sauvegarder ou les analyser."
@@ -7673,52 +7923,52 @@ msgstr ""
 "Erstellen und laden Sie Ihre Dateien einfach im Excel-Format herunter, um"
 " sie zu sichern oder zu analysieren."
 
-#: project/templates/user/reglage.html:593
+#: project/templates/user/reglage.html:618
 msgid "Tous les livres"
 msgstr "Alle Bücher"
 
-#: project/templates/user/reglage.html:601
+#: project/templates/user/reglage.html:626
 msgid "La liste complète de tous les livres enregistrés dans votre bibliothèque."
 msgstr "Die vollständige Liste aller in Ihrer Bibliothek erfassten Bücher."
 
-#: project/templates/user/reglage.html:605
-#: project/templates/user/reglage.html:610
+#: project/templates/user/reglage.html:630
 #: project/templates/user/reglage.html:635
-#: project/templates/user/reglage.html:640
+#: project/templates/user/reglage.html:660
 #: project/templates/user/reglage.html:665
-#: project/templates/user/reglage.html:670
+#: project/templates/user/reglage.html:690
 #: project/templates/user/reglage.html:695
-#: project/templates/user/reglage.html:700
+#: project/templates/user/reglage.html:720
+#: project/templates/user/reglage.html:725
 msgid "Télécharger (Excel)"
 msgstr "Herunterladen (Excel)"
 
-#: project/templates/user/reglage.html:623
+#: project/templates/user/reglage.html:648
 msgid "Lectures par élève"
 msgstr "Ausleihen pro Schüler"
 
-#: project/templates/user/reglage.html:631
+#: project/templates/user/reglage.html:656
 msgid "Historique des livres lus et empruntés classé par élève."
 msgstr "Verlauf der gelesenen und ausgeliehenen Bücher sortiert nach Schüler."
 
-#: project/templates/user/reglage.html:653
+#: project/templates/user/reglage.html:678
 msgid "Prêts en cours"
 msgstr "Laufende Ausleihen"
 
-#: project/templates/user/reglage.html:661
+#: project/templates/user/reglage.html:686
 msgid "La liste des emprunts actifs non encore retournés."
 msgstr "Die Liste der aktiven Ausleihen, die noch nicht zurückgegeben wurden."
 
-#: project/templates/user/reglage.html:691
+#: project/templates/user/reglage.html:716
 msgid ""
 "L'ensemble de tous les prêts réalisés depuis la création de la "
 "bibliothèque."
 msgstr "Gesamtheit aller Ausleihen seit Erstellung der Bibliothek."
 
-#: project/templates/user/reglage.html:722
+#: project/templates/user/reglage.html:747
 msgid "Attention :"
 msgstr "Achtung:"
 
-#: project/templates/user/reglage.html:722
+#: project/templates/user/reglage.html:747
 msgid ""
 "Les actions ci-dessous sont irréversibles et entraînent la suppression "
 "définitive de vos données."
@@ -7726,73 +7976,73 @@ msgstr ""
 "Die folgenden Aktionen sind unwiderruflich und führen zur dauerhaften "
 "Löschung Ihrer Daten."
 
-#: project/templates/user/reglage.html:729
-#: project/templates/user/reglage.html:734
+#: project/templates/user/reglage.html:754
+#: project/templates/user/reglage.html:759
 msgid "Supprimer tous les élèves"
 msgstr "Alle Schüler löschen"
 
-#: project/templates/user/reglage.html:730
+#: project/templates/user/reglage.html:755
 msgid "Efface l'ensemble de vos élèves ainsi que l'historique de leurs prêts."
 msgstr "Löscht alle Ihre Schüler sowie deren Ausleihhistorie."
 
-#: project/templates/user/reglage.html:741
-#: project/templates/user/reglage.html:746
+#: project/templates/user/reglage.html:766
+#: project/templates/user/reglage.html:771
 msgid "Supprimer tous les prêts"
 msgstr "Alle Ausleihen löschen"
 
-#: project/templates/user/reglage.html:742
+#: project/templates/user/reglage.html:767
 msgid "Efface tous les enregistrements de prêts (en cours et retournés)."
 msgstr "Löscht alle Ausleiheinträge (laufende und zurückgegebene)."
 
-#: project/templates/user/reglage.html:753
-#: project/templates/user/reglage.html:758
+#: project/templates/user/reglage.html:778
+#: project/templates/user/reglage.html:783
 msgid "Supprimer tous les livres"
 msgstr "Alle Bücher löschen"
 
-#: project/templates/user/reglage.html:754
+#: project/templates/user/reglage.html:779
 msgid "Vide totalement votre catalogue de livres."
 msgstr "Leert Ihren gesamten Buchkatalog."
 
-#: project/templates/user/reglage.html:768
-#: project/templates/user/reglage.html:773
-#: project/templates/user/reglage.html:882
+#: project/templates/user/reglage.html:793
+#: project/templates/user/reglage.html:798
+#: project/templates/user/reglage.html:907
 msgid "Supprimer mon compte"
 msgstr "Mein Konto löschen"
 
-#: project/templates/user/reglage.html:769
+#: project/templates/user/reglage.html:794
 msgid "Supprime définitivement votre compte et l'intégralité de vos données."
 msgstr "Löscht Ihr Konto und alle Ihre Daten dauerhaft."
 
-#: project/templates/user/reglage.html:785
-#: project/templates/user/reglage.html:924
+#: project/templates/user/reglage.html:810
+#: project/templates/user/reglage.html:949
 msgid "Modifications non enregistrées"
 msgstr "Ungespeicherte Änderungen"
 
-#: project/templates/user/reglage.html:809
+#: project/templates/user/reglage.html:834
 msgid "Supprimer tous les élèves ?"
 msgstr "Alle Schüler löschen?"
 
-#: project/templates/user/reglage.html:813
+#: project/templates/user/reglage.html:838
 msgid "Êtes-vous sûr de vouloir supprimer tous les élèves ? Cette action est"
 msgstr "Sind Sie sicher, dass Sie alle Schüler löschen möchten? Diese Aktion ist"
 
-#: project/templates/user/reglage.html:813
-#: project/templates/user/reglage.html:834
-#: project/templates/user/reglage.html:855
+#: project/templates/user/reglage.html:838
+#: project/templates/user/reglage.html:859
+#: project/templates/user/reglage.html:880
 msgid "irréversible"
 msgstr "unwiderruflich"
 
-#: project/templates/user/reglage.html:819
-#: project/templates/user/reglage.html:840
-#: project/templates/user/reglage.html:861
+#: project/templates/user/reglage.html:844
+#: project/templates/user/reglage.html:865
+#: project/templates/user/reglage.html:886
 msgid "Oui, supprimer"
 msgstr "Ja, löschen"
 
-#: project/templates/user/reglage.html:830
+#: project/templates/user/reglage.html:855
 msgid "Supprimer tous les prêts ?"
 msgstr "Alle Ausleihen löschen?"
 
-#: project/templates/user/reglage.html:834
+#: project/templates/user/reglage.html:859
 msgid ""
 "Êtes-vous sûr de vouloir réinitialiser l'historique des prêts ? Cette "
 "action est"
@@ -7800,11 +8050,11 @@ msgstr ""
 "Sind Sie sicher, dass Sie die Ausleihhistorie zurücksetzen möchten? Diese"
 " Aktion ist"
 
-#: project/templates/user/reglage.html:851
+#: project/templates/user/reglage.html:876
 msgid "Supprimer tous les livres ?"
 msgstr "Alle Bücher löschen?"
 
-#: project/templates/user/reglage.html:855
+#: project/templates/user/reglage.html:880
 msgid ""
 "Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? "
 "Cette action est"
@@ -7812,27 +8062,27 @@ msgstr ""
 "Sind Sie sicher, dass Sie Ihren gesamten Buchkatalog leeren möchten? "
 "Diese Aktion ist"
 
-#: project/templates/user/reglage.html:872
+#: project/templates/user/reglage.html:897
 msgid "Supprimer définitivement mon compte ?"
 msgstr "Mein Konto dauerhaft löschen?"
 
-#: project/templates/user/reglage.html:876
+#: project/templates/user/reglage.html:901
 msgid "Attention : Cette action supprimera"
 msgstr "Achtung: Diese Aktion löscht"
 
-#: project/templates/user/reglage.html:876
+#: project/templates/user/reglage.html:901
 msgid "définitivement"
 msgstr "dauerhaft"
 
-#: project/templates/user/reglage.html:876
+#: project/templates/user/reglage.html:901
 msgid "votre compte et l'ensemble des données associées (livres, élèves, prêts)."
 msgstr "Ihr Konto und alle zugehörigen Daten (Bücher, Schüler, Ausleihen)."
 
-#: project/templates/user/reglage.html:895
+#: project/templates/user/reglage.html:920
 msgid "Fonctionnalité Premium : Export Excel"
 msgstr "Premium-Funktion: Excel-Export"
 
-#: project/templates/user/reglage.html:901
+#: project/templates/user/reglage.html:926
 msgid ""
 "L'exportation de vos données au format Excel (catalogue des livres, "
 "lectures par élève, emprunts actifs et historique complet) est réservée "
@@ -7842,7 +8092,7 @@ msgstr ""
 "Schüler, aktive Ausleihen und vollständige Historie) ist Premium-"
 "Abonnenten und Gründer-Mitgliedern vorbehalten."
 
-#: project/templates/user/reglage.html:904
+#: project/templates/user/reglage.html:929
 msgid ""
 "Sauvegardez vos listes, partagez-les avec vos collègues ou intégrez-les "
 "dans vos bilans scolaires en un clic."
@@ -7850,26 +8100,26 @@ msgstr ""
 "Sichern Sie Ihre Listen, teilen Sie sie mit Kollegen oder binden Sie sie "
 "mit einem Klick in Schulberichte ein."
 
-#: project/templates/user/reglage.html:930
+#: project/templates/user/reglage.html:955
 msgid "Vous avez modifié des réglages sur votre compte sans les enregistrer."
 msgstr "Sie haben Einstellungen in Ihrem Konto geändert, ohne sie zu speichern."
 
-#: project/templates/user/reglage.html:933
+#: project/templates/user/reglage.html:958
 msgid ""
 "Si vous quittez cette page maintenant, vos modifications seront perdues. "
 "Souhaitez-vous enregistrer vos modifications avant de partir ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:938
+#: project/templates/user/reglage.html:963
 msgid "Annuler et rester"
 msgstr "Abbrechen und bleiben"
 
-#: project/templates/user/reglage.html:941
+#: project/templates/user/reglage.html:966
 #, fuzzy
 msgid "Quitter sans enregistrer"
 msgstr "Speichern"
 
-#: project/templates/user/reglage.html:945
+#: project/templates/user/reglage.html:970
 #, fuzzy
 msgid "Enregistrer et continuer"
 msgstr "Änderungen speichern"
@@ -9669,4 +9919,40 @@ msgstr "Kein Buch gefunden"
 
 #~ msgid "Rester sur la page"
 #~ msgstr "Auf der Seite bleiben"
+
+#~ msgid "ISBN officiel :"
+#~ msgstr "Offizielle ISBN:"
+
+#~ msgid "Référence classe :"
+#~ msgstr "Klassen-Referenz:"
+
+#~ msgid "%(count)s livre(s) en retard"
+#~ msgstr ""
+
+#~ msgid "Cliquez pour voir les élèves concernés et enregistrer les retours."
+#~ msgstr ""
+
+#~ msgid "Voir les retards"
+#~ msgstr "Ausleihen ansehen"
+
+#~ msgid "Tous les emprunts sont à jour ! (%(count)s prêt(s) en cours)"
+#~ msgstr ""
+
+#~ msgid "Retour rapide"
+#~ msgstr "Zurück zur Website"
+
+#~ msgid "Palmarès de lecture (Top livres & élèves)"
+#~ msgstr "Lese-Pass"
+
+#~ msgid "prêts"
+#~ msgstr "Ausleihen"
+
+#~ msgid "Aucun prêt enregistré pour le moment."
+#~ msgstr ""
+
+#~ msgid "Élèves les plus actifs"
+#~ msgstr "Älteste"
+
+#~ msgid "lus"
+#~ msgstr "Mo"
 

@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from flask import (
     Blueprint,
     flash,
+    jsonify,
     make_response,
     redirect,
     render_template,
@@ -15,7 +16,7 @@ from flask_login import current_user, login_required
 
 from . import db
 from .config_plans import FREE_HISTORY_MONTHS
-from .models import Book, Loan
+from .models import Book, Loan, Student
 from .query import (
     get_loans_count,
     get_loans_with_infos,
@@ -40,7 +41,9 @@ def emprunt_db():
     # nombre de page
     nb_page = math.ceil(nb_books / n_books_by_page)
 
-    only_active_loans = request.form.get("active_loan") == "1"
+    only_active_loans = (
+        request.form.get("active_loan") == "1" or request.args.get("active_loan") == "1"
+    )
 
     loans, nb_books = get_loans_with_infos(current_user.id, only_active_loans)
 
@@ -57,20 +60,119 @@ def emprunt_db():
 @emprunt.route("/emprunt/<id>", methods=["POST"])
 @login_required
 def return_loan(id):
+    loan = db.session.query(Loan).filter(Loan.id == id).first()
+    book = (
+        db.session.query(Book).filter(Book.id == loan.book_id).first() if loan else None
+    )
+
+    next_url = request.form.get("next") or request.referrer
+    if not next_url or (
+        not next_url.startswith("/") and not next_url.startswith(request.host_url)
+    ):
+        next_url = url_for("emprunt.emprunt_db")
+    if next_url.endswith(f"/emprunt/{id}"):
+        next_url = (
+            url_for("livre.livre_infos", id=book.id)
+            if book
+            else url_for("emprunt.emprunt_db")
+        )
+
+    if loan:
+        if book and book.user_id == current_user.id:
+            loan.date_return = datetime.now(tz=UTC).date()
+            db.session.commit()
+            flash(
+                _(
+                    "Le livre '%(title)s' a bien été marqué comme retourné.",
+                    title=book.title,
+                ),
+                "success",
+            )
+        else:
+            flash(_("Accès non autorisé."), "error")
+
+    if request.headers.get("HX-Request"):
+        student = (
+            db.session.query(Student).filter(Student.id == loan.student_id).first()
+            if loan
+            else None
+        )
+        loan_item = type(
+            "LoanItem", (), {"Loan": loan, "Book": book, "Student": student}
+        )()
+        return render_template(
+            "emprunt/_loan_row.html",
+            loan=loan_item,
+            just_returned=True,
+            cutoff_date=get_loan_history_cutoff(),
+        )
+
+    return redirect(next_url)
+
+
+@emprunt.route("/emprunt/<id>/return-quick", methods=["POST"])
+@login_required
+def return_loan_quick(id):
     from_url = request.referrer
     if not from_url or not from_url.startswith(request.host_url):
         from_url = url_for("emprunt.emprunt_db")
 
     loan = db.session.query(Loan).filter(Loan.id == id).first()
 
-    if loan:
-        book = db.session.query(Book).filter(Book.id == loan.book_id).first()
-        if book and book.user_id == current_user.id:
-            loan.date_return = datetime.now(tz=UTC).date()
-            db.session.commit()
-        else:
-            flash(_("Accès non autorisé."), "error")
+    if not loan:
+        if request.headers.get("HX-Request"):
+            return make_response(
+                f"<div class='notification is-danger is-light p-2'>{_('Emprunt introuvable.')}</div>",
+                404,
+            )
+        if request.is_json or request.headers.get("Accept") == "application/json":
+            return jsonify({"error": _("Emprunt introuvable.")}), 404
+        flash(_("Emprunt introuvable."), "error")
+        return redirect(from_url)
 
+    book = db.session.query(Book).filter(Book.id == loan.book_id).first()
+    if not book or book.user_id != current_user.id:
+        if request.headers.get("HX-Request"):
+            return make_response(
+                f"<div class='notification is-danger is-light p-2'>{_('Accès non autorisé.')}</div>",
+                403,
+            )
+        if request.is_json or request.headers.get("Accept") == "application/json":
+            return jsonify({"error": _("Accès non autorisé.")}), 403
+        flash(_("Accès non autorisé."), "error")
+        return redirect(from_url)
+
+    loan.date_return = datetime.now(tz=UTC).date()
+    db.session.commit()
+
+    if request.headers.get("HX-Request"):
+        student = (
+            db.session.query(Student).filter(Student.id == loan.student_id).first()
+        )
+        loan_item = type(
+            "LoanItem", (), {"Loan": loan, "Book": book, "Student": student}
+        )()
+        return render_template(
+            "emprunt/_loan_row.html",
+            loan=loan_item,
+            just_returned=True,
+            cutoff_date=get_loan_history_cutoff(),
+        )
+
+    if request.is_json or request.headers.get("Accept") == "application/json":
+        return jsonify(
+            {
+                "success": True,
+                "message": _("Livre retourné avec succès."),
+                "book_title": book.title,
+                "loan_id": loan.id,
+            }
+        )
+
+    flash(
+        _("Le livre '%(title)s' a bien été marqué comme retourné.", title=book.title),
+        "success",
+    )
     return redirect(from_url)
 
 

@@ -413,16 +413,30 @@
     <!-- Aide contextuelle scanner -->
     <div id="scanner-help" class="container is-max-desktop" style="margin-top: 1rem; padding: 0 1rem;">
 
-        <!-- Message d'erreur caméra (caché par défaut) -->
-        <div id="camera-error" class="notification is-danger is-light" style="display:none; border-radius: 12px;">
-            <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-            <strong>{{ _("Impossible d'accéder à la caméra.") }}</strong>
-            {{ _("Vérifiez que vous avez autorisé l'accès à la caméra dans votre navigateur, puis rechargez la page.") }}
-            <br><br>
-            <a href="/aide#scanner" class="button is-danger is-light is-small is-rounded mt-2">
-                <span class="icon"><i class="fas fa-question-circle"></i></span>
-                <span>{{ _("Voir le guide de dépannage") }}</span>
-            </a>
+        <!-- Fallback Saisie Manuelle & Alerte Caméra -->
+        <div id="camera-fallback-card" class="box p-3 mb-3" style="border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div id="camera-error" class="notification is-warning is-light p-3 mb-3" style="display:none; border-radius: 8px;">
+                <span class="icon is-small mr-1"><i class="fas fa-exclamation-triangle"></i></span>
+                <span class="is-size-7">{{ _("Caméra inaccessible dans ce navigateur. Utilisez la saisie manuelle :") }}</span>
+            </div>
+            <div class="field has-addons mb-1">
+                <div class="control is-expanded has-icons-left">
+                    <input id="manual-scan-input" class="input is-rounded" type="text" placeholder="{{ _('Saisir le code ISBN ou étiquette classe...') }}" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();submitManualCode();}">
+                    <span class="icon is-left has-text-grey"><i class="fas fa-barcode"></i></span>
+                </div>
+                <div class="control">
+                    <button type="button" class="button is-primary is-rounded px-4" onclick="submitManualCode()">
+                        <span class="has-text-weight-bold">{{ _("Valider") }}</span>
+                    </button>
+                </div>
+            </div>
+            <div class="is-flex is-justify-content-between is-align-items-center mt-2 px-1">
+                <span class="is-size-7 has-text-grey">{{ _("Ex: 9782070584628 ou BAC-A-001") }}</span>
+                <a href="/aide#scanner" class="is-size-7 has-text-grey-dark">
+                    <span class="icon is-small"><i class="fas fa-question-circle"></i></span>
+                    <span>{{ _("Aide caméra") }}</span>
+                </a>
+            </div>
         </div>
 
         <!-- Carte d'aide pliable -->
@@ -455,6 +469,66 @@
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Retour Express au Scan -->
+    <div class="modal" id="modalReturnPrompt">
+        <div class="modal-background" onclick="closeReturnPromptModal(true)"></div>
+        <div class="modal-card" style="max-width: 480px; margin: 1rem;">
+            <header class="modal-card-head" style="background: #fff; border-bottom: 1px solid #e2e8f0;">
+                <p class="modal-card-title is-size-6 has-text-weight-bold">
+                    <span class="icon has-text-info mr-1"><i class="fas fa-book-reader"></i></span>
+                    {{ _("Livre actuellement emprunté") }}
+                </p>
+                <button class="delete" aria-label="close" onclick="closeReturnPromptModal(true)"></button>
+            </header>
+            <section class="modal-card-body has-text-centered py-5">
+                <div id="return-prompt-body">
+                    <div class="mb-3">
+                        <span class="icon is-large has-text-success" style="font-size: 2.5rem;">
+                            <i class="fas fa-undo-alt"></i>
+                        </span>
+                    </div>
+                    <h4 id="return-book-title" class="title is-5 mb-2"></h4>
+                    <p class="subtitle is-6 has-text-grey mb-4">
+                        {{ _("Emprunté par") }} <strong id="return-borrower-name" class="has-text-dark"></strong>
+                    </p>
+                    <div class="notification is-success is-light is-size-6 mb-4">
+                        {{ _("Souhaitez-vous enregistrer le retour de ce livre ?") }}
+                    </div>
+                </div>
+                <div id="return-success-feedback" style="display: none;" class="py-4">
+                    <span class="icon is-large has-text-success mb-2" style="font-size: 3rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                    <h4 class="title is-5 has-text-success mb-2">{{ _("Livre retourné avec succès !") }}</h4>
+                    <p class="is-size-6 has-text-grey">{{ _("Le livre est de nouveau disponible en rayon.") }}</p>
+                </div>
+            </section>
+            <footer class="modal-card-foot is-flex is-flex-direction-column" style="gap: 8px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                <div id="return-prompt-buttons" style="width: 100%;">
+                    <button type="button" class="button is-success is-fullwidth has-text-weight-bold mb-2" style="height: 44px;" id="btn-confirm-return" onclick="confirmScanReturn()">
+                        <span class="icon"><i class="fas fa-check"></i></span>
+                        <span>{{ _("Confirmer le retour") }}</span>
+                    </button>
+                    <div class="is-flex" style="gap: 8px;">
+                        <a id="btn-view-book-details" href="#" class="button is-light is-fullwidth">
+                            <span class="icon is-small"><i class="fas fa-info-circle"></i></span>
+                            <span>{{ _("Voir la fiche") }}</span>
+                        </a>
+                        <button type="button" class="button is-light is-fullwidth" onclick="closeReturnPromptModal(true)">
+                            {{ _("Scanner un autre") }}
+                        </button>
+                    </div>
+                </div>
+                <div id="return-continue-buttons" style="display: none; width: 100%;">
+                    <button type="button" class="button is-primary is-fullwidth has-text-weight-bold" style="height: 44px;" onclick="closeReturnPromptModal(true)">
+                        <span class="icon"><i class="fas fa-barcode"></i></span>
+                        <span>{{ _("Continuer à scanner") }}</span>
+                    </button>
+                </div>
+            </footer>
         </div>
     </div>
 
@@ -672,16 +746,25 @@
                         }
 
                         if (barFill) barFill.style.width = "100%";
-                        if (titleEl) titleEl.textContent = {{ _("Livre trouvé dans votre classe !")|tojson }};
-                        if (descEl) descEl.textContent = {{ _("Ouverture de la fiche...")|tojson }};
 
-                        setTimeout(() => {
-                            if (data.multiple) {
+                        if (data.multiple) {
+                            if (titleEl) titleEl.textContent = {{ _("Plusieurs exemplaires trouvés !")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Affichage de la liste...")|tojson }};
+                            setTimeout(() => {
                                 window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
-                            } else {
-                                window.location.href = `/livre/${data.id}/edit`;
-                            }
-                        }, 300);
+                            }, 300);
+                        } else if (data.is_loaned) {
+                            // Cas B : Le livre est actuellement prêté -> Proposer le retour immédiat
+                            if (overlay) overlay.style.display = "none";
+                            showReturnPromptModal(data);
+                        } else {
+                            // Cas A : Le livre est en rayon (disponible) -> Ouvrir directement la fiche en mode prêt
+                            if (titleEl) titleEl.textContent = {{ _("Livre disponible dans votre classe !")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Ouverture du prêt...")|tojson }};
+                            setTimeout(() => {
+                                window.location.href = `/livre/${data.id}?action=pret`;
+                            }, 300);
+                        }
                     })
                     .catch(error => {
                         console.error("Erreur de recherche du livre :", error);
@@ -940,6 +1023,98 @@
             const isOpen = content.style.display !== 'none';
             content.style.display = isOpen ? 'none' : 'block';
             chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+        }
+
+                // Saisie manuelle de code-barres
+        function submitManualCode() {
+            const input = document.getElementById('manual-scan-input');
+            if (!input) return;
+            const code = input.value.trim();
+            if (!code) return;
+            handleDetectedCode(code);
+        }
+
+        // Gestion de la modale de retour express au scan
+        let currentReturnData = null;
+
+        function showReturnPromptModal(data) {
+            currentReturnData = data;
+            const modal = document.getElementById('modalReturnPrompt');
+            const titleEl = document.getElementById('return-book-title');
+            const borrowerEl = document.getElementById('return-borrower-name');
+            const viewBtn = document.getElementById('btn-view-book-details');
+            const promptBody = document.getElementById('return-prompt-body');
+            const promptButtons = document.getElementById('return-prompt-buttons');
+            const successFeedback = document.getElementById('return-success-feedback');
+            const continueButtons = document.getElementById('return-continue-buttons');
+
+            if (titleEl) titleEl.textContent = data.title || {{ _("Livre")|tojson }};
+            if (borrowerEl) borrowerEl.textContent = data.borrower_name || {{ _("un élève")|tojson }};
+            if (viewBtn) viewBtn.href = `/livre/${data.id}`;
+
+            if (promptBody) promptBody.style.display = 'block';
+            if (promptButtons) promptButtons.style.display = 'block';
+            if (successFeedback) successFeedback.style.display = 'none';
+            if (continueButtons) continueButtons.style.display = 'none';
+
+            if (modal) modal.classList.add('is-active');
+            stopScanner();
+        }
+
+        function closeReturnPromptModal(resumeScanner = true) {
+            const modal = document.getElementById('modalReturnPrompt');
+            if (modal) modal.classList.remove('is-active');
+            currentReturnData = null;
+            if (resumeScanner) {
+                isProcessingDetection = false;
+                resetScannerUI();
+                startScanner();
+            }
+        }
+
+        function confirmScanReturn() {
+            if (!currentReturnData || !currentReturnData.loan_id) return;
+
+            const btn = document.getElementById('btn-confirm-return');
+            if (btn) btn.classList.add('is-loading');
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+
+            fetch(`/emprunt/${currentReturnData.loan_id}/return-quick`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(res => res.json())
+            .then(resData => {
+                if (btn) btn.classList.remove('is-loading');
+                const promptBody = document.getElementById('return-prompt-body');
+                const promptButtons = document.getElementById('return-prompt-buttons');
+                const successFeedback = document.getElementById('return-success-feedback');
+                const continueButtons = document.getElementById('return-continue-buttons');
+
+                if (promptBody) promptBody.style.display = 'none';
+                if (promptButtons) promptButtons.style.display = 'none';
+                if (successFeedback) successFeedback.style.display = 'block';
+                if (continueButtons) continueButtons.style.display = 'block';
+
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+                setTimeout(() => {
+                    const modal = document.getElementById('modalReturnPrompt');
+                    if (modal && modal.classList.contains('is-active')) {
+                        closeReturnPromptModal(true);
+                    }
+                }, 1800);
+            })
+            .catch(err => {
+                console.error("Erreur retour emprunt :", err);
+                if (btn) btn.classList.remove('is-loading');
+                alert({{ _("Une erreur est survenue lors du retour du livre.")|tojson }});
+            });
         }
 
         window.addEventListener('beforeunload', stopScanner);

@@ -637,3 +637,39 @@ def test_reglage_next_redirection(client, app):
             assert resp.headers["Location"] == "/livre"
             u_updated = db.session.get(User, 412)
             assert u_updated.name == "Prof Next Modifié"
+
+
+def test_livre_exist_loaned_status(client, app):
+    from datetime import UTC, datetime
+
+    from project import db
+    from project.models import Book, Loan, Student, User
+
+    with app.app_context():
+        user = User.query.filter_by(email="test@test.com").first()
+        if not user:
+            user = User(email="test@test.com", password="hash", name="Test")
+            db.session.add(user)
+            db.session.commit()
+
+        book = Book(title="Livre Emprunte", user_id=user.id, isbn="9780000000001")
+        student = Student(name="Martin", firstname="Sophie", user_id=user.id)
+        db.session.add_all([book, student])
+        db.session.commit()
+
+        loan = Loan(
+            book_id=book.id,
+            student_id=student.id,
+            date_loan=datetime.now(tz=UTC).date(),
+        )
+        db.session.add(loan)
+        db.session.commit()
+
+        with patch("project.livre.current_user", user):
+            resp = client.get("/livre/9780000000001/exist")
+            assert resp.status_code == 200
+            data = resp.get_json()
+            assert data["id"] == book.id
+            assert data["is_loaned"] is True
+            assert data["loan_id"] == loan.id
+            assert data["borrower_name"] == "Sophie Martin"
