@@ -12,16 +12,16 @@
 </p>
 
 <p align="center">
-  <a href="https://livresenclasse.com"><strong>accéder au site officiel : livresenclasse.com »</strong></a>
+  <a href="https://livresenclasse.com"><strong>Accéder au site officiel : livresenclasse.com →</strong></a>
 </p>
 
 <p align="center">
   <a href="README.en.md">English version</a> •
-  <a href="#-pourquoi-utiliser-livres-en-classe-">Fonctionnalités</a> •
-  <a href="#-aperçu-de-lapplication">Aperçu</a> •
-  <a href="#-formules--tarifs">Formules & Tarifs</a> •
-  <a href="#-auto-hébergement--développement">Self-Hosting</a> •
-  <a href="#-licence">Licence</a>
+  <a href="#pourquoi-utiliser-livres-en-classe-">Fonctionnalités</a> •
+  <a href="#aperçu-de-lapplication">Aperçu</a> •
+  <a href="#formules--tarifs">Formules & Tarifs</a> •
+  <a href="#auto-hébergement--développement">Self-Hosting</a> •
+  <a href="#licence">Licence</a>
 </p>
 
 <p align="center">
@@ -34,25 +34,17 @@
 
 ---
 
-<p align="center">
-  <a href="https://livresenclasse.com">
-    <img src="project/static/image/store/feature-graphic-1280x720.png" width="850" alt="Présentation de Livres en Classe">
-  </a>
-</p>
-
----
-
-## ✨ Pourquoi utiliser Livres en Classe ?
+## Pourquoi utiliser Livres en Classe ?
 
 Conçu spécialement pour le quotidien des enseignants d'école primaire et de maternelle, **Livres en Classe** remplace les cahiers d'emprunt manuscrits et les tableurs complexes par une interface fluide et visuelle.
 
-| ⏱️ Gagnez du temps | 📊 Suivez la progression | 📱 100% Mobile & Caméra |
+| Gagnez du temps | Suivez la progression | 100% Mobile & Caméra |
 | :--- | :--- | :--- |
 | **Fini les cahiers brouillons.** En quelques clics, enregistrez un prêt ou un retour. Retrouvez un livre instantanément grâce à la recherche rapide. | **Analysez les lectures de vos élèves.** Visualisez qui a lu quoi, repérez les retards et encouragez la curiosité de ceux qui lisent moins. | **Scannez directement avec votre smartphone.** Utilisez la caméra de votre téléphone ou tablette, sans investir dans une douchette coûteuse. |
 
 ---
 
-## 🔍 Aperçu de l'application
+## Aperçu de l'application
 
 ### 1. Une vue globale de votre bibliothèque scolaire
 Le tableau de bord centralise toutes les informations clés de votre classe : nombre d'ouvrages, élèves inscrits, emprunts actifs, graphique d'activité sur l'année et alertes prioritaires des prêts en retard avec retours rapides en un clic.
@@ -81,11 +73,11 @@ Suivez le parcours de chaque élève, attribuez des étiquettes personnalisées 
 
 ---
 
-## 💎 Formules & Tarifs
+## Formules & Tarifs
 
 Une tarification juste et transparente pensée pour les budgets de classe des enseignants :
 
-| Caractéristique | 🟢 Formule Gratuite | ⭐️ Formule Premium |
+| Caractéristique | Formule Gratuite | Formule Premium |
 | :--- | :---: | :---: |
 | **Tarif** | **0.- CHF** / à vie | **3.- CHF / mois** ou **30.- CHF / an** |
 | **Élèves maximum** | Jusqu'à 40 élèves | **Illimité** |
@@ -96,13 +88,13 @@ Une tarification juste et transparente pensée pour les budgets de classe des en
 | **Outils de classe & impressions** | — | **Planches de codes-barres vectoriels & étiquettes de bacs** |
 | **Clôture de classe annuelle** | Bilan en ligne | **Bilan officiel imprimable** (top livres & lecteurs) |
 
-🎁 **Essai gratuit de 30 jours** accordé automatiquement à chaque nouvel inscrit, sans carte bancaire requise.
+**Essai gratuit de 30 jours** accordé automatiquement à chaque nouvel inscrit, sans carte bancaire requise.
 
-👉 **[Créer un compte enseignant gratuitement sur LivresEnClasse.com »](https://livresenclasse.com)**
+**[Créer un compte enseignant gratuitement sur LivresEnClasse.com →](https://livresenclasse.com)**
 
 ---
 
-## 🛠️ Auto-hébergement & Développement
+## Auto-hébergement & Développement
 
 **Livres en Classe** est un projet distribué sous modèle *Source-Available*. La solution officielle, prête à l'emploi et hébergée en Suisse / Europe, est accessible directement sur [livresenclasse.com](https://livresenclasse.com).
 
@@ -123,7 +115,7 @@ Si vous êtes développeur, que vous souhaitez contribuer au projet ou déployer
 
 ---
 
-## 📜 Licence
+## Licence
 
 Ce projet est distribué sous licence **[PolyForm Noncommercial License 1.0.0](LICENSE.md)** (Source-Available) :
 
@@ -133,6 +125,6 @@ Ce projet est distribué sous licence **[PolyForm Noncommercial License 1.0.0](L
 ---
 
 <p align="center">
-  Fait avec passion pour les enseignants et leurs élèves 📖<br>
+  Fait avec passion pour les enseignants et leurs élèves<br>
   <strong><a href="https://livresenclasse.com">LivresEnClasse.com</a></strong>
 </p>

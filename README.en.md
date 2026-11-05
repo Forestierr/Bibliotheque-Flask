@@ -12,16 +12,16 @@
 </p>
 
 <p align="center">
-  <a href="https://livresenclasse.com/en/"><strong>Visit the official website: livresenclasse.com »</strong></a>
+  <a href="https://livresenclasse.com/en/"><strong>Visit the official website: livresenclasse.com →</strong></a>
 </p>
 
 <p align="center">
   <a href="README.md">Version française</a> •
-  <a href="#-why-use-livres-en-classe-">Features</a> •
-  <a href="#-application-overview">Overview</a> •
-  <a href="#-plans--pricing">Plans & Pricing</a> •
-  <a href="#-self-hosting--development">Self-Hosting</a> •
-  <a href="#-license">License</a>
+  <a href="#why-use-livres-en-classe">Features</a> •
+  <a href="#application-overview">Overview</a> •
+  <a href="#plans--pricing">Plans & Pricing</a> •
+  <a href="#self-hosting--development">Self-Hosting</a> •
+  <a href="#license">License</a>
 </p>
 
 <p align="center">
@@ -34,25 +34,17 @@
 
 ---
 
-<p align="center">
-  <a href="https://livresenclasse.com/en/">
-    <img src="project/static/image/store/feature-graphic-1280x720.png" width="850" alt="Livres en Classe Presentation">
-  </a>
-</p>
-
----
-
-## ✨ Why use Livres en Classe?
+## Why use Livres en Classe?
 
 Designed specifically for primary and elementary school teachers, **Livres en Classe** replaces handwritten paper logbooks and messy spreadsheets with a fluid, visual, and modern web application.
 
-| ⏱️ Save time | 📊 Track progress | 📱 100% Mobile & Camera |
+| Save time | Track progress | 100% Mobile & Camera |
 | :--- | :--- | :--- |
 | **No more messy paper logbooks.** Register a loan or a return in one click. Find any book instantly with ultra-fast search. | **Analyze your students' reading habits.** See who read what, spot overdue books automatically, and encourage reluctant readers. | **Scan directly from your smartphone.** Use your phone or tablet camera without purchasing expensive barcode equipment. |
 
 ---
 
-## 🔍 Application Overview
+## Application Overview
 
 ### 1. A complete overview of your school library
 The dashboard centralizes all critical classroom metrics: book count, enrolled students, active loans, annual reading activity chart, and priority overdue alerts with one-click inline returns.
@@ -81,11 +73,11 @@ Follow each student's reading journey, organize themed book bins with custom tag
 
 ---
 
-## 💎 Plans & Pricing
+## Plans & Pricing
 
 Fair, transparent pricing tailored for classroom budgets:
 
-| Feature | 🟢 Free Plan | ⭐️ Premium Plan |
+| Feature | Free Plan | Premium Plan |
 | :--- | :---: | :---: |
 | **Price** | **0.- CHF** / lifetime | **3.- CHF / month** or **30.- CHF / year** |
 | **Maximum students** | Up to 40 students | **Unlimited** |
@@ -96,13 +88,13 @@ Fair, transparent pricing tailored for classroom budgets:
 | **Classroom tools & printing** | — | **Printable vector barcode sheets & bin labels** |
 | **Annual classroom archive** | Online summary | **Official printable report** (top books & readers) |
 
-🎁 **30-day free trial** granted automatically to all new accounts, no credit card required.
+**30-day free trial** granted automatically to all new accounts, no credit card required.
 
-👉 **[Sign up for free on LivresEnClasse.com »](https://livresenclasse.com/en/)**
+**[Sign up for free on LivresEnClasse.com →](https://livresenclasse.com/en/)**
 
 ---
 
-## 🛠️ Self-Hosting & Development
+## Self-Hosting & Development
 
 **Livres en Classe** is a *Source-Available* project. The official, production-ready, hosted service is operated on [livresenclasse.com](https://livresenclasse.com).
 
@@ -123,7 +115,7 @@ For developers wishing to contribute to the code or run their own autonomous ins
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE.md)** (Source-Available):
 
@@ -133,6 +125,6 @@ This project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICE
 ---
 
 <p align="center">
-  Crafted with care for teachers and their students 📖<br>
+  Crafted with care for teachers and their students<br>
   <strong><a href="https://livresenclasse.com/en/">LivresEnClasse.com</a></strong>
 </p>
