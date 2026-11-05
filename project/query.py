@@ -230,7 +230,9 @@ Get all students
 
 def get_students(current_user_id) -> list:
     students = (
-        db.session.query(Student).filter(Student.user_id == current_user_id).all()
+        db.session.query(Student)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
+        .all()
     )
     return students
 
@@ -244,9 +246,32 @@ Get the number of students
 
 def get_students_count(current_user_id) -> int:
     students_count = (
-        db.session.query(Student).filter(Student.user_id == current_user_id).count()
+        db.session.query(Student)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
+        .count()
     )
     return students_count
+
+
+def get_archived_students(current_user_id) -> list:
+    return (
+        db.session.query(Student)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(True))
+        .order_by(Student.archived_at.desc(), collate(Student.name, "NOCASE"))
+        .all()
+    )
+
+
+def get_students_by_archive_id(current_user_id, archive_id) -> list:
+    return (
+        db.session.query(Student)
+        .filter(
+            Student.user_id == current_user_id,
+            Student.archived_year_id == archive_id,
+        )
+        .order_by(collate(Student.name, "NOCASE"), collate(Student.firstname, "NOCASE"))
+        .all()
+    )
 
 
 """
@@ -295,7 +320,7 @@ def get_all_students_info(current_user_id) -> list:
             last_loan_subquery.c.last_loan,
             func.coalesce(subquery_loan_count.c.loan_count, 0).label("loan_count"),
         )
-        .filter(Student.user_id == current_user_id)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
         .outerjoin(
             Loan, and_(Student.id == Loan.student_id, Loan.date_return.is_(None))
         )
@@ -335,6 +360,7 @@ def get_search_all_students_info(current_user_id, search) -> list:
         .filter(
             and_(
                 Student.user_id == current_user_id,
+                Student.is_archived.is_(False),
                 or_(
                     Student.name.like("%" + search + "%"),
                     Student.firstname.like("%" + search + "%"),
@@ -657,7 +683,7 @@ def get_students_most_borrowed(current_user_id, n_students=5) -> list:
             Student,
             func.coalesce(subquery_loan_count.c.loan_count, 0).label("loan_count"),
         )
-        .filter(Student.user_id == current_user_id)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
         .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
         .order_by(subquery_loan_count.c.loan_count.desc())
         .limit(n_students)
@@ -1140,7 +1166,7 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
             func.coalesce(func.count(Loan.id), 0).label("books_read"),
         )
         .outerjoin(Loan, Loan.student_id == Student.id)
-        .filter(Student.user_id == current_user_id)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
         .filter(
             (Loan.date_loan >= date_from) & (Loan.date_loan <= date_to)
             | (Loan.id.is_(None))

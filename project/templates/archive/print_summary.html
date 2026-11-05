@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="utf-8">
+    <title>{{ _("Bilan Annuel %(year)s", year=archive.year_label) }} | Livres en classe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #f8fafc;
+            color: #1e293b;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .screen-toolbar {
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sheet {
+            background: white;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+        .diploma-card {
+            border: 3px double #3b82f6;
+            border-radius: 16px;
+            padding: 24px;
+            background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .diploma-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .diploma-subtitle {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 16px;
+        }
+        .kpi-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-box {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .kpi-val {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2563eb;
+            line-height: 1;
+        }
+        .kpi-lbl {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        .podium-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .podium-col {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            background: white;
+        }
+        .podium-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+        .podium-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px dashed #f1f5f9;
+        }
+        .podium-entry:last-child {
+            border-bottom: none;
+        }
+        .students-grid {
+            columns: 2;
+            column-gap: 24px;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+        .student-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f5f9;
+            break-inside: avoid;
+        }
+        .footer-sig {
+            margin-top: 32px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .screen-toolbar {
+                display: none !important;
+            }
+            .sheet {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 12mm 15mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-toolbar">
+        <a href="{{ url_for('archive.detail', archive_id=archive.id) }}" class="button is-light">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span>{{ _("Retour à l'archive") }}</span>
+        </a>
+        <button onclick="window.print()" class="button is-info has-text-weight-bold">
+            <span class="icon"><i class="fas fa-print"></i></span>
+            <span>{{ _("Imprimer / Enregistrer en PDF") }}</span>
+        </button>
+    </div>
+
+    <div class="sheet">
+        <!-- Diplôme & En-tête -->
+        <div class="diploma-card">
+            <div class="is-flex is-justify-content-space-between is-align-items-center mb-2" style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">
+                <span>Livres en classe</span>
+                <span>{{ _("Année scolaire %(year)s", year=archive.year_label) }}</span>
+            </div>
+
+            <div class="diploma-title">
+                <i class="fas fa-award has-text-warning mr-2"></i>{{ _("Bilan Officiel de Lecture") }}
+            </div>
+            <div class="diploma-subtitle">
+                {{ _("Certificat d'honneur décerné à la promotion pour son engagement et ses lectures tout au long de l'année") }}
+            </div>
+
+            <div style="font-size: 14px; font-weight: 600; color: #1e3a8a;">
+                {{ _("Classe de :") }} <strong>{{ current_user.name }}</strong>
+                • {{ _("Période :") }} {{ archive.start_date.strftime("%d/%m/%Y") }} - {{ archive.end_date.strftime("%d/%m/%Y") }}
+            </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-row">
+            <div class="kpi-box">
+                <div class="kpi-val">{{ archive.total_loans }}</div>
+                <div class="kpi-lbl">{{ _("Livres empruntés") }}</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-val">{{ archive.total_students }}</div>
+                <div class="kpi-lbl">{{ _("Élèves de la promo") }}</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-val">{{ archive.average_loans_per_student }}</div>
+                <div class="kpi-lbl">{{ _("Moyenne par élève") }}</div>
+            </div>
+        </div>
+
+        <!-- Podiums -->
+        <div class="podium-section">
+            <div class="podium-col">
+                <div class="podium-title">
+                    <i class="fas fa-crown has-text-warning mr-1"></i>{{ _("Livres les plus lus") }}
+                </div>
+                {% if archive.top_books %}
+                    {% for book in archive.top_books[:5] %}
+                    <div class="podium-entry">
+                        <div>
+                            <strong>#{{ loop.index }}</strong> {{ book.title }}
+                            <span style="color: #64748b; font-size: 11px;">({{ book.author or "—" }})</span>
+                        </div>
+                        <span style="font-weight: 700; color: #2563eb;">{{ book.count }} {{ _("prêts") }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="color: #94a3b8; font-size: 12px;">{{ _("Aucun prêt enregistré.") }}</div>
+                {% endif %}
+            </div>
+
+            <div class="podium-col">
+                <div class="podium-title">
+                    <i class="fas fa-medal has-text-info mr-1"></i>{{ _("Palmarès des lecteurs") }}
+                </div>
+                {% if archive.top_readers %}
+                    {% for reader in archive.top_readers[:5] %}
+                    <div class="podium-entry">
+                        <div>
+                            <strong>#{{ loop.index }}</strong> {{ reader.name }}
+                        </div>
+                        <span style="font-weight: 700; color: #16a34a;">{{ reader.count }} {{ _("livres") }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="color: #94a3b8; font-size: 12px;">{{ _("Aucune lecture enregistrée.") }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Promotion des élèves -->
+        <div style="margin-top: 20px;">
+            <div style="font-size: 13px; font-weight: 700; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+                <i class="fas fa-users mr-1"></i>{{ _("Lectures individuelles de la promotion") }}
+            </div>
+            {% if students %}
+                <div class="students-grid">
+                    {% for student in students %}
+                    <div class="student-line">
+                        <span>{{ student.name }} {{ student.firstname }}</span>
+                        <strong>{{ student_loan_counts.get(student.id, 0) }} {{ _("livres") }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Signatures & Date -->
+        <div class="footer-sig">
+            <div>
+                {{ _("Certifié le") }} {{ archive.archived_at.strftime("%d/%m/%Y") }}
+            </div>
+            <div>
+                {{ _("Signature de l'enseignant(e) :") }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

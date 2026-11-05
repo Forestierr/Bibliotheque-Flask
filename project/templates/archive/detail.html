@@ -1,0 +1,284 @@
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Bilan Promotion %(year)s", year=archive.year_label) }} | Livres en Classe{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Promotion %(year)s", year=archive.year_label)) }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .archive-header-card {
+        background: linear-gradient(135deg, hsl(210, 60%, 97%) 0%, hsl(250, 50%, 96%) 100%);
+        border: 1px solid hsl(210, 50%, 88%);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .archive-kpi {
+        background: white;
+        border: 1px solid hsl(0, 0%, 91%);
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .archive-kpi-val {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: hsl(217, 71%, 45%);
+        line-height: 1.1;
+    }
+    .podium-box {
+        background: white;
+        border: 1px solid hsl(0, 0%, 90%);
+        border-radius: 14px;
+        padding: 1.5rem;
+        height: 100%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .podium-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid hsl(0, 0%, 95%);
+    }
+    .podium-item:last-child {
+        border-bottom: none;
+    }
+    .podium-rank {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+    .rank-1 { background: #fef08a; color: #854d0e; }
+    .rank-2 { background: #e2e8f0; color: #475569; }
+    .rank-3 { background: #fed7aa; color: #9a3412; }
+    .rank-other { background: #f1f5f9; color: #64748b; }
+</style>
+
+<div class="container" style="max-width: 1040px; padding: 1.5rem 1rem;">
+    <!-- Navigation retour -->
+    <div class="mb-4">
+        <a href="{{ url_for('auth.reglage') }}?tab=archive" class="button is-ghost p-0 has-text-grey">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span>{{ _("Retour aux archives de l'école") }}</span>
+        </a>
+    </div>
+
+    <!-- Flash messages -->
+    {% include 'utils/flash_message.html' %}
+
+    <!-- Carte En-tête -->
+    <div class="archive-header-card">
+        <div class="is-flex is-justify-content-space-between is-align-items-flex-start" style="flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <span class="tag is-info is-light is-rounded has-text-weight-bold mb-2">
+                    <i class="fas fa-graduation-cap mr-1"></i>{{ _("Promotion archivée") }}
+                </span>
+                <h1 class="title is-2 mb-1">
+                    {{ _("Année scolaire %(year)s", year=archive.year_label) }}
+                </h1>
+                <p class="subtitle is-6 has-text-grey mb-0">
+                    <i class="far fa-calendar-alt mr-1"></i>
+                    {{ _("Du %(start)s au %(end)s", start=archive.start_date.strftime("%d/%m/%Y"), end=archive.end_date.strftime("%d/%m/%Y")) }}
+                    • {{ _("Clôturée le %(date)s", date=archive.archived_at.strftime("%d/%m/%Y")) }}
+                </p>
+            </div>
+            <div class="buttons">
+                {% if current_user.is_premium %}
+                    <a href="{{ url_for('archive.print_summary', archive_id=archive.id) }}" class="button is-info has-text-weight-semibold" target="_blank">
+                        <span class="icon"><i class="fas fa-print"></i></span>
+                        <span>{{ _("Imprimer le bilan (PDF)") }}</span>
+                    </a>
+                    <a href="{{ url_for('archive.export_excel', archive_id=archive.id) }}" class="button is-light has-text-weight-semibold">
+                        <span class="icon has-text-success"><i class="fas fa-file-excel"></i></span>
+                        <span>{{ _("Export Excel") }}</span>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-light has-text-weight-semibold" title="{{ _('Fonctionnalité réservée aux membres Premium') }}">
+                        <span class="icon"><i class="fas fa-crown"></i></span>
+                        <span>{{ _("Imprimer / Excel (Premium)") }}</span>
+                    </a>
+                {% endif %}
+                <button class="button is-ghost has-text-danger showModal" href="#delete-archive-modal" title="{{ _('Supprimer cette archive') }}">
+                    <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="columns is-multiline mb-5">
+        <div class="column is-4">
+            <div class="archive-kpi">
+                <div class="archive-kpi-val">{{ archive.total_loans }}</div>
+                <div class="is-size-7 has-text-grey has-text-weight-semibold mt-1">
+                    <i class="fas fa-book-reader mr-1"></i>{{ _("Livres empruntés") }}
+                </div>
+            </div>
+        </div>
+        <div class="column is-4">
+            <div class="archive-kpi">
+                <div class="archive-kpi-val">{{ archive.total_students }}</div>
+                <div class="is-size-7 has-text-grey has-text-weight-semibold mt-1">
+                    <i class="fas fa-users mr-1"></i>{{ _("Élèves dans la promotion") }}
+                </div>
+            </div>
+        </div>
+        <div class="column is-4">
+            <div class="archive-kpi">
+                <div class="archive-kpi-val">{{ archive.average_loans_per_student }}</div>
+                <div class="is-size-7 has-text-grey has-text-weight-semibold mt-1">
+                    <i class="fas fa-chart-line mr-1"></i>{{ _("Moyenne par élève") }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Podiums Top Livres & Top Lecteurs -->
+    <div class="columns is-multiline mb-5">
+        <!-- Top Livres -->
+        <div class="column is-6">
+            <div class="podium-box">
+                <h3 class="title is-5 mb-3 has-text-dark">
+                    <i class="fas fa-crown has-text-warning mr-2"></i>{{ _("Livres champions de la promo") }}
+                </h3>
+                {% if archive.top_books %}
+                    {% for book in archive.top_books %}
+                    <div class="podium-item">
+                        <div class="podium-rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-other{% endif %}">
+                            {{ loop.index }}
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="has-text-weight-semibold is-size-6 text-truncate">{{ book.title }}</div>
+                            <div class="is-size-7 has-text-grey text-truncate">{{ book.author or _("Auteur non renseigné") }}</div>
+                        </div>
+                        <span class="tag is-info is-light has-text-weight-bold">
+                            {{ book.count }} {{ _("prêts") }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="is-size-7 has-text-grey has-text-centered py-4">{{ _("Aucun livre enregistré.") }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Top Lecteurs -->
+        <div class="column is-6">
+            <div class="podium-box">
+                <h3 class="title is-5 mb-3 has-text-dark">
+                    <i class="fas fa-medal has-text-info mr-2"></i>{{ _("Palmarès des grands lecteurs") }}
+                </h3>
+                {% if archive.top_readers %}
+                    {% for reader in archive.top_readers %}
+                    <div class="podium-item">
+                        <div class="podium-rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-other{% endif %}">
+                            {{ loop.index }}
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="has-text-weight-semibold is-size-6 text-truncate">{{ reader.name }}</div>
+                        </div>
+                        <span class="tag is-success is-light has-text-weight-bold">
+                            {{ reader.count }} {{ _("livres") }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="is-size-7 has-text-grey has-text-centered py-4">{{ _("Aucune lecture enregistrée.") }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des Élèves de la Promotion -->
+    <div class="box" style="border-radius: 14px; border: 1px solid hsl(0, 0%, 91%); box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+        <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+            <h3 class="title is-5 mb-0">
+                <i class="fas fa-user-graduate has-text-info mr-2"></i>{{ _("Élèves archivés de cette promotion (%(count)s)", count=students|length) }}
+            </h3>
+        </div>
+
+        {% if students %}
+        <div class="table-container">
+            <table class="table is-fullwidth is-hoverable is-striped">
+                <thead>
+                    <tr>
+                        <th>{{ _("Élève") }}</th>
+                        <th class="has-text-centered">{{ _("Livres lus sur l'année") }}</th>
+                        <th class="has-text-centered">{{ _("Date d'archivage") }}</th>
+                        <th class="has-text-right">{{ _("Actions") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td class="has-text-weight-semibold">
+                            <span class="icon is-small has-text-grey mr-1"><i class="fas fa-user"></i></span>
+                            {{ student.name }} {{ student.firstname }}
+                        </td>
+                        <td class="has-text-centered">
+                            <span class="tag is-info is-light has-text-weight-bold">
+                                {{ student_loan_counts.get(student.id, 0) }}
+                            </span>
+                        </td>
+                        <td class="has-text-centered is-size-7 has-text-grey">
+                            {{ student.archived_at.strftime("%d/%m/%Y") if student.archived_at else "—" }}
+                        </td>
+                        <td class="has-text-right">
+                            <a href="{{ url_for('eleve.eleve_infos', id=student.id) }}" class="button is-small is-light" title="{{ _('Consulter la fiche historique') }}">
+                                <span class="icon is-small"><i class="fas fa-eye"></i></span>
+                                <span>{{ _("Fiche") }}</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p class="has-text-grey is-size-7 py-3">{{ _("Aucun élève spécifiquement lié à cette archive (élèves potentiellement déjà réactivés).") }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal Suppression Archive -->
+<div id="delete-archive-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title has-text-danger">
+                <i class="fas fa-exclamation-triangle mr-2"></i>{{ _("Supprimer l'archive %(year)s ?", year=archive.year_label) }}
+            </p>
+        </header>
+        <section class="modal-card-body">
+            <p class="mb-3">
+                {{ _("Êtes-vous sûr de vouloir supprimer cette archive de promotion ?") }}
+            </p>
+            <div class="notification is-info is-light" style="border-radius: 10px;">
+                <i class="fas fa-undo mr-1"></i>
+                {{ _("Les élèves archivés lors de cette clôture seront automatiquement réactivés dans votre classe active.") }}
+            </div>
+        </section>
+        <footer class="modal-card-foot is-justify-content-flex-end">
+            <button class="button closeModal">{{ _("Annuler") }}</button>
+            <form action="{{ url_for('archive.delete', archive_id=archive.id) }}" method="POST" style="display: inline;">
+                {% include 'utils/csrf.html' %}
+                <button type="submit" class="button is-danger has-text-weight-bold">
+                    <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                    <span>{{ _("Supprimer l'archive et réactiver les élèves") }}</span>
+                </button>
+            </form>
+        </footer>
+    </div>
+</div>
+{% endblock %}

@@ -37,7 +37,8 @@ from .email import (
     send_email_reset_password,
     send_email_verification,
 )
-from .models import User
+from .models import AcademicYearArchive, Book, Loan, User
+from .query import get_students_count
 
 auth = Blueprint("auth", __name__)
 
@@ -408,7 +409,25 @@ def reglage():
         except Exception as e:  # noqa: BLE001
             current_app.logger.debug("Sync Stripe reglage : %s", e)
 
-    return render_template("user/reglage.html", user=user)
+    archives = (
+        AcademicYearArchive.query.filter_by(user_id=current_user.id)
+        .order_by(AcademicYearArchive.end_date.desc(), AcademicYearArchive.id.desc())
+        .all()
+    )
+    active_students_count = get_students_count(current_user.id)
+    active_loans_count = (
+        Loan.query.join(Book)
+        .filter(Book.user_id == current_user.id, Loan.date_return.is_(None))
+        .count()
+    )
+
+    return render_template(
+        "user/reglage.html",
+        user=user,
+        archives=archives,
+        active_students_count=active_students_count,
+        active_loans_count=active_loans_count,
+    )
 
 
 @auth.route("/unsubscribe/<token>/<int:user_id>", methods=["GET", "POST"])

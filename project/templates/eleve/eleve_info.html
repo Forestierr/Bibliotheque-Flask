@@ -12,9 +12,17 @@
 
     <div class="is-flex is-justify-content-space-between is-align-items-flex-start mb-2">
         <div>
-            <h1 class="title is-2 mb-1">
-                {{ student.name }} {{ student.firstname }}
-            </h1>
+            <div class="is-flex is-align-items-center" style="gap: 0.75rem; flex-wrap: wrap;">
+                <h1 class="title is-2 mb-1">
+                    {{ student.name }} {{ student.firstname }}
+                </h1>
+                {% if student.is_archived %}
+                <span class="tag is-warning is-light is-rounded mb-1" style="font-weight: 600;">
+                    <i class="fas fa-archive mr-1"></i>
+                    {{ _("Archivé") }}{% if student.archived_year %} — {{ _("Promo") }} {{ student.archived_year.year_label }}{% endif %}
+                </span>
+                {% endif %}
+            </div>
             <h4 class="subtitle is-5 mb-0">{{ _("Nombre de livres lus :") }} <strong>{{ books|count + old_books|count }}</strong></h4>
         </div>
         <div class="dropdown is-right is-hoverable">

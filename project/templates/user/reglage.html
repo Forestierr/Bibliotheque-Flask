@@ -353,6 +353,11 @@
                 <span class="tab-label-full">{{ _("Mon Compte") }}</span>
                 <span class="tab-label-short">{{ _("Compte") }}</span>
             </button>
+            <button class="settings-tab-btn" onclick="switchSettingsTab('archive')" id="tabBtnArchive" title="{{ _('Année scolaire & Archives') }}">
+                <span class="icon"><i class="fas fa-graduation-cap"></i></span>
+                <span class="tab-label-full">{{ _("Année scolaire & Archives") }}</span>
+                <span class="tab-label-short">{{ _("Archives") }}</span>
+            </button>
             <button class="settings-tab-btn" onclick="switchSettingsTab('export')" id="tabBtnExport" title="{{ _('Exporter mes données') }}">
                 <span class="icon"><i class="fas fa-file-export"></i></span>
                 <span class="tab-label-full">{{ _("Exporter mes données") }}</span>
@@ -598,6 +603,115 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- TAB 1.5 : Année scolaire & Archives -->
+        <div id="tabContentArchive" class="settings-tab-content" style="display: none;">
+            <div class="settings-card">
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-4" style="flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 class="title is-4 mb-1">
+                            <i class="fas fa-graduation-cap has-text-info mr-2"></i>{{ _("Année scolaire & Archivage") }}
+                        </h2>
+                        <p class="subtitle is-6 has-text-grey mb-0">
+                            {{ _("Gérez la transition entre les années scolaires, conservez vos cours doubles et libérez votre quota d'élèves.") }}
+                        </p>
+                    </div>
+                    <a href="{{ url_for('archive.wizard') }}" class="button is-info has-text-weight-bold">
+                        <span class="icon"><i class="fas fa-graduation-cap"></i></span>
+                        <span>{{ _("Clôturer l'année scolaire") }}</span>
+                    </a>
+                </div>
+
+                <!-- État de l'année scolaire active -->
+                <div class="p-4 mb-5" style="background: hsl(210, 50%, 98%); border: 1px solid hsl(210, 40%, 88%); border-radius: 12px;">
+                    <div class="columns is-vcentered">
+                        <div class="column is-8">
+                            <span class="tag is-success is-light is-rounded has-text-weight-bold mb-2">
+                                <span class="icon is-small mr-1"><i class="fas fa-circle" style="font-size: 8px;"></i></span>
+                                {{ _("Année scolaire en cours") }}
+                            </span>
+                            <div class="is-size-7 has-text-grey">
+                                {{ _("Classe active :") }} <strong>{{ active_students_count }} {{ _("élèves") }}</strong>
+                                • {{ _("Prêts en cours :") }} <strong>{{ active_loans_count }}</strong>
+                            </div>
+                        </div>
+                        <div class="column is-4 has-text-right">
+                            <a href="{{ url_for('archive.wizard') }}" class="button is-small is-info is-light has-text-weight-semibold">
+                                <span class="icon is-small"><i class="fas fa-magic"></i></span>
+                                <span>{{ _("Lancer l'assistant") }}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="margin: 1.5rem 0;" />
+
+                <!-- Liste des promotions archivées -->
+                <h3 class="title is-5 mb-3 has-text-dark">
+                    <i class="fas fa-archive has-text-grey mr-2"></i>{{ _("Promotions archivées") }}
+                </h3>
+
+                {% if archives %}
+                    <div class="columns is-multiline">
+                        {% for arch in archives %}
+                        <div class="column is-6">
+                            <div class="box" style="border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <div class="is-flex is-justify-content-space-between is-align-items-flex-start mb-2">
+                                        <div>
+                                            <span class="tag is-info is-light is-rounded is-small mb-1">{{ _("Promotion") }}</span>
+                                            <h4 class="title is-5 mb-1">{{ arch.year_label }}</h4>
+                                        </div>
+                                        <span class="is-size-7 has-text-grey">
+                                            {{ arch.archived_at.strftime("%d/%m/%Y") }}
+                                        </span>
+                                    </div>
+                                    <p class="is-size-7 has-text-grey mb-3">
+                                        <strong>{{ arch.total_students }}</strong> {{ _("élèves") }}
+                                        • <strong>{{ arch.total_loans }}</strong> {{ _("prêts") }}
+                                        • <strong>{{ arch.average_loans_per_student }}</strong> {{ _("prêts/élève") }}
+                                    </p>
+                                    {% if arch.most_read_book_title %}
+                                    <div class="is-size-7 has-text-grey text-truncate mb-1">
+                                        <i class="fas fa-crown has-text-warning mr-1"></i>
+                                        {{ _("Top livre :") }} <strong>{{ arch.most_read_book_title }}</strong> ({{ arch.most_read_book_count }})
+                                    </div>
+                                    {% endif %}
+                                    {% if arch.top_reader_name %}
+                                    <div class="is-size-7 has-text-grey text-truncate mb-3">
+                                        <i class="fas fa-medal has-text-info mr-1"></i>
+                                        {{ _("Top lecteur :") }} <strong>{{ arch.top_reader_name }}</strong> ({{ arch.top_reader_count }})
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="is-flex is-align-items-center pt-3" style="gap: 0.5rem; border-top: 1px solid hsl(0, 0%, 95%);">
+                                    <a href="{{ url_for('archive.detail', archive_id=arch.id) }}" class="button is-small is-info is-light has-text-weight-semibold" style="flex: 1;">
+                                        <span class="icon is-small"><i class="fas fa-eye"></i></span>
+                                        <span>{{ _("Consulter le bilan") }}</span>
+                                    </a>
+                                    {% if current_user.is_premium %}
+                                    <a href="{{ url_for('archive.print_summary', archive_id=arch.id) }}" class="button is-small is-light" target="_blank" title="{{ _('Imprimer le bilan officiel') }}">
+                                        <span class="icon is-small"><i class="fas fa-print"></i></span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="has-text-centered py-6" style="background: hsl(0, 0%, 99%); border: 1px dashed hsl(0, 0%, 88%); border-radius: 12px;">
+                        <span class="icon is-large has-text-grey-light mb-2">
+                            <i class="fas fa-box-open fa-2x"></i>
+                        </span>
+                        <h4 class="title is-6 has-text-grey mb-1">{{ _("Aucune année scolaire n'est encore archivée") }}</h4>
+                        <p class="is-size-7 has-text-grey" style="max-width: 480px; margin: 0 auto;">
+                            {{ _("Lorsque vous clôturez votre classe à la fin de l'année scolaire, vos statistiques, vos bilans de lecture et vos élèves sortants sont archivés ici sans encombrer votre nouvelle rentrée.") }}
+                        </p>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
@@ -980,23 +1094,30 @@
     // Fonctions globales accessibles depuis les attributs HTML onclick
     window.switchSettingsTab = function(tabName) {
         var cCompte = document.getElementById('tabContentCompte');
+        var cArchive = document.getElementById('tabContentArchive');
         var cExport = document.getElementById('tabContentExport');
         var cDanger = document.getElementById('tabContentDanger');
         var bCompte = document.getElementById('tabBtnCompte');
+        var bArchive = document.getElementById('tabBtnArchive');
         var bExport = document.getElementById('tabBtnExport');
         var bDanger = document.getElementById('tabBtnDanger');
 
         if (cCompte) cCompte.style.display = 'none';
+        if (cArchive) cArchive.style.display = 'none';
         if (cExport) cExport.style.display = 'none';
         if (cDanger) cDanger.style.display = 'none';
 
         if (bCompte) bCompte.classList.remove('is-active');
+        if (bArchive) bArchive.classList.remove('is-active');
         if (bExport) bExport.classList.remove('is-active');
         if (bDanger) bDanger.classList.remove('is-active');
 
         if (tabName === 'compte' && cCompte) {
             cCompte.style.display = 'block';
             if (bCompte) bCompte.classList.add('is-active');
+        } else if (tabName === 'archive' && cArchive) {
+            cArchive.style.display = 'block';
+            if (bArchive) bArchive.classList.add('is-active');
         } else if (tabName === 'export' && cExport) {
             cExport.style.display = 'block';
             if (bExport) bExport.classList.add('is-active');
@@ -1216,12 +1337,27 @@
         }
 
         // Lancement immédiat si le DOM est déjà prêt, ou sur DOMContentLoaded / htmx:load
+        function checkInitialTab() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var tabParam = urlParams.get('tab');
+            if (tabParam && ['compte', 'archive', 'export', 'danger'].indexOf(tabParam) !== -1) {
+                window.switchSettingsTab(tabParam);
+            }
+        }
+
         if (document.readyState !== 'loading') {
             initSettings();
+            checkInitialTab();
         } else {
-            document.addEventListener('DOMContentLoaded', initSettings);
+            document.addEventListener('DOMContentLoaded', function() {
+                initSettings();
+                checkInitialTab();
+            });
         }
-        document.body.addEventListener('htmx:load', initSettings);
+        document.body.addEventListener('htmx:load', function() {
+            initSettings();
+            checkInitialTab();
+        });
 
         // Nettoyage automatique avant un swap HTMX lors d'un départ de la page
         document.body.addEventListener('htmx:beforeSwap', function() {

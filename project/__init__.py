@@ -217,6 +217,7 @@ def create_app(test_config=None):
 
     # import data base models
     from .models import (  # noqa: F401
+        AcademicYearArchive,
         Book,
         Feedback,
         Loan,
@@ -378,6 +379,7 @@ def create_app(test_config=None):
 
     # Blueprint registrations
     from .admin import admin as admin_blueprint
+    from .archive import archive as archive_blueprint
     from .auth import auth as auth_blueprint
     from .eleve import eleve as eleve_blueprint
     from .emprunt import emprunt as emprunt_blueprint
@@ -398,6 +400,7 @@ def create_app(test_config=None):
     app.register_blueprint(webhook_blueprint)
 
     localized_blueprints = [
+        archive_blueprint,
         auth_blueprint,
         export_blueprint,
         livre_blueprint,

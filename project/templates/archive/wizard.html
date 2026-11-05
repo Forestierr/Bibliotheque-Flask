@@ -1,0 +1,652 @@
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Clôturer l'année scolaire") }} | Livres en Classe{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Archivage annuel")) }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .wizard-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid hsl(0, 0%, 91%);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+        padding: 2.25rem;
+        margin-bottom: 2rem;
+    }
+    .wizard-stepper {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 2.5rem;
+    }
+    .wizard-stepper::before {
+        content: "";
+        position: absolute;
+        top: 22px;
+        left: 10%;
+        right: 10%;
+        height: 3px;
+        background: hsl(0, 0%, 90%);
+        z-index: 0;
+    }
+    .wizard-step-item {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        flex: 1;
+    }
+    .step-circle {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid hsl(0, 0%, 82%);
+        color: hsl(0, 0%, 50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+        transition: all 0.25s ease;
+    }
+    .wizard-step-item.is-active .step-circle {
+        border-color: hsl(217, 71%, 53%);
+        background: hsl(217, 71%, 53%);
+        color: white;
+        box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.2);
+    }
+    .wizard-step-item.is-done .step-circle {
+        border-color: hsl(141, 71%, 45%);
+        background: hsl(141, 71%, 45%);
+        color: white;
+    }
+    .step-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: hsl(0, 0%, 45%);
+    }
+    .wizard-step-item.is-active .step-title {
+        color: hsl(217, 71%, 53%);
+        font-weight: 700;
+    }
+    .kpi-tile {
+        background: hsl(210, 40%, 98%);
+        border: 1px solid hsl(210, 30%, 90%);
+        border-radius: 12px;
+        padding: 1.25rem;
+        text-align: center;
+    }
+    .kpi-number {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: hsl(217, 71%, 45%);
+        line-height: 1.1;
+    }
+    .podium-box {
+        background: white;
+        border: 1px solid hsl(0, 0%, 90%);
+        border-radius: 12px;
+        padding: 1.25rem;
+        height: 100%;
+    }
+    .podium-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid hsl(0, 0%, 95%);
+    }
+    .podium-item:last-child {
+        border-bottom: none;
+    }
+    .podium-rank {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+    .rank-1 { background: #fef08a; color: #854d0e; }
+    .rank-2 { background: #e2e8f0; color: #475569; }
+    .rank-3 { background: #fed7aa; color: #9a3412; }
+    .rank-other { background: #f1f5f9; color: #64748b; }
+    .loan-card-item {
+        background: hsl(0, 0%, 99%);
+        border: 1px solid hsl(0, 0%, 90%);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .quota-preview-card {
+        background: linear-gradient(135deg, hsl(210, 60%, 98%) 0%, hsl(250, 50%, 97%) 100%);
+        border: 1px solid hsl(210, 50%, 88%);
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .safety-box {
+        background: hsl(48, 100%, 97%);
+        border: 1px solid hsl(48, 90%, 75%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="container" style="max-width: 920px; padding: 1.5rem 1rem;">
+    <!-- En-tête -->
+    <div class="mb-5">
+        <a href="{{ url_for('auth.reglage') }}?tab=archive" class="button is-ghost p-0 mb-2 has-text-grey">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span>{{ _("Retour aux réglages") }}</span>
+        </a>
+        <h1 class="title is-2 mb-1">
+            <i class="fas fa-graduation-cap has-text-info mr-2"></i>{{ _("Clôture de l'année scolaire") }}
+        </h1>
+        <p class="subtitle is-6 has-text-grey">
+            {{ _("Assistant en 3 étapes pour clôturer votre promotion, célébrer les lectures et préparer la nouvelle rentrée.") }}
+        </p>
+    </div>
+
+    <!-- Flash messages -->
+    {% include 'utils/flash_message.html' %}
+
+    <!-- Stepper -->
+    <div class="wizard-stepper">
+        <div class="wizard-step-item {% if step == 1 %}is-active{% elif step > 1 %}is-done{% endif %}">
+            <div class="step-circle">
+                {% if step > 1 %}<i class="fas fa-check"></i>{% else %}1{% endif %}
+            </div>
+            <div class="step-title">{{ _("1. Prêts en cours") }}</div>
+        </div>
+        <div class="wizard-step-item {% if step == 2 %}is-active{% elif step > 2 %}is-done{% endif %}">
+            <div class="step-circle">
+                {% if step > 2 %}<i class="fas fa-check"></i>{% else %}2{% endif %}
+            </div>
+            <div class="step-title">{{ _("2. Bilan & Synthèse") }}</div>
+        </div>
+        <div class="wizard-step-item {% if step == 3 %}is-active{% endif %}">
+            <div class="step-circle">3</div>
+            <div class="step-title">{{ _("3. Nouvelle rentrée") }}</div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- ÉTAPE 1 : CONTRÔLE DES ENCOURS -->
+    <!-- ============================================================== -->
+    {% if step == 1 %}
+    <div class="wizard-card">
+        <div class="is-flex is-align-items-center mb-4" style="gap: 0.75rem;">
+            <span class="icon is-medium has-text-info"><i class="fas fa-clipboard-check fa-lg"></i></span>
+            <div>
+                <h2 class="title is-4 mb-0">{{ _("Étape 1 : Contrôle des prêts en cours") }}</h2>
+                <p class="is-size-7 has-text-grey">{{ _("Assurez-vous qu'aucun livre ne reste orphelin avant le départ des élèves.") }}</p>
+            </div>
+        </div>
+
+        {% if not has_active_loans %}
+            <div class="notification is-success is-light p-5 has-text-centered" style="border-radius: 12px;">
+                <span class="icon is-large has-text-success mb-2">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </span>
+                <h3 class="title is-4 has-text-success mb-2">{{ _("Tous les livres ont été retournés !") }}</h3>
+                <p class="mb-4">{{ _("Aucun emprunt n'est en suspens dans votre classe. Vous pouvez passer au bilan de l'année.") }}</p>
+                <a href="{{ url_for('archive.wizard', step=2) }}" class="button is-info is-medium has-text-weight-bold">
+                    <span>{{ _("Continuer vers le bilan de l'année") }}</span>
+                    <span class="icon"><i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+        {% elif not has_unresolved_loans %}
+            <div class="notification is-success is-light p-5 mb-4" style="border-radius: 12px;">
+                <div class="is-flex is-align-items-center" style="gap: 1rem;">
+                    <span class="icon is-large has-text-success"><i class="fas fa-check-circle fa-2x"></i></span>
+                    <div>
+                        <h4 class="title is-5 has-text-success mb-1">{{ _("Tous les emprunts ont été arbitrés !") }}</h4>
+                        <p class="is-size-7">{{ _("%(count)s livre(s) sont conservés pour la rentrée prochaine par des élèves qui restent.", count=kept_loan_ids|length) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="has-text-centered my-5">
+                <a href="{{ url_for('archive.wizard', step=2) }}" class="button is-info is-medium has-text-weight-bold">
+                    <span>{{ _("Continuer vers le bilan de l'année") }}</span>
+                    <span class="icon"><i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+        {% else %}
+            <div class="notification is-warning is-light mb-4" style="border-radius: 10px;">
+                <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
+                    <span class="icon has-text-warning-dark"><i class="fas fa-exclamation-triangle fa-lg"></i></span>
+                    <div>
+                        <strong>{{ _("Action requise :") }}</strong>
+                        {{ _("Il reste %(count)s livre(s) actuellement emprunté(s). Veuillez arbitrer chaque situation ci-dessous avant de clôturer.", count=unresolved_loans|length) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                {% for item in active_loans %}
+                <div class="loan-card-item">
+                    <div style="flex: 1; min-width: 240px;">
+                        <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
+                            <span class="icon has-text-info"><i class="fas fa-book"></i></span>
+                            <div>
+                                <strong class="is-size-6">{{ item.Book.title }}</strong>
+                                <div class="is-size-7 has-text-grey">
+                                    {{ _("Emprunté par") }} <strong>{{ item.Student.firstname }} {{ item.Student.name }}</strong>
+                                    • {{ _("le") }} {{ item.Loan.date_loan.strftime("%d/%m/%Y") }}
+                                    {% if item.Loan.is_late %}
+                                        <span class="tag is-danger is-light is-small ml-2">{{ _("En retard") }}</span>
+                                    {% endif %}
+                                    {% if item.Loan.id in kept_loan_ids %}
+                                        <span class="tag is-info is-light is-small ml-2"><i class="fas fa-sync-alt mr-1"></i>{{ _("Conservé pour la rentrée") }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="is-flex is-align-items-center" style="gap: 0.5rem; flex-wrap: wrap;">
+                        {% if item.Loan.id in kept_loan_ids %}
+                            <form action="{{ url_for('archive.check_loans') }}" method="POST">
+                                {% include 'utils/csrf.html' %}
+                                <input type="hidden" name="loan_id" value="{{ item.Loan.id }}">
+                                <input type="hidden" name="action" value="unkeep">
+                                <button type="submit" class="button is-small is-light">
+                                    <span class="icon is-small"><i class="fas fa-undo"></i></span>
+                                    <span>{{ _("Annuler conservation") }}</span>
+                                </button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('archive.check_loans') }}" method="POST">
+                                {% include 'utils/csrf.html' %}
+                                <input type="hidden" name="loan_id" value="{{ item.Loan.id }}">
+                                <input type="hidden" name="action" value="return">
+                                <button type="submit" class="button is-small is-success is-light" title="{{ _('Marquer comme retourné aujourd\'hui') }}">
+                                    <span class="icon is-small"><i class="fas fa-check"></i></span>
+                                    <span>{{ _("Rendre") }}</span>
+                                </button>
+                            </form>
+                            <form action="{{ url_for('archive.check_loans') }}" method="POST">
+                                {% include 'utils/csrf.html' %}
+                                <input type="hidden" name="loan_id" value="{{ item.Loan.id }}">
+                                <input type="hidden" name="action" value="lost">
+                                <button type="submit" class="button is-small is-danger is-light" onclick="return confirm('{{ _('Déclarer ce livre comme perdu ? Cela clôturera l\'emprunt.') }}')">
+                                    <span class="icon is-small"><i class="fas fa-times-circle"></i></span>
+                                    <span>{{ _("Déclarer perdu") }}</span>
+                                </button>
+                            </form>
+                            <form action="{{ url_for('archive.check_loans') }}" method="POST">
+                                {% include 'utils/csrf.html' %}
+                                <input type="hidden" name="loan_id" value="{{ item.Loan.id }}">
+                                <input type="hidden" name="action" value="keep">
+                                <button type="submit" class="button is-small is-info is-light" title="{{ _('L\'élève conserve le livre pendant les vacances car il reste dans votre classe l\'an prochain') }}">
+                                    <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
+                                    <span>{{ _("Conserver") }}</span>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="has-text-centered pt-3">
+                <button class="button is-info is-medium" disabled title="{{ _('Veuillez arbitrer tous les livres empruntés pour débloquer la suite') }}">
+                    <span>{{ _("Continuer vers le bilan") }}</span>
+                    <span class="icon"><i class="fas fa-lock"></i></span>
+                </button>
+                <p class="is-size-7 has-text-grey mt-2">
+                    {{ _("Règle de sécurité : tous les emprunts doivent être clôturés ou marqués conservés pour avancer.") }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ============================================================== -->
+    <!-- ÉTAPE 2 : BILAN & SYNTHÈSE DE L'ANNÉE -->
+    <!-- ============================================================== -->
+    {% if step == 2 %}
+    <div class="wizard-card">
+        <div class="is-flex is-align-items-center mb-4" style="gap: 0.75rem;">
+            <span class="icon is-medium has-text-info"><i class="fas fa-chart-pie fa-lg"></i></span>
+            <div>
+                <h2 class="title is-4 mb-0">{{ _("Étape 2 : Bilan & Synthèse de l'Année") }}</h2>
+                <p class="is-size-7 has-text-grey">{{ _("Vérifiez les dates officielles et découvrez les succès de lecture de votre classe.") }}</p>
+            </div>
+        </div>
+
+        <!-- Formulaire de paramétrage temporel -->
+        <form method="GET" action="{{ url_for('archive.wizard') }}" class="mb-5 p-4" style="background: hsl(0, 0%, 98%); border-radius: 12px; border: 1px solid hsl(0, 0%, 92%);">
+            <input type="hidden" name="step" value="2">
+            <div class="columns is-multiline is-vcentered">
+                <div class="column is-4">
+                    <label class="label is-small">{{ _("Libellé de l'année scolaire") }}</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" name="year_label" value="{{ year_label }}" required placeholder="ex: 2025-2026">
+                        <span class="icon is-small is-left"><i class="fas fa-tag"></i></span>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <label class="label is-small">{{ _("Date de rentrée (Début)") }}</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="date" name="start_date" value="{{ start_date }}" required>
+                        <span class="icon is-small is-left"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <label class="label is-small">{{ _("Date de clôture (Fin)") }}</label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="date" name="end_date" value="{{ end_date }}" required>
+                        <span class="icon is-small is-left"><i class="fas fa-calendar-check"></i></span>
+                    </div>
+                </div>
+                <div class="column is-2 has-text-right">
+                    <label class="label is-small">&nbsp;</label>
+                    <button type="submit" class="button is-light is-fullwidth" title="{{ _('Recalculer les statistiques avec ces dates') }}">
+                        <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
+                        <span>{{ _("Actualiser") }}</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Indicateurs Clés (KPIs) -->
+        <div class="columns is-multiline mb-4">
+            <div class="column is-4">
+                <div class="kpi-tile">
+                    <div class="kpi-number">{{ stats.total_loans }}</div>
+                    <div class="is-size-7 has-text-grey has-text-weight-semibold mt-1">
+                        <i class="fas fa-book-reader mr-1"></i>{{ _("Livres empruntés") }}
+                    </div>
+                </div>
+            </div>
+            <div class="column is-4">
+                <div class="kpi-tile">
+                    <div class="kpi-number">{{ stats.total_students }}</div>
+                    <div class="is-size-7 has-text-grey has-text-weight-semibold mt-1">
+                        <i class="fas fa-users mr-1"></i>{{ _("Élèves dans la classe") }}
+                    </div>
+                </div>
+            </div>
+            <div class="column is-4">
+                <div class="kpi-tile">
+                    <div class="kpi-number">{{ stats.average_loans }}</div>
+                    <div class="is-size-7 has-text-grey has-text-weight-semibold mt-1">
+                        <i class="fas fa-chart-line mr-1"></i>{{ _("Moyenne par élève") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Podiums (Top Livres & Top Lecteurs) -->
+        <div class="columns is-multiline mb-5">
+            <div class="column is-6">
+                <div class="podium-box">
+                    <h3 class="title is-6 mb-3 has-text-dark">
+                        <i class="fas fa-crown has-text-warning mr-1"></i>{{ _("Livres les plus lus") }}
+                    </h3>
+                    {% if stats.top_books %}
+                        {% for book in stats.top_books[:5] %}
+                        <div class="podium-item">
+                            <div class="podium-rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-other{% endif %}">
+                                {{ loop.index }}
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div class="has-text-weight-semibold is-size-7 text-truncate">{{ book.title }}</div>
+                                <div class="is-size-7 has-text-grey text-truncate">{{ book.author or _("Auteur non précisé") }}</div>
+                            </div>
+                            <span class="tag is-info is-light is-small has-text-weight-bold">
+                                {{ book.count }} {{ _("prêts") }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="is-size-7 has-text-grey has-text-centered py-4">{{ _("Aucun prêt enregistré sur cette période.") }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="column is-6">
+                <div class="podium-box">
+                    <h3 class="title is-6 mb-3 has-text-dark">
+                        <i class="fas fa-medal has-text-info mr-1"></i>{{ _("Palmarès des lecteurs") }}
+                    </h3>
+                    {% if stats.top_readers %}
+                        {% for reader in stats.top_readers[:5] %}
+                        <div class="podium-item">
+                            <div class="podium-rank {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-other{% endif %}">
+                                {{ loop.index }}
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div class="has-text-weight-semibold is-size-7 text-truncate">{{ reader.name }}</div>
+                            </div>
+                            <span class="tag is-success is-light is-small has-text-weight-bold">
+                                {{ reader.count }} {{ _("livres") }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="is-size-7 has-text-grey has-text-centered py-4">{{ _("Aucune lecture enregistrée sur cette période.") }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="is-flex is-justify-content-space-between is-align-items-center pt-3">
+            <a href="{{ url_for('archive.wizard', step=1) }}" class="button is-light">
+                <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                <span>{{ _("Retour aux encours") }}</span>
+            </a>
+            <a href="{{ url_for('archive.wizard', step=3, year_label=year_label, start_date=start_date, end_date=end_date) }}" class="button is-info is-medium has-text-weight-bold">
+                <span>{{ _("Continuer vers la nouvelle rentrée") }}</span>
+                <span class="icon"><i class="fas fa-arrow-right"></i></span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ============================================================== -->
+    <!-- ÉTAPE 3 : NOUVELLE RENTRÉE & CLÔTURE SÉCURISÉE -->
+    <!-- ============================================================== -->
+    {% if step == 3 %}
+    <div class="wizard-card">
+        <div class="is-flex is-align-items-center mb-4" style="gap: 0.75rem;">
+            <span class="icon is-medium has-text-info"><i class="fas fa-graduation-cap fa-lg"></i></span>
+            <div>
+                <h2 class="title is-4 mb-0">{{ _("Étape 3 : Nouvelle Rentrée & Clôture Sécurisée") }}</h2>
+                <p class="is-size-7 has-text-grey">{{ _("Sélectionnez les élèves qui quittent la classe et préparez vos places pour la rentrée.") }}</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('archive.commit') }}" id="archiveCommitForm">
+            {% include 'utils/csrf.html' %}
+            <input type="hidden" name="year_label" value="{{ year_label }}">
+            <input type="hidden" name="start_date" value="{{ start_date }}">
+            <input type="hidden" name="end_date" value="{{ end_date }}">
+
+            <!-- Compteur dynamique de Quota Prévisionnel -->
+            <div class="quota-preview-card">
+                <div class="columns is-vcentered">
+                    <div class="column is-8">
+                        <h4 class="title is-5 mb-1 has-text-dark">
+                            <i class="fas fa-calculator has-text-info mr-2"></i>{{ _("Simulation de votre rentrée") }}
+                        </h4>
+                        <p class="is-size-7 has-text-grey">
+                            {{ _("Les élèves archivés libèrent immédiatement votre quota sans perdre leur historique de prêts passés.") }}
+                        </p>
+                    </div>
+                    <div class="column is-4 has-text-right">
+                        <div class="is-size-5 has-text-weight-bold has-text-info">
+                            <span id="retainedCountText">0</span> {{ _("élèves conservés") }}
+                        </div>
+                        <div class="is-size-7 has-text-grey">
+                            {{ _("Quota libre :") }} <strong id="freeQuotaText" class="has-text-success">40</strong> / {{ max_free_students }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des élèves avec cases à cocher -->
+            <div class="mb-4">
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
+                    <label class="label mb-0">
+                        {{ _("Cochez les élèves qui quittent votre classe :") }}
+                    </label>
+                    <div class="buttons are-small mb-0">
+                        <button type="button" class="button is-light" onclick="toggleAllStudents(true)">
+                            <span class="icon is-small"><i class="fas fa-check-double"></i></span>
+                            <span>{{ _("Tout cocher (Classe entière)") }}</span>
+                        </button>
+                        <button type="button" class="button is-light" onclick="toggleAllStudents(false)">
+                            <span class="icon is-small"><i class="fas fa-undo"></i></span>
+                            <span>{{ _("Décocher tout") }}</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="max-height: 380px; overflow-y: auto; border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 0.5rem 1rem;">
+                    {% if students %}
+                        {% for student in students %}
+                        <div class="is-flex is-align-items-center is-justify-content-space-between py-2" style="border-bottom: 1px solid hsl(0, 0%, 95%);">
+                            <label class="checkbox is-flex is-align-items-center" style="gap: 0.75rem; width: 100%; cursor: pointer;">
+                                <input type="checkbox"
+                                       name="archived_students"
+                                       value="{{ student.id }}"
+                                       class="student-checkbox"
+                                       {% if student.id in kept_student_ids %}disabled{% else %}checked{% endif %}
+                                       onchange="updateQuotaSimulation()">
+                                <div>
+                                    <strong class="is-size-6">{{ student.name }} {{ student.firstname }}</strong>
+                                    {% if student.id in kept_student_ids %}
+                                        <span class="tag is-info is-light is-small ml-2" title="{{ _('Cet élève conserve un livre emprunté pour la rentrée et reste donc actif.') }}">
+                                            <i class="fas fa-sync-alt mr-1"></i>{{ _("Maintien automatique (emprunt en cours)") }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="has-text-grey is-size-7 py-3">{{ _("Aucun élève actif trouvé dans votre compte.") }}</p>
+                    {% endif %}
+                </div>
+                <p class="is-size-7 has-text-grey mt-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    {{ _("Les élèves décochés resteront actifs dans votre classe pour l'année prochaine (idéal pour les cours doubles).") }}
+                </p>
+            </div>
+
+            <!-- Zone de sécurité anti-erreur -->
+            <div class="safety-box">
+                <div class="is-flex is-align-items-center mb-3" style="gap: 0.75rem;">
+                    <span class="icon is-medium has-text-warning-dark"><i class="fas fa-shield-alt fa-lg"></i></span>
+                    <div>
+                        <h4 class="title is-5 mb-0 has-text-dark">{{ _("Confirmation de clôture") }}</h4>
+                        <p class="is-size-7 has-text-grey">{{ _("Cette action finalise l'archive %(year)s et archive les élèves sélectionnés.", year=year_label) }}</p>
+                    </div>
+                </div>
+
+                <div class="field mb-4">
+                    <label class="label is-small">
+                        {{ _("Pour débloquer la clôture, tapez exactement le mot") }} <strong class="has-text-danger">ARCHIVER</strong> :
+                    </label>
+                    <div class="control has-icons-left">
+                        <input class="input is-medium"
+                               type="text"
+                               id="confirmInput"
+                               name="confirmation"
+                               placeholder="ARCHIVER"
+                               autocomplete="off"
+                               oninput="checkConfirmationWord()">
+                        <span class="icon is-left"><i class="fas fa-key"></i></span>
+                    </div>
+                </div>
+
+                <div class="is-flex is-justify-content-space-between is-align-items-center pt-2">
+                    <a href="{{ url_for('archive.wizard', step=2, year_label=year_label, start_date=start_date, end_date=end_date) }}" class="button is-light">
+                        <span class="icon"><i class="fas fa-arrow-left"></i></span>
+                        <span>{{ _("Retour au bilan") }}</span>
+                    </a>
+                    <button type="submit" id="submitArchiveBtn" class="button is-danger is-medium has-text-weight-bold" disabled>
+                        <span class="icon"><i class="fas fa-graduation-cap"></i></span>
+                        <span>{{ _("Clôturer l'année et préparer la rentrée") }}</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const totalStudentsCount = {{ students|length }};
+        const maxFreeStudents = {{ max_free_students }};
+
+        function updateQuotaSimulation() {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            let archivedCount = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) archivedCount++;
+            });
+
+            const retainedCount = totalStudentsCount - archivedCount;
+            const freeSlots = Math.max(0, maxFreeStudents - retainedCount);
+
+            const retainedEl = document.getElementById('retainedCountText');
+            const freeQuotaEl = document.getElementById('freeQuotaText');
+
+            if (retainedEl) retainedEl.textContent = retainedCount;
+            if (freeQuotaEl) {
+                freeQuotaEl.textContent = freeSlots;
+                if (freeSlots === 0 && !{{ current_user.is_premium|tojson }}) {
+                    freeQuotaEl.className = 'has-text-danger';
+                } else {
+                    freeQuotaEl.className = 'has-text-success';
+                }
+            }
+        }
+
+        function toggleAllStudents(checked) {
+            const checkboxes = document.querySelectorAll('.student-checkbox');
+            checkboxes.forEach(cb => {
+                if (!cb.disabled) {
+                    cb.checked = checked;
+                }
+            });
+            updateQuotaSimulation();
+        }
+
+        function checkConfirmationWord() {
+            const input = document.getElementById('confirmInput');
+            const btn = document.getElementById('submitArchiveBtn');
+            if (!input || !btn) return;
+
+            if (input.value.trim().toUpperCase() === 'ARCHIVER') {
+                btn.removeAttribute('disabled');
+            } else {
+                btn.setAttribute('disabled', 'disabled');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateQuotaSimulation();
+        });
+    </script>
+    {% endif %}
+</div>
+{% endblock %}

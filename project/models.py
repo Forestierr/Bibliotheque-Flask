@@ -275,6 +275,14 @@ class User(UserMixin, db.Model):
     feedbacks = relationship(
         "Feedback", backref="user", lazy=True, cascade="all, delete-orphan"
     )
+    # One-to-Many relationship with academic year archives
+    academic_year_archives = relationship(
+        "AcademicYearArchive",
+        backref="user",
+        lazy=True,
+        cascade="all, delete-orphan",
+        order_by="desc(AcademicYearArchive.end_date)",
+    )
 
     def get_verification_token(self):
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
@@ -372,6 +380,52 @@ class Book(db.Model):
     )
 
 
+class AcademicYearArchive(db.Model):
+    __tablename__ = "academic_year_archive"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey("user.id"), nullable=False)
+    year_label = db.Column(db.String(50), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    archived_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(UTC), nullable=False
+    )
+    total_students = db.Column(db.Integer, default=0, nullable=False)
+    total_loans = db.Column(db.Integer, default=0, nullable=False)
+    average_loans_per_student = db.Column(db.Float, default=0.0, nullable=False)
+    most_read_book_title = db.Column(db.String(255), nullable=True)
+    most_read_book_author = db.Column(db.String(255), nullable=True)
+    most_read_book_count = db.Column(db.Integer, default=0, nullable=False)
+    top_reader_name = db.Column(db.String(255), nullable=True)
+    top_reader_count = db.Column(db.Integer, default=0, nullable=False)
+    top_books_json = db.Column(db.Text, nullable=True)
+    top_readers_json = db.Column(db.Text, nullable=True)
+
+    students = relationship("Student", back_populates="archived_year", lazy=True)
+
+    @property
+    def top_books(self):
+        import json
+
+        if not self.top_books_json:
+            return []
+        try:
+            return json.loads(self.top_books_json)
+        except Exception:  # noqa: BLE001
+            return []
+
+    @property
+    def top_readers(self):
+        import json
+
+        if not self.top_readers_json:
+            return []
+        try:
+            return json.loads(self.top_readers_json)
+        except Exception:  # noqa: BLE001
+            return []
+
+
 class Student(db.Model):
     __tablename__ = "student"
     id = db.Column(db.Integer, primary_key=True)
@@ -382,9 +436,23 @@ class Student(db.Model):
     user_id = db.Column(
         db.Integer, ForeignKey("user.id")
     )  # Each student belongs to a user
+
+    # Soft-delete / Archivage fields
+    is_archived = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False, index=True
+    )
+    archived_at = db.Column(db.DateTime, nullable=True)
+    archived_year_id = db.Column(
+        db.Integer,
+        ForeignKey("academic_year_archive.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+
+    archived_year = relationship("AcademicYearArchive", back_populates="students")
+
     # Loan relationship: One student can have multiple loans
     loans = relationship(
-        "Loan", backref="student", lazy=True, cascade="all, delete-orphan"
+        "Loan", backref="student", lazy=True, cascade="save-update, merge"
     )
 
 
@@ -394,6 +462,7 @@ class Loan(db.Model):
     date_loan = db.Column(db.Date)
     date_return = db.Column(db.Date)
     expected_return_date = db.Column(db.Date, nullable=True)
+    notes = db.Column(db.String(255), nullable=True)
 
     # Foreign keys to link Student and Book
     student_id = db.Column(db.Integer, ForeignKey("student.id"), nullable=False)
