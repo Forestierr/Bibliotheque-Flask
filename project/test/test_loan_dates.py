@@ -218,3 +218,4 @@ def test_livre_infos_renders_clean_chips_and_loan_history(app, client, test_user
             assert "Actuellement prêté à" in html
             assert "Rendre le livre" in html
             assert "Clara" in html
+            assert "Prêté 1 fois" in html

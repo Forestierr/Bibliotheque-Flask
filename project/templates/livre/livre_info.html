@@ -43,7 +43,7 @@
                     {% if book.year %}<span><i class="far fa-calendar mr-1"></i>{{ book.year }}</span>{% endif %}
                     {% if book.isbn %}<span><i class="fas fa-barcode mr-1"></i>ISBN: {{ book.isbn }}</span>{% endif %}
                     {% if book.barcode %}<span class="tag is-info is-light is-small"><i class="fas fa-tag mr-1"></i>{{ book.barcode }}</span>{% endif %}
-                    <span><i class="fas fa-history mr-1"></i>{{ _("Prêté %(count)s fois", count=(old_loans|count if old_loans else 0) + (actual_loans|count if actual_loans else 0)) }}</span>
+                    <span><i class="fas fa-history mr-1"></i>{{ _("Prêté %(count)s fois", count=(old_loans|length if old_loans else 0) + (1 if actual_loans else 0)) }}</span>
                 </div>
                 {% if tags %}
                 <div class="mt-2">
