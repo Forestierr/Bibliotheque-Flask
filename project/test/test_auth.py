@@ -334,3 +334,209 @@ def test_signup_retains_email_and_name_on_failure(client, app):
         html = response.get_data(as_text=True)
         assert 'value="existant@ecole.ch"' in html
         assert 'value="Mme Dupont"' in html
+
+
+
+def test_delete_user_account_preserves_isbn_books_and_removes_user_data(app):
+    from project import db
+    from project.models import Book, BookTags, Feedback, Loan, Student, Tags, User
+    from project.query import delete_user_account
+
+    with app.app_context():
+        db.create_all()
+
+        user = User(
+            name="Prof Test",
+            email="delete_me@test.com",
+            password="hash",
+            is_verified=True,
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # Book with ISBN
+        book_isbn = Book(
+            title="Le Petit Prince",
+            author="Saint-Exupéry",
+            isbn="9782070612758",
+            barcode="BAC-01",
+            user_id=user.id,
+        )
+        # Book without ISBN
+        book_no_isbn = Book(
+            title="Livre Fait Maison",
+            author="Enseignant",
+            isbn=None,
+            barcode="BAC-02",
+            user_id=user.id,
+        )
+        db.session.add_all([book_isbn, book_no_isbn])
+        db.session.commit()
+
+        # Student & Tag
+        student = Student(name="Dupont", firstname="Alice", user_id=user.id)
+        tag = Tags(name="Roman", user_id=user.id)
+        db.session.add_all([student, tag])
+        db.session.commit()
+
+        loan = Loan(student_id=student.id, book_id=book_isbn.id)
+        book_tag = BookTags(book_id=book_isbn.id, tag_id=tag.id)
+        db.session.add_all([loan, book_tag])
+        db.session.commit()
+
+        book_isbn_id = book_isbn.id
+        book_no_isbn_id = book_no_isbn.id
+        user_id = user.id
+
+        delete_user_account(user, reason="too_expensive", details="Pas de budget")
+
+
+        # Departure feedback is recorded
+
+
+        departure_fb = Feedback.query.filter_by(category="depart").first()
+
+
+        assert departure_fb is not None
+
+
+        assert departure_fb.departure_reason == "too_expensive"
+
+
+        assert departure_fb.author_email == "delete_me@test.com"
+
+
+        assert "Pas de budget" in departure_fb.message
+
+
+        assert departure_fb.user_id is None
+
+        # User is deleted
+        assert db.session.get(User, user_id) is None
+
+        # Student, Loan, Tag are deleted
+        assert Student.query.filter_by(user_id=user_id).first() is None
+        assert Loan.query.filter_by(book_id=book_isbn_id).first() is None
+        assert Tags.query.filter_by(user_id=user_id).first() is None
+
+        # Book without ISBN is deleted
+        assert db.session.get(Book, book_no_isbn_id) is None
+
+        # Book with ISBN is PRESERVED for the collaborative database
+        preserved = db.session.get(Book, book_isbn_id)
+        assert preserved is not None
+        assert preserved.user_id is None
+        assert preserved.barcode is None
+        assert preserved.title == "Le Petit Prince"
+        assert preserved.isbn == "9782070612758"
+        assert preserved.loans == []
+        assert preserved.book_tags == []
+
+
+def test_delete_account_post_route(app):
+    from project import db
+    from project.models import Book, Feedback, User
+
+    with app.app_context():
+        db.create_all()
+
+        user = User(
+            name="Marie Curie",
+            email="marie@radium.fr",
+            password="hash",
+            is_verified=True,
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+        user_id = user.id
+
+        book = Book(
+            title="La radioactivité",
+            author="Marie Curie",
+            isbn="9780123456789",
+            user_id=user_id,
+        )
+        db.session.add(book)
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = str(user_id)
+
+        res = client.post(
+
+
+            "/delete_account",
+
+
+            data={
+
+
+                "deletion_reason": "too_expensive",
+
+
+                "deletion_details": "Trop cher",
+
+
+            },
+
+
+            follow_redirects=False,
+
+
+        )
+
+
+        assert res.status_code == 302
+
+
+        assert res.headers["Location"].endswith("/")
+
+
+        departure_fb = Feedback.query.filter_by(category="depart").first()
+
+
+        assert departure_fb is not None
+
+
+        assert departure_fb.departure_reason == "too_expensive"
+
+
+        assert "Trop cher" in departure_fb.message
+
+        assert db.session.get(User, user_id) is None
+        preserved = Book.query.filter_by(isbn="9780123456789").first()
+        assert preserved is not None
+        assert preserved.user_id is None
+
+
+def test_reglage_danger_zone_shows_promo_retention_box(app):
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        db.create_all()
+
+        user = User(
+            name="Albert",
+            email="albert@physique.ch",
+            password="hash",
+            is_verified=True,
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = str(user.id)
+
+        res = client.get("/reglage?tab=danger")
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+        assert "modalDeleteAccount" in html
+        assert "promoRetentionBox" in html
+        assert "PROMO30" in html
+        assert "too_expensive" in html

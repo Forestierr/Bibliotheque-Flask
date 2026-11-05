@@ -1186,3 +1186,120 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
         .all()
     )
     return results
+
+
+
+def delete_user_account(user, reason=None, details=None):
+    """
+    Supprime un compte utilisateur et ses données personnelles,
+    tout en conservant les fiches de livres avec ISBN pour la base collaborative
+    et les autres utilisateurs.
+    """
+    import os
+    import re
+    from datetime import UTC, datetime
+    import stripe
+    from flask import current_app
+    from .models import Book, Student, Tags, Loan, BookTags, NewsletterDelivery, Feedback
+
+    user_id = user.id
+    user_email = user.email
+    user_name = user.name
+    effective_plan = getattr(user, "effective_plan", "inconnu")
+
+    # 1. Annulation de l'abonnement Stripe si existant et actif
+    if getattr(user, "stripe_subscription_id", None):
+        try:
+            stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+            if stripe_secret:
+                stripe.api_key = stripe_secret
+                stripe.Subscription.cancel(user.stripe_subscription_id)
+        except Exception as exc:  # noqa: BLE001
+            current_app.logger.warning(
+                "Erreur annulation Stripe pour %s : %s", user_email, exc
+            )
+
+    # 2. Enregistrement du questionnaire de sortie dans le dashboard admin (Feedback)
+    if reason or details:
+        clean_reason = reason or "non_specifie"
+        reason_labels = {
+            "too_expensive": "Tarif trop élevé / trop cher",
+            "free_limits": "Quotas de la version gratuite trop limités",
+            "no_longer_needed": "Je n'en ai plus l'utilité (changement de niveau, départ...)",
+            "missing_features": "Il manque des fonctionnalités importantes",
+            "too_complex": "Trop difficile ou complexe à utiliser",
+            "other": "Autre raison",
+            "non_specifie": "Non spécifié",
+        }
+        reason_label = reason_labels.get(clean_reason, clean_reason)
+        msg_lines = [f"Formule au départ : {effective_plan}"]
+        if details:
+            msg_lines.append(f"Commentaire de l'enseignant :\n{details}")
+
+        departure_fb = Feedback(
+            user_id=None,
+            author_name=user_name or "Enseignant",
+            author_email=user_email,
+            category="depart",
+            departure_reason=clean_reason,
+            subject=f"Départ : {reason_label}",
+            message="\n\n".join(msg_lines),
+            page_url="/reglage?tab=danger",
+            status="nouveau",
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(departure_fb)
+
+    # Détachement des feedbacks existants créés par cet utilisateur
+    Feedback.query.filter_by(user_id=user_id).update({
+        "user_id": None,
+        "author_name": user_name or "Enseignant",
+        "author_email": user_email,
+    })
+
+    # 3. Traitement des livres : conservation des fiches avec ISBN pour la base collaborative
+    user_books = Book.query.filter_by(user_id=user_id).all()
+    for book in user_books:
+        clean_isbn = re.sub(r"[^0-9X]", "", str(book.isbn or "")).strip().upper()
+        if clean_isbn:
+            # Nettoyage des prêts et tags associés à cette copie
+            for loan in list(book.loans):
+                db.session.delete(loan)
+            for bt in list(book.book_tags):
+                db.session.delete(bt)
+
+            # Vérifier si un exemplaire orphelin existe déjà dans la base
+            orphan_exists = Book.query.filter(
+                Book.id != book.id,
+                Book.isbn == book.isbn,
+                Book.user_id.is_(None),
+            ).first()
+
+            if orphan_exists:
+                db.session.delete(book)
+            else:
+                book.user_id = None
+                book.barcode = None
+        else:
+            db.session.delete(book)
+
+    # 4. Suppression des élèves (et prêts restants par cascade)
+    user_students = Student.query.filter_by(user_id=user_id).all()
+    for st in user_students:
+        for loan in list(st.loans):
+            db.session.delete(loan)
+        db.session.delete(st)
+
+    # 5. Suppression des tags personnalisés
+    user_tags = Tags.query.filter_by(user_id=user_id).all()
+    for tag in user_tags:
+        for bt in list(tag.book_tags):
+            db.session.delete(bt)
+        db.session.delete(tag)
+
+    # 6. Détachement des livraisons de newsletter
+    NewsletterDelivery.query.filter_by(user_id=user_id).update({"user_id": None})
+
+    # 7. Suppression de l'utilisateur lui-même (archives d'année scolaire et feedbacks cascade-delete)
+    db.session.delete(user)
+    db.session.commit()

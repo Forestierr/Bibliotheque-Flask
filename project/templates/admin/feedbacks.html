@@ -13,6 +13,44 @@
 {% endblock %}
 
 {% block admin_content %}
+{% if total_departures > 0 %}
+<div class="admin-card mb-5" style="border-left: 4px solid #ef4444;">
+    <div class="columns is-vcentered">
+        <div class="column is-7">
+            <h3 class="title is-6 mb-2" style="color: #0f172a; font-weight: 700;">
+                <i class="fas fa-chart-pie mr-2 has-text-danger"></i>Analyse des Départs & Churn
+            </h3>
+            <p class="is-size-7 has-text-grey mb-3">
+                Répartition des motifs déclarés par les enseignants lors de la suppression de leur compte.
+            </p>
+            <div class="level is-mobile mb-0">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading is-size-7 mb-1 has-text-grey">Départs enregistrés</p>
+                        <p class="title is-4 has-text-weight-bold" style="color: #0f172a;">{{ total_departures }}</p>
+                    </div>
+                </div>
+                {% if top_reason_label %}
+                <div class="level-item has-text-centered" style="border-left: 1px solid #e2e8f0; padding-left: 1.5rem;">
+                    <div>
+                        <p class="heading is-size-7 mb-1 has-text-grey">Principal déclencheur de départ</p>
+                        <p class="title is-6 has-text-danger has-text-weight-bold mb-0">
+                            {{ top_reason_label }}
+                        </p>
+                        <p class="is-size-7 has-text-grey">{{ top_reason_count }} enseignant{{ 's' if top_reason_count > 1 else '' }} ({{ top_reason_pct }}%)</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="column is-5">
+            <div style="height: 180px; position: relative;">
+                <canvas id="departureReasonsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 <!-- Filtres par statut & catégorie -->
 <div class="level mb-4">
     <div class="level-left">
@@ -60,6 +98,9 @@
                         <option value="{{ url_for('admin.feedbacks', status=current_status, category='general') }}" {% if current_category == 'general' %}selected{% endif %}>
                             Avis généraux
                         </option>
+                        <option value="{{ url_for('admin.feedbacks', status=current_status, category='depart') }}" {% if current_category == 'depart' %}selected{% endif %}>
+                            Questionnaires de départ ({{ counts.depart }})
+                        </option>
                     </select>
                 </div>
             </div>
@@ -97,6 +138,10 @@
                                     <span class="tag is-info is-light is-rounded">
                                         <i class="fas fa-lightbulb mr-1"></i> Idée
                                     </span>
+                                {% elif fb.category == 'depart' %}
+                                    <span class="tag is-danger is-light is-rounded has-text-weight-bold">
+                                        <i class="fas fa-user-slash mr-1"></i> Départ
+                                    </span>
                                 {% else %}
                                     <span class="tag is-light is-rounded">
                                         <i class="fas fa-comment mr-1"></i> Général
@@ -107,6 +152,9 @@
                                 {% if fb.user %}
                                     <div class="has-text-weight-bold" style="color: #0f172a;">{{ fb.user.name or 'Enseignant' }}</div>
                                     <div class="is-size-7 has-text-grey">{{ fb.user.email }}</div>
+                                {% elif fb.author_name or fb.author_email %}
+                                    <div class="has-text-weight-bold" style="color: #0f172a;">{{ fb.author_name or 'Enseignant' }}</div>
+                                    <div class="is-size-7 has-text-grey">{{ fb.author_email or '' }}</div>
                                 {% else %}
                                     <span class="has-text-grey-dark">Anonyme</span>
                                 {% endif %}
@@ -143,8 +191,8 @@
                                             "date": fb.created_at.strftime('%d/%m/%Y à %H:%M'),
                                             "pageUrl": fb.page_url or '',
                                             "userAgent": fb.user_agent or '',
-                                            "authorName": (fb.user.name if fb.user else 'Anonyme'),
-                                            "authorEmail": (fb.user.email if fb.user else '')
+                                            "authorName": (fb.author_name or (fb.user.name if fb.user else 'Enseignant')),
+                                            "authorEmail": (fb.author_email or (fb.user.email if fb.user else ''))
                                         } | tojson | safe }}
                                     </script>
 
@@ -256,6 +304,9 @@
         } else if (data.category === 'suggestion') {
             catBadge.className = 'tag is-info is-light is-rounded';
             catBadge.textContent = 'Suggestion / Idée';
+        } else if (data.category === 'depart') {
+            catBadge.className = 'tag is-danger is-light is-rounded has-text-weight-bold';
+            catBadge.textContent = 'Questionnaire de départ';
         } else {
             catBadge.className = 'tag is-light is-rounded';
             catBadge.textContent = 'Avis Général';
@@ -308,5 +359,53 @@
             });
         });
     });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+{% if total_departures > 0 %}
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('departureReasonsChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ chart_departure_labels | tojson | safe }},
+                datasets: [{
+                    data: {{ chart_departure_data | tojson | safe }},
+                    backgroundColor: {{ chart_departure_colors | tojson | safe }},
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 12,
+                            font: { size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = {{ total_departures }};
+                                const val = context.parsed;
+                                const pct = ((val / total) * 100).toFixed(1);
+                                return ` ${context.label}: ${val} (${pct}%)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '62%'
+            }
+        });
+    }
+});
+{% endif %}
 </script>
 {% endblock %}

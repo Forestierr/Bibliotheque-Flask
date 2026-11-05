@@ -31,6 +31,7 @@ from .config_plans import (
     MAX_FREE_BOOKS,
     MAX_FREE_SCANS,
     MAX_FREE_STUDENTS,
+    RETENTION_PROMO_CODE,
     TRIAL_PERIOD_DAYS,
 )
 from .email import (
@@ -38,7 +39,7 @@ from .email import (
     send_email_verification,
 )
 from .models import AcademicYearArchive, Book, Loan, User
-from .query import get_students_count
+from .query import delete_user_account, get_students_count
 
 auth = Blueprint("auth", __name__)
 
@@ -299,14 +300,22 @@ def reset_password(token, user_id):
 @auth.route("/delete_account", methods=["POST"])
 @login_required
 def delete_account():
-    # db.session.query(User).filter(User.id == current_user.id).delete()
-    # db.session.commit()
-    # logout_user()
+    user = db.session.get(User, current_user.id)
+    if not user:
+        return redirect(url_for("main.index"))
 
-    # return redirect(url_for('main.index'))
-    print("delete account !!!!")
+    reason = request.form.get("deletion_reason", "").strip() or "non_specifie"
+    details = request.form.get("deletion_details", "").strip()
 
-    return redirect(url_for("auth.reglage"))
+    delete_user_account(user, reason=reason, details=details)
+    logout_user()
+    flash(
+        _(
+            "Votre compte et vos données personnelles ont été supprimés avec succès."
+        ),
+        "info",
+    )
+    return redirect(url_for("main.index"))
 
 
 @auth.route("/reglage", methods=["GET", "POST"])
@@ -427,6 +436,7 @@ def reglage():
         archives=archives,
         active_students_count=active_students_count,
         active_loans_count=active_loans_count,
+        retention_promo_code=RETENTION_PROMO_CODE,
     )
 
 

@@ -327,6 +327,381 @@
             height: auto !important;
         }
     }
+
+    /* ============================================================
+       MODALE DE SUPPRESSION DE COMPTE (PREMIUM UI / APPLE DESIGN)
+       ============================================================ */
+    #modalDeleteAccount {
+        z-index: 1050 !important;
+    }
+    #modalDeleteAccount .modal-card {
+        border-radius: 20px !important;
+        overflow: hidden !important;
+        max-width: 540px !important;
+        width: 95% !important;
+        max-height: calc(100vh - 40px) !important;
+        max-height: calc(100dvh - 30px) !important;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 1px 1px rgba(15, 23, 42, 0.08) !important;
+        border: 1px solid rgba(226, 232, 240, 0.9) !important;
+        background: #ffffff;
+        display: flex !important;
+        flex-direction: column !important;
+        margin: auto 10px !important;
+    }
+    #modalDeleteAccount .modal-card-head {
+        background: #ffffff !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        padding: 1rem 1.25rem !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.9rem !important;
+        flex-shrink: 0 !important;
+    }
+    #modalDeleteAccount .delete-modal-icon-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: #fee2e2;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    #modalDeleteAccount .modal-card-title {
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        line-height: 1.3 !important;
+        margin: 0 !important;
+    }
+    #modalDeleteAccount .modal-card-body {
+        padding: 1.25rem 1.25rem !important;
+        background: #ffffff !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        overscroll-behavior: contain !important;
+    }
+
+    /* Bannières d'avertissement et de conservation */
+    .delete-warning-banner {
+        background: #fef2f2;
+        border: 1px solid #fee2e2;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .delete-warning-banner .warning-icon {
+        color: #ef4444;
+        font-size: 1.1rem;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .delete-warning-banner p {
+        font-size: 0.85rem;
+        color: #991b1b;
+        line-height: 1.45;
+        margin: 0;
+    }
+
+    .delete-collaborative-banner {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+    .delete-collaborative-banner .info-icon {
+        color: #3b82f6;
+        font-size: 1.05rem;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .delete-collaborative-banner p {
+        font-size: 0.82rem;
+        color: #475569;
+        line-height: 1.45;
+        margin: 0;
+    }
+
+    /* Tuiles interactives pour les motifs de suppression */
+    .deletion-reasons-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .deletion-reason-tile {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 0.95rem;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+        position: relative;
+        gap: 0.75rem;
+    }
+    .deletion-reason-tile:hover {
+        border-color: #cbd5e1;
+        background: #f8fafc;
+        transform: translateY(-1px);
+    }
+    .deletion-reason-tile input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+    .reason-tile-indicator {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #cbd5e1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.18s ease;
+        background: #ffffff;
+    }
+    .reason-tile-indicator::after {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ef4444;
+        transform: scale(0);
+        transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .deletion-reason-tile.is-checked,
+    .deletion-reason-tile:has(input[type="radio"]:checked) {
+        border-color: #fca5a5;
+        background: #fff5f5;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.08);
+    }
+    .deletion-reason-tile.is-checked .reason-tile-indicator,
+    .deletion-reason-tile:has(input[type="radio"]:checked) .reason-tile-indicator {
+        border-color: #ef4444;
+    }
+    .deletion-reason-tile.is-checked .reason-tile-indicator::after,
+    .deletion-reason-tile:has(input[type="radio"]:checked) .reason-tile-indicator::after {
+        transform: scale(1);
+    }
+    .deletion-reason-tile .reason-tile-text {
+        font-size: 0.86rem;
+        font-weight: 500;
+        color: #334155;
+        line-height: 1.35;
+        flex: 1;
+    }
+    .deletion-reason-tile.is-checked .reason-tile-text,
+    .deletion-reason-tile:has(input[type="radio"]:checked) .reason-tile-text {
+        color: #991b1b;
+        font-weight: 600;
+    }
+
+    /* Zone de texte feedback */
+    .deletion-textarea {
+        border: 1.5px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        font-size: 0.86rem !important;
+        transition: all 0.18s ease !important;
+        padding: 0.65rem 0.85rem !important;
+        line-height: 1.5 !important;
+    }
+    .deletion-textarea:focus {
+        border-color: #f87171 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+    }
+
+    /* Encart promotionnel de rétention */
+    .retention-offer-card {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border: 1.5px dashed #f59e0b;
+        border-radius: 14px;
+        padding: 1.1rem 1.25rem;
+        margin-top: 1.15rem;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+        animation: retentionPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes retentionPop {
+        from {
+            opacity: 0;
+            transform: translateY(-6px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    .retention-offer-header {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 0.45rem;
+    }
+    .retention-gift-badge {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #fef08a;
+        color: #b45309;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+    .retention-offer-title {
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: #92400e;
+    }
+    .retention-offer-text {
+        font-size: 0.83rem;
+        color: #78350f;
+        line-height: 1.45;
+        margin-bottom: 0.85rem;
+    }
+    .retention-offer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .retention-promo-chip {
+        background: #ffffff;
+        border: 1.5px dashed #d97706;
+        padding: 0.4rem 0.85rem;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .retention-promo-code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.95rem;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        color: #b45309;
+    }
+    .retention-claim-btn {
+        background: #d97706 !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-weight: 700 !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem !important;
+        font-size: 0.84rem !important;
+        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25) !important;
+        transition: all 0.18s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 0.4rem !important;
+    }
+    .retention-claim-btn:hover {
+        background: #b45309 !important;
+        transform: translateY(-1px);
+        color: #ffffff !important;
+    }
+
+    /* Footer de la modale */
+    #modalDeleteAccount .modal-card-foot {
+        background: #f8fafc !important;
+        border-top: 1px solid #e2e8f0 !important;
+        padding: 1rem 1.5rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0.75rem !important;
+    }
+    #modalDeleteAccount .btn-cancel-retention {
+        background: #ffffff !important;
+        border: 1.5px solid #cbd5e1 !important;
+        color: #334155 !important;
+        font-weight: 600 !important;
+        border-radius: 10px !important;
+        padding: 0.55rem 1.2rem !important;
+        font-size: 0.88rem !important;
+        transition: all 0.18s ease !important;
+    }
+    #modalDeleteAccount .btn-cancel-retention:hover {
+        background: #f1f5f9 !important;
+        border-color: #94a3b8 !important;
+        color: #0f172a !important;
+    }
+    #modalDeleteAccount .btn-confirm-delete {
+        background: #ef4444 !important;
+        border: 1px solid #dc2626 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        border-radius: 10px !important;
+        padding: 0.55rem 1.25rem !important;
+        font-size: 0.88rem !important;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2) !important;
+        transition: all 0.18s ease !important;
+    }
+    #modalDeleteAccount .btn-confirm-delete:hover {
+        background: #dc2626 !important;
+        transform: translateY(-1px);
+    }
+
+    /* Responsive mobile spécifique pour la modale de suppression */
+    @media screen and (max-width: 768px) {
+        #modalDeleteAccount .modal-card {
+            margin: 10px auto !important;
+            width: calc(100vw - 20px) !important;
+            max-width: calc(100vw - 20px) !important;
+            max-height: calc(100dvh - 20px) !important;
+            max-height: calc(100vh - 20px) !important;
+        }
+        #modalDeleteAccount .modal-card-body {
+            padding: 1rem !important;
+            max-height: none !important;
+        }
+        #modalDeleteAccount .modal-card-foot {
+            flex-direction: column !important;
+            gap: 0.5rem !important;
+            padding: 0.75rem 1rem !important;
+            padding-bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
+            flex-shrink: 0 !important;
+        }
+        #modalDeleteAccount .modal-card-foot .button {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 0.7rem 1rem !important;
+            font-size: 0.9rem !important;
+            height: auto !important;
+            min-height: 42px !important;
+        }
+        .retention-offer-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .retention-promo-chip {
+            justify-content: center;
+        }
+        .retention-claim-btn {
+            width: 100% !important;
+            justify-content: center !important;
+        }
+    }
+
 </style>
 
 <section class="section">
@@ -1029,22 +1404,117 @@
 <!-- Modale 4 : Compte -->
 <div id="modalDeleteAccount" class="modal">
     <div class="modal-background" onclick="closeModal('modalDeleteAccount')"></div>
-    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
+    <form method="POST" action="{{ url_for('auth.delete_account') }}" id="deleteAccountForm" class="modal-card">
+        {% include 'utils/csrf.html' %}
         <header class="modal-card-head">
-            <p class="modal-card-title has-text-danger">{{ _("Supprimer définitivement mon compte ?") }}</p>
-            <button class="delete" aria-label="close" onclick="closeModal('modalDeleteAccount')"></button>
+            <div class="delete-modal-icon-badge">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <p class="modal-card-title">{{ _("Supprimer définitivement mon compte ?") }}</p>
+            </div>
+            <button class="delete" aria-label="close" onclick="closeModal('modalDeleteAccount')" type="button"></button>
         </header>
         <section class="modal-card-body">
-            <p>{{ _("Attention : Cette action supprimera") }} <strong>{{ _("définitivement") }}</strong> {{ _("votre compte et l'ensemble des données associées (livres, élèves, prêts).") }}</p>
+            <!-- Avertissement action irréversible -->
+            <div class="delete-warning-banner">
+                <span class="warning-icon"><i class="fas fa-exclamation-circle"></i></span>
+                <p>
+                    <strong>{{ _("Attention :") }}</strong> {{ _("Cette action est") }} <strong>{{ _("irréversible") }}</strong>. {{ _("Vos élèves, prêts et données personnelles seront définitivement supprimés.") }}
+                </p>
+            </div>
+
+            <!-- Info catalogue collaboratif ISBN -->
+            <div class="delete-collaborative-banner">
+                <span class="info-icon"><i class="fas fa-book-open"></i></span>
+                <p>
+                    <strong>{{ _("Catalogue collaboratif :") }}</strong> {{ _("Afin de préserver le catalogue partagé pour tous les enseignants, les fiches bibliographiques des livres munis d'un code ISBN seront conservées de manière anonyme dans la base collaborative.") }}
+                </p>
+            </div>
+
+            <!-- Questionnaire de départ avec tuiles interactives -->
+            <div class="field mb-3">
+                <label class="label is-size-7 has-text-weight-bold mb-2" style="color: #334155;">
+                    {{ _("Pourquoi souhaitez-vous supprimer votre compte ?") }}
+                </label>
+                <div class="deletion-reasons-list">
+                    <label class="deletion-reason-tile">
+                        <input type="radio" name="deletion_reason" value="too_expensive" onchange="onDeletionReasonChange(this.value)">
+                        <span class="reason-tile-indicator"></span>
+                        <span class="reason-tile-text">{{ _("Le tarif est trop élevé / trop cher") }}</span>
+                    </label>
+                    {% if user.effective_plan == 'free' %}
+                    <label class="deletion-reason-tile">
+                        <input type="radio" name="deletion_reason" value="free_limits" onchange="onDeletionReasonChange(this.value)">
+                        <span class="reason-tile-indicator"></span>
+                        <span class="reason-tile-text">{{ _("Les quotas de la version gratuite sont trop limités") }}</span>
+                    </label>
+                    {% endif %}
+                    <label class="deletion-reason-tile">
+                        <input type="radio" name="deletion_reason" value="no_longer_needed" onchange="onDeletionReasonChange(this.value)">
+                        <span class="reason-tile-indicator"></span>
+                        <span class="reason-tile-text">{{ _("Je n'en ai plus l'utilité (changement de niveau, départ...)") }}</span>
+                    </label>
+                    <label class="deletion-reason-tile">
+                        <input type="radio" name="deletion_reason" value="missing_features" onchange="onDeletionReasonChange(this.value)">
+                        <span class="reason-tile-indicator"></span>
+                        <span class="reason-tile-text">{{ _("Il manque des fonctionnalités importantes") }}</span>
+                    </label>
+                    <label class="deletion-reason-tile">
+                        <input type="radio" name="deletion_reason" value="too_complex" onchange="onDeletionReasonChange(this.value)">
+                        <span class="reason-tile-indicator"></span>
+                        <span class="reason-tile-text">{{ _("Trop difficile ou complexe à utiliser") }}</span>
+                    </label>
+                    <label class="deletion-reason-tile">
+                        <input type="radio" name="deletion_reason" value="other" onchange="onDeletionReasonChange(this.value)">
+                        <span class="reason-tile-indicator"></span>
+                        <span class="reason-tile-text">{{ _("Autre raison") }}</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Détails supplémentaires facultatifs -->
+            <div class="field mb-3">
+                <label class="label is-size-7" style="color: #64748b;">
+                    {{ _("Précisez votre retour (facultatif) :") }}
+                </label>
+                <div class="control">
+                    <textarea class="textarea is-small deletion-textarea" name="deletion_details" rows="2" placeholder="{{ _('Vos remarques nous aident à améliorer Livres en Classe...') }}"></textarea>
+                </div>
+            </div>
+
+            <!-- Encart promotionnel de rétention -->
+            <div id="promoRetentionBox" class="retention-offer-card" style="{% if user.effective_plan != 'free' %}display: none;{% endif %}">
+                <div class="retention-offer-header">
+                    <span class="retention-gift-badge"><i class="fas fa-gift"></i></span>
+                    <span class="retention-offer-title">{{ _("Attendez ! Une offre spéciale pour votre classe") }}</span>
+                </div>
+                <p class="retention-offer-text">
+                    {{ _("Avant de supprimer votre compte, profitez de -30%% de réduction sur l'abonnement Premium avec le code promo :")|replace("%%", "%") }}
+                </p>
+                <div class="retention-offer-actions">
+                    <div class="retention-promo-chip">
+                        <i class="fas fa-tag has-text-warning-dark"></i>
+                        <span class="retention-promo-code">{{ retention_promo_code }}</span>
+                    </div>
+                    <a href="{{ url_for('subscription.tarifs') }}" class="button is-small retention-claim-btn">
+                        <span class="icon is-small mr-1"><i class="fas fa-bolt"></i></span>
+                        <span>{{ _("Profiter du code promo (-30%%)")|replace("%%", "%") }}</span>
+                    </a>
+                </div>
+            </div>
         </section>
-        <footer class="modal-card-foot" style="justify-content: flex-end;">
-            <button class="button is-light" onclick="closeModal('modalDeleteAccount')">{{ _("Annuler") }}</button>
-            <form method="POST" action="{{ url_for('auth.delete_account') }}">
-                {% include 'utils/csrf.html' %}
-                <button type="submit" class="button is-danger ml-2">{{ _("Supprimer mon compte") }}</button>
-            </form>
+        <footer class="modal-card-foot">
+            <button type="submit" class="button btn-confirm-delete" id="btnConfirmDeleteAccount">
+                <span class="icon is-small mr-1"><i class="fas fa-trash-alt"></i></span>
+                <span>{{ _("Supprimer définitivement mon compte") }}</span>
+            </button>
+            <button type="button" class="button btn-cancel-retention" onclick="closeModal('modalDeleteAccount')">
+                <span class="icon is-small mr-1"><i class="fas fa-arrow-left"></i></span>
+                <span>{{ _("Annuler et rester") }}</span>
+            </button>
         </footer>
-    </div>
+    </form>
 </div>
 
 <!-- Modale 5 : Export Premium Paywall -->
@@ -1163,6 +1633,25 @@
     window.closeModal = function(id) {
         var el = document.getElementById(id);
         if (el) el.classList.remove('is-active');
+    };
+
+    var isFreeUserPlan = {{ 'true' if user.effective_plan == 'free' else 'false' }};
+    window.onDeletionReasonChange = function(val) {
+        document.querySelectorAll('#modalDeleteAccount .deletion-reason-tile').forEach(function(tile) {
+            var input = tile.querySelector('input[type="radio"]');
+            if (input && input.checked) {
+                tile.classList.add('is-checked');
+            } else {
+                tile.classList.remove('is-checked');
+            }
+        });
+        var box = document.getElementById('promoRetentionBox');
+        if (!box) return;
+        if (val === 'too_expensive' || val === 'free_limits' || isFreeUserPlan) {
+            box.style.display = 'block';
+        } else {
+            box.style.display = 'none';
+        }
     };
 
     // Encapsulation complète de la logique des réglages et du suivi des modifications

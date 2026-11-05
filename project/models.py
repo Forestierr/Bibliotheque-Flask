@@ -273,7 +273,7 @@ class User(UserMixin, db.Model):
     tags = relationship("Tags", backref="user", lazy=True)  # User can have many tags
     # One-to-Many relationship with feedbacks
     feedbacks = relationship(
-        "Feedback", backref="user", lazy=True, cascade="all, delete-orphan"
+        "Feedback", backref="user", lazy=True
     )
     # One-to-Many relationship with academic year archives
     academic_year_archives = relationship(
@@ -507,10 +507,15 @@ class Tags(db.Model):
 class Feedback(db.Model):
     __tablename__ = "feedback"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(
+        db.Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    author_name = db.Column(db.String(100), nullable=True)
+    author_email = db.Column(db.String(255), nullable=True)
     category = db.Column(
         db.String(50), nullable=False
-    )  # "suggestion", "bug", "general"
+    )  # "suggestion", "bug", "general", "depart"
+    departure_reason = db.Column(db.String(50), nullable=True)
     subject = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
     page_url = db.Column(db.String(255), nullable=True)

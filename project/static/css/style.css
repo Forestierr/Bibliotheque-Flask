@@ -103,6 +103,12 @@ a.navbar-item,
     padding: 4rem 1.5rem;
 }
 
+
+/* Modals must always sit above the mobile bottom bar (z-index 999) and floating bars (z-index 1000) */
+.modal {
+    z-index: 1050 !important;
+}
+
 @media screen and (max-width: 768px) {
     .modal-card {
         margin: 0 10px;

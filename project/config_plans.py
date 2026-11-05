@@ -19,3 +19,6 @@ PRICE_YEARLY_AMOUNT = 30.0
 
 # Seuil d'alerte pour les jauges visuelles (en pourcentage)
 GAUGE_WARNING_PERCENT = 80
+
+# Code promotionnel proposé lors d'une tentative de suppression de compte (rétention)
+RETENTION_PROMO_CODE = "PROMO30"

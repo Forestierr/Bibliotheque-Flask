@@ -415,6 +415,8 @@ def feedback():
 
         new_feedback = Feedback(
             user_id=current_user.id,
+            author_name=current_user.name,
+            author_email=current_user.email,
             category=category,
             subject=subject[:200],
             message=message,
