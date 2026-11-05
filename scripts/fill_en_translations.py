@@ -1467,6 +1467,10 @@ translations = {
     "L'archive de l'année scolaire %(year)s a été supprimée et les élèves ont été réactivés dans votre classe.": "The archive for school year %(year)s was deleted and students were reactivated in your class.",
     "Archivé": "Archived",
     "Promo": "Cohort",
+    "Aucun emprunt en cours actuellement.": "No active loans at this time.",
+    "Aucun emprunt archivé pour le moment.": "No archived loans at this time.",
+    "Aucun emprunt trouvé.": "No loans found.",
+    "Élève archivé": "Archived student",
 }
 
 with open(po_path, "rb") as f:

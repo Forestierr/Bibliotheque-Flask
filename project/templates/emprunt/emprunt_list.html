@@ -23,25 +23,40 @@
 </style>
 
 <div class="container block">
-    {% set has_blurred = namespace(value=false) %}
-    {% for loan in loans %}
-        {% set is_blurred = not current_user.is_premium and cutoff_date and loan.Loan.date_loan and loan.Loan.date_loan < cutoff_date %}
-        {% if is_blurred %}
-            {% set has_blurred.value = true %}
-        {% endif %}
-        {% include "emprunt/_loan_row.html" %}
-    {% endfor %}
+    {% if not loans %}
+        <div class="notification is-light has-text-centered py-5" style="border-radius: 8px;">
+            <p class="is-size-6 has-text-grey">
+                <span class="icon is-medium mb-2"><i class="fas fa-book-reader fa-2x"></i></span><br>
+                {% if active_loan in ('1', 'active') %}
+                    {{ _("Aucun emprunt en cours actuellement.") }}
+                {% elif active_loan in ('archive', 'archives', '2') %}
+                    {{ _("Aucun emprunt archivé pour le moment.") }}
+                {% else %}
+                    {{ _("Aucun emprunt trouvé.") }}
+                {% endif %}
+            </p>
+        </div>
+    {% else %}
+        {% set has_blurred = namespace(value=false) %}
+        {% for loan in loans %}
+            {% set is_blurred = not current_user.is_premium and cutoff_date and loan.Loan.date_loan and loan.Loan.date_loan < cutoff_date %}
+            {% if is_blurred %}
+                {% set has_blurred.value = true %}
+            {% endif %}
+            {% include "emprunt/_loan_row.html" %}
+        {% endfor %}
 
-    {% if has_blurred.value %}
-    <div class="notification is-warning is-light has-text-centered loan-locked-banner">
-        <p class="is-size-6 mb-2">
-            <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span><strong>{{ _("Archives antérieures à 10 mois masquées.") }}</strong>
-            {{ _("Passez Premium pour consulter l'historique complet de vos emprunts passés.") }}
-        </p>
-        <a href="{{ url_for('subscription.tarifs') }}" class="button is-small is-warning is-dark">
-            {{ _("Découvrir les offres Premium") }}
-        </a>
-    </div>
+        {% if has_blurred.value %}
+        <div class="notification is-warning is-light has-text-centered loan-locked-banner">
+            <p class="is-size-6 mb-2">
+                <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span><strong>{{ _("Archives antérieures à 10 mois masquées.") }}</strong>
+                {{ _("Passez Premium pour consulter l'historique complet de vos emprunts passés.") }}
+            </p>
+            <a href="{{ url_for('subscription.tarifs') }}" class="button is-small is-warning is-dark">
+                {{ _("Découvrir les offres Premium") }}
+            </a>
+        </div>
+        {% endif %}
     {% endif %}
 </div>
 

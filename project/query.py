@@ -473,8 +473,13 @@ def get_loans_with_infos(
         Book.user_id == current_user_id
     )
 
-    if actualy_loan:
+    if actualy_loan in (True, "1", "active"):
         query = query.filter(Loan.date_return.is_(None))
+        query = query.filter(Student.is_archived.is_not(True))
+    elif actualy_loan in ("archive", "archives", "2"):
+        query = query.filter(Student.is_archived.is_(True))
+    else:
+        query = query.filter(Student.is_archived.is_not(True))
 
     query = query.join(Book, Loan.book_id == Book.id).join(
         Student, Loan.student_id == Student.id
@@ -1037,8 +1042,13 @@ def search_loans_by_types(
         Book.user_id == current_user_id
     )
 
-    if actualy_loan:
+    if actualy_loan in (True, "1", "active"):
         query = query.filter(Loan.date_return.is_(None))
+        query = query.filter(Student.is_archived.is_not(True))
+    elif actualy_loan in ("archive", "archives", "2"):
+        query = query.filter(Student.is_archived.is_(True))
+    else:
+        query = query.filter(Student.is_archived.is_not(True))
 
     query = query.join(Book, Loan.book_id == Book.id).join(
         Student, Loan.student_id == Student.id

@@ -1467,6 +1467,10 @@ translations = {
     "L'archive de l'année scolaire %(year)s a été supprimée et les élèves ont été réactivés dans votre classe.": "Das Archiv für das Schuljahr %(year)s wurde gelöscht und die Schüler wurden in Ihrer Klasse reaktiviert.",
     "Archivé": "Archiviert",
     "Promo": "Klasse",
+    "Aucun emprunt en cours actuellement.": "Derzeit keine aktiven Ausleihen.",
+    "Aucun emprunt archivé pour le moment.": "Derzeit keine archivierten Ausleihen.",
+    "Aucun emprunt trouvé.": "Keine Ausleihen gefunden.",
+    "Élève archivé": "Archivierter Schüler",
 }
 
 with open(po_path, "rb") as f:

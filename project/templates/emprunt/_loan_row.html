@@ -15,6 +15,11 @@
                     <div class="is-size-7 has-text-grey mt-1">
                         <span class="icon is-small mr-1"><i class="fas fa-user-graduate"></i></span>
                         <a href="{{ url_for('eleve.eleve_infos', id=loan.Student.id) }}" class="has-text-grey-dark">{{ loan.Student.name }} {{ loan.Student.firstname }}</a>
+                        {% if loan.Student.is_archived %}
+                        <span class="tag is-light is-rounded is-small ml-1" title="{{ _('Élève archivé') }}">
+                            <i class="fas fa-archive mr-1"></i>{{ _("Archivé") }}
+                        </span>
+                        {% endif %}
                     </div>
                 </div>
             </div>

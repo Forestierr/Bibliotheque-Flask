@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-11-05 10:23+0100\n"
+"POT-Creation-Date: 2026-11-05 11:06+0100\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: en\n"
@@ -31,7 +31,7 @@ msgstr "Give your feedback:"
 msgid "Signaler un problème :"
 msgstr "Report an issue:"
 
-#: project/archive.py:176
+#: project/archive.py:177
 msgid ""
 "Des livres sont encore empruntés. Veuillez tous les arbitrer (retournés, "
 "perdus ou conservés) avant de continuer."
@@ -39,38 +39,38 @@ msgstr ""
 "Some books are still borrowed. Please review all of them (returned, lost,"
 " or kept) before continuing."
 
-#: project/archive.py:232
+#: project/archive.py:231
 msgid "Action invalide."
 msgstr "Invalid action."
 
-#: project/archive.py:245 project/emprunt.py:121 project/emprunt.py:125
-#: project/emprunt.py:126 project/emprunt.py:185
+#: project/archive.py:244 project/emprunt.py:126 project/emprunt.py:130
+#: project/emprunt.py:131 project/emprunt.py:190
 msgid "Emprunt introuvable."
 msgstr "Loan not found."
 
-#: project/archive.py:256
+#: project/archive.py:255
 msgid "Le livre a été marqué comme retourné."
 msgstr "The book was marked as returned."
 
-#: project/archive.py:264
+#: project/archive.py:263
 msgid "Le livre a été déclaré perdu et l'emprunt a été clôturé."
 msgstr "The book was declared lost and the loan was closed."
 
-#: project/archive.py:271
+#: project/archive.py:269
 msgid "L'emprunt a été marqué comme conservé pour la rentrée prochaine."
 msgstr "The loan was marked as kept for the next school year."
 
-#: project/archive.py:279
+#: project/archive.py:276
 msgid "La conservation de l'emprunt a été annulée."
 msgstr "Loan retention was canceled."
 
-#: project/archive.py:294
+#: project/archive.py:291
 msgid ""
 "Veuillez saisir exactement le mot ARCHIVER pour confirmer la clôture de "
 "l'année scolaire."
 msgstr "Please type exactly the word ARCHIVER to confirm closing the school year."
 
-#: project/archive.py:310
+#: project/archive.py:305
 msgid "La date de début doit être antérieure à la date de fin."
 msgstr "Start date must be before end date."
 
@@ -92,7 +92,7 @@ msgstr ""
 "The school year %(year)s was successfully closed! Your departing students"
 " were archived and your quota was reset."
 
-#: project/archive.py:570
+#: project/archive.py:602
 #, python-format
 msgid ""
 "L'archive de l'année scolaire %(year)s a été supprimée et les élèves ont "
@@ -217,17 +217,17 @@ msgstr "Please fill in all fields."
 msgid "L'élève existe déjà."
 msgstr "The student already exists."
 
-#: project/emprunt.py:92 project/emprunt.py:169
+#: project/emprunt.py:97 project/emprunt.py:174
 #, python-format
 msgid "Le livre '%(title)s' a bien été marqué comme retourné."
 msgstr ""
 
-#: project/emprunt.py:98 project/emprunt.py:133 project/emprunt.py:137
-#: project/emprunt.py:138 project/emprunt.py:191
+#: project/emprunt.py:103 project/emprunt.py:138 project/emprunt.py:142
+#: project/emprunt.py:143 project/emprunt.py:196
 msgid "Accès non autorisé."
 msgstr "Unauthorized access."
 
-#: project/emprunt.py:162
+#: project/emprunt.py:167
 msgid "Livre retourné avec succès."
 msgstr ""
 
@@ -2516,7 +2516,7 @@ msgstr ""
 #: project/templates/archive/detail.html:166
 #: project/templates/archive/print_summary.html:214
 #: project/templates/archive/wizard.html:417
-#: project/templates/user/reglage.html:673
+#: project/templates/user/reglage.html:696
 msgid "prêts"
 msgstr "loans"
 
@@ -2608,11 +2608,11 @@ msgstr ""
 #: project/templates/livre/livre_edit.html:185
 #: project/templates/livre/livre_info.html:145
 #: project/templates/livre/livre_info.html:297
-#: project/templates/user/reglage.html:928
-#: project/templates/user/reglage.html:955
-#: project/templates/user/reglage.html:976
-#: project/templates/user/reglage.html:997
-#: project/templates/user/reglage.html:1018
+#: project/templates/user/reglage.html:951
+#: project/templates/user/reglage.html:978
+#: project/templates/user/reglage.html:999
+#: project/templates/user/reglage.html:1020
+#: project/templates/user/reglage.html:1041
 msgid "Annuler"
 msgstr "Cancel"
 
@@ -2687,7 +2687,7 @@ msgid "Signature de l'enseignant(e) :"
 msgstr "Teacher's signature:"
 
 #: project/templates/archive/wizard.html:4
-#: project/templates/user/reglage.html:623
+#: project/templates/user/reglage.html:646
 msgid "Clôturer l'année scolaire"
 msgstr "Close the school year"
 
@@ -2800,7 +2800,7 @@ msgid "Marquer comme retourné aujourd'hui"
 msgstr ""
 
 #: project/templates/archive/wizard.html:283
-#: project/templates/emprunt/_loan_row.html:31
+#: project/templates/emprunt/_loan_row.html:36
 #: project/templates/user/dashboard.html:274
 msgid "Rendre"
 msgstr "Return"
@@ -3734,6 +3734,7 @@ msgid "Ajouter"
 msgstr "Add"
 
 #: project/templates/eleve/eleve_info.html:22
+#: project/templates/emprunt/_loan_row.html:20
 msgid "Archivé"
 msgstr "Archived"
 
@@ -3773,7 +3774,7 @@ msgstr "Book currently on loan"
 
 #: project/templates/eleve/eleve_info.html:74
 #: project/templates/eleve/eleve_info.html:170
-#: project/templates/emprunt/_loan_row.html:45
+#: project/templates/emprunt/_loan_row.html:50
 #: project/templates/livre/livre_info.html:103
 msgid "Emprunté le"
 msgstr "Loaned on"
@@ -3974,34 +3975,38 @@ msgstr "Product notification sent to users of"
 msgid "Préférences de notification"
 msgstr "Notification preferences"
 
-#: project/templates/emprunt/_loan_row.html:29
+#: project/templates/emprunt/_loan_row.html:19
+msgid "Élève archivé"
+msgstr "Archived student"
+
+#: project/templates/emprunt/_loan_row.html:34
 #, fuzzy
 msgid "Rendre ce livre en 1 clic"
 msgstr "Back to Livres en Classe"
 
-#: project/templates/emprunt/_loan_row.html:36
+#: project/templates/emprunt/_loan_row.html:41
 msgid "Rendu"
 msgstr ""
 
-#: project/templates/emprunt/_loan_row.html:47
+#: project/templates/emprunt/_loan_row.html:52
 msgid "Emprunté du"
 msgstr "Loaned from"
 
-#: project/templates/emprunt/_loan_row.html:47
+#: project/templates/emprunt/_loan_row.html:52
 #: project/templates/user/dashboard.html:367
 msgid "au"
 msgstr "to"
 
-#: project/templates/emprunt/_loan_row.html:54
+#: project/templates/emprunt/_loan_row.html:59
 #, fuzzy, python-format
 msgid "En retard de %(days)s j"
 msgstr "Trial (%(days)sd)"
 
-#: project/templates/emprunt/_loan_row.html:58
+#: project/templates/emprunt/_loan_row.html:63
 msgid "À rendre sous 3 j"
 msgstr ""
 
-#: project/templates/emprunt/_loan_row.html:62
+#: project/templates/emprunt/_loan_row.html:67
 #, fuzzy, python-format
 msgid "Retour : %(date)s"
 msgstr "Back to the site"
@@ -4039,45 +4044,62 @@ msgstr "View loans"
 msgid "Emprunts actifs"
 msgstr "Loans"
 
-#: project/templates/emprunt/emprunt.html:66
+#: project/templates/emprunt/emprunt.html:58
+#: project/templates/user/reglage.html:382
+msgid "Archives"
+msgstr "Archives"
+
+#: project/templates/emprunt/emprunt.html:67
 #: project/templates/utils/result_sort.html:9
 msgid "Pertinent"
 msgstr "Relevant"
 
-#: project/templates/emprunt/emprunt.html:67
+#: project/templates/emprunt/emprunt.html:68
 #: project/templates/utils/result_sort.html:17
 msgid "Les plus récents"
 msgstr "Most recent"
 
-#: project/templates/emprunt/emprunt.html:68
+#: project/templates/emprunt/emprunt.html:69
 #: project/templates/utils/result_sort.html:18
 msgid "Les plus anciens"
 msgstr "Oldest"
 
-#: project/templates/emprunt/emprunt.html:81
+#: project/templates/emprunt/emprunt.html:82
 #: project/templates/utils/result_sort.html:30
 msgid "20 résultats"
 msgstr "20 results"
 
-#: project/templates/emprunt/emprunt.html:82
+#: project/templates/emprunt/emprunt.html:83
 #: project/templates/utils/result_sort.html:31
 msgid "50 résultats"
 msgstr "50 results"
 
-#: project/templates/emprunt/emprunt.html:83
+#: project/templates/emprunt/emprunt.html:84
 #: project/templates/utils/result_sort.html:32
 msgid "100 résultats"
 msgstr "100 results"
 
-#: project/templates/emprunt/emprunt_list.html:38
+#: project/templates/emprunt/emprunt_list.html:31
+msgid "Aucun emprunt en cours actuellement."
+msgstr "No active loans at this time."
+
+#: project/templates/emprunt/emprunt_list.html:33
+msgid "Aucun emprunt archivé pour le moment."
+msgstr "No archived loans at this time."
+
+#: project/templates/emprunt/emprunt_list.html:35
+msgid "Aucun emprunt trouvé."
+msgstr "No loans found."
+
+#: project/templates/emprunt/emprunt_list.html:52
 msgid "Archives antérieures à 10 mois masquées."
 msgstr "Archives older than 10 months are blurred."
 
-#: project/templates/emprunt/emprunt_list.html:39
+#: project/templates/emprunt/emprunt_list.html:53
 msgid "Passez Premium pour consulter l'historique complet de vos emprunts passés."
 msgstr "Upgrade to Premium to view the full history of past loans."
 
-#: project/templates/emprunt/emprunt_list.html:42
+#: project/templates/emprunt/emprunt_list.html:56
 msgid "Découvrir les offres Premium"
 msgstr "Discover Premium plans"
 
@@ -4406,7 +4428,7 @@ msgstr "Add a tag or category"
 
 #: project/templates/livre/livre_ajout.html:151
 #: project/templates/livre/livre_edit.html:154
-#: project/templates/user/reglage.html:932
+#: project/templates/user/reglage.html:955
 msgid "Enregistrer"
 msgstr "Save"
 
@@ -4558,7 +4580,7 @@ msgid "1 mois"
 msgstr "month"
 
 #: project/templates/livre/livre_info.html:190
-#: project/templates/user/reglage.html:567
+#: project/templates/user/reglage.html:590
 #, fuzzy
 msgid "jours"
 msgstr "returns"
@@ -5510,8 +5532,8 @@ msgid "Diplômes générés pour chacun des"
 msgstr "Diplomas generated for each of the"
 
 #: project/templates/ressources/diplome.html:111
-#: project/templates/user/reglage.html:636
-#: project/templates/user/reglage.html:672
+#: project/templates/user/reglage.html:659
+#: project/templates/user/reglage.html:695
 msgid "élèves"
 msgstr "students"
 
@@ -6157,10 +6179,10 @@ msgstr "Bins & Spines"
 #: project/templates/ressources/index.html:297
 #: project/templates/ressources/index.html:338
 #: project/templates/subscription/tarifs.html:393
-#: project/templates/user/reglage.html:735
-#: project/templates/user/reglage.html:765
-#: project/templates/user/reglage.html:795
-#: project/templates/user/reglage.html:825
+#: project/templates/user/reglage.html:758
+#: project/templates/user/reglage.html:788
+#: project/templates/user/reglage.html:818
+#: project/templates/user/reglage.html:848
 #: project/templates/utils/navbar.html:363
 #: project/templates/utils/navbar.html:447
 msgid "Premium"
@@ -6411,12 +6433,12 @@ msgstr ""
 
 #: project/templates/ressources/index.html:570
 #: project/templates/ressources/livret_pdf.html:506
-#: project/templates/user/reglage.html:1047
+#: project/templates/user/reglage.html:1070
 msgid "Fermer"
 msgstr "Close"
 
 #: project/templates/ressources/index.html:573
-#: project/templates/user/reglage.html:1050
+#: project/templates/user/reglage.html:1073
 msgid "Découvrir les offres Premium (dès 3.- CHF/mois)"
 msgstr "Discover Premium plans (from 3.- CHF/month)"
 
@@ -7708,7 +7730,7 @@ msgstr ""
 "current and future features. You will never be asked for a subscription."
 
 #: project/templates/subscription/tarifs.html:195
-#: project/templates/user/reglage.html:384
+#: project/templates/user/reglage.html:407
 msgid "Résiliation programmée : accès Premium maintenu"
 msgstr "Cancellation scheduled: Premium access maintained"
 
@@ -7857,7 +7879,7 @@ msgid "scans / semaine"
 msgstr "scans / week"
 
 #: project/templates/subscription/tarifs.html:413
-#: project/templates/user/reglage.html:822
+#: project/templates/user/reglage.html:845
 msgid "Historique des prêts"
 msgstr "Loan history"
 
@@ -7995,7 +8017,7 @@ msgid "Résiliation programmée"
 msgstr "Cancellation scheduled"
 
 #: project/templates/user/dashboard.html:142
-#: project/templates/user/reglage.html:330
+#: project/templates/user/reglage.html:353
 #, python-format
 msgid "Premium jusqu'au %(date)s"
 msgstr "Premium until %(date)s"
@@ -8173,66 +8195,62 @@ msgstr "Number of books read"
 msgid "Réglages de votre compte"
 msgstr "Account settings"
 
-#: project/templates/user/reglage.html:326
+#: project/templates/user/reglage.html:349
 msgid "Membre Fondateur"
 msgstr "Founder Member"
 
-#: project/templates/user/reglage.html:334
+#: project/templates/user/reglage.html:357
 msgid "Essai Premium"
 msgstr "Premium Trial"
 
-#: project/templates/user/reglage.html:334
+#: project/templates/user/reglage.html:357
 msgid "jours restants"
 msgstr "days remaining"
 
-#: project/templates/user/reglage.html:338
+#: project/templates/user/reglage.html:361
 msgid "Abonné Premium"
 msgstr "Premium Subscriber"
 
-#: project/templates/user/reglage.html:342
-#: project/templates/user/reglage.html:408
+#: project/templates/user/reglage.html:365
+#: project/templates/user/reglage.html:431
 msgid "Formule Gratuite"
 msgstr "Free Plan"
 
-#: project/templates/user/reglage.html:351
-#: project/templates/user/reglage.html:353
+#: project/templates/user/reglage.html:374
+#: project/templates/user/reglage.html:376
 msgid "Mon Compte"
 msgstr "My Account"
 
-#: project/templates/user/reglage.html:354
+#: project/templates/user/reglage.html:377
 #: project/templates/utils/footer.html:84
 msgid "Compte"
 msgstr "Account"
 
-#: project/templates/user/reglage.html:356
-#: project/templates/user/reglage.html:358
+#: project/templates/user/reglage.html:379
+#: project/templates/user/reglage.html:381
 msgid "Année scolaire & Archives"
 msgstr "School Year & Archives"
 
-#: project/templates/user/reglage.html:359
-msgid "Archives"
-msgstr "Archives"
-
-#: project/templates/user/reglage.html:361
-#: project/templates/user/reglage.html:363
+#: project/templates/user/reglage.html:384
+#: project/templates/user/reglage.html:386
 msgid "Exporter mes données"
 msgstr "Export my data"
 
-#: project/templates/user/reglage.html:364
+#: project/templates/user/reglage.html:387
 msgid "Exports"
 msgstr "Exports"
 
-#: project/templates/user/reglage.html:366
-#: project/templates/user/reglage.html:368
-#: project/templates/user/reglage.html:855
+#: project/templates/user/reglage.html:389
+#: project/templates/user/reglage.html:391
+#: project/templates/user/reglage.html:878
 msgid "Zone de danger"
 msgstr "Danger Zone"
 
-#: project/templates/user/reglage.html:369
+#: project/templates/user/reglage.html:392
 msgid "Danger"
 msgstr "Danger"
 
-#: project/templates/user/reglage.html:387
+#: project/templates/user/reglage.html:410
 #, python-format
 msgid ""
 "Votre abonnement ne sera pas renouvelé, mais vous conservez tous vos "
@@ -8241,24 +8259,24 @@ msgstr ""
 "Your subscription will not renew, but you retain all unlimited access "
 "(scans, exports, labels) until %(date)s."
 
-#: project/templates/user/reglage.html:400
+#: project/templates/user/reglage.html:423
 msgid "Formule Fondateur"
 msgstr "Founder Plan"
 
-#: project/templates/user/reglage.html:402
+#: project/templates/user/reglage.html:425
 #, python-format
 msgid "Abonnement résilié (actif jusqu'au %(date)s)"
 msgstr "Subscription canceled (active until %(date)s)"
 
-#: project/templates/user/reglage.html:404
+#: project/templates/user/reglage.html:427
 msgid "Période d'essai Premium"
 msgstr "Premium Trial Period"
 
-#: project/templates/user/reglage.html:406
+#: project/templates/user/reglage.html:429
 msgid "Abonnement Premium Actif"
 msgstr "Active Premium Subscription"
 
-#: project/templates/user/reglage.html:413
+#: project/templates/user/reglage.html:436
 msgid ""
 "Vous bénéficiez d'un accès complet et illimité à vie pour vous remercier "
 "de votre soutien initial."
@@ -8266,7 +8284,7 @@ msgstr ""
 "You enjoy lifetime full and unlimited access as a thank you for your "
 "early support."
 
-#: project/templates/user/reglage.html:415
+#: project/templates/user/reglage.html:438
 #, python-format
 msgid ""
 "Votre demande de résiliation a bien été prise en compte. Vous continuez à"
@@ -8279,14 +8297,14 @@ msgstr ""
 "date, your account will automatically switch to the free plan without "
 "losing any of your books, students, or loans."
 
-#: project/templates/user/reglage.html:417
+#: project/templates/user/reglage.html:440
 #, python-format
 msgid ""
 "Vous bénéficiez de l'accès Premium complet pendant 30 jours (encore "
 "%(days)d jours)."
 msgstr "You enjoy full Premium access for 30 days (%(days)d days remaining)."
 
-#: project/templates/user/reglage.html:419
+#: project/templates/user/reglage.html:442
 msgid ""
 "Votre abonnement Premium est actif. Vous disposez de toutes les "
 "fonctionnalités sans aucune limite."
@@ -8294,7 +8312,7 @@ msgstr ""
 "Your Premium subscription is active. You have access to all features "
 "without any limits."
 
-#: project/templates/user/reglage.html:421
+#: project/templates/user/reglage.html:444
 #, python-format
 msgid ""
 "Vous utilisez la version gratuite (jusqu'à %(students)s élèves, %(books)s"
@@ -8303,75 +8321,75 @@ msgstr ""
 "You are using the free version (up to %(students)s students, %(books)s "
 "books, and %(scans)s barcode scans per week)."
 
-#: project/templates/user/reglage.html:434
+#: project/templates/user/reglage.html:457
 msgid "Réactiver ou modifier mon abonnement"
 msgstr "Reactivate or manage my subscription"
 
-#: project/templates/user/reglage.html:439
+#: project/templates/user/reglage.html:462
 msgid "Se réabonner à Premium"
 msgstr "Resubscribe to Premium"
 
-#: project/templates/user/reglage.html:447
+#: project/templates/user/reglage.html:470
 msgid "Gérer ma facturation"
 msgstr "Manage billing"
 
-#: project/templates/user/reglage.html:452
+#: project/templates/user/reglage.html:475
 msgid "Passer à Premium (dès 3.- CHF/mois)"
 msgstr "Upgrade to Premium (from 3.- CHF/month)"
 
-#: project/templates/user/reglage.html:460
+#: project/templates/user/reglage.html:483
 msgid "Informations personnelles & Sécurité"
 msgstr "Personal Information & Security"
 
-#: project/templates/user/reglage.html:467
+#: project/templates/user/reglage.html:490
 msgid "Nom d'affichage"
 msgstr "Display name"
 
-#: project/templates/user/reglage.html:475
+#: project/templates/user/reglage.html:498
 msgid "Adresse e-mail"
 msgstr "Email address"
 
-#: project/templates/user/reglage.html:480
+#: project/templates/user/reglage.html:503
 msgid "Changer votre e-mail nécessitera une nouvelle vérification."
 msgstr "Changing your email address will require a new verification."
 
-#: project/templates/user/reglage.html:484
+#: project/templates/user/reglage.html:507
 msgid "Langue de l'interface"
 msgstr "Interface language"
 
-#: project/templates/user/reglage.html:499
+#: project/templates/user/reglage.html:522
 msgid "Changer de mot de passe"
 msgstr "Change password"
 
-#: project/templates/user/reglage.html:500
+#: project/templates/user/reglage.html:523
 msgid ""
 "Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot"
 " de passe."
 msgstr "Leave both fields blank if you do not wish to change your password."
 
-#: project/templates/user/reglage.html:503
-#: project/templates/user/reglage.html:505
+#: project/templates/user/reglage.html:526
+#: project/templates/user/reglage.html:528
 msgid "Mot de passe actuel"
 msgstr "Current password"
 
-#: project/templates/user/reglage.html:511
-#: project/templates/user/reglage.html:513
+#: project/templates/user/reglage.html:534
+#: project/templates/user/reglage.html:536
 msgid "Nouveau mot de passe"
 msgstr "New password"
 
-#: project/templates/user/reglage.html:521
+#: project/templates/user/reglage.html:544
 msgid "Conseils pour un mot de passe sécurisé :"
 msgstr "Tips for a secure password:"
 
-#: project/templates/user/reglage.html:524
+#: project/templates/user/reglage.html:547
 msgid "Au moins 8 caractères"
 msgstr "At least 8 characters"
 
-#: project/templates/user/reglage.html:525
+#: project/templates/user/reglage.html:548
 msgid "Mélange de majuscules et minuscules (ex. : A, a)"
 msgstr "Mix of uppercase and lowercase letters (e.g.: A, a)"
 
-#: project/templates/user/reglage.html:526
+#: project/templates/user/reglage.html:549
 #, python-format
 msgid ""
 "Au moins un chiffre (ex. : 1, 9) et un caractère spécial (ex. : @, #, $, "
@@ -8380,69 +8398,69 @@ msgstr ""
 "At least one number (e.g.: 1, 9) and one special character (e.g.: @, #, "
 "$, %%)"
 
-#: project/templates/user/reglage.html:532
+#: project/templates/user/reglage.html:555
 #, fuzzy
 msgid "Affichage & Préférences"
 msgstr "Manage my preferences"
 
-#: project/templates/user/reglage.html:538
+#: project/templates/user/reglage.html:561
 msgid "Afficher les images de couverture des livres"
 msgstr ""
 
-#: project/templates/user/reglage.html:541
+#: project/templates/user/reglage.html:564
 #, fuzzy
 msgid "Activé"
 msgstr "Active"
 
-#: project/templates/user/reglage.html:543
+#: project/templates/user/reglage.html:566
 #, fuzzy
 msgid "Mode compact"
 msgstr "My Account"
 
-#: project/templates/user/reglage.html:547
+#: project/templates/user/reglage.html:570
 msgid ""
 "Affiche l'illustration de la couverture des livres sur la liste de tous "
 "vos livres, la gestion des emprunts et les fiches détaillées d'un livre "
 "ou d'un élève. Décochez pour conserver l'affichage textuel classique."
 msgstr ""
 
-#: project/templates/user/reglage.html:552
+#: project/templates/user/reglage.html:575
 #, fuzzy
 msgid "Gestion des Prêts & Retards"
 msgstr "Loan management"
 
-#: project/templates/user/reglage.html:557
+#: project/templates/user/reglage.html:580
 msgid "Durée habituelle d'un prêt"
 msgstr ""
 
-#: project/templates/user/reglage.html:568
+#: project/templates/user/reglage.html:591
 msgid "ex. : 7 jours = 1 semaine, 14 jours = 2 semaines"
 msgstr ""
 
-#: project/templates/user/reglage.html:572
+#: project/templates/user/reglage.html:595
 msgid ""
 "Cette durée pré-remplira automatiquement la date de retour prévue lors de"
 " chaque nouvel emprunt. Les retards seront signalés sur le tableau de "
 "bord."
 msgstr ""
 
-#: project/templates/user/reglage.html:577
+#: project/templates/user/reglage.html:600
 msgid "Communications & Newsletter"
 msgstr "Communications & Newsletter"
 
-#: project/templates/user/reglage.html:583
+#: project/templates/user/reglage.html:606
 msgid "Recevoir la newsletter et les actualités par e-mail"
 msgstr "Receive the newsletter and news by email"
 
-#: project/templates/user/reglage.html:586
+#: project/templates/user/reglage.html:609
 msgid "Abonné"
 msgstr "Subscribed"
 
-#: project/templates/user/reglage.html:588
+#: project/templates/user/reglage.html:611
 msgid "Désabonné"
 msgstr "Unsubscribed"
 
-#: project/templates/user/reglage.html:592
+#: project/templates/user/reglage.html:615
 msgid ""
 "Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils "
 "pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous "
@@ -8451,15 +8469,15 @@ msgstr ""
 "Receive announcements of new features, tips for managing your classroom "
 "library, and news by email. You can unsubscribe at any time."
 
-#: project/templates/user/reglage.html:601
+#: project/templates/user/reglage.html:624
 msgid "Enregistrer les modifications"
 msgstr "Save changes"
 
-#: project/templates/user/reglage.html:615
+#: project/templates/user/reglage.html:638
 msgid "Année scolaire & Archivage"
 msgstr "School Year & Archiving"
 
-#: project/templates/user/reglage.html:618
+#: project/templates/user/reglage.html:641
 msgid ""
 "Gérez la transition entre les années scolaires, conservez vos cours "
 "doubles et libérez votre quota d'élèves."
@@ -8467,55 +8485,55 @@ msgstr ""
 "Manage the transition between school years, keep your multi-grade "
 "students, and free up your student quota."
 
-#: project/templates/user/reglage.html:633
+#: project/templates/user/reglage.html:656
 msgid "Année scolaire en cours"
 msgstr "Current school year"
 
-#: project/templates/user/reglage.html:636
+#: project/templates/user/reglage.html:659
 msgid "Classe active :"
 msgstr "Active class:"
 
-#: project/templates/user/reglage.html:637
+#: project/templates/user/reglage.html:660
 msgid "Prêts en cours :"
 msgstr "Current loans:"
 
-#: project/templates/user/reglage.html:643
+#: project/templates/user/reglage.html:666
 msgid "Lancer l'assistant"
 msgstr "Launch wizard"
 
-#: project/templates/user/reglage.html:653
+#: project/templates/user/reglage.html:676
 msgid "Promotions archivées"
 msgstr "Archived cohorts"
 
-#: project/templates/user/reglage.html:664
+#: project/templates/user/reglage.html:687
 msgid "Promotion"
 msgstr "Cohort"
 
-#: project/templates/user/reglage.html:674
+#: project/templates/user/reglage.html:697
 msgid "prêts/élève"
 msgstr "loans/student"
 
-#: project/templates/user/reglage.html:679
+#: project/templates/user/reglage.html:702
 msgid "Top livre :"
 msgstr "Top book:"
 
-#: project/templates/user/reglage.html:685
+#: project/templates/user/reglage.html:708
 msgid "Top lecteur :"
 msgstr "Top reader:"
 
-#: project/templates/user/reglage.html:692
+#: project/templates/user/reglage.html:715
 msgid "Consulter le bilan"
 msgstr "View summary"
 
-#: project/templates/user/reglage.html:695
+#: project/templates/user/reglage.html:718
 msgid "Imprimer le bilan officiel"
 msgstr "Print official summary"
 
-#: project/templates/user/reglage.html:709
+#: project/templates/user/reglage.html:732
 msgid "Aucune année scolaire n'est encore archivée"
 msgstr "No school year archived yet"
 
-#: project/templates/user/reglage.html:711
+#: project/templates/user/reglage.html:734
 msgid ""
 "Lorsque vous clôturez votre classe à la fin de l'année scolaire, vos "
 "statistiques, vos bilans de lecture et vos élèves sortants sont archivés "
@@ -8525,11 +8543,11 @@ msgstr ""
 " reading summaries, and graduating students are archived here without "
 "cluttering your new school year."
 
-#: project/templates/user/reglage.html:721
+#: project/templates/user/reglage.html:744
 msgid "Télécharger vos données"
 msgstr "Download your data"
 
-#: project/templates/user/reglage.html:722
+#: project/templates/user/reglage.html:745
 msgid ""
 "Générez et téléchargez facilement vos fichiers au format Excel pour les "
 "sauvegarder ou les analyser."
@@ -8537,160 +8555,160 @@ msgstr ""
 "Easily generate and download your files in Excel format to back them up "
 "or analyze them."
 
-#: project/templates/user/reglage.html:732
+#: project/templates/user/reglage.html:755
 msgid "Tous les livres"
 msgstr "All books"
 
-#: project/templates/user/reglage.html:740
+#: project/templates/user/reglage.html:763
 msgid "La liste complète de tous les livres enregistrés dans votre bibliothèque."
 msgstr "The complete list of all books registered in your library."
 
-#: project/templates/user/reglage.html:744
-#: project/templates/user/reglage.html:749
-#: project/templates/user/reglage.html:774
-#: project/templates/user/reglage.html:779
-#: project/templates/user/reglage.html:804
-#: project/templates/user/reglage.html:809
-#: project/templates/user/reglage.html:834
-#: project/templates/user/reglage.html:839
+#: project/templates/user/reglage.html:767
+#: project/templates/user/reglage.html:772
+#: project/templates/user/reglage.html:797
+#: project/templates/user/reglage.html:802
+#: project/templates/user/reglage.html:827
+#: project/templates/user/reglage.html:832
+#: project/templates/user/reglage.html:857
+#: project/templates/user/reglage.html:862
 msgid "Télécharger (Excel)"
 msgstr "Download (Excel)"
 
-#: project/templates/user/reglage.html:762
+#: project/templates/user/reglage.html:785
 msgid "Lectures par élève"
 msgstr "Readings per student"
 
-#: project/templates/user/reglage.html:770
+#: project/templates/user/reglage.html:793
 msgid "Historique des livres lus et empruntés classé par élève."
 msgstr "History of books read and borrowed sorted by student."
 
-#: project/templates/user/reglage.html:792
+#: project/templates/user/reglage.html:815
 msgid "Prêts en cours"
 msgstr "Current loans"
 
-#: project/templates/user/reglage.html:800
+#: project/templates/user/reglage.html:823
 msgid "La liste des emprunts actifs non encore retournés."
 msgstr "The list of active loans not yet returned."
 
-#: project/templates/user/reglage.html:830
+#: project/templates/user/reglage.html:853
 msgid ""
 "L'ensemble de tous les prêts réalisés depuis la création de la "
 "bibliothèque."
 msgstr "All loans made since the creation of the library."
 
-#: project/templates/user/reglage.html:861
+#: project/templates/user/reglage.html:884
 msgid "Attention :"
 msgstr "Warning:"
 
-#: project/templates/user/reglage.html:861
+#: project/templates/user/reglage.html:884
 msgid ""
 "Les actions ci-dessous sont irréversibles et entraînent la suppression "
 "définitive de vos données."
 msgstr "The actions below are irreversible and will permanently delete your data."
 
-#: project/templates/user/reglage.html:868
-#: project/templates/user/reglage.html:873
+#: project/templates/user/reglage.html:891
+#: project/templates/user/reglage.html:896
 msgid "Supprimer tous les élèves"
 msgstr "Delete all students"
 
-#: project/templates/user/reglage.html:869
+#: project/templates/user/reglage.html:892
 msgid "Efface l'ensemble de vos élèves ainsi que l'historique de leurs prêts."
 msgstr "Deletes all your students and their loan history."
 
-#: project/templates/user/reglage.html:880
-#: project/templates/user/reglage.html:885
+#: project/templates/user/reglage.html:903
+#: project/templates/user/reglage.html:908
 msgid "Supprimer tous les prêts"
 msgstr "Delete all loans"
 
-#: project/templates/user/reglage.html:881
+#: project/templates/user/reglage.html:904
 msgid "Efface tous les enregistrements de prêts (en cours et retournés)."
 msgstr "Deletes all loan records (current and returned)."
 
-#: project/templates/user/reglage.html:892
-#: project/templates/user/reglage.html:897
+#: project/templates/user/reglage.html:915
+#: project/templates/user/reglage.html:920
 msgid "Supprimer tous les livres"
 msgstr "Delete all books"
 
-#: project/templates/user/reglage.html:893
+#: project/templates/user/reglage.html:916
 msgid "Vide totalement votre catalogue de livres."
 msgstr "Completely empties your book catalog."
 
-#: project/templates/user/reglage.html:907
-#: project/templates/user/reglage.html:912
-#: project/templates/user/reglage.html:1021
+#: project/templates/user/reglage.html:930
+#: project/templates/user/reglage.html:935
+#: project/templates/user/reglage.html:1044
 msgid "Supprimer mon compte"
 msgstr "Delete my account"
 
-#: project/templates/user/reglage.html:908
+#: project/templates/user/reglage.html:931
 msgid "Supprime définitivement votre compte et l'intégralité de vos données."
 msgstr "Permanently deletes your account and all of your data."
 
-#: project/templates/user/reglage.html:924
-#: project/templates/user/reglage.html:1063
+#: project/templates/user/reglage.html:947
+#: project/templates/user/reglage.html:1086
 msgid "Modifications non enregistrées"
 msgstr "Unsaved changes"
 
-#: project/templates/user/reglage.html:948
+#: project/templates/user/reglage.html:971
 msgid "Supprimer tous les élèves ?"
 msgstr "Delete all students?"
 
-#: project/templates/user/reglage.html:952
+#: project/templates/user/reglage.html:975
 msgid "Êtes-vous sûr de vouloir supprimer tous les élèves ? Cette action est"
 msgstr "Are you sure you want to delete all students? This action is"
 
-#: project/templates/user/reglage.html:952
-#: project/templates/user/reglage.html:973
-#: project/templates/user/reglage.html:994
+#: project/templates/user/reglage.html:975
+#: project/templates/user/reglage.html:996
+#: project/templates/user/reglage.html:1017
 msgid "irréversible"
 msgstr "irreversible"
 
-#: project/templates/user/reglage.html:958
-#: project/templates/user/reglage.html:979
-#: project/templates/user/reglage.html:1000
+#: project/templates/user/reglage.html:981
+#: project/templates/user/reglage.html:1002
+#: project/templates/user/reglage.html:1023
 msgid "Oui, supprimer"
 msgstr "Yes, delete"
 
-#: project/templates/user/reglage.html:969
+#: project/templates/user/reglage.html:992
 msgid "Supprimer tous les prêts ?"
 msgstr "Delete all loans?"
 
-#: project/templates/user/reglage.html:973
+#: project/templates/user/reglage.html:996
 msgid ""
 "Êtes-vous sûr de vouloir réinitialiser l'historique des prêts ? Cette "
 "action est"
 msgstr "Are you sure you want to reset the loan history? This action is"
 
-#: project/templates/user/reglage.html:990
+#: project/templates/user/reglage.html:1013
 msgid "Supprimer tous les livres ?"
 msgstr "Delete all books?"
 
-#: project/templates/user/reglage.html:994
+#: project/templates/user/reglage.html:1017
 msgid ""
 "Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? "
 "Cette action est"
 msgstr "Are you sure you want to empty your entire book catalog? This action is"
 
-#: project/templates/user/reglage.html:1011
+#: project/templates/user/reglage.html:1034
 msgid "Supprimer définitivement mon compte ?"
 msgstr "Permanently delete my account?"
 
-#: project/templates/user/reglage.html:1015
+#: project/templates/user/reglage.html:1038
 msgid "Attention : Cette action supprimera"
 msgstr "Warning: This action will permanently delete"
 
-#: project/templates/user/reglage.html:1015
+#: project/templates/user/reglage.html:1038
 msgid "définitivement"
 msgstr "permanently"
 
-#: project/templates/user/reglage.html:1015
+#: project/templates/user/reglage.html:1038
 msgid "votre compte et l'ensemble des données associées (livres, élèves, prêts)."
 msgstr "your account and all associated data (books, students, loans)."
 
-#: project/templates/user/reglage.html:1034
+#: project/templates/user/reglage.html:1057
 msgid "Fonctionnalité Premium : Export Excel"
 msgstr "Premium Feature: Excel Export"
 
-#: project/templates/user/reglage.html:1040
+#: project/templates/user/reglage.html:1063
 msgid ""
 "L'exportation de vos données au format Excel (catalogue des livres, "
 "lectures par élève, emprunts actifs et historique complet) est réservée "
@@ -8700,7 +8718,7 @@ msgstr ""
 "history, active loans, and full history) is reserved for Premium "
 "subscribers and Founder members."
 
-#: project/templates/user/reglage.html:1043
+#: project/templates/user/reglage.html:1066
 msgid ""
 "Sauvegardez vos listes, partagez-les avec vos collègues ou intégrez-les "
 "dans vos bilans scolaires en un clic."
@@ -8708,26 +8726,26 @@ msgstr ""
 "Save your lists, share them with colleagues, or include them in school "
 "reports in one click."
 
-#: project/templates/user/reglage.html:1069
+#: project/templates/user/reglage.html:1092
 msgid "Vous avez modifié des réglages sur votre compte sans les enregistrer."
 msgstr "You modified settings on your account without saving them."
 
-#: project/templates/user/reglage.html:1072
+#: project/templates/user/reglage.html:1095
 msgid ""
 "Si vous quittez cette page maintenant, vos modifications seront perdues. "
 "Souhaitez-vous enregistrer vos modifications avant de partir ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:1077
+#: project/templates/user/reglage.html:1100
 msgid "Annuler et rester"
 msgstr "Cancel and stay"
 
-#: project/templates/user/reglage.html:1080
+#: project/templates/user/reglage.html:1103
 #, fuzzy
 msgid "Quitter sans enregistrer"
 msgstr "Save"
 
-#: project/templates/user/reglage.html:1084
+#: project/templates/user/reglage.html:1107
 #, fuzzy
 msgid "Enregistrer et continuer"
 msgstr "Save changes"

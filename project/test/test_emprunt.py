@@ -666,3 +666,45 @@ def test_return_loan_hx_request_issues_hx_redirect(client, app, logged_in_user):
             )
             assert response.status_code == 200
             assert response.headers.get("HX-Redirect") == "/fr/livre/3"
+
+
+def test_emprunt_search_with_archive_filter(client, app, logged_in_user):
+    """Vérifier que le filtre 'archive' est bien transmis à get_loans_with_infos."""
+    with (
+        app.app_context(),
+        patch("project.emprunt.current_user", logged_in_user),
+        patch("project.emprunt.get_loans_count", return_value=12),
+        patch(
+            "project.emprunt.get_loans_with_infos", return_value=([], 3)
+        ) as mock_loans,
+        app.test_request_context("/emprunt/search", method="POST"),
+    ):
+        response = client.post(
+            "/emprunt/search",
+            data={
+                "search": "",
+                "sort": "pertinent",
+                "n_results": "20",
+                "page": "1",
+                "active_loan": "archive",
+            },
+        )
+        assert response.status_code == 200
+        mock_loans.assert_called_once()
+        assert mock_loans.call_args[0][1] == "archive"
+
+
+def test_emprunt_get_with_archive_param(client, app, logged_in_user):
+    """Vérifier que /emprunt?active_loan=archive appelle get_loans_with_infos avec 'archive'."""
+    with (
+        app.app_context(),
+        patch("project.emprunt.current_user", logged_in_user),
+        patch("project.emprunt.get_loans_count", return_value=5),
+        patch(
+            "project.emprunt.get_loans_with_infos", return_value=([], 0)
+        ) as mock_loans,
+    ):
+        response = client.get("/emprunt?active_loan=archive")
+        assert response.status_code == 200
+        mock_loans.assert_called_once()
+        assert mock_loans.call_args[0][1] == "archive"

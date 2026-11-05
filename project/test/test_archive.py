@@ -470,3 +470,65 @@ def test_print_and_excel_require_premium(app, client, test_user):
             res_excel_prem.headers.get("Content-Type")
             == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
+
+def test_loans_query_filtering_active_vs_archive(app, test_user):
+    """Vérifier que get_loans_with_infos filtre correctement selon '1', '0' et 'archive'."""
+    from project.query import get_loans_with_infos
+
+    with app.app_context():
+        book1 = Book(title="Livre Actif", user_id=test_user.id)
+        book2 = Book(title="Livre Rendu", user_id=test_user.id)
+        book3 = Book(title="Livre Archive", user_id=test_user.id)
+        student_active = Student(
+            name="Actif", firstname="Eleve", user_id=test_user.id, is_archived=False
+        )
+        student_archived = Student(
+            name="Ancien", firstname="Eleve", user_id=test_user.id, is_archived=True
+        )
+        db.session.add_all([book1, book2, book3, student_active, student_archived])
+        db.session.commit()
+
+        # 1. Prêt actif (non rendu) par élève actif
+        l1 = Loan(
+            book_id=book1.id,
+            student_id=student_active.id,
+            date_loan=date(2026, 9, 1),
+            date_return=None,
+        )
+        # 2. Prêt retourné par élève actif
+        l2 = Loan(
+            book_id=book2.id,
+            student_id=student_active.id,
+            date_loan=date(2026, 9, 2),
+            date_return=date(2026, 9, 10),
+        )
+        # 3. Prêt retourné par élève archivé
+        l3 = Loan(
+            book_id=book3.id,
+            student_id=student_archived.id,
+            date_loan=date(2025, 10, 1),
+            date_return=date(2025, 10, 15),
+        )
+        db.session.add_all([l1, l2, l3])
+        db.session.commit()
+
+        # Filtre '1' (Emprunts actifs) : seulement l1
+        loans_active, count_active = get_loans_with_infos(
+            test_user.id, actualy_loan="1"
+        )
+        assert count_active == 1
+        assert loans_active[0].Loan.id == l1.id
+
+        # Filtre '0' (Tous les emprunts de la classe active) : l1 et l2
+        loans_all, count_all = get_loans_with_infos(test_user.id, actualy_loan="0")
+        assert count_all == 2
+        loan_ids_all = {x.Loan.id for x in loans_all}
+        assert loan_ids_all == {l1.id, l2.id}
+
+        # Filtre 'archive' (Emprunts des élèves archivés) : l3
+        loans_arch, count_arch = get_loans_with_infos(
+            test_user.id, actualy_loan="archive"
+        )
+        assert count_arch == 1
+        assert loans_arch[0].Loan.id == l3.id

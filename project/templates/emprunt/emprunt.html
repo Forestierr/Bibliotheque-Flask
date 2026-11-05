@@ -17,7 +17,7 @@
 
     {% include "utils/flash_message.html" %}
 
-    {% if not loans %}
+    {% if not loans and total_loans == 0 %}
         <section class="section">
             <div class="box">
                 <article class="media">
@@ -53,8 +53,9 @@
                         hx-trigger="change"
                         hx-target="#search_list"
                         hx-include="[name='search'], [name='n_results'], [name='sort']">
-                        <option value="0" {% if not only_active_loans %}selected{% endif %}>{{ _("Tous les emprunts") }}</option>
-                        <option value="1" {% if only_active_loans %}selected{% endif %}>{{ _("Emprunts actifs") }}</option>
+                        <option value="0" {% if not active_loan or active_loan == '0' %}selected{% endif %}>{{ _("Tous les emprunts") }}</option>
+                        <option value="1" {% if active_loan == '1' or active_loan == 'active' %}selected{% endif %}>{{ _("Emprunts actifs") }}</option>
+                        <option value="archive" {% if active_loan in ('archive', 'archives', '2') %}selected{% endif %}>{{ _("Archives") }}</option>
                     </select>
                 </div>
                 <div class="select is-rounded is-small">
