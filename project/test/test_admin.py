@@ -226,6 +226,7 @@ def test_admin_dashboard_financial_breakdown(client, app):
     assert "revenueChart" in html
     assert "subTypesChart" in html
 
+
 def test_admin_feedbacks_departure_analytics(client, app):
     """Vérifie l'analyse des départs et le graphique des motifs de résiliation dans /admin/feedbacks."""
     with app.app_context():
@@ -264,7 +265,10 @@ def test_admin_feedbacks_departure_analytics(client, app):
     html = res.get_data(as_text=True)
 
     # Vérification de la carte d'analyse des motifs de départ
-    assert "Analyse des Départs &amp; Churn" in html or "Analyse des Départs & Churn" in html
+    assert (
+        "Analyse des Départs &amp; Churn" in html
+        or "Analyse des Départs & Churn" in html
+    )
     assert "departureReasonsChart" in html
     assert "Tarif trop élevé / trop cher" in html
     assert "Principal déclencheur de départ" in html

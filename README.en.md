@@ -26,9 +26,12 @@
 ## Key Features
 
 - **Barcode scanning & multi-API enrichment**: Instant recognition via webcam/smartphone (HTML5-QRCode) with fallback search across the **Bibliothèque nationale de France (BnF SRU Dublin Core)**, **Google Books**, and **Open Library**.
-- **Student & loan management**: One-click loans and returns, reading history, overdue book indicators.
-- **Classroom tools & printing**: Generation of printable vector barcode sheets and themed storage bin labels.
+- **Student, loan & overdue management**: One-click loans and returns powered by HTMX, customizable expected return dates, priority overdue alerts on the dashboard, and reading history.
+- **Book cover artwork & smooth PWA navigation**: Book cover display (Open Library / Google Books), Service Worker caching, and full progressive web app (PWA) support.
+- **Annual classroom archiving**: End-of-year archiving with automatic student quota release for the incoming classroom promotion, annual reports, and printable reading summaries.
+- **Classroom tools & printing**: Generation of printable vector barcode sheets, themed storage bin labels, and full Excel data exports.
 - **Freemium SaaS Model & Stripe**: Free quotas (40 students, 500 books, 30 scans/week), 30-day trial period, lifetime Founder status, and unlimited Premium subscription powered by Stripe Checkout and the Stripe Customer Portal.
+- **Full Administration Dashboard**: SaaS financial performance metrics (MRR, ARR, net subscription flow), user management, feedback inbox, and departure churn analytics with interactive charts.
 - **Multilingual & International SEO**: Full support for French 🇫🇷, English 🇬🇧, and German 🇩🇪 with dedicated URLs (`/fr/`, `/en/`, `/de/`) and `hreflang` tags.
 - **Security & Privacy**: Secure authentication (Werkzeug/Scrypt), anti-bot & anti-spam protection (hCaptcha), strict data isolation per teacher, and no data destruction policy.
 

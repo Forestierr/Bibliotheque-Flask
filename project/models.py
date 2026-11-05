@@ -272,9 +272,7 @@ class User(UserMixin, db.Model):
     # One-to-Many relationship with tags
     tags = relationship("Tags", backref="user", lazy=True)  # User can have many tags
     # One-to-Many relationship with feedbacks
-    feedbacks = relationship(
-        "Feedback", backref="user", lazy=True
-    )
+    feedbacks = relationship("Feedback", backref="user", lazy=True)
     # One-to-Many relationship with academic year archives
     academic_year_archives = relationship(
         "AcademicYearArchive",

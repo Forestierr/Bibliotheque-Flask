@@ -336,7 +336,6 @@ def test_signup_retains_email_and_name_on_failure(client, app):
         assert 'value="Mme Dupont"' in html
 
 
-
 def test_delete_user_account_preserves_isbn_books_and_removes_user_data(app):
     from project import db
     from project.models import Book, BookTags, Feedback, Loan, Student, Tags, User
@@ -391,24 +390,17 @@ def test_delete_user_account_preserves_isbn_books_and_removes_user_data(app):
 
         delete_user_account(user, reason="too_expensive", details="Pas de budget")
 
-
         # Departure feedback is recorded
-
 
         departure_fb = Feedback.query.filter_by(category="depart").first()
 
-
         assert departure_fb is not None
-
 
         assert departure_fb.departure_reason == "too_expensive"
 
-
         assert departure_fb.author_email == "delete_me@test.com"
 
-
         assert "Pas de budget" in departure_fb.message
-
 
         assert departure_fb.user_id is None
 
@@ -466,43 +458,23 @@ def test_delete_account_post_route(app):
             sess["_user_id"] = str(user_id)
 
         res = client.post(
-
-
             "/delete_account",
-
-
             data={
-
-
                 "deletion_reason": "too_expensive",
-
-
                 "deletion_details": "Trop cher",
-
-
             },
-
-
             follow_redirects=False,
-
-
         )
-
 
         assert res.status_code == 302
 
-
         assert res.headers["Location"].endswith("/")
-
 
         departure_fb = Feedback.query.filter_by(category="depart").first()
 
-
         assert departure_fb is not None
 
-
         assert departure_fb.departure_reason == "too_expensive"
-
 
         assert "Trop cher" in departure_fb.message
 

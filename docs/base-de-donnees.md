@@ -12,6 +12,7 @@ Ce document détaille la structure relationnelle, le schéma de données, la ges
    * [Table `user`](#table-user)
    * [Table `book`](#table-book)
    * [Table `student`](#table-student)
+   * [Table `academic_year_archive`](#table-academic_year_archive)
    * [Table `loan`](#table-loan)
    * [Table `tags`](#table-tags)
    * [Table `book_tags`](#table-book_tags)
@@ -40,10 +41,12 @@ Ce document détaille la structure relationnelle, le schéma de données, la ges
 erDiagram
     user ||--o{ book : "possede"
     user ||--o{ student : "gere"
+    user ||--o{ academic_year_archive : "archive"
     user ||--o{ tags : "definit"
     user ||--o{ feedback : "soumet"
     user ||--o{ newsletter_delivery : "recoit"
     
+    academic_year_archive ||--o{ student : "regroupe"
     student ||--o{ loan : "emprunte"
     book ||--o{ loan : "est prete"
     
@@ -71,11 +74,13 @@ erDiagram
         string stripe_price_id
         datetime subscription_end_at
         datetime last_scan_reset_at
+        boolean show_book_covers
+        int default_loan_duration_days
     }
 
     book {
         int id PK
-        int user_id FK
+        int user_id FK "Nullable"
         string title
         string author
         string editor
@@ -83,6 +88,7 @@ erDiagram
         string type
         string isbn
         string barcode "INDEX"
+        string image_url
     }
 
     student {
@@ -90,6 +96,25 @@ erDiagram
         int user_id FK
         string name
         string firstname
+        boolean is_archived "INDEX"
+        datetime archived_at
+        int archived_year_id FK "Nullable"
+    }
+
+    academic_year_archive {
+        int id PK
+        int user_id FK
+        string year_label
+        date start_date
+        date end_date
+        datetime archived_at
+        int total_students
+        int total_loans
+        float average_loans_per_student
+        string most_read_book_title
+        string top_reader_name
+        text top_books_json
+        text top_readers_json
     }
 
     loan {
@@ -98,6 +123,8 @@ erDiagram
         int book_id FK
         date date_loan
         date date_return
+        date expected_return_date "INDEX"
+        string notes
     }
 
     tags {
@@ -113,8 +140,11 @@ erDiagram
 
     feedback {
         int id PK
-        int user_id FK
+        int user_id FK "Nullable"
+        string author_name
+        string author_email
         string category
+        string departure_reason
         string subject
         text message
         string page_url
@@ -176,6 +206,8 @@ Représente un compte enseignant inscrit sur la plateforme.
 | `stripe_price_id` | `VARCHAR(120)` | Oui | Aucun | Identifiant du tarif Stripe souscrit. |
 | `subscription_end_at` | `DATETIME` | Oui | Aucun | Date d'échéance d'accès payant après résiliation. |
 | `last_scan_reset_at` | `DATETIME` | Oui | Aucun | Horodatage de la dernière remise à zéro hebdomadaire des scans. |
+| `show_book_covers` | `BOOLEAN` | Non | `True` (`server_default='1'`) | Préférence d'affichage des couvertures visuelles de livres. |
+| `default_loan_duration_days` | `INTEGER` | Non | `14` (`server_default='14'`) | Durée habituelle d'un emprunt en jours pour le calcul des retards. |
 
 ### Table `book`
 Représente un exemplaire de livre présent dans la classe.
@@ -190,7 +222,8 @@ Représente un exemplaire de livre présent dans la classe.
 | `type` | `VARCHAR(100)` | Oui | Aucun | Genre littéraire ou nom de collection. |
 | `isbn` | `VARCHAR(100)` | Oui | Aucun | Code ISBN officiel commercial (10 ou 13 chiffres). |
 | `barcode` | `VARCHAR(100)` | Oui | `INDEX` | Identifiant étiquette interne classe (ex: `BAC-A-001`). |
-| `user_id` | `INTEGER` | Oui | Clé étrangère `user.id` | Propriétaire de la bibliothèque. |
+| `image_url` | `VARCHAR(500)` | Oui | Aucun | URL distante de la couverture (OpenLibrary / Google Books). |
+| `user_id` | `INTEGER` | Oui | Clé étrangère `user.id` (`NULL` si livre orphelin conservé pour le catalogue partagé) | Propriétaire de la bibliothèque. |
 
 ### Table `student`
 Représente un élève d'une classe.
@@ -201,6 +234,31 @@ Représente un élève d'une classe.
 | `name` | `VARCHAR(100)` | Oui | Aucun | Nom de famille. |
 | `firstname` | `VARCHAR(100)` | Oui | Aucun | Prénom. |
 | `user_id` | `INTEGER` | Oui | Clé étrangère `user.id` | Enseignant responsable de l'élève. |
+| `is_archived` | `BOOLEAN` | Non | `False` (`INDEX`, `server_default='0'`) | Indique si l'élève appartient à une promotion clôturée (libère le quota). |
+| `archived_at` | `DATETIME` | Oui | Aucun | Date et heure de l'archivage. |
+| `archived_year_id` | `INTEGER` | Oui | FK `academic_year_archive.id` (ON DELETE SET NULL) | Année scolaire / promotion d'archivage associée. |
+
+### Table `academic_year_archive`
+Synthèse annuelle et palmarès de fin d'année scolaire lors de la clôture d'une classe.
+
+| Colonne | Type SQL | Nullable | Contraintes | Rôle |
+| :--- | :--- | :---: | :--- | :--- |
+| `id` | `INTEGER` | Non | Clé primaire | Identifiant de l'archive. |
+| `user_id` | `INTEGER` | Non | Clé étrangère `user.id` | Enseignant titulaire de la promotion. |
+| `year_label` | `VARCHAR(50)` | Non | Aucun | Libellé de l'année scolaire (ex: `"2025-2026"`). |
+| `start_date` | `DATE` | Non | Aucun | Date de début de l'année scolaire (ex: 1er septembre). |
+| `end_date` | `DATE` | Non | Aucun | Date de fin de l'année scolaire (ex: 31 août). |
+| `archived_at` | `DATETIME` | Non | `utcnow()` | Horodatage de génération du bilan. |
+| `total_students` | `INTEGER` | Non | Défaut `0` | Nombre total d'élèves archivés dans cette promotion. |
+| `total_loans` | `INTEGER` | Non | Défaut `0` | Nombre total d'emprunts réalisés sur l'année. |
+| `average_loans_per_student` | `FLOAT` | Non | Défaut `0.0` | Moyenne annuelle de livres lus par élève. |
+| `most_read_book_title` | `VARCHAR(255)` | Oui | Aucun | Titre de l'ouvrage le plus emprunté de l'année. |
+| `most_read_book_author` | `VARCHAR(255)` | Oui | Aucun | Auteur de l'ouvrage le plus emprunté. |
+| `most_read_book_count` | `INTEGER` | Non | Défaut `0` | Nombre d'emprunts du livre le plus populaire. |
+| `top_reader_name` | `VARCHAR(255)` | Oui | Aucun | Nom de l'élève ayant le plus lu dans la classe. |
+| `top_reader_count` | `INTEGER` | Non | Défaut `0` | Nombre de livres lus par le meilleur lecteur. |
+| `top_books_json` | `TEXT` | Oui | Aucun | Données JSON structurées du podium des livres. |
+| `top_readers_json` | `TEXT` | Oui | Aucun | Données JSON structurées du palmarès des élèves. |
 
 ### Table `loan`
 Historique et suivi des emprunts de livres par les élèves.
@@ -212,6 +270,8 @@ Historique et suivi des emprunts de livres par les élèves.
 | `book_id` | `INTEGER` | Non | Clé étrangère `book.id` | Livre prêté. |
 | `date_loan` | `DATE` | Oui | Aucun | Date de sortie du livre. |
 | `date_return`| `DATE` | Oui | Aucun | Date effective de retour (`NULL` si actuellement prêté). |
+| `expected_return_date`| `DATE` | Oui | `INDEX` | Date théorique de retour (calculée selon `default_loan_duration_days`). |
+| `notes` | `VARCHAR(255)` | Oui | Aucun | Notes optionnelles sur l'emprunt (ex: état du livre). |
 
 ### Table `tags`
 Catégories et étiquettes créées par l'enseignant pour organiser ses bacs de livres.
@@ -231,13 +291,16 @@ Table de liaison many-to-many entre livres et étiquettes.
 | `tag_id` | `INTEGER` | Non | PK composite, FK `tags.id` | Référence de l'étiquette. |
 
 ### Table `feedback`
-Signalements d'anomalies ou suggestions envoyées depuis la plateforme.
+Signalements d'anomalies, suggestions et questionnaires de sortie post-suppression de compte.
 
 | Colonne | Type SQL | Nullable | Contraintes | Rôle |
 | :--- | :--- | :---: | :--- | :--- |
 | `id` | `INTEGER` | Non | Clé primaire | Identifiant du message. |
-| `user_id` | `INTEGER` | Non | Clé étrangère `user.id` | Auteur du retour. |
-| `category` | `VARCHAR(50)` | Non | `'suggestion'`, `'bug'`, `'general'` | Typologie du retour. |
+| `user_id` | `INTEGER` | Oui | FK `user.id` (`ON DELETE SET NULL`) | Auteur du retour (détaché si compte supprimé). |
+| `author_name` | `VARCHAR(100)` | Oui | Aucun | Nom mémorisé de l'auteur (persiste après suppression). |
+| `author_email` | `VARCHAR(255)`| Oui | Aucun | E-mail mémorisé de l'auteur pour réponse administrative. |
+| `category` | `VARCHAR(50)` | Non | `'suggestion'`, `'bug'`, `'general'`, `'depart'` | Typologie du retour. |
+| `departure_reason` | `VARCHAR(50)` | Oui | Aucun | Motif de résiliation / départ (`'too_expensive'`, `'free_limits'`, etc.). |
 | `subject` | `VARCHAR(200)`| Non | Aucun | Objet du message. |
 | `message` | `TEXT` | Non | Aucun | Contenu détaillé. |
 | `page_url` | `VARCHAR(255)`| Oui | Aucun | URL de la page lors de la soumission. |

@@ -310,9 +310,7 @@ def delete_account():
     delete_user_account(user, reason=reason, details=details)
     logout_user()
     flash(
-        _(
-            "Votre compte et vos données personnelles ont été supprimés avec succès."
-        ),
+        _("Votre compte et vos données personnelles ont été supprimés avec succès."),
         "info",
     )
     return redirect(url_for("main.index"))

@@ -9,7 +9,7 @@ Ce document décrit l'architecture globale, les composants d'infrastructure, l'o
 1. [Vue d'ensemble de l'infrastructure](#1-vue-densemble-de-linfrastructure)
 2. [Diagramme d'architecture globale (Mermaid)](#2-diagramme-darchitecture-globale-mermaid)
 3. [Organisation des répertoires](#3-organisation-des-répertoires)
-4. [Cartographie des 11 Blueprints applicatifs](#4-cartographie-des-11-blueprints-applicatifs)
+4. [Cartographie des Blueprints applicatifs](#4-cartographie-des-blueprints-applicatifs)
 5. [Cycle de vie d'une requête HTTP](#5-cycle-de-vie-dune-requête-http)
 6. [Tâches d'arrière-plan & Concurrence multi-workers](#6-tâches-darrière-plan--concurrence-multi-workers)
 7. [Filtres Jinja2 et processeurs de contexte](#7-filtres-jinja2-et-processeurs-de-contexte)
@@ -113,23 +113,29 @@ Bibliotheque-Flask/
 
 ---
 
-## 4. Cartographie des 11 Blueprints applicatifs
+## 4. Cartographie des Blueprints applicatifs
 
-Toutes les routes de l'application sont découpées en **11 Blueprints** modulaires enregistrés au démarrage dans [`project/__init__.py`](../project/__init__.py) sous le préfixe de langue dynamique `/<lang_code>` :
+Toutes les routes de l'application sont découpées en **Blueprints modulaires** enregistrés au démarrage dans [`project/__init__.py`](../project/__init__.py). Deux blueprints techniques sont montés à la racine (sans préfixe), tandis que les blueprints applicatifs sont montés sous le préfixe dynamique de langue `/<lang_code>` (`fr`, `en`, `de`) :
 
+### Blueprints techniques racine (non préfixés)
+| Blueprint | Préfixe d'URL | Rôle et fonctionnalités |
+| :--- | :--- | :--- |
+| **`core`** | `/` | Endpoints techniques racine : `/sitemap.xml`, `/robots.txt`, `/llms.txt`, clé Bing/IndexNow. |
+| **`webhook`** | `/` | Réception des événements Stripe sans validation CSRF (`/webhook/stripe`). |
+
+### Blueprints applicatifs localisés (`/<lang_code>/...`)
 | Blueprint | Préfixe d'URL | Rôle et fonctionnalités couvertes |
 | :--- | :--- | :--- |
-| **`main`** | `/<lang_code>` | Pages vitrines d'accueil, mentions légales, CGU, sélection de langue (`/set-lang/<lang>`). |
-| **`auth`** | `/<lang_code>` | Inscription, connexion, déconnexion, confirmation d'e-mail, réinitialisation de mot de passe, validation hCaptcha. |
-| **`livre`** | `/<lang_code>/livre` | Inventaire, ajout manuel, scan code-barres (multi-APIs BnF/Google/OpenLib), modification, suppression, fiches détails. |
-| **`eleve`** | `/<lang_code>/eleve` | Roster des élèves, création individuelle, import CSV, suppression, statistiques d'emprunts par élève. |
-| **`emprunt`** | `/<lang_code>/emprunt`| Prise d'emprunt, retour d'emprunt, liste des retards, historique des lectures avec flou freemium (`.loan-blurred`). |
-| **`subscription`**| `/<lang_code>` | Grille tarifaire (`/tarifs`), Stripe Checkout, Customer Portal (`/portail-abonne`), Webhook Stripe sans CSRF (`/webhook/stripe`). |
-| **`admin`** | `/<lang_code>/admin`| Console d'administration, supervision des utilisateurs, bascule de statut Fondateur, métriques d'usage. |
-| **`feedback`** | `/<lang_code>` | Formulaire de signalement de bug et retour utilisateur avec capture d'écran optionnelle. |
-| **`newsletter`**| `/<lang_code>` | Inscription/désinscription à la lettre d'information, pixel de tracking d'ouverture, gestion des campagnes. |
-| **`etiquette`** | `/<lang_code>` | Génération PDF de planches de codes-barres vectoriels et d'étiquettes de bacs thématiques (`@premium_required`). |
-| **`ressource`** | `/<lang_code>` | Fiches pédagogiques, marque-pages imprimables, diplômes de lecteur à télécharger. |
+| **`main`** | `/<lang_code>` | Vitrine d'accueil, aide/FAQ, blog, contact, formulaire de feedback utilisateur, gestion newsletter et tracking. |
+| **`auth`** | `/<lang_code>` | Inscription, connexion, validation d'e-mail, réinitialisation de mot de passe, réglages du compte, suppression de compte collaborative avec rétention promo. |
+| **`livre`** | `/<lang_code>/livre` | Inventaire, ajout manuel, scan code-barres (multi-APIs BnF/Google/OpenLib), modification, suppression, fiches détaillées, couvertures distantes. |
+| **`eleve`** | `/<lang_code>/eleve` | Répertoire des élèves actifs, fiches individuelles, suppression, historique personnel de lecture. |
+| **`emprunt`** | `/<lang_code>/emprunt`| Prise d'emprunt, retour rapide inline HTMX, alertes de retard, calcul de date théorique de retour, flou freemium (`.loan-blurred`). |
+| **`archive`** | `/<lang_code>/archive`| Clôture annuelle de classe, libération des quotas freemium pour la nouvelle promotion, bilans annuels et palmarès de lecture imprimables. |
+| **`export`** | `/<lang_code>/export` | Génération et téléchargement de classeurs Excel : catalogue de livres, lectures par élève, emprunts actifs et historique complet (`@premium_required`). |
+| **`subscription`**| `/<lang_code>` | Grille tarifaire (`/tarifs`), Stripe Checkout (mensuel/annuel), Portail Client Stripe (`/subscription/portal`), gestion du code promo de rétention `PROMO30`. |
+| **`admin`** | `/<lang_code>/admin`| Console d'administration complète : tableau de bord avec métriques financières (MRR, ARR, Cashflow, ventilations des plans), gestion des utilisateurs/rôles, catalogue global des livres, répertoire des élèves, retours utilisateurs et analyse du churn des départs avec graphique Chart.js, diffusion newsletter. |
+| **`ressource`** | `/<lang_code>/ressources` | Fiches pédagogiques, marque-pages imprimables, diplômes de lecteur, planches d'étiquettes de bacs et codes-barres vectoriels. |
 
 ---
 

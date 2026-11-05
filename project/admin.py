@@ -29,7 +29,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
 
 from . import config_plans, db, mail
-from .query import delete_user_account
 from .models import (
     Book,
     Feedback,
@@ -39,6 +38,7 @@ from .models import (
     Student,
     User,
 )
+from .query import delete_user_account
 
 admin = Blueprint("admin", __name__)
 
@@ -1195,11 +1195,19 @@ def feedbacks():
     top_reason_key = None
     top_reason_count = 0
     if total_departures > 0:
-        sorted_reasons = sorted(reason_counts.items(), key=lambda item: item[1], reverse=True)
+        sorted_reasons = sorted(
+            reason_counts.items(), key=lambda item: item[1], reverse=True
+        )
         top_reason_key, top_reason_count = sorted_reasons[0]
 
-    top_reason_label = next((label for k, label, _ in departure_reasons_def if k == top_reason_key), "Aucun")
-    top_reason_pct = round((top_reason_count / total_departures * 100), 1) if total_departures > 0 else 0
+    top_reason_label = next(
+        (label for k, label, _ in departure_reasons_def if k == top_reason_key), "Aucun"
+    )
+    top_reason_pct = (
+        round((top_reason_count / total_departures * 100), 1)
+        if total_departures > 0
+        else 0
+    )
 
     return render_template(
         "admin/feedbacks.html",

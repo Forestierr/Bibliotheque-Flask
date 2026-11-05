@@ -26,9 +26,12 @@
 ## Fonctionnalités clés
 
 - **Scan code-barres & enrichissement multi-APIs** : Reconnaissance instantanée par webcam/smartphone (HTML5-QRCode) avec recherche en cascade sur la **Bibliothèque nationale de France (BnF SRU Dublin Core)**, **Google Books** et **Open Library**.
-- **Gestion des élèves & prêts** : Emprunts et retours en un clic, historique des lectures, indicateurs d'ouvrages en retard.
-- **Outils de classe & impressions** : Génération de planches de codes-barres vectoriels et d'étiquettes thématiques pour les bacs de livres.
+- **Gestion des élèves, prêts & alertes retards** : Emprunts et retours en un clic boostés par HTMX, date de retour prévue paramétrable, alertes visuelles de retard prioritaires sur le tableau de bord et historique des lectures.
+- **Couvertures visuelles & Navigation PWA fluide** : Intégration des couvertures de livres (Open Library / Google Books), mise en cache Service Worker et support PWA complet.
+- **Archivage annuel des promotions** : Clôture de fin d'année scolaire avec libération automatique des quotas d'élèves pour la nouvelle promotion, bilans annuels et palmarès de lecture imprimables.
+- **Outils de classe & impressions** : Génération de planches de codes-barres vectoriels, étiquettes thématiques pour les bacs de livres et exports Excel complets.
 - **Modèle SaaS Freemium & Stripe** : Quotas gratuits (40 élèves, 500 livres, 30 scans/semaine), période d'essai de 30 jours, statut Fondateur à vie et abonnement Premium illimité opéré par Stripe Checkout et le Portail Client Stripe.
+- **Tableau de bord d'administration** : Suivi des métriques financières SaaS (MRR, ARR, solde net), supervision des comptes, gestion des retours utilisateurs et analyse graphique des départs.
 - **Multi-langue & SEO international** : Support complet du Français 🇫🇷, Anglais 🇬🇧 et Allemand 🇩🇪 avec URLs dédiées (`/fr/`, `/en/`, `/de/`) et balises `hreflang`.
 - **Sécurité & Confidentialité** : Authentification sécurisée (Werkzeug/Scrypt), protection anti-brute force et anti-spam (hCaptcha), isolation stricte des données par enseignant et politique de non-destruction des données.
 

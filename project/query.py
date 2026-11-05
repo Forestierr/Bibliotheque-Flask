@@ -1188,7 +1188,6 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
     return results
 
 
-
 def delete_user_account(user, reason=None, details=None):
     """
     Supprime un compte utilisateur et ses données personnelles,
@@ -1198,9 +1197,17 @@ def delete_user_account(user, reason=None, details=None):
     import os
     import re
     from datetime import UTC, datetime
+
     import stripe
     from flask import current_app
-    from .models import Book, Student, Tags, Loan, BookTags, NewsletterDelivery, Feedback
+
+    from .models import (
+        Book,
+        Feedback,
+        NewsletterDelivery,
+        Student,
+        Tags,
+    )
 
     user_id = user.id
     user_email = user.email
@@ -1251,11 +1258,13 @@ def delete_user_account(user, reason=None, details=None):
         db.session.add(departure_fb)
 
     # Détachement des feedbacks existants créés par cet utilisateur
-    Feedback.query.filter_by(user_id=user_id).update({
-        "user_id": None,
-        "author_name": user_name or "Enseignant",
-        "author_email": user_email,
-    })
+    Feedback.query.filter_by(user_id=user_id).update(
+        {
+            "user_id": None,
+            "author_name": user_name or "Enseignant",
+            "author_email": user_email,
+        }
+    )
 
     # 3. Traitement des livres : conservation des fiches avec ISBN pour la base collaborative
     user_books = Book.query.filter_by(user_id=user_id).all()
