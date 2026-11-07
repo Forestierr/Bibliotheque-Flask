@@ -456,13 +456,49 @@ def test_lead_magnets_seo_and_matomo_tracking(client):
         # 2. Schema.org LearningResource
         assert '"@type": "LearningResource"' in html
 
-        # 3. Tracking Matomo
+        # 3. Tracking Matomo & UTM
         assert "trackPinterestClick" in html
         assert "trackCtaLogiciel" in html
         assert "triggerStudioPrint" in html
         assert "mtm_source" in html
+        assert "utm_source" in html
         assert mtm_content in html
         assert f'data-ressource-id="{res_id}"' in html
+
+
+def test_post_print_conversion_modal_anonymous(client):
+    """Vérifie que la modale de conversion post-impression est présente pour un visiteur anonyme."""
+    resp = client.get("/fr/ressources/fiche-de-lecture-a-imprimer")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+    assert 'id="modalPostPrint"' in html
+    assert "Vos fiches sont prêtes !" in html
+    assert "Créer ma classe gratuitement" in html
+    assert "handleAfterPrint" in html
+    assert "closePostPrintModal" in html
+    assert "trackPostPrintCta" in html
+
+
+def test_post_print_conversion_modal_authenticated(client, app):
+    """Vérifie que la modale de conversion post-impression n'est pas affichée pour un enseignant connecté."""
+    with app.app_context():
+        user = User(
+            name="Professeur Test",
+            email="prof@example.com",
+            password="hashed-password",
+        )
+        db.session.add(user)
+        db.session.commit()
+        user_id = user.id
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = str(user_id)
+        sess["_fresh"] = True
+
+    resp = client.get("/fr/ressources/fiche-de-lecture-a-imprimer")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+    assert 'id="modalPostPrint"' not in html
 
 
 def test_pinterest_generated_images_exist(client):

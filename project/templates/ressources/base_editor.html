@@ -111,7 +111,81 @@
     {% endblock %}
 </div>
 
+{% if not current_user.is_authenticated %}
+<!-- Modale Bridge vers le logiciel après impression (Lead Magnet Conversion) -->
+<div id="modalPostPrint" class="modal no-print">
+    <div class="modal-background" onclick="closePostPrintModal()"></div>
+    <div class="modal-card post-print-card">
+        <header class="modal-card-head post-print-header">
+            <div class="post-print-badge">
+                <i class="fas fa-magic"></i>
+            </div>
+            <div class="post-print-title-group">
+                <p class="modal-card-title post-print-title">{{ _("Vos fiches sont prêtes !") }}</p>
+                <p class="post-print-subtitle">{{ _("Organisez votre bibliothèque de classe en toute simplicité") }}</p>
+            </div>
+            <button class="delete" aria-label="close" onclick="closePostPrintModal()"></button>
+        </header>
+        <section class="modal-card-body post-print-body">
+            <p class="post-print-pitch mb-4">
+                {{ _("Saviez-vous que Livres en Classe gère aussi gratuitement le prêt de livres dans votre classe ?") }}
+            </p>
+            <div class="post-print-features">
+                <div class="post-print-feature-item">
+                    <div class="post-print-feature-icon" style="color: #2563eb; background: #eff6ff;">
+                        <i class="fas fa-barcode"></i>
+                    </div>
+                    <div class="post-print-feature-text">
+                        <strong>{{ _("Scan instantané des livres") }}</strong>
+                        <p>{{ _("Scannez le code-barres avec votre smartphone ou douchette pour remplir votre bibliothèque en un clin d'œil.") }}</p>
+                    </div>
+                </div>
+                <div class="post-print-feature-item">
+                    <div class="post-print-feature-icon" style="color: #059669; background: #ecfdf5;">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="post-print-feature-text">
+                        <strong>{{ _("Prêts et retours sans papier") }}</strong>
+                        <p>{{ _("Finis les cahiers perdus : prêtez un livre à un élève en 3 clics et suivez les retards sans stress.") }}</p>
+                    </div>
+                </div>
+                <div class="post-print-feature-item">
+                    <div class="post-print-feature-icon" style="color: #d97706; background: #fffbeb;">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="post-print-feature-text">
+                        <strong>{{ _("Statistiques & motivation") }}</strong>
+                        <p>{{ _("Découvrez les livres coups de cœur et récompensez vos élèves avec des bilans de lecture personnalisés.") }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="post-print-guarantee mt-4">
+                <span class="tag is-success is-light is-rounded mr-2">
+                    <i class="fas fa-check mr-1"></i> {{ _("100%% Gratuit")|replace("%%", "%") }}
+                </span>
+                <span class="is-size-7 has-text-grey">
+                    {{ _("Jusqu'à 40 élèves et 500 livres • Sans carte bancaire • Prêt en 1 minute") }}
+                </span>
+            </div>
+        </section>
+        <footer class="modal-card-foot post-print-footer">
+            <a href="{{ url_for('auth.signup') }}?source=post_print" 
+               class="button is-link is-medium is-rounded is-fullwidth has-text-weight-bold post-print-cta"
+               onclick="trackPostPrintCta('signup')">
+                <span class="icon"><i class="fas fa-arrow-right"></i></span>
+                <span>{{ _("Créer ma classe gratuitement") }}</span>
+            </a>
+            <button type="button" class="button is-ghost is-small is-fullwidth mt-2 has-text-grey" onclick="closePostPrintModal()">
+                {{ _("Non merci, continuer sur le studio") }}
+            </button>
+        </footer>
+    </div>
+</div>
+{% endif %}
+
 <script>
+var postPrintTriggered = false;
+
 function triggerStudioPrint() {
     try {
         if (typeof _paq !== 'undefined') {
@@ -122,7 +196,64 @@ function triggerStudioPrint() {
     } catch (e) {
         console.error("Matomo tracking error:", e);
     }
+    postPrintTriggered = true;
     window.print();
+}
+
+window.addEventListener('beforeprint', function() {
+    postPrintTriggered = true;
+});
+
+function handleAfterPrint() {
+    if (!postPrintTriggered) return;
+    postPrintTriggered = false;
+
+    try {
+        if (sessionStorage.getItem('post_print_modal_shown')) {
+            return;
+        }
+    } catch (e) {}
+
+    var modal = document.getElementById('modalPostPrint');
+    if (modal) {
+        setTimeout(function() {
+            modal.classList.add('is-active');
+            try {
+                sessionStorage.setItem('post_print_modal_shown', 'true');
+                if (typeof _paq !== 'undefined') {
+                    var el = document.getElementById('studioRessourceTracker');
+                    var resId = el ? el.getAttribute('data-ressource-id') : 'ressource';
+                    _paq.push(['trackEvent', 'Conversion', 'PostPrint_Modal_Shown', resId]);
+                }
+            } catch (e) {}
+        }, 500);
+    }
+}
+
+window.addEventListener('afterprint', handleAfterPrint);
+
+function closePostPrintModal() {
+    var modal = document.getElementById('modalPostPrint');
+    if (modal) {
+        modal.classList.remove('is-active');
+        try {
+            if (typeof _paq !== 'undefined') {
+                var el = document.getElementById('studioRessourceTracker');
+                var resId = el ? el.getAttribute('data-ressource-id') : 'ressource';
+                _paq.push(['trackEvent', 'Conversion', 'PostPrint_Modal_Dismiss', resId]);
+            }
+        } catch (e) {}
+    }
+}
+
+function trackPostPrintCta(action) {
+    try {
+        if (typeof _paq !== 'undefined') {
+            var el = document.getElementById('studioRessourceTracker');
+            var resId = el ? el.getAttribute('data-ressource-id') : 'ressource';
+            _paq.push(['trackEvent', 'Conversion', 'PostPrint_Signup_Click', resId]);
+        }
+    } catch (e) {}
 }
 </script>
 

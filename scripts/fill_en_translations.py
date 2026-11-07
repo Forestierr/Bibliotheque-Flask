@@ -9,6 +9,18 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/en/LC_MESSAGES/messages.po")
 
 translations = {
+    'Vos fiches sont prêtes !': 'Your printables are ready!',
+    'Organisez votre bibliothèque de classe en toute simplicité': 'Easily organize your classroom library',
+    'Saviez-vous que Livres en Classe gère aussi gratuitement le prêt de livres dans votre classe ?': 'Did you know that Livres en Classe also manages classroom book lending for free?',
+    'Scan instantané des livres': 'Instant book scanning',
+    "Scannez le code-barres avec votre smartphone ou douchette pour remplir votre bibliothèque en un clin d'œil.": 'Scan barcodes with your smartphone or barcode scanner to build your library in no time.',
+    'Prêts et retours sans papier': 'Paperless lending and returns',
+    'Finis les cahiers perdus : prêtez un livre à un élève en 3 clics et suivez les retards sans stress.': 'No more lost paper notebooks: lend a book to a student in 3 clicks and track overdue books stress-free.',
+    'Statistiques & motivation': 'Statistics & motivation',
+    'Découvrez les livres coups de cœur et récompensez vos élèves avec des bilans de lecture personnalisés.': 'Discover top favorite books and reward your students with personalized reading reports.',
+    '100%% Gratuit': '100%% Free',
+    "Jusqu'à 40 élèves et 500 livres • Sans carte bancaire • Prêt en 1 minute": 'Up to 40 students and 500 books • No credit card required • Ready in 1 minute',
+    'Non merci, continuer sur le studio': 'No thanks, continue in the studio',
     "Marque-pages à imprimer gratuits pour école et classe (PDF A4) | Livres en Classe": "Free Printable Bookmarks for School and Classroom (A4 PDF) | Livres en Classe",
     "Générez et imprimez des marque-pages gratuits pour votre classe (format PDF A4) : suivi des emprunts de livres au recto, fiche d'avis lecteur et étoiles au verso. Personnalisable.": "Generate and print free bookmarks for your classroom (A4 PDF format): book loan tracking on the front, review notes and stars on the back. Customizable.",
     "Fiche de lecture et avis coup de cœur à imprimer pour la classe (A4) | Livres en Classe": "Printable Book Review and Recommendation Sheets for Classroom (A4) | Livres en Classe",

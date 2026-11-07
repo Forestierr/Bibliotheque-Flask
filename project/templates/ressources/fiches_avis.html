@@ -175,7 +175,7 @@
                         {{ _("Épinglez cette idée sur Pinterest pour aménager un coin lecture interactif où les élèves recommandent leurs livres préférés à leurs camarades.") }}
                     </p>
                     <div class="buttons">
-                        <a href="https://www.pinterest.com/pin/create/button/?url={{ 'https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=lead_magnets&mtm_content=fiche_lecture'|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png'|urlencode }}&description={{ 'Fiches coup de cœur et avis de lecture à imprimer gratuits pour la classe (A4). Fanions de recommandation de livres entre élèves pour le coin bibliothèque et la BCD ! #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/fiche-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=fiche_lecture&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=fiche_lecture')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png'|urlencode }}&description={{ 'Fiches coup de cœur et avis de lecture à imprimer gratuits pour la classe (A4). Fanions de recommandation de livres entre élèves pour le coin bibliothèque et la BCD ! #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            id="pin-button-fa"

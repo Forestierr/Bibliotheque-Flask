@@ -9,6 +9,18 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/de/LC_MESSAGES/messages.po")
 
 translations = {
+    'Vos fiches sont prêtes !': 'Ihre Druckvorlagen sind fertig!',
+    'Organisez votre bibliothèque de classe en toute simplicité': 'Organisieren Sie Ihre Klassenbibliothek ganz einfach',
+    'Saviez-vous que Livres en Classe gère aussi gratuitement le prêt de livres dans votre classe ?': 'Wussten Sie, dass Livres en Classe auch die Buchausleihe in Ihrer Klasse kostenlos verwaltet?',
+    'Scan instantané des livres': 'Sofortiges Scannen von Büchern',
+    "Scannez le code-barres avec votre smartphone ou douchette pour remplir votre bibliothèque en un clin d'œil.": 'Scannen Sie den Barcode mit Ihrem Smartphone oder Barcodescanner, um Ihre Bibliothek im Handumdrehen zu füllen.',
+    'Prêts et retours sans papier': 'Papierlose Ausleihe und Rückgabe',
+    'Finis les cahiers perdus : prêtez un livre à un élève en 3 clics et suivez les retards sans stress.': 'Keine verlorenen Hefte mehr: Verleihen Sie ein Buch mit 3 Klicks und behalten Sie Überfälligkeiten stressfrei im Blick.',
+    'Statistiques & motivation': 'Statistiken & Motivation',
+    'Découvrez les livres coups de cœur et récompensez vos élèves avec des bilans de lecture personnalisés.': 'Entdecken Sie die beliebtesten Bücher und belohnen Sie Ihre Schüler mit personalisierten Leseberichten.',
+    '100%% Gratuit': '100%% Kostenlos',
+    "Jusqu'à 40 élèves et 500 livres • Sans carte bancaire • Prêt en 1 minute": 'Bis zu 40 Schüler und 500 Bücher • Keine Kreditkarte erforderlich • In 1 Minute startklar',
+    'Non merci, continuer sur le studio': 'Nein danke, im Studio fortfahren',
     "Marque-pages à imprimer gratuits pour école et classe (PDF A4) | Livres en Classe": "Kostenlose Lesezeichen zum Ausdrucken für Schule und Klasse (A4 PDF) | Livres en Classe",
     "Générez et imprimez des marque-pages gratuits pour votre classe (format PDF A4) : suivi des emprunts de livres au recto, fiche d'avis lecteur et étoiles au verso. Personnalisable.": "Erstellen und drucken Sie kostenlose Lesezeichen für Ihre Klasse (A4 PDF): Ausleihübersicht auf der Vorderseite, Buchrezension und Sterne auf der Rückseite. Anpassbar.",
     "Fiche de lecture et avis coup de cœur à imprimer pour la classe (A4) | Livres en Classe": "Buchbewertung und Lesetipp-Karten zum Ausdrucken für die Klasse (A4) | Livres en Classe",
