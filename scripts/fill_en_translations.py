@@ -9,6 +9,12 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/en/LC_MESSAGES/messages.po")
 
 translations = {
+    "Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer": "Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything",
+    "Découvrez pourquoi archiver votre promotion plutôt que supprimer vos élèves et prêts permet de préserver vos statistiques de lecture, libérer votre quota gratuit et valoriser les progrès de vos élèves.": "Discover why archiving your school year cohort instead of deleting students and loans preserves reading statistics, resets your free tier quota, and celebrates student reading achievements.",
+    "Préserver les statistiques de lecture, libérer votre quota d'élèves et valoriser les réussites : découvrez pourquoi l'archivage annuel surpasse la suppression.": "Preserve reading statistics, reset your student quota, and celebrate reading accomplishments: discover why annual archiving beats deleting everything.",
+    "Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything": "Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything",
+    "Discover why archiving your school year cohort instead of deleting students and loans preserves reading statistics, resets your free tier quota, and celebrates student reading achievements.": "Discover why archiving your school year cohort instead of deleting students and loans preserves reading statistics, resets your free tier quota, and celebrates student reading achievements.",
+    "Organisation de classe": "Classroom Organization",
     "Cap des 100 classes franchi : merci pour votre confiance !": "Milestone of 100 Classes Reached: Thank You for Your Trust!",
     "Plus de 100 enseignants et classes font confiance à Livres en classe au quotidien en Suisse, en France et au Canada. Retour sur cette étape symbolique, quelques chiffres clés et notre feuille de route.": "More than 100 teachers and classrooms trust Livres en classe daily across Switzerland, France, and Canada. A look back at this milestone, key figures, and our roadmap.",
     "Plus de 100 enseignants utilisent désormais Livres en classe. Retour sur cette étape symbolique, nos chiffres clés et notre feuille de route.": "More than 100 teachers now use Livres en classe. A look back at this milestone, key figures, and our roadmap.",

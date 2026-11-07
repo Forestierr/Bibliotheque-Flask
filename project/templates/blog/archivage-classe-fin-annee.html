@@ -1,0 +1,231 @@
+<!-- templates/blog/archivage-classe-fin-annee.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer") }}{% endblock %}
+{% block meta_description %}{{ _("Découvrez pourquoi archiver votre promotion plutôt que supprimer vos élèves et prêts permet de préserver vos statistiques de lecture, libérer votre quota gratuit et valoriser les progrès de vos élèves.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('fr', external=True) }}"
+  },
+  "headline": {{ _("Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer")|tojson }},
+  "description": {{ _("Découvrez pourquoi archiver votre promotion plutôt que supprimer vos élèves et prêts permet de préserver vos statistiques de lecture, libérer votre quota gratuit et valoriser les progrès de vos élèves.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Person",
+    "name": "Robin Forestier",
+    "jobTitle": "Créateur de Livres en classe"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "fr",
+  "datePublished": "2026-11-07",
+  "dateModified": "2026-11-07"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Sommaire (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Le dilemme de la rentrée</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Pourquoi supprimer est une erreur</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Les 4 atouts de l'archivage</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Comment clôturer en 3 étapes</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Bilan & diplômes de lecture</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Accueil</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Archiver sa classe</a></li>
+                      </ul>
+                    </nav>
+
+                    <span class="tag is-primary is-light is-rounded mb-3" style="font-weight: 600; letter-spacing: 0.5px;">
+                        <i class="fas fa-archive mr-2" style="color: #00d1b2;"></i> {{ _("Organisation de classe") }}
+                    </span>
+
+                    <h1 class="title is-1 mb-5">Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer</h1>
+                    <p class="subtitle is-5 has-text-grey">Temps de lecture : 4 min | Par Robin Forestier, créateur de Livres en classe</p>
+
+                    <div class="content is-medium mt-6">
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            En juin ou au moment de préparer la rentrée de septembre, chaque enseignant fait face à la même interrogation : <em>que faire de la liste d'élèves de l'année écoulée et de l'historique de leurs emprunts ?</em>
+                        </p>
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            Par réflexe ou manque de temps, beaucoup choisissent de tout supprimer d'un clic pour « repartir à zéro ». C'est pourtant une occasion manquée. <strong>L'archivage annuel</strong> a été spécialement conçu pour résoudre ce dilemme : repartir sur une classe vierge tout en sublimant les réussites de vos élèves.
+                        </p>
+
+                        <hr class="my-6">
+
+                        <!-- Mobile Sommaire -->
+                        <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Sommaire</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Le dilemme de la rentrée</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Pourquoi supprimer est une erreur</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Les 4 atouts de l'archivage</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Comment clôturer en 3 étapes</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Bilan & diplômes de lecture</a></li>
+                            </ul>
+                        </div>
+
+                        <h2 id="section-1">1. Le piège de la suppression radicale</h2>
+                        <p>
+                            Quand l'été arrive, la tentation est grande d'aller dans les réglages et de cliquer sur <em>« Supprimer tous les élèves »</em>. Sur le moment, l'ardoise est propre : la liste est vide, prête à accueillir la nouvelle cohorte.
+                        </p>
+                        <p>
+                            Mais en faisant cela, vous effacez instantanément :
+                        </p>
+                        <ul>
+                            <li><strong>Le palmarès de lecture</strong> : qui a lu le plus d'ouvrages cette année ? Quels enfants ont franchi un cap décisif dans leur autonomie ?</li>
+                            <li><strong>Les livres stars de votre classe</strong> : quel album a circulé de main en main 25 fois ? Quels titres n'ont jamais trouvé preneur et mériteraient d'être remplacés ou mieux mis en valeur ?</li>
+                            <li><strong>La mémoire pédagogique</strong> : aucune trace pour les bilans de fin d'année, les équipes de suivi ou les réunions avec les parents d'élèves.</li>
+                        </ul>
+
+                        <h2 id="section-2" class="mt-6">2. Pourquoi supprimer est un gâchis pédagogique</h2>
+                        <p>
+                            La lecture en classe n'est pas qu'une simple transaction logistique ; c'est un parcours d'apprentissage. Supprimer les données revient à déchirer le carnet de bord à la fin du voyage.
+                        </p>
+                        <p>
+                            De plus, si un élève a oublié de rapporter un roman avant les grandes vacances, supprimer sa fiche supprime également l'emprunt en cours : le livre disparaît des radars et vous perdez sa trace jusqu'à la rentrée suivante.
+                        </p>
+
+                        <h2 id="section-3" class="mt-6">3. Les 4 atouts majeurs de l'archivage annuel</h2>
+                        
+                        <!-- Grille atouts -->
+                        <div class="columns is-multiline my-4">
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-success mb-2"><i class="fas fa-unlock-alt mr-2"></i> Libération immédiate du quota gratuit</h4>
+                                    <p class="is-size-6 has-text-dark">Les élèves archivés ne sont plus comptabilisés dans le plafond des 40 élèves de la version gratuite. Votre quota est remis à zéro sans supprimer un seul souvenir.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-link mb-2"><i class="fas fa-chart-line mr-2"></i> Bilan et podium de lecture</h4>
+                                    <p class="is-size-6 has-text-dark">Génération automatique d'un rapport consolidé : nombre total de livres lus, moyenne par élève, livre le plus plébiscité et top des grands lecteurs.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-purple mb-2" style="color: #9333ea;"><i class="fas fa-shield-alt mr-2"></i> Sécurité contre les livres perdus</h4>
+                                    <p class="is-size-6 has-text-dark">L'assistant vérifie qu'aucun livre n'est encore dans la nature. Si un enfant conserve un livre pendant l'été (classe multi-niveaux), vous pouvez le maintenir actif en un clic.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-warning-dark mb-2"><i class="fas fa-print mr-2"></i> Bilan imprimable A4 prêt pour les familles</h4>
+                                    <p class="is-size-6 has-text-dark">Imprimez une synthèse soignée de la promotion pour votre propre cahier de maîtresse/maître ou pour célébrer l'effort collectif en classe.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 id="section-4" class="mt-6">4. Comment fonctionne l'assistant en 3 étapes ?</h2>
+                        <p>
+                            Sur <strong>Livres en classe</strong>, nous avons conçu un assistant fluide et guidé, accessible directement depuis vos Réglages :
+                        </p>
+                        <ol>
+                            <li><strong>Étape 1 : Vérification des emprunts en cours</strong>. L'outil vous alerte si des livres n'ont pas été retournés. Vous pouvez enregistrer les retours en un clic ou signaler qu'un élève garde l'ouvrage pour la rentrée prochaine.</li>
+                            <li><strong>Étape 2 : Synthèse & Bilan de promotion</strong>. Visualisez instantanément les exploits de lecture de l'année : total de prêts, moyennes et top 3 des lectures coup de cœur.</li>
+                            <li><strong>Étape 3 : Clôture sécurisée & Nouvelle classe</strong>. La promotion est archivée sous son étiquette (ex: <em>2025-2026</em>). Votre tableau de bord redevient net et vierge, prêt à accueillir votre nouvelle liste d'élèves.</li>
+                        </ol>
+
+                        <h2 id="section-5" class="mt-6">5. Valoriser les progrès : diplômes et transmission</h2>
+                        <p>
+                            L'archivage permet aussi de boucler l'année sur une note stimulante et joyeuse pour les enfants. En consultant le bilan de l'archive, vous pouvez éditer et remettre à chacun son <strong>Diplôme de Super Lecteur</strong> ou son passeport de lecture validé.
+                        </p>
+                        <p>
+                            Et si vous suivez vos élèves sur un cycle de deux ans (CP-CE1 ou CM1-CM2), vous pouvez réactiver un élève archivé à tout moment sans ressaisir son nom.
+                        </p>
+
+                        <!-- Signature Robin -->
+                        <div class="box mt-5 p-5" style="border-left: 4px solid #3273dc; background: #fafbfc;">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-48x48">
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #3273dc; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">
+                                            RF
+                                        </div>
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-5 mb-1" style="color: #2c3e50;">Robin</p>
+                                    <p class="subtitle is-6 has-text-grey">Créateur de Livres en classe</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Box -->
+                        <div class="box has-background-white-bis has-text-centered p-5 my-6" style="border: 1px solid #eef0f5; border-radius: 12px;">
+                            <h3 class="title is-4">Prêt(e) à préparer une rentrée sereine ?</h3>
+                            <p class="mb-4">Clôturez votre cohorte en 2 minutes ou rejoignez les enseignants qui simplifient leur gestion de classe au quotidien.</p>
+                            <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Découvrir gratuitement Livres en classe</a>
+                        </div>
+
+                        <!-- Articles suggérés -->
+                        <hr class="my-6">
+                        <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                            <h3 class="title is-4 mb-4">📚 Vous aimerez aussi lire...</h3>
+                            <div class="columns">
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='suivi-emprunts-livres-eleves') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">PRATIQUES DE CLASSE</p>
+                                        <p class="has-text-weight-bold has-text-dark">Suivi des Emprunts de Livres à l'École : Astuces et Solutions</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">ORGANISATION</p>
+                                        <p class="has-text-weight-bold has-text-dark">Comment créer une bibliothèque de classe efficace ?</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- End content -->
+                </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

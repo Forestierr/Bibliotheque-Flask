@@ -9,6 +9,12 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/de/LC_MESSAGES/messages.po")
 
 translations = {
+    "Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer": "Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen",
+    "Découvrez pourquoi archiver votre promotion plutôt que supprimer vos élèves et prêts permet de préserver vos statistiques de lecture, libérer votre quota gratuit et valoriser les progrès de vos élèves.": "Erfahren Sie, warum die Archivierung Ihres Jahrgangs statt des Löschens von Schülern Lesestatistiken bewahrt, das Kontingent zurücksetzt und Lesefortschritte würdigt.",
+    "Préserver les statistiques de lecture, libérer votre quota d'élèves et valoriser les réussites : découvrez pourquoi l'archivage annuel surpasse la suppression.": "Lesestatistiken bewahren, Schülerkontingent freigeben und Erfolge würdigen: Entdecken Sie, warum die Archivierung dem Löschen überlegen ist.",
+    "Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen": "Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen",
+    "Erfahren Sie, warum die Archivierung Ihres Jahrgangs statt des Löschens von Schülern Lesestatistiken bewahrt, das Kontingent zurücksetzt und Lesefortschritte würdigt.": "Erfahren Sie, warum die Archivierung Ihres Jahrgangs statt des Löschens von Schülern Lesestatistiken bewahrt, das Kontingent zurücksetzt und Lesefortschritte würdigt.",
+    "Organisation de classe": "Klassenorganisation",
     "Cap des 100 classes franchi : merci pour votre confiance !": "Meilenstein von 100 Klassen erreicht: Danke für Ihr Vertrauen!",
     "Plus de 100 enseignants et classes font confiance à Livres en classe au quotidien en Suisse, en France et au Canada. Retour sur cette étape symbolique, quelques chiffres clés et notre feuille de route.": "Über 100 Lehrpersonen und Klassen vertrauen täglich in der Schweiz, Frankreich und Kanada auf Livres en classe. Ein Rückblick auf diesen Meilenstein, Kennzahlen und unsere Roadmap.",
     "Plus de 100 enseignants utilisent désormais Livres en classe. Retour sur cette étape symbolique, nos chiffres clés et notre feuille de route.": "Über 100 Lehrpersonen nutzen mittlerweile Livres en classe. Ein Rückblick auf diesen Meilenstein, Kennzahlen und unsere Roadmap.",

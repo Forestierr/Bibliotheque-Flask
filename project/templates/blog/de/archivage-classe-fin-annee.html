@@ -1,0 +1,231 @@
+<!-- templates/blog/de/archivage-classe-fin-annee.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen") }}{% endblock %}
+{% block meta_description %}{{ _("Erfahren Sie, warum die Archivierung Ihres Jahrgangs statt des Löschens von Schülern Lesestatistiken bewahrt, das Kontingent zurücksetzt und Lesefortschritte würdigt.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('de', external=True) }}"
+  },
+  "headline": {{ _("Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen")|tojson }},
+  "description": {{ _("Erfahren Sie, warum die Archivierung Ihres Jahrgangs statt des Löschens von Schülern Lesestatistiken bewahrt, das Kontingent zurücksetzt und Lesefortschritte würdigt.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Person",
+    "name": "Robin Forestier",
+    "jobTitle": "Gründer von Livres en classe"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "de",
+  "datePublished": "2026-11-07",
+  "dateModified": "2026-11-07"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Inhaltsverzeichnis (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Das Dilemma zum Schuljahresende</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Warum Löschen ein Fehler ist</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Die 4 Vorteile des Archivierens</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Der 3-Schritte-Assistent</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Jahresabschluss & Lese-Diplome</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Startseite</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Klassenarchivierung</a></li>
+                      </ul>
+                    </nav>
+
+                    <span class="tag is-primary is-light is-rounded mb-3" style="font-weight: 600; letter-spacing: 0.5px;">
+                        <i class="fas fa-archive mr-2" style="color: #00d1b2;"></i> {{ _("Organisation de classe") }}
+                    </span>
+
+                    <h1 class="title is-1 mb-5">Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen</h1>
+                    <p class="subtitle is-5 has-text-grey">Lesezeit: 4 Min. | Von Robin Forestier, Gründer von Livres en classe</p>
+
+                    <div class="content is-medium mt-6">
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            Zum Schuljahresabschluss oder bei der Vorbereitung des neuen Schuljahres stehen Lehrpersonen vor derselben Frage: <em>Was passiert mit der Schülerliste des vergangenen Schuljahres und der bisherigen Ausleihhistorie?</em>
+                        </p>
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            Aus Gewohnheit oder Zeitmangel neigen viele dazu, alle Schüler mit einem Klick zu löschen, um «bei null anzufangen». Das ist jedoch schade. Die <strong>jährliche Klassenarchivierung</strong> wurde eigens dafür entwickelt: Sie starten mit einer leeren Schülerliste ins neue Schuljahr, ohne die wertvollen Leseerfolge Ihrer Klasse zu verlieren.
+                        </p>
+
+                        <hr class="my-6">
+
+                        <!-- Mobile Inhaltsverzeichnis -->
+                        <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. Das Dilemma zum Schuljahresende</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Warum Löschen ein Fehler ist</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Die 4 Vorteile des Archivierens</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Der 3-Schritte-Assistent</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Jahresabschluss & Lese-Diplome</a></li>
+                            </ul>
+                        </div>
+
+                        <h2 id="section-1">1. Die Falle der radikalen Löschung</h2>
+                        <p>
+                            Vor den Sommerferien ist die Versuchung gross, in den Kontoeinstellungen auf <em>«Alle Schüler löschen»</em> zu klicken. Auf den ersten Blick ist die Tafel sauber: Die Liste ist leer und bereit für den neuen Jahrgang.
+                        </p>
+                        <p>
+                            Doch dabei gehen wichtige Informationen unwiderruflich verloren:
+                        </p>
+                        <ul>
+                            <li><strong>Die Lese-Bestenliste</strong>: Wer hat im Schuljahr die meisten Bücher gelesen? Welche Kinder haben deutliche Fortschritte bei der Selbstständigkeit gemacht?</li>
+                            <li><strong>Die Lieblingsbücher Ihrer Klasse</strong>: Welcher Titel wurde über 20 Mal ausgeliehen? Welche Bücher blieben unbeachtet im Regal und sollten neu präsentiert oder ausgetauscht werden?</li>
+                            <li><strong>Pädagogische Nachweise</strong>: Keine Zahlenbasis für Elterngespräche, Schulzeugnisse oder Jahresberichte.</li>
+                        </ul>
+
+                        <h2 id="section-2" class="mt-6">2. Warum vollständiges Löschen eine verpasste Chance ist</h2>
+                        <p>
+                            Leseförderung in der Klasse ist mehr als ein reiner Logistikablauf; sie ist ein Bildungsweg. Die Daten zu löschen, gleicht dem Zerreißen des Fahrtenbuchs am Ende einer Reise.
+                        </p>
+                        <p>
+                            Zudem: Hat ein Kind vergessen, ein Buch vor den Ferien zurückzubringen, wird beim Löschen auch die aktive Ausleihe gelöscht. Das Buch verschwindet spurlos aus dem System und bleibt bis zum Herbst unauffindbar.
+                        </p>
+
+                        <h2 id="section-3" class="mt-6">3. Die 4 Hauptvorteile der jährlichen Archivierung</h2>
+                        
+                        <!-- Vorteilsraster -->
+                        <div class="columns is-multiline my-4">
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-success mb-2"><i class="fas fa-unlock-alt mr-2"></i> Sofortige Kontingent-Freigabe</h4>
+                                    <p class="is-size-6 has-text-dark">Archivierte Schüler zählen nicht mehr zum Limit von 40 Schülern des kostenlosen Modells. Ihr Kontingent wird für den neuen Jahrgang wieder auf 0 gesetzt.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-link mb-2"><i class="fas fa-chart-line mr-2"></i> Ausführliche Jahresbilanz</h4>
+                                    <p class="is-size-6 has-text-dark">Automatische Erstellung des Jahresberichts: Gesamtzahl der gelesenen Bücher, Durchschnitt pro Kind, beliebtester Buchtitel und Top-Leser.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-purple mb-2" style="color: #9333ea;"><i class="fas fa-shield-alt mr-2"></i> Schutz vor Buchverlusten</h4>
+                                    <p class="is-size-6 has-text-dark">Der Assistent prüft vor dem Abschluss offene Ausleihen. Behält ein Kind über die Sommerferien ein Buch (z. B. in einer Mehrjahrgangsklasse), bleibt es mit einem Klick aktiv.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-warning-dark mb-2"><i class="fas fa-print mr-2"></i> Druckbare A4-Jahresübersicht</h4>
+                                    <p class="is-size-6 has-text-dark">Drucken Sie einen ansprechenden Jahresbericht für Ihre Klassenunterlagen oder zum Aushang im Klassenzimmer aus.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 id="section-4" class="mt-6">4. So funktioniert der 3-Schritte-Assistent</h2>
+                        <p>
+                            In <strong>Livres en classe</strong> führt Sie ein geführter Assistent direkt in den Kontoeinstellungen durch den Abschluss:
+                        </p>
+                        <ol>
+                            <li><strong>Schritt 1: Aktuelle Ausleihen prüfen</strong>. Das System zeigt offene Rückgaben an. Sie buchen Rückgaben mit einem Klick ab oder markieren Kinder, die ein Buch über die Ferien behalten.</li>
+                            <li><strong>Schritt 2: Jahresrückblick & Lesestatistiken</strong>. Entdecken Sie die Leseerfolge: Gesamtanzahl der Ausleihen, Durchschnitt pro Schüler und das Top-3-Buchranking.</li>
+                            <li><strong>Schritt 3: Sicherer Abschluss & Neues Schuljahr</strong>. Der Jahrgang wird unter seiner Jahresbezeichnung archiviert (z. B. <em>2025-2026</em>). Ihre Übersicht ist wieder leer und startklar.</li>
+                        </ol>
+
+                        <h2 id="section-5" class="mt-6">5. Leseerfolge feiern: Urkunden & Kontinuität</h2>
+                        <p>
+                            Die Archivierung ermöglicht es auch, das Schuljahr motivierend zu beenden. Anhand der Statistiken können Sie Ihren Schülern persönliche <strong>Super-Leser-Diplome</strong> oder ihren Lesepass überreichen.
+                        </p>
+                        <p>
+                            Und wenn Sie eine Mehrklasse unterrichten oder Schüler ins nächste Schuljahr mitnehmen, können Sie archivierte Kinder jederzeit reaktivieren, ohne Namen neu einzugeben.
+                        </p>
+
+                        <!-- Robin Signatur -->
+                        <div class="box mt-5 p-5" style="border-left: 4px solid #3273dc; background: #fafbfc;">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-48x48">
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #3273dc; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">
+                                            RF
+                                        </div>
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-5 mb-1" style="color: #2c3e50;">Robin</p>
+                                    <p class="subtitle is-6 has-text-grey">Gründer von Livres en classe</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Box -->
+                        <div class="box has-background-white-bis has-text-centered p-5 my-6" style="border: 1px solid #eef0f5; border-radius: 12px;">
+                            <h3 class="title is-4">Bereit für einen entspannten Schulstart?</h3>
+                            <p class="mb-4">Schließen Sie Ihr Schuljahr in 2 Minuten ab oder starten Sie noch heute kostenlos mit Livres en classe.</p>
+                            <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Livres en classe kostenlos testen</a>
+                        </div>
+
+                        <!-- Weitere Artikel -->
+                        <hr class="my-6">
+                        <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                            <h3 class="title is-4 mb-4">📚 Weitere interessante Artikel...</h3>
+                            <div class="columns">
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='suivi-emprunts-livres-eleves') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">PRAXISTIPPS</p>
+                                        <p class="has-text-weight-bold has-text-dark">Ausleihe von Büchern in der Schule verwalten: Tipps und Lösungen</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">ORGANISATION</p>
+                                        <p class="has-text-weight-bold has-text-dark">Klassenbibliothek effektiv einrichten und organisieren</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- End content -->
+                </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}
