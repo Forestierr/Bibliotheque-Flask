@@ -5,13 +5,13 @@ Revises: ce07d1a76a04
 Create Date: 2026-11-05 09:56:42.452934
 
 """
-from alembic import op
-import sqlalchemy as sa
 
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = 'f68b297bc5dd'
-down_revision = 'ce07d1a76a04'
+revision = "f68b297bc5dd"
+down_revision = "ce07d1a76a04"
 branch_labels = None
 depends_on = None
 
@@ -49,9 +49,7 @@ def upgrade():
 
     with op.batch_alter_table("student", schema=None) as batch_op:
         batch_op.add_column(
-            sa.Column(
-                "is_archived", sa.Boolean(), server_default="0", nullable=False
-            )
+            sa.Column("is_archived", sa.Boolean(), server_default="0", nullable=False)
         )
         batch_op.add_column(sa.Column("archived_at", sa.DateTime(), nullable=True))
         batch_op.add_column(sa.Column("archived_year_id", sa.Integer(), nullable=True))

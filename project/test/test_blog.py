@@ -150,7 +150,10 @@ def test_archivage_classe_article_all_languages(client):
     res_fr = client.get("/fr/blog/archivage-classe-fin-annee")
     assert res_fr.status_code == 200
     html_fr = res_fr.get_data(as_text=True)
-    assert "Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer" in html_fr
+    assert (
+        "Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer"
+        in html_fr
+    )
     assert "Robin Forestier" in html_fr
     assert '"@type": "BlogPosting"' in html_fr
 
@@ -158,7 +161,10 @@ def test_archivage_classe_article_all_languages(client):
     res_en = client.get("/en/blog/archivage-classe-fin-annee")
     assert res_en.status_code == 200
     html_en = res_en.get_data(as_text=True)
-    assert "Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything" in html_en
+    assert (
+        "Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything"
+        in html_en
+    )
     assert "Robin Forestier" in html_en
     assert '"@type": "BlogPosting"' in html_en
 
@@ -166,7 +172,10 @@ def test_archivage_classe_article_all_languages(client):
     res_de = client.get("/de/blog/archivage-classe-fin-annee")
     assert res_de.status_code == 200
     html_de = res_de.get_data(as_text=True)
-    assert "Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen" in html_de
+    assert (
+        "Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen"
+        in html_de
+    )
     assert "Robin Forestier" in html_de
     assert '"@type": "BlogPosting"' in html_de
 

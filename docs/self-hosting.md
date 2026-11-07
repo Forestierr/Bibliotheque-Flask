@@ -155,6 +155,7 @@ Pour une mise en production orchestrée avec Traefik, Let's Encrypt et Cloudflar
   ```python
   from project import create_app, db
   from project.models import User
+
   app = create_app()
   with app.app_context():
       u = User.query.filter_by(email="votre@email.fr").first()
