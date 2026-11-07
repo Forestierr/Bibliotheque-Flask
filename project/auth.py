@@ -204,7 +204,7 @@ def signup_post():
         ),
         "success",
     )
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.login", registered=1))
 
 
 @auth.route("/verify_email/<token>/<int:user_id>")
@@ -226,7 +226,7 @@ def verify_email(token, user_id):
         ),
         "success",
     )
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.login", verified=1))
 
 
 @auth.route("/logout")
