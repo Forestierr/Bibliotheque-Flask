@@ -1560,6 +1560,7 @@ translations = {
     'Attention : Cette action est': 'Warning: This action is',
     'irréversible': 'irreversible',
     'Vos élèves, prêts et données personnelles seront définitivement supprimés.': 'Your students, loans, and personal data will be permanently deleted.',
+    "Catalogue collaboratif :": "Collaborative catalog:",
     "Afin de préserver le catalogue partagé pour tous les enseignants, les fiches bibliographiques des livres munis d'un code ISBN seront conservées de manière anonyme dans la base collaborative.": 'In order to preserve the shared catalog for all teachers, bibliographic records of books with an ISBN will be kept anonymously in the collaborative database.',
     'Pourquoi souhaitez-vous supprimer votre compte ?': 'Why do you want to delete your account?',
     'Le tarif est trop élevé / trop cher': 'The price is too high / too expensive',

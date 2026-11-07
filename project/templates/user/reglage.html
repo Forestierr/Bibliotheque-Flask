@@ -1389,7 +1389,14 @@
             <button class="delete" aria-label="close" onclick="closeModal('modalDeleteBooks')"></button>
         </header>
         <section class="modal-card-body">
-            <p>{{ _("Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? Cette action est") }} <strong>{{ _("irréversible") }}</strong>.</p>
+            <p class="mb-3">{{ _("Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? Cette action est") }} <strong>{{ _("irréversible") }}</strong>.</p>
+            <!-- Info catalogue collaboratif ISBN -->
+            <div class="delete-collaborative-banner">
+                <span class="info-icon"><i class="fas fa-book-open"></i></span>
+                <p>
+                    <strong>{{ _("Catalogue collaboratif :") }}</strong> {{ _("Afin de préserver le catalogue partagé pour tous les enseignants, les fiches bibliographiques des livres munis d'un code ISBN seront conservées de manière anonyme dans la base collaborative.") }}
+                </p>
+            </div>
         </section>
         <footer class="modal-card-foot" style="justify-content: flex-end;">
             <button class="button is-light" onclick="closeModal('modalDeleteBooks')">{{ _("Annuler") }}</button>
@@ -1420,7 +1427,7 @@
             <div class="delete-warning-banner">
                 <span class="warning-icon"><i class="fas fa-exclamation-circle"></i></span>
                 <p>
-                    <strong>{{ _("Attention :") }}</strong> {{ _("Cette action est") }} <strong>{{ _("irréversible") }}</strong>. {{ _("Vos élèves, prêts et données personnelles seront définitivement supprimés.") }}
+                    <strong>{{ _("Attention : Cette action est") }}</strong> <strong>{{ _("irréversible") }}</strong>. {{ _("Vos élèves, prêts et données personnelles seront définitivement supprimés.") }}
                 </p>
             </div>
 

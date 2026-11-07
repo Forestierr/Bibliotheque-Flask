@@ -974,7 +974,28 @@ def livre_delete_all():
     books = get_books(current_user.id)
 
     for book in books:
-        db.session.delete(book)
+        clean_isbn = re.sub(r"[^0-9X]", "", str(book.isbn or "")).strip().upper()
+        if clean_isbn:
+            # Nettoyage des prêts et tags associés à cette copie personnelle
+            for loan in list(book.loans):
+                db.session.delete(loan)
+            for bt in list(book.book_tags):
+                db.session.delete(bt)
+
+            # Vérifier si un exemplaire orphelin existe déjà dans la base collective
+            orphan_exists = Book.query.filter(
+                Book.id != book.id,
+                Book.isbn == book.isbn,
+                Book.user_id.is_(None),
+            ).first()
+
+            if orphan_exists:
+                db.session.delete(book)
+            else:
+                book.user_id = None
+                book.barcode = None
+        else:
+            db.session.delete(book)
 
     db.session.commit()
 

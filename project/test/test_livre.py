@@ -203,6 +203,77 @@ def test_livre_delete_all(mock_get_books, mock_user, client):
         assert response.status_code == 302
 
 
+def test_livre_delete_all_preserves_isbn_books_and_deletes_non_isbn(app, client):
+    from project import db
+    from project.models import Book, BookTags, Loan, Student, Tags, User
+
+    with app.app_context():
+        db.create_all()
+
+        user = User(
+            name="Prof Livres",
+            email="delete_books@test.com",
+            password="hash",
+            is_verified=True,
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # Livre avec ISBN
+        book_isbn = Book(
+            title="Harry Potter",
+            author="J.K. Rowling",
+            isbn="9782070584628",
+            barcode="BAC-HP",
+            user_id=user.id,
+        )
+        # Livre sans ISBN (fait maison)
+        book_no_isbn = Book(
+            title="Cahier de poésie maison",
+            author="Classe",
+            isbn=None,
+            barcode="BAC-POESIE",
+            user_id=user.id,
+        )
+        db.session.add_all([book_isbn, book_no_isbn])
+        db.session.commit()
+
+        student = Student(name="Lucas", user_id=user.id)
+        db.session.add(student)
+        db.session.commit()
+
+        loan = Loan(book_id=book_isbn.id, student_id=student.id)
+        tag = Tags(name="Roman", user_id=user.id)
+        db.session.add_all([loan, tag])
+        db.session.commit()
+
+        bt = BookTags(book_id=book_isbn.id, tag_id=tag.id)
+        db.session.add(bt)
+        db.session.commit()
+
+        with client.session_transaction() as sess:
+            sess["_user_id"] = str(user.id)
+
+        response = client.post("/livre/delete_all")
+        assert response.status_code == 302
+
+        # Le livre avec ISBN est conservé comme orphelin pour le catalogue collaboratif
+        preserved_book = db.session.get(Book, book_isbn.id)
+        assert preserved_book is not None
+        assert preserved_book.user_id is None
+        assert preserved_book.barcode is None
+        assert preserved_book.title == "Harry Potter"
+
+        # Les prêts et tags personnels sont nettoyés
+        assert len(preserved_book.loans) == 0
+        assert len(preserved_book.book_tags) == 0
+
+        # Le livre sans ISBN est définitivement supprimé
+        deleted_book = db.session.get(Book, book_no_isbn.id)
+        assert deleted_book is None
+
+
 # Test recherche preview (POST)
 @patch("project.livre.current_user")
 def test_search_preview_empty(mock_user, client):
