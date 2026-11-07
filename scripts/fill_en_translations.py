@@ -9,6 +9,11 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/en/LC_MESSAGES/messages.po")
 
 translations = {
+    "Marque-pages à imprimer gratuits pour école et classe (PDF A4) | Livres en Classe": "Free Printable Bookmarks for School and Classroom (A4 PDF) | Livres en Classe",
+    "Générez et imprimez des marque-pages gratuits pour votre classe (format PDF A4) : suivi des emprunts de livres au recto, fiche d'avis lecteur et étoiles au verso. Personnalisable.": "Generate and print free bookmarks for your classroom (A4 PDF format): book loan tracking on the front, review notes and stars on the back. Customizable.",
+    "Fiche de lecture et avis coup de cœur à imprimer pour la classe (A4) | Livres en Classe": "Printable Book Review and Recommendation Sheets for Classroom (A4) | Livres en Classe",
+    "Fiches de lecture et avis coup de cœur à imprimer gratuitement pour l'école primaire (4 par page A4) : recommandations, étoiles et avis à glisser dans les livres de classe.": "Free printable book reviews and recommendation slips for elementary school (4 per A4 sheet): book reviews, stars, and bookmarks to slip into classroom books.",
+    "Comment créer et gérer une bibliothèque de classe ? Le Guide Ultime": "How to Create and Manage a Classroom Library: The Ultimate Guide",
     "Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer": "Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything",
     "Découvrez pourquoi archiver votre promotion plutôt que supprimer vos élèves et prêts permet de préserver vos statistiques de lecture, libérer votre quota gratuit et valoriser les progrès de vos élèves.": "Discover why archiving your school year cohort instead of deleting students and loans preserves reading statistics, resets your free tier quota, and celebrates student reading achievements.",
     "Préserver les statistiques de lecture, libérer votre quota d'élèves et valoriser les réussites : découvrez pourquoi l'archivage annuel surpasse la suppression.": "Preserve reading statistics, reset your student quota, and celebrate reading accomplishments: discover why annual archiving beats deleting everything.",

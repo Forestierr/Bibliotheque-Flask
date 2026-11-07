@@ -9,6 +9,11 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/de/LC_MESSAGES/messages.po")
 
 translations = {
+    "Marque-pages à imprimer gratuits pour école et classe (PDF A4) | Livres en Classe": "Kostenlose Lesezeichen zum Ausdrucken für Schule und Klasse (A4 PDF) | Livres en Classe",
+    "Générez et imprimez des marque-pages gratuits pour votre classe (format PDF A4) : suivi des emprunts de livres au recto, fiche d'avis lecteur et étoiles au verso. Personnalisable.": "Erstellen und drucken Sie kostenlose Lesezeichen für Ihre Klasse (A4 PDF): Ausleihübersicht auf der Vorderseite, Buchrezension und Sterne auf der Rückseite. Anpassbar.",
+    "Fiche de lecture et avis coup de cœur à imprimer pour la classe (A4) | Livres en Classe": "Buchbewertung und Lesetipp-Karten zum Ausdrucken für die Klasse (A4) | Livres en Classe",
+    "Fiches de lecture et avis coup de cœur à imprimer gratuitement pour l'école primaire (4 par page A4) : recommandations, étoiles et avis à glisser dans les livres de classe.": "Kostenlose Buchbewertungs- und Empfehlungskarten für die Grundschule (4 pro A4-Seite): Rezensionen, Bewertungssterne und Lesezeichen zum Einlegen in Klassenbücher.",
+    "Comment créer et gérer une bibliothèque de classe ? Le Guide Ultime": "Wie richtet man eine Klassenbibliothek ein und verwaltet sie? Der ultimative Leitfaden",
     "Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer": "Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen",
     "Découvrez pourquoi archiver votre promotion plutôt que supprimer vos élèves et prêts permet de préserver vos statistiques de lecture, libérer votre quota gratuit et valoriser les progrès de vos élèves.": "Erfahren Sie, warum die Archivierung Ihres Jahrgangs statt des Löschens von Schülern Lesestatistiken bewahrt, das Kontingent zurücksetzt und Lesefortschritte würdigt.",
     "Préserver les statistiques de lecture, libérer votre quota d'élèves et valoriser les réussites : découvrez pourquoi l'archivage annuel surpasse la suppression.": "Lesestatistiken bewahren, Schülerkontingent freigeben und Erfolge würdigen: Entdecken Sie, warum die Archivierung dem Löschen überlegen ist.",
