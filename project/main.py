@@ -93,6 +93,8 @@ def set_language(lang):
 
 @main.route("/")
 def index():
+    if current_user.is_authenticated and not request.args.get("home"):
+        return redirect(url_for("main.dashboard"))
     infos = get_app_infos()
 
     return render_template(

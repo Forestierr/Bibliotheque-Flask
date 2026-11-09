@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-11-07 20:50+0100\n"
+"POT-Creation-Date: 2026-11-09 17:30+0100\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: en\n"
@@ -101,12 +101,12 @@ msgstr ""
 "The archive for school year %(year)s was deleted and students were "
 "reactivated in your class."
 
-#: project/auth.py:78 project/auth.py:149 project/main.py:300
+#: project/auth.py:78 project/auth.py:149 project/main.py:302
 #: project/templates/auth/login.html:161 project/templates/auth/signup.html:272
 msgid "Veuillez compléter le CAPTCHA."
 msgstr "Please complete the CAPTCHA."
 
-#: project/auth.py:87 project/auth.py:159 project/main.py:309
+#: project/auth.py:87 project/auth.py:159 project/main.py:311
 msgid "CAPTCHA invalide. Veuillez réessayer."
 msgstr "Invalid CAPTCHA. Please try again."
 
@@ -213,7 +213,7 @@ msgstr ""
 "existing students remain accessible. To add more, upgrade to Premium or "
 "delete an existing student."
 
-#: project/eleve.py:62 project/main.py:315
+#: project/eleve.py:62 project/main.py:317
 msgid "Veuillez remplir tous les champs."
 msgstr "Please fill in all fields."
 
@@ -310,7 +310,7 @@ msgstr ""
 msgid "Tous les livres ont été supprimés."
 msgstr "All books have been deleted."
 
-#: project/main.py:337
+#: project/main.py:339
 msgid ""
 "Votre message a été envoyé avec succès. Vous avez reçu un email de "
 "confirmation."
@@ -318,21 +318,21 @@ msgstr ""
 "Your message has been sent successfully. A confirmation email has been "
 "sent to you."
 
-#: project/main.py:403
+#: project/main.py:405
 msgid "Veuillez renseigner l'objet et la description de votre retour."
 msgstr "Please provide the subject and description of your feedback."
 
-#: project/main.py:440
+#: project/main.py:442
 msgid "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 msgstr ""
 "Your feedback has been successfully submitted. Thank you for your "
 "valuable help!"
 
-#: project/main.py:496
+#: project/main.py:498
 msgid "Article non trouvé"
 msgstr "Article not found"
 
-#: project/main.py:506
+#: project/main.py:508
 msgid "Guide non trouvé"
 msgstr "Guide not found"
 
@@ -2484,28 +2484,37 @@ msgstr ""
 "For any questions regarding your subscription, billing, or support "
 "requests, please contact us at livresenclasse@gmail.com."
 
-#: project/templates/offline.html:10
-#, fuzzy
+#: project/templates/offline.html:8
 msgid "Vous êtes hors ligne | Ma bibliothèque"
-msgstr "Add a book to your library"
+msgstr "You are offline | My library"
 
-#: project/templates/offline.html:18
-#, fuzzy
+#: project/templates/offline.html:20 project/templates/utils/navbar.html:329
+msgid "Logo Livres en Classe"
+msgstr "Livres en Classe Logo"
+
+#: project/templates/offline.html:28
 msgid "Vous êtes hors ligne"
-msgstr "You are unsubscribed"
+msgstr "You are offline"
 
-#: project/templates/offline.html:20
-msgid "Vérifiez votre connexion internet et réessayez."
-msgstr ""
-
-#: project/templates/offline.html:23
+#: project/templates/offline.html:30
 msgid "L'application nécessite une connexion pour accéder à votre bibliothèque."
-msgstr ""
+msgstr "The application requires an internet connection to access your library."
 
-#: project/templates/offline.html:32
-#, fuzzy
+#: project/templates/offline.html:42
 msgid "Réessayer"
-msgstr "Message"
+msgstr "Retry"
+
+#: project/templates/offline.html:65
+msgid "Vérification de la connexion..."
+msgstr "Checking connection..."
+
+#: project/templates/offline.html:77
+msgid "Connexion rétablie ! Redirection..."
+msgstr "Connection restored! Redirecting..."
+
+#: project/templates/offline.html:106
+msgid "Toujours pas connecté..."
+msgstr "Still not connected..."
 
 #: project/templates/archive/detail.html:4
 #, python-format
@@ -9182,10 +9191,6 @@ msgstr "Mobile navigation"
 msgid "Scan"
 msgstr "Scan"
 
-#: project/templates/utils/navbar.html:329
-msgid "Logo Livres en Classe"
-msgstr "Livres en Classe Logo"
-
 #: project/templates/utils/navbar.html:359
 msgid "Résiliation en cours"
 msgstr "Cancellation in progress"
@@ -10883,4 +10888,22 @@ msgstr "Borrowed by:"
 #~ "au verso. Outil personnalisable et "
 #~ "entièrement gratuit."
 #~ msgstr ""
+
+#~ msgid "Réessayer"
+#~ msgstr "Retry"
+
+#~ msgid "Vérifiez votre connexion Wi-Fi ou réseau mobile et réessayez."
+#~ msgstr "Please check your Wi-Fi or mobile network connection and try again."
+
+#~ msgid "Réessayer (retour au tableau de bord)"
+#~ msgstr "Retry (return to dashboard)"
+
+#~ msgid "Tableau de bord"
+#~ msgstr "Back to dashboard"
+
+#~ msgid "Accueil"
+#~ msgstr "Manual"
+
+#~ msgid "Toujours hors ligne. Vérifiez votre connexion internet."
+#~ msgstr "Still offline. Please check your internet connection."
 

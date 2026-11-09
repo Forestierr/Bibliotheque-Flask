@@ -1,8 +1,6 @@
 <!-- templates/offline.html -->
 <!-- Page de fallback hors ligne — servie par le Service Worker -->
 
-{% from "utils/navbar.html" import navbar %}
-
 {% extends "base.html" %}
 
 {% block meta_robots %}<meta name="robots" content="noindex, nofollow" />{% endblock %}
@@ -10,30 +8,115 @@
 {% block title %}{{ _("Vous êtes hors ligne | Ma bibliothèque") }}{% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="columns is-multiline is-centered is-vcentered" style="min-height: 60vh;">
+<section class="section is-flex is-align-items-center is-justify-content-center" style="min-height: 70vh;">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-12-mobile is-8-tablet is-5-desktop has-text-centered">
 
-        <div class="column is-full has-text-centered">
-            <span style="font-size: 5rem; display: block; margin-bottom: 1rem;">📚</span>
-            <h1 class="title is-2">{{ _("Vous êtes hors ligne") }}</h1>
-            <p class="subtitle is-5 mt-3">
-                {{ _("Vérifiez votre connexion internet et réessayez.") }}
-            </p>
-            <p class="has-text-grey mt-2">
-                {{ _("L'application nécessite une connexion pour accéder à votre bibliothèque.") }}
-            </p>
+                <!-- Logo officiel de l'application -->
+                <div class="mb-4">
+                    <img
+                        src="/static/image/icons/logo-w-512x512.png"
+                        alt="{{ _('Logo Livres en Classe') }}"
+                        width="110"
+                        height="110"
+                        style="max-width: 110px; height: auto; border-radius: 22px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);"
+                        onerror="this.onerror=null; this.src='/static/image/icons/favicon.svg';"
+                    />
+                </div>
 
-            <div class="mt-5">
-                <button
-                    class="button is-primary is-medium"
-                    onclick="window.location.reload()"
-                >
-                    <span class="icon"><i class="fas fa-rotate-right"></i></span>
-                    <span>{{ _("Réessayer") }}</span>
-                </button>
+                <h1 class="title is-3 mb-2">{{ _("Vous êtes hors ligne") }}</h1>
+                <p class="subtitle is-6 has-text-grey mt-2 mb-5">
+                    {{ _("L'application nécessite une connexion pour accéder à votre bibliothèque.") }}
+                </p>
+
+                <!-- Bouton unique Réessayer -->
+                <div class="mt-4">
+                    <button
+                        id="retry-btn"
+                        class="button is-primary is-medium is-rounded has-text-weight-semibold"
+                        type="button"
+                        onclick="retryConnection()"
+                    >
+                        <span class="icon"><i class="fas fa-rotate-right"></i></span>
+                        <span id="retry-btn-text">{{ _("Réessayer") }}</span>
+                    </button>
+                </div>
+
+                <!-- Message de statut dynamique -->
+                <div id="offline-status" class="mt-4" style="min-height: 28px;" aria-live="polite"></div>
+
             </div>
         </div>
-
     </div>
 </section>
+
+<script>
+let isCheckingConnection = false;
+
+async function retryConnection() {
+    if (isCheckingConnection) return;
+    isCheckingConnection = true;
+
+    const btn = document.getElementById("retry-btn");
+    const statusEl = document.getElementById("offline-status");
+    if (btn) btn.classList.add("is-loading");
+    if (statusEl) {
+        statusEl.innerHTML = '<span class="has-text-grey"><i class="fas fa-spinner fa-spin mr-1"></i> {{ _("Vérification de la connexion...") }}</span>';
+    }
+
+    try {
+        // Test de connectivité réel en court-circuitant le cache
+        const res = await fetch("/manifest.json?_t=" + Date.now(), {
+            method: "HEAD",
+            cache: "no-store"
+        });
+
+        if (res.ok || (res.status >= 200 && res.status < 400)) {
+            if (statusEl) {
+                statusEl.innerHTML = '<span class="has-text-success font-weight-bold"><i class="fas fa-check-circle mr-1"></i> {{ _("Connexion rétablie ! Redirection...") }}</span>';
+            }
+
+            // Retour en priorité sur la dernière page consultée valide
+            let targetUrl = "";
+            try {
+                const lastVisited = sessionStorage.getItem("last_visited_page");
+                if (lastVisited && !lastVisited.includes("/offline")) {
+                    targetUrl = lastVisited;
+                }
+            } catch (e) {}
+
+            // Sinon retour vers le dashboard (ou l'accueil si non connecté)
+            if (!targetUrl) {
+                targetUrl = "{% if current_user.is_authenticated %}{{ url_for('main.dashboard') }}{% else %}{{ url_for('main.index') }}{% endif %}";
+            }
+
+            setTimeout(() => {
+                window.location.replace(targetUrl);
+            }, 300);
+            return;
+        }
+    } catch (err) {
+        // Toujours déconnecté
+    }
+
+    isCheckingConnection = false;
+    if (btn) btn.classList.remove("is-loading");
+    if (statusEl) {
+        statusEl.innerHTML = '<span class="has-text-danger font-weight-semibold"><i class="fas fa-triangle-exclamation mr-1"></i> {{ _("Toujours pas connecté...") }}</span>';
+    }
+}
+
+// Redirection automatique dès que la connexion internet est rétablie
+window.addEventListener("online", () => {
+    retryConnection();
+});
+
+// Auto-test si la machine est déjà en ligne à l'affichage
+if (navigator.onLine) {
+    setTimeout(() => {
+        retryConnection();
+    }, 250);
+}
+</script>
 {% endblock %}

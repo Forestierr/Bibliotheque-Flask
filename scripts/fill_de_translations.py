@@ -9,6 +9,20 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/de/LC_MESSAGES/messages.po")
 
 translations = {
+    "Toujours pas connecté...": "Immer noch nicht verbunden...",
+    "Connexion rétablie ! Redirection...": "Verbindung wiederhergestellt! Weiterleitung...",
+    "L'application nécessite une connexion pour accéder à votre bibliothèque de classe.": "Die Anwendung erfordert eine Internetverbindung, um auf Ihre Klassenbibliothek zuzugreifen.",
+    "Vérifiez votre connexion Wi-Fi ou réseau mobile et réessayez.": "Bitte überprüfen Sie Ihre WLAN- oder Mobilfunkverbindung und versuchen Sie es erneut.",
+    "Réessayer (retour au tableau de bord)": "Wiederholen (zurück zum Dashboard)",
+    "Connexion rétablie ! Redirection vers le tableau de bord...": "Verbindung wiederhergestellt! Weiterleitung zum Dashboard...",
+    "Vous êtes hors ligne | Ma bibliothèque": "Sie sind offline | Meine Bibliothek",
+    "Vous êtes hors ligne": "Sie sind offline",
+    "Vérifiez votre connexion internet et réessayez.": "Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+    "L'application nécessite une connexion pour accéder à votre bibliothèque.": "Die Anwendung erfordert eine Internetverbindung, um auf Ihre Bibliothek zuzugreifen.",
+    "Réessayer": "Wiederholen",
+    "Vérification de la connexion...": "Verbindung wird überprüft...",
+    "Connexion rétablie ! Redirection en cours...": "Verbindung wiederhergestellt! Weiterleitung...",
+    "Toujours hors ligne. Vérifiez votre connexion internet.": "Immer noch offline. Bitte überprüfen Sie Ihre Internetverbindung.",
     "Vos fiches sont prêtes !": "Ihre Druckvorlagen sind fertig!",
     "Organisez votre bibliothèque de classe en toute simplicité": "Organisieren Sie Ihre Klassenbibliothek ganz einfach",
     "Saviez-vous que Livres en Classe gère aussi gratuitement le prêt de livres dans votre classe ?": "Wussten Sie, dass Livres en Classe auch die Buchausleihe in Ihrer Klasse kostenlos verwaltet?",

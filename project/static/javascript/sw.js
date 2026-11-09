@@ -1,7 +1,7 @@
 // sw.js
 // Service Worker for PWA — livresenclasse.com
 
-const CACHE_NAME = "livres-en-classe-v5";
+const CACHE_NAME = "livres-en-classe-v7";
 const COVERS_CACHE_NAME = "livres-en-classe-covers-v1";
 const OFFLINE_URL = "/offline";
 
@@ -23,7 +23,7 @@ const STATIC_ASSETS = [
 
 // ─── Install : précache TOUT de façon garantie ────────────────────────────────
 self.addEventListener("install", (event) => {
-  console.log("[Service Worker] Installing v5...");
+  console.log("[Service Worker] Installing v7...");
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       console.log("[Service Worker] Pre-caching shell & core dependencies...");
@@ -44,7 +44,7 @@ self.addEventListener("install", (event) => {
 
 // ─── Activate : nettoyage des anciens caches ───────────────────────────────────
 self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating v5...");
+  console.log("[Service Worker] Activating v7...");
   event.waitUntil(
     caches.keys()
       .then((keys) =>
@@ -145,36 +145,32 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2. Navigation HTML classique → Network-First avec fallback /offline
-  if (request.mode === "navigate") {
+  // 2. Navigation HTML classique et navigation HTMX boostée → Network-First avec fallback /offline
+  const isNavigation =
+    request.mode === "navigate" ||
+    request.headers.get("HX-Boosted") === "true";
+
+  if (isNavigation) {
     event.respondWith(
       fetch(request)
         .then((response) => response)
-        .catch(() =>
-          caches.match(OFFLINE_URL).then((offline) =>
-            offline ||
-            new Response(
-              "<h1>Vous êtes hors ligne</h1><p>Vérifiez votre connexion internet.</p>",
-              { headers: { "Content-Type": "text/html; charset=utf-8" } }
-            )
-          )
-        )
-    );
-    return;
-  }
-
-  // 3. Navigation HTMX (HX-Request) → Network-First avec fallback hors-ligne
-  if (request.headers.get("HX-Request") === "true") {
-    event.respondWith(
-      fetch(request).catch(() =>
-        caches.match(OFFLINE_URL).then((offline) =>
-          offline ||
-          new Response(
-            "<div class='notification is-warning'>Vous êtes hors ligne. Vérifiez votre connexion.</div>",
+        .catch(async () => {
+          const offlineRes = await caches.match(OFFLINE_URL);
+          if (offlineRes) {
+            // Créer une nouvelle réponse avec le contenu mis en cache afin de préserver l'URL demandée
+            // dans la barre d'adresse et permettre à "Réessayer" de recharger directement la page cible.
+            const content = await offlineRes.text();
+            return new Response(content, {
+              status: 200,
+              statusText: "OK",
+              headers: { "Content-Type": "text/html; charset=utf-8" }
+            });
+          }
+          return new Response(
+            "<h1>Vous êtes hors ligne</h1><p>Vérifiez votre connexion internet.</p>",
             { headers: { "Content-Type": "text/html; charset=utf-8" } }
-          )
-        )
-      )
+          );
+        })
     );
     return;
   }
@@ -243,14 +239,14 @@ self.addEventListener("push", (event) => {
       body: data.body || "",
       icon: "/static/image/icons/web-app-manifest-192x192.png",
       badge: "/static/image/icons/favicon-96x96.png",
-      data: { url: data.url || "/" }
+      data: { url: data.url || "/dashboard" }
     })
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || "/";
+  const targetUrl = event.notification.data?.url || "/dashboard";
   event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {

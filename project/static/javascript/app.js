@@ -1,23 +1,30 @@
-function showOfflineNotification() {
-  if ("serviceWorker" in navigator && "Notification" in window) {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        new Notification("📶 Vous êtes hors ligne", {
-          body: "Certaines fonctionnalités peuvent être limitées.",
-          icon: "/static/image/favicon-192x192.png"
-        });
-      }
-    });
+// Sauvegarde l'URL courante pour restaurer la navigation après une coupure réseau
+if (typeof window !== "undefined" && window.location && !window.location.pathname.includes("/offline")) {
+  try {
+    sessionStorage.setItem("last_visited_page", window.location.href);
+  } catch (e) {
+    // Mode navigation privée restreint
   }
 }
 
-// Listen for connection loss
+function handleOfflineRedirect() {
+  if (typeof window !== "undefined" && window.location) {
+    if (!window.location.pathname.includes("/offline")) {
+      try {
+        sessionStorage.setItem("last_visited_page", window.location.href);
+      } catch (e) {}
+      window.location.href = "/offline";
+    }
+  }
+}
+
+// Redirection directe vers /offline en cas de perte de connexion
 window.addEventListener("offline", () => {
-  console.log("⚠️ Perte de connexion !");
-  showOfflineNotification();
+  console.log("⚠️ Perte de connexion, redirection vers /offline...");
+  handleOfflineRedirect();
 });
 
-// Optionally, notify when back online
+// En cas de reconnexion
 window.addEventListener("online", () => {
   console.log("✅ Connexion rétablie !");
 });
@@ -79,17 +86,8 @@ if (document.readyState !== "loading") {
     updateNavbarControls();
 }
 
-// Non-blocking Toast notification for HTMX network errors
+// Redirection immédiate vers /offline lors d'une erreur réseau HTMX
 document.addEventListener("htmx:sendError", () => {
-    console.warn("⚠️ [HTMX] Erreur de transmission réseau / hors ligne.");
-    if (!document.getElementById("htmx-network-toast")) {
-        const toast = document.createElement("div");
-        toast.id = "htmx-network-toast";
-        toast.className = "notification is-warning is-light";
-        toast.style.cssText = "position: fixed; bottom: 20px; right: 20px; z-index: 10000; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 350px;";
-        toast.innerHTML = '<button class="delete"></button><strong>Connexion interrompue</strong><br>Impossible d\'effectuer l\'action. Vérifiez votre réseau.';
-        toast.querySelector(".delete").addEventListener("click", () => toast.remove());
-        document.body.appendChild(toast);
-        setTimeout(() => { if (toast.parentNode) toast.remove(); }, 6000);
-    }
+    console.warn("⚠️ [HTMX] Erreur de transmission réseau / hors ligne, redirection vers /offline...");
+    handleOfflineRedirect();
 });

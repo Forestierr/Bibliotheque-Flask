@@ -9,6 +9,20 @@ from babel.messages import pofile
 po_path = pathlib.Path("project/translations/en/LC_MESSAGES/messages.po")
 
 translations = {
+    "Toujours pas connecté...": "Still not connected...",
+    "Connexion rétablie ! Redirection...": "Connection restored! Redirecting...",
+    "L'application nécessite une connexion pour accéder à votre bibliothèque de classe.": "The application requires an internet connection to access your classroom library.",
+    "Vérifiez votre connexion Wi-Fi ou réseau mobile et réessayez.": "Please check your Wi-Fi or mobile network connection and try again.",
+    "Réessayer (retour au tableau de bord)": "Retry (return to dashboard)",
+    "Connexion rétablie ! Redirection vers le tableau de bord...": "Connection restored! Redirecting to dashboard...",
+    "Vous êtes hors ligne | Ma bibliothèque": "You are offline | My library",
+    "Vous êtes hors ligne": "You are offline",
+    "Vérifiez votre connexion internet et réessayez.": "Please check your internet connection and try again.",
+    "L'application nécessite une connexion pour accéder à votre bibliothèque.": "The application requires an internet connection to access your library.",
+    "Réessayer": "Retry",
+    "Vérification de la connexion...": "Checking connection...",
+    "Connexion rétablie ! Redirection en cours...": "Connection restored! Redirecting...",
+    "Toujours hors ligne. Vérifiez votre connexion internet.": "Still offline. Please check your internet connection.",
     "Vos fiches sont prêtes !": "Your printables are ready!",
     "Organisez votre bibliothèque de classe en toute simplicité": "Easily organize your classroom library",
     "Saviez-vous que Livres en Classe gère aussi gratuitement le prêt de livres dans votre classe ?": "Did you know that Livres en Classe also manages classroom book lending for free?",

@@ -308,6 +308,7 @@ def create_app(test_config=None):
         "/llms",
         "/favicon.ico",
         "/manifest.json",
+        "/offline",
         "/sw.js",
         "/1452be41003e41c59435f150f75f55d8.txt",
         "/744d589148a54a93bfd6c066fce258a6.txt",
