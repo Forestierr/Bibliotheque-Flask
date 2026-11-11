@@ -1539,15 +1539,19 @@
             <p class="mb-3">
                 {{ _("L'exportation de vos données au format Excel (catalogue des livres, lectures par élève, emprunts actifs et historique complet) est réservée aux abonnés Premium et membres Fondateurs.") }}
             </p>
-            <p class="has-text-grey is-size-7">
+            <p class="has-text-grey is-size-7 mb-3">
                 {{ _("Sauvegardez vos listes, partagez-les avec vos collègues ou intégrez-les dans vos bilans scolaires en un clic.") }}
             </p>
+            <div class="notification is-info is-light py-2 px-3 mb-0" style="border-radius: 8px; font-size: 0.8rem;">
+                <span class="icon is-small mr-1"><i class="fas fa-info-circle"></i></span>
+                <span>{{ _("Éligible au financement par votre coopérative scolaire (OCCE), les crédits mairie ou votre budget de classe.") }}</span>
+            </div>
         </section>
         <footer class="modal-card-foot" style="justify-content: flex-end;">
             <button class="button is-light" onclick="closeModal('modalPremiumExport')">{{ _("Fermer") }}</button>
-            <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-dark">
+            <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-dark has-text-weight-bold">
                 <span class="icon"><i class="fas fa-bolt"></i></span>
-                <span>{{ _("Découvrir les offres Premium (dès 3.- CHF/mois)") }}</span>
+                <span>{{ _("Découvrir la formule complète (30.- CHF/an)") }}</span>
             </a>
         </footer>
     </div>

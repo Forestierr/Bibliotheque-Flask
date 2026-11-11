@@ -13,6 +13,40 @@
     size: A4 {% block page_orientation %}portrait{% endblock %};
     margin: 8mm;
 }
+.studio-preview-watermark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    user-select: none;
+    z-index: 50;
+    overflow: hidden;
+}
+.studio-preview-watermark-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+@media print {
+    .studio-preview-watermark,
+    .studio-preview-watermark-svg {
+        display: block !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 9999 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
 </style>
 {% block extra_head %}{% endblock %}
 {% endblock %}
@@ -55,8 +89,20 @@
             <!-- Bouton d'impression principal -->
             <button type="button" class="button is-link is-rounded has-text-weight-bold" id="print-button" onclick="triggerStudioPrint()">
                 <span class="icon"><i class="fas fa-print"></i></span>
-                <span>{{ _("Imprimer / Enregistrer en PDF") }}</span>
+                <span>
+                    {% if is_premium_resource and not current_user.is_premium %}
+                        {{ _("Imprimer l'aperçu") }}
+                    {% else %}
+                        {{ _("Imprimer / Enregistrer en PDF") }}
+                    {% endif %}
+                </span>
             </button>
+            {% if is_premium_resource and not current_user.is_premium %}
+            <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-light is-rounded has-text-weight-bold ml-2" title="{{ _('Imprimer sans filigrane pour toute la classe') }}">
+                <span class="icon is-small"><i class="fas fa-crown"></i></span>
+                <span>{{ _("Imprimer sans filigrane (Premium)") }}</span>
+            </a>
+            {% endif %}
         </div>
     </div>
     <div id="studioRessourceTracker" data-ressource-id="{% block ressource_id %}ressource{% endblock %}" style="display:none;"></div>
@@ -100,6 +146,29 @@
             </div>
 
             <div class="a4-sheet {% block sheet_orientation %}portrait{% endblock %} {% block sheet_extra_class %}{% endblock %}" id="printableSheet">
+                {% if is_premium_resource and not current_user.is_premium %}
+                <div class="studio-preview-watermark">
+                    <span class="is-sr-only">{{ _("Aperçu - Livres en classe") }}</span>
+                    <svg class="studio-preview-watermark-svg" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                        <defs>
+                            <pattern id="studioWmPattern" width="300" height="150" patternTransform="rotate(-28 0 0)" patternUnits="userSpaceOnUse">
+                                <!-- Bloc 1 -->
+                                <line x1="0" y1="8" x2="140" y2="8" stroke="#dc2626" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="8,6" />
+                                <text x="6" y="34" font-family="'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="17" font-weight="900" fill="#dc2626" fill-opacity="0.55" letter-spacing="2">{{ _("APERÇU GRATUIT") }}</text>
+                                <text x="6" y="52" font-family="'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="11" font-weight="800" fill="#dc2626" fill-opacity="0.48" letter-spacing="1">{{ _("LIVRES EN CLASSE • SPÉCIMEN") }}</text>
+                                <line x1="0" y1="64" x2="140" y2="64" stroke="#dc2626" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="8,6" />
+
+                                <!-- Bloc 2 décalé (quinconce) -->
+                                <line x1="150" y1="83" x2="290" y2="83" stroke="#dc2626" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="8,6" />
+                                <text x="156" y="109" font-family="'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="17" font-weight="900" fill="#dc2626" fill-opacity="0.55" letter-spacing="2">{{ _("SPÉCIMEN") }}</text>
+                                <text x="156" y="127" font-family="'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="10" font-weight="800" fill="#dc2626" fill-opacity="0.48" letter-spacing="0.5">{{ _("NE PAS UTILISER EN CLASSE") }}</text>
+                                <line x1="150" y1="139" x2="290" y2="139" stroke="#dc2626" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="8,6" />
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#studioWmPattern)" />
+                    </svg>
+                </div>
+                {% endif %}
                 {% block sheet_content %}
                 <!-- Contenu rendu de la feuille A4 -->
                 {% endblock %}

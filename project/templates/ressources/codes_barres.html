@@ -11,6 +11,12 @@
 {% endblock %}
 
 {% block editor_sidebar %}
+{% if not current_user.is_premium %}
+<div class="notification is-info is-light py-2 px-3 mb-3" style="border-radius: 8px; font-size: 0.8rem; border-left: 4px solid #3b82f6;">
+    <span class="icon is-small mr-1"><i class="fas fa-info-circle"></i></span>
+    <span>{{ _("Mode Découverte : Testez la génération avec vos livres. La formule Premium permet d'imprimer l'intégralité de la classe sans filigrane.") }}</span>
+</div>
+{% endif %}
 <div class="studio-section">
     <div class="studio-section-title">
         <i class="fas fa-barcode"></i>
@@ -90,10 +96,17 @@ BAC-B-002 | Charlie et la chocolaterie</textarea>
 <div class="codes-barres-grid" id="codesBarresGrid">
     <!-- Généré dynamiquement en JS vectoriel SVG CODE 128 -->
 </div>
+<div id="previewNoticeLimit" class="no-print has-text-centered mt-3" style="display: none;">
+    <span class="tag is-warning is-light has-text-weight-semibold">
+        <i class="fas fa-info-circle mr-1"></i>
+        {{ _("Aperçu limité à 24 codes (1 planche). Passez Premium pour imprimer les planches complètes de votre classe sans filigrane.") }}
+    </span>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
+const isPremiumUser = {{ 'true' if current_user.is_premium else 'false' }};
 const myBooks = [
     {% for b in books_list %}
     { code: "{{ b.barcode or b.isbn or 'LIV-' ~ b.id }}", title: "{{ b.title|replace('"', '\\"') }}" },
@@ -159,7 +172,16 @@ function renderItems(items) {
     const grid = document.getElementById('codesBarresGrid');
     grid.innerHTML = '';
 
-    items.forEach((item, idx) => {
+    const limitNotice = document.getElementById('previewNoticeLimit');
+    let displayItems = items;
+    if (!isPremiumUser && items.length > 24) {
+        displayItems = items.slice(0, 24);
+        if (limitNotice) limitNotice.style.display = 'block';
+    } else {
+        if (limitNotice) limitNotice.style.display = 'none';
+    }
+
+    displayItems.forEach((item, idx) => {
         const card = document.createElement('div');
         card.className = 'code-barre-card';
 

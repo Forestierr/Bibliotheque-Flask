@@ -245,6 +245,37 @@ def test_a4_page_orientations(client):
         assert "multi-page" in html_cb
 
 
+def test_preview_watermark_free_vs_premium(client):
+    """Vérifie que les utilisateurs gratuits accèdent aux planches avec filigrane et que les premium n'ont pas de filigrane."""
+    # 1. Utilisateur gratuit
+    mock_free = MagicMock(id=1, is_authenticated=True, is_premium=False)
+    with patch("flask_login.utils._get_user", return_value=mock_free):
+        resp_cb = client.get("/ressources/codes-barres")
+        assert resp_cb.status_code == 200
+        html_cb = resp_cb.get_data(as_text=True)
+        assert '<div class="studio-preview-watermark">' in html_cb
+        assert "Aperçu - Livres en classe" in html_cb
+        assert "Mode Découverte" in html_cb
+
+        resp_et = client.get("/ressources/etiquettes")
+        assert resp_et.status_code == 200
+        html_et = resp_et.get_data(as_text=True)
+        assert '<div class="studio-preview-watermark">' in html_et
+
+    # 2. Utilisateur premium
+    mock_prem = MagicMock(id=1, is_authenticated=True, is_premium=True)
+    with patch("flask_login.utils._get_user", return_value=mock_prem):
+        resp_cb_prem = client.get("/ressources/codes-barres")
+        assert resp_cb_prem.status_code == 200
+        html_cb_prem = resp_cb_prem.get_data(as_text=True)
+        assert '<div class="studio-preview-watermark">' not in html_cb_prem
+
+        resp_et_prem = client.get("/ressources/etiquettes")
+        assert resp_et_prem.status_code == 200
+        html_et_prem = resp_et_prem.get_data(as_text=True)
+        assert '<div class="studio-preview-watermark">' not in html_et_prem
+
+
 def test_diplome_authenticated_students_dropdown_and_batch(client, app):
     """Vérifie la présence du sélecteur d'élèves avec décompte des lectures et le mode toute la classe."""
     with app.app_context():
