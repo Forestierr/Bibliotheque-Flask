@@ -16,49 +16,47 @@
     margin-bottom: 1rem;
     border-left: 4px solid #f39c12;
 }
+.loan-just-returned {
+    background-color: #f0fdf4 !important;
+    border-color: #86efac !important;
+}
 </style>
 
 <div class="container block">
-    {% set has_blurred = namespace(value=false) %}
-    {% for loan in loans %}
-        {% set is_blurred = not current_user.is_premium and cutoff_date and loan.Loan.date_loan and loan.Loan.date_loan < cutoff_date %}
-        {% if is_blurred %}
-            {% set has_blurred.value = true %}
-        {% endif %}
-        <hr style="margin: 5px 0 5px 0"/>
-        <div class="container {% if is_blurred %}loan-blurred{% endif %}" style="margin-bottom: 10px">
-            <div class="columns is-mobile" style="margin-bottom: 0;">
-                <div class="column">
-                    <a href="{{ url_for('livre.livre_infos', id=loan.Book.id) }}" class="has-text-weight-bold {% if loan.Loan.date_return == None %}has-text-danger{% endif %}">{{ loan.Book.title }}</a>
-                </div>
-                <div class="column has-text-right">
-                    <a href="{{ url_for('eleve.eleve_infos', id=loan.Student.id) }}">{{ loan.Student.name }} {{ loan.Student.firstname }}</a>
-                </div>
-            </div>
-
-            {% if loan.Loan.date_return == None %}
-                <p>{{ _("Emprunté le") }} : {{ format_date(loan.Loan.date_loan, format='medium') }}</p>
-            {% else %}
-                <p>{{ _("Emprunté du") }} : {{ format_date(loan.Loan.date_loan, format='medium') }} {{ _("au") }} {{ format_date(loan.Loan.date_return, format='medium') }}</p>
-            {% endif %}
+    {% if not loans %}
+        <div class="notification is-light has-text-centered py-5" style="border-radius: 8px;">
+            <p class="is-size-6 has-text-grey">
+                <span class="icon is-medium mb-2"><i class="fas fa-book-reader fa-2x"></i></span><br>
+                {% if active_loan in ('1', 'active') %}
+                    {{ _("Aucun emprunt en cours actuellement.") }}
+                {% elif active_loan in ('archive', 'archives', '2') %}
+                    {{ _("Aucun emprunt archivé pour le moment.") }}
+                {% else %}
+                    {{ _("Aucun emprunt trouvé.") }}
+                {% endif %}
+            </p>
         </div>
+    {% else %}
+        {% set has_blurred = namespace(value=false) %}
+        {% for loan in loans %}
+            {% set is_blurred = not current_user.is_premium and cutoff_date and loan.Loan.date_loan and loan.Loan.date_loan < cutoff_date %}
+            {% if is_blurred %}
+                {% set has_blurred.value = true %}
+            {% endif %}
+            {% include "emprunt/_loan_row.html" %}
+        {% endfor %}
 
-        {# Add hr if last element #}
-        {%  if loop.last %}
-        <hr style="margin: 5px 0 5px 0" />
+        {% if has_blurred.value %}
+        <div class="notification is-warning is-light has-text-centered loan-locked-banner">
+            <p class="is-size-6 mb-2">
+                <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span><strong>{{ _("Archives antérieures à 10 mois masquées.") }}</strong>
+                {{ _("Passez Premium pour consulter l'historique complet de vos emprunts passés.") }}
+            </p>
+            <a href="{{ url_for('subscription.tarifs') }}" class="button is-small is-warning is-dark">
+                {{ _("Découvrir les offres Premium") }}
+            </a>
+        </div>
         {% endif %}
-    {% endfor %}
-
-    {% if has_blurred.value %}
-    <div class="notification is-warning is-light has-text-centered loan-locked-banner">
-        <p class="is-size-6 mb-2">
-            <span class="icon is-small mr-1"><i class="fas fa-lock"></i></span><strong>{{ _("Archives antérieures à 10 mois masquées.") }}</strong>
-            {{ _("Passez Premium pour consulter l'historique complet de vos emprunts passés.") }}
-        </p>
-        <a href="{{ url_for('subscription.tarifs') }}" class="button is-small is-warning is-dark">
-            {{ _("Découvrir les offres Premium") }}
-        </a>
-    </div>
     {% endif %}
 </div>
 

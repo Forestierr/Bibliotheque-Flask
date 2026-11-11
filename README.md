@@ -1,126 +1,130 @@
-# LivresEnClasse.com — Gestion de bibliothèque de classe
+<p align="center">
+  <a href="https://livresenclasse.com" target="_blank" rel="noopener noreferrer">
+    <img src="project/static/image/icons/logo-w-512x512.png" width="100" height="100" alt="Logo Livres en Classe">
+  </a>
+</p>
 
-[![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
-[![Framework](https://img.shields.io/badge/flask-3.0-lightgrey.svg)](https://flask.palletsprojects.com/)
-[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-green.svg)](LICENSE.md)
-[![Code style](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Testing](https://img.shields.io/badge/tests-pytest-yellow.svg)](project/test/)
+<h1 align="center">Livres en Classe</h1>
 
-[English version](README.en.md)
+<p align="center">
+  <strong>Le logiciel de gestion de bibliothèque de classe gratuit pour les enseignants</strong><br>
+  Cataloguez vos livres par scan code-barres, gérez les prêts, suivez les emprunts des élèves et développez la lecture dans votre classe.
+</p>
 
-**LivresEnClasse.com** (Bibliothèque-Flask) est une application web conçue spécialement pour les enseignants afin de gérer facilement leur bibliothèque de classe, suivre les emprunts des élèves et enrichir leur catalogue grâce au scan de codes-barres.
+<p align="center">
+  <a href="https://livresenclasse.com"><strong>Accéder au site officiel : livresenclasse.com →</strong></a>
+</p>
 
----
+<p align="center">
+  <a href="README.en.md">English version</a> •
+  <a href="#pourquoi-utiliser-livres-en-classe-">Fonctionnalités</a> •
+  <a href="#aperçu-de-lapplication">Aperçu</a> •
+  <a href="#formules--tarifs">Formules & Tarifs</a> •
+  <a href="#auto-hébergement--développement">Self-Hosting</a> •
+  <a href="#licence">Licence</a>
+</p>
 
-## Sommaire
-
-- [Fonctionnalités clés](#fonctionnalités-clés)
-- [Stack technique](#stack-technique)
-- [Démarrage rapide en local (Quickstart)](#démarrage-rapide-en-local-quickstart)
-- [Documentation technique](#documentation-technique)
-- [Qualité du code & Tests](#qualité-du-code--tests)
-- [Licence](#licence)
-
----
-
-## Fonctionnalités clés
-
-- **Scan code-barres & enrichissement multi-APIs** : Reconnaissance instantanée par webcam/smartphone (HTML5-QRCode) avec recherche en cascade sur la **Bibliothèque nationale de France (BnF SRU Dublin Core)**, **Google Books** et **Open Library**.
-- **Gestion des élèves & prêts** : Emprunts et retours en un clic, historique des lectures, indicateurs d'ouvrages en retard.
-- **Outils de classe & impressions** : Génération de planches de codes-barres vectoriels et d'étiquettes thématiques pour les bacs de livres.
-- **Modèle SaaS Freemium & Stripe** : Quotas gratuits (40 élèves, 500 livres, 30 scans/semaine), période d'essai de 30 jours, statut Fondateur à vie et abonnement Premium illimité opéré par Stripe Checkout et le Portail Client Stripe.
-- **Multi-langue & SEO international** : Support complet du Français 🇫🇷, Anglais 🇬🇧 et Allemand 🇩🇪 avec URLs dédiées (`/fr/`, `/en/`, `/de/`) et balises `hreflang`.
-- **Sécurité & Confidentialité** : Authentification sécurisée (Werkzeug/Scrypt), protection anti-brute force et anti-spam (hCaptcha), isolation stricte des données par enseignant et politique de non-destruction des données.
-
----
-
-## Stack technique
-
-- **Backend** : Python 3.12, Flask 3, Flask-Login, Flask-WTF, Flask-Babel 4
-- **ORM & Base de données** : SQLAlchemy, Flask-Migrate (Alembic), SQLite (stocké dans `instance/db.sqlite`)
-- **Frontend** : Jinja2, HTML5 sémantique, CSS3 responsive (design système fluide), Vanilla JavaScript
-- **Production & Conteneurisation** : Gunicorn, Traefik (reverse proxy & TLS Let's Encrypt), Authelia (2FA /admin), Docker Compose, Cloudflare Tunnel
+<p align="center">
+  <a href="https://livresenclasse.com"><img src="https://img.shields.io/badge/Service-En_Ligne-22c55e.svg" alt="Service en ligne"></a>
+  <a href="https://livresenclasse.com"><img src="https://img.shields.io/badge/Plateforme-Web_%26_PWA-3b82f6.svg" alt="Web & PWA"></a>
+  <img src="https://img.shields.io/badge/Langues-FR_%7C_EN_%7C_DE-orange.svg" alt="Langues">
+  <img src="https://img.shields.io/badge/Formule-Gratuite_disponible-blue.svg" alt="Formule gratuite">
+  <a href="LICENSE.md"><img src="https://img.shields.io/badge/Licence-PolyForm_Noncommercial-emerald.svg" alt="Licence PolyForm"></a>
+</p>
 
 ---
 
-## Démarrage rapide en local (Quickstart)
+## Pourquoi utiliser Livres en Classe ?
 
-Pour lancer le projet en environnement de développement local en 5 étapes :
+Conçu spécialement pour le quotidien des enseignants d'école primaire et de maternelle, **Livres en Classe** remplace les cahiers d'emprunt manuscrits et les tableurs complexes par une interface fluide et visuelle.
 
-```bash
-# 1. Cloner le dépôt et entrer dans le dossier
-git clone https://github.com/Forestierr/Bibliotheque-Flask.git
-cd Bibliotheque-Flask
-
-# 2. Créer et activer l'environnement virtuel Python 3.12
-python -m venv venv
-# Sur Linux / macOS : source venv/bin/activate
-# Sur Windows (PowerShell) : .\venv\Scripts\Activate.ps1
-
-# 3. Installer les dépendances applicatives et d'outillage
-pip install --upgrade pip
-pip install -r project/requirements.txt
-pip install ruff pytest
-
-# 4. Configurer les variables d'environnement
-cp .env.example .env
-
-# 5. Appliquer les migrations de base de données et lancer le serveur
-export FLASK_APP=project   # Windows PowerShell: $env:FLASK_APP="project"
-flask db upgrade
-flask run -p 5000 -h 127.0.0.1
-```
-
-Accédez ensuite à l'application dans votre navigateur à l'adresse : **[http://127.0.0.1:5000](http://127.0.0.1:5000)**.
-
-> **Note Caméra / HTTPS :** Les navigateurs modernes restreignent l'accès à la webcam aux contextes sécurisés (HTTPS ou localhost). Pour tester le scanner sur un smartphone connecté à votre réseau local, lancez le serveur avec :
-> ```bash
-> flask run -p 5000 -h 0.0.0.0 --cert adhoc
-> ```
+| Gagnez du temps | Suivez la progression | 100% Mobile & Caméra |
+| :--- | :--- | :--- |
+| **Fini les cahiers brouillons.** En quelques clics, enregistrez un prêt ou un retour. Retrouvez un livre instantanément grâce à la recherche rapide. | **Analysez les lectures de vos élèves.** Visualisez qui a lu quoi, repérez les retards et encouragez la curiosité de ceux qui lisent moins. | **Scannez directement avec votre smartphone.** Utilisez la caméra de votre téléphone ou tablette, sans investir dans une douchette coûteuse. |
 
 ---
 
-## Documentation technique
+## Aperçu de l'application
 
-Pour approfondir le fonctionnement, l'architecture et la maintenance du projet, consultez les guides détaillés situés dans le dossier [`/docs`](docs/) :
+### 1. Une vue globale de votre bibliothèque scolaire
+Le tableau de bord centralise toutes les informations clés de votre classe : nombre d'ouvrages, élèves inscrits, emprunts actifs, graphique d'activité sur l'année et alertes prioritaires des prêts en retard avec retours rapides en un clic.
 
-| Document | Description |
-| :--- | :--- |
-| [**Architecture logicielle**](docs/architecture.md) | Découpage en 11 Blueprints, diagramme Mermaid du cycle HTTP, filtres Jinja2, middlewares et scheduler multi-workers. |
-| [**Base de données**](docs/base-de-donnees.md) | Diagramme relationnel complet (`erDiagram`), détail des 9 tables, gestion des migrations Alembic et stratégie de sauvegarde SQLite. |
-| [**Déploiement en production**](docs/deploiement.md) | Guide pas-à-pas pour serveur de production, stack Traefik, Authelia, Cloudflare Tunnel, images GHCR et persistance. |
-| [**APIs Externes & Intégrations**](docs/apis-externes.md) | Spécifications des requêtes BnF SRU (Dublin Core), Google Books, Open Library, webhooks Stripe et hCaptcha (dont obligations légales BnF). |
-| [**Configuration & Variables**](docs/configuration.md) | Répertoire exhaustif des variables `.env`, constantes métiers de tarification (`config_plans.py`), cookies de session et drapeaux d'environnement. |
-| [**Exploitation & Maintenance**](docs/maintenance.md) | Utilitaire des scripts CLI (`scripts/`), gestion manuelle des quotas et des comptes Fondateurs, supervision et résolution des pannes courantes. |
+<p align="center">
+  <img src="project/static/image/store/play_store/1_dashboard_desktop.png" width="800" alt="Tableau de bord Livres en Classe">
+</p>
 
 ---
 
-## Qualité du code & Tests
+### 2. Tous les livres de la classe au même endroit
+Scannez le code-barres ISBN de vos livres pédagogiques avec la caméra de votre téléphone. L'application récupère automatiquement la fiche bibliographique (titre, auteur, éditeur, image de couverture) en interrogeant la **Bibliothèque nationale de France (BnF)**, **Google Books** et **Open Library**.
 
-Le projet intègre un pipeline strict de validation CI/CD sur GitHub Actions ([`.github/workflows/pr-validation.yml`](.github/workflows/pr-validation.yml)) :
+<p align="center">
+  <img src="project/static/image/store/play_store/2_livres_desktop.png" width="800" alt="Catalogue des livres">
+</p>
 
-- **Formatage & Linting** :
-  ```bash
-  ruff format project/
-  ruff check project/
-  ```
-- **Tests unitaires & d'intégration** :
-  ```bash
-  pytest project/test/
-  ```
-- **Internationalisation (i18n)** :  
-  Avant de soumettre une modification touchant aux traductions, les fichiers `.mo` compilés doivent impérativement être mis à jour :
-  ```bash
-  pybabel compile -d project/translations
-  ```
+---
 
-Consultez le guide [**CONTRIBUTING.md**](CONTRIBUTING.md) pour découvrir les règles complètes de contribution.
+### 3. Qui a lu quoi ? Suivez vos élèves
+Suivez le parcours de chaque élève, attribuez des étiquettes personnalisées aux bacs de livres et téléchargez vos bilans annuels de promotion lors de la clôture de l'année scolaire.
+
+<p align="center">
+  <img src="project/static/image/store/play_store/3_eleves_desktop.png" width="800" alt="Répertoire des élèves et suivi des lectures">
+</p>
+
+---
+
+## Formules & Tarifs
+
+Une tarification juste et transparente pensée pour les budgets de classe des enseignants :
+
+| Caractéristique | Formule Gratuite | Formule Premium |
+| :--- | :---: | :---: |
+| **Tarif** | **0.- CHF** / à vie | **3.- CHF / mois** ou **30.- CHF / an** |
+| **Élèves maximum** | Jusqu'à 40 élèves | **Illimité** |
+| **Livres au catalogue** | Jusqu'à 500 livres | **Illimité** |
+| **Scans code-barres** | 30 scans par semaine | **Illimité** |
+| **Historique des prêts** | 10 mois d'historique | **Illimité** |
+| **Exports de données** | Consultation en ligne | **Exports Excel complets** (livres, élèves, prêts) |
+| **Outils de classe & impressions** | — | **Planches de codes-barres vectoriels & étiquettes de bacs** |
+| **Clôture de classe annuelle** | Bilan en ligne | **Bilan officiel imprimable** (top livres & lecteurs) |
+
+**Essai gratuit de 30 jours** accordé automatiquement à chaque nouvel inscrit, sans carte bancaire requise.
+
+**[Créer un compte enseignant gratuitement sur LivresEnClasse.com →](https://livresenclasse.com)**
+
+---
+
+## Auto-hébergement & Développement
+
+**Livres en Classe** est un projet distribué sous modèle *Source-Available*. La solution officielle, prête à l'emploi et hébergée en Suisse / Europe, est accessible directement sur [livresenclasse.com](https://livresenclasse.com).
+
+Si vous êtes développeur, que vous souhaitez contribuer au projet ou déployer votre propre instance autonome, l'application est facilement installable :
+
+* **Guide d'installation locale & Self-hosting** : [**`docs/self-hosting.md`**](docs/self-hosting.md)  
+  *(Prérequis : Python 3.12, SQLite, configuration des clés d'APIs et certificat HTTPS pour la caméra).*
+* **Architecture logicielle détaillée** : [**`docs/architecture.md`**](docs/architecture.md)
+* **Schéma de base de données & Migrations** : [**`docs/base-de-donnees.md`**](docs/base-de-donnees.md)
+* **Guide de déploiement en production (Docker / Traefik)** : [**`docs/deploiement.md`**](docs/deploiement.md)
+* **Règles de contribution** : [**`CONTRIBUTING.md`**](CONTRIBUTING.md)
+
+### Stack technique
+- **Backend** : Python 3.12, Flask 3, Flask-Login, Flask-Babel 4 (i18n Français / Anglais / Allemand)
+- **Base de données** : SQLAlchemy 2.0, Flask-Migrate (Alembic), SQLite
+- **Frontend** : Jinja2, Bulma CSS, HTMX, Vanilla JavaScript, Service Worker (PWA)
+- **Services intégrés** : BnF SRU API, Google Books API, Open Library, Stripe Checkout, hCaptcha
 
 ---
 
 ## Licence
 
-Ce projet est distribué sous licence **[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)** (Source-Available) — voir le fichier [LICENSE.md](LICENSE.md).
+Ce projet est distribué sous licence **[PolyForm Noncommercial License 1.0.0](LICENSE.md)** (Source-Available) :
 
-- **Autorisé** : Utilisation personnelle, pédagogique, éducative (écoles, enseignants, médiathèques), recherche et contributions open source non commerciales.
-- **Interdit** : Toute exploitation commerciale, monétisation directe ou indirecte, revente ou hébergement SaaS payant concurrent sans autorisation écrite préalable de l'auteur.
+- **Autorisé** : Utilisation personnelle, pédagogique et scolaire (écoles, enseignants, associations éducatives), audit de sécurité et contributions open source.
+- **Interdit** : Toute exploitation commerciale, monétisation, revente ou hébergement payant concurrent sans accord écrit préalable de l'auteur.
+
+---
+
+<p align="center">
+  Fait avec passion pour les enseignants et leurs élèves<br>
+  <strong><a href="https://livresenclasse.com">LivresEnClasse.com</a></strong>
+</p>

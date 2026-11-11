@@ -31,13 +31,15 @@ from .config_plans import (
     MAX_FREE_BOOKS,
     MAX_FREE_SCANS,
     MAX_FREE_STUDENTS,
+    RETENTION_PROMO_CODE,
     TRIAL_PERIOD_DAYS,
 )
 from .email import (
     send_email_reset_password,
     send_email_verification,
 )
-from .models import User
+from .models import AcademicYearArchive, Book, Loan, User
+from .query import delete_user_account, get_students_count
 
 auth = Blueprint("auth", __name__)
 
@@ -202,7 +204,7 @@ def signup_post():
         ),
         "success",
     )
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.login", registered=1))
 
 
 @auth.route("/verify_email/<token>/<int:user_id>")
@@ -224,7 +226,7 @@ def verify_email(token, user_id):
         ),
         "success",
     )
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.login", verified=1))
 
 
 @auth.route("/logout")
@@ -298,14 +300,20 @@ def reset_password(token, user_id):
 @auth.route("/delete_account", methods=["POST"])
 @login_required
 def delete_account():
-    # db.session.query(User).filter(User.id == current_user.id).delete()
-    # db.session.commit()
-    # logout_user()
+    user = db.session.get(User, current_user.id)
+    if not user:
+        return redirect(url_for("main.index"))
 
-    # return redirect(url_for('main.index'))
-    print("delete account !!!!")
+    reason = request.form.get("deletion_reason", "").strip() or "non_specifie"
+    details = request.form.get("deletion_details", "").strip()
 
-    return redirect(url_for("auth.reglage"))
+    delete_user_account(user, reason=reason, details=details)
+    logout_user()
+    flash(
+        _("Votre compte et vos données personnelles ont été supprimés avec succès."),
+        "info",
+    )
+    return redirect(url_for("main.index"))
 
 
 @auth.route("/reglage", methods=["GET", "POST"])
@@ -345,6 +353,16 @@ def reglage():
             user.name = name
 
         user.newsletter_subscribed = newsletter_subscribed
+        user.show_book_covers = "show_book_covers" in request.form
+
+        loan_duration_str = request.form.get("default_loan_duration_days")
+        if loan_duration_str:
+            try:
+                duration_val = int(loan_duration_str)
+                if 1 <= duration_val <= 365:
+                    user.default_loan_duration_days = duration_val
+            except ValueError:
+                pass
 
         preferred_language = request.form.get("preferred_language")
         if preferred_language in ["fr", "en", "de"]:
@@ -366,6 +384,10 @@ def reglage():
 
         db.session.commit()
         flash(_("Vos informations ont été mises à jour."), "success")
+
+        next_url = request.form.get("next")
+        if next_url and next_url.startswith("/") and not next_url.startswith("//"):
+            return redirect(next_url)
 
     user = db.session.get(User, current_user.id)
 
@@ -394,7 +416,26 @@ def reglage():
         except Exception as e:  # noqa: BLE001
             current_app.logger.debug("Sync Stripe reglage : %s", e)
 
-    return render_template("user/reglage.html", user=user)
+    archives = (
+        AcademicYearArchive.query.filter_by(user_id=current_user.id)
+        .order_by(AcademicYearArchive.end_date.desc(), AcademicYearArchive.id.desc())
+        .all()
+    )
+    active_students_count = get_students_count(current_user.id)
+    active_loans_count = (
+        Loan.query.join(Book)
+        .filter(Book.user_id == current_user.id, Loan.date_return.is_(None))
+        .count()
+    )
+
+    return render_template(
+        "user/reglage.html",
+        user=user,
+        archives=archives,
+        active_students_count=active_students_count,
+        active_loans_count=active_loans_count,
+        retention_promo_code=RETENTION_PROMO_CODE,
+    )
 
 
 @auth.route("/unsubscribe/<token>/<int:user_id>", methods=["GET", "POST"])

@@ -65,6 +65,12 @@ class User(UserMixin, db.Model):
     stripe_price_id = db.Column(db.String(120), nullable=True)
     subscription_end_at = db.Column(db.DateTime, nullable=True)
     last_scan_reset_at = db.Column(db.DateTime, nullable=True)
+    show_book_covers = db.Column(
+        db.Boolean, default=True, server_default="1", nullable=False
+    )
+    default_loan_duration_days = db.Column(
+        db.Integer, default=14, server_default="14", nullable=False
+    )
 
     def check_and_reset_weekly_scans(self) -> bool:
         """
@@ -266,8 +272,14 @@ class User(UserMixin, db.Model):
     # One-to-Many relationship with tags
     tags = relationship("Tags", backref="user", lazy=True)  # User can have many tags
     # One-to-Many relationship with feedbacks
-    feedbacks = relationship(
-        "Feedback", backref="user", lazy=True, cascade="all, delete-orphan"
+    feedbacks = relationship("Feedback", backref="user", lazy=True)
+    # One-to-Many relationship with academic year archives
+    academic_year_archives = relationship(
+        "AcademicYearArchive",
+        backref="user",
+        lazy=True,
+        cascade="all, delete-orphan",
+        order_by="desc(AcademicYearArchive.end_date)",
     )
 
     def get_verification_token(self):
@@ -353,6 +365,7 @@ class Book(db.Model):
     type = db.Column(db.String(100))
     isbn = db.Column(db.String(100), nullable=True)
     barcode = db.Column(db.String(100), nullable=True, index=True)
+    image_url = db.Column(db.String(500), nullable=True)
 
     user_id = db.Column(
         db.Integer, ForeignKey("user.id")
@@ -365,6 +378,52 @@ class Book(db.Model):
     )
 
 
+class AcademicYearArchive(db.Model):
+    __tablename__ = "academic_year_archive"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey("user.id"), nullable=False)
+    year_label = db.Column(db.String(50), nullable=False)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+    archived_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(UTC), nullable=False
+    )
+    total_students = db.Column(db.Integer, default=0, nullable=False)
+    total_loans = db.Column(db.Integer, default=0, nullable=False)
+    average_loans_per_student = db.Column(db.Float, default=0.0, nullable=False)
+    most_read_book_title = db.Column(db.String(255), nullable=True)
+    most_read_book_author = db.Column(db.String(255), nullable=True)
+    most_read_book_count = db.Column(db.Integer, default=0, nullable=False)
+    top_reader_name = db.Column(db.String(255), nullable=True)
+    top_reader_count = db.Column(db.Integer, default=0, nullable=False)
+    top_books_json = db.Column(db.Text, nullable=True)
+    top_readers_json = db.Column(db.Text, nullable=True)
+
+    students = relationship("Student", back_populates="archived_year", lazy=True)
+
+    @property
+    def top_books(self):
+        import json
+
+        if not self.top_books_json:
+            return []
+        try:
+            return json.loads(self.top_books_json)
+        except Exception:  # noqa: BLE001
+            return []
+
+    @property
+    def top_readers(self):
+        import json
+
+        if not self.top_readers_json:
+            return []
+        try:
+            return json.loads(self.top_readers_json)
+        except Exception:  # noqa: BLE001
+            return []
+
+
 class Student(db.Model):
     __tablename__ = "student"
     id = db.Column(db.Integer, primary_key=True)
@@ -375,9 +434,23 @@ class Student(db.Model):
     user_id = db.Column(
         db.Integer, ForeignKey("user.id")
     )  # Each student belongs to a user
+
+    # Soft-delete / Archivage fields
+    is_archived = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False, index=True
+    )
+    archived_at = db.Column(db.DateTime, nullable=True)
+    archived_year_id = db.Column(
+        db.Integer,
+        ForeignKey("academic_year_archive.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+
+    archived_year = relationship("AcademicYearArchive", back_populates="students")
+
     # Loan relationship: One student can have multiple loans
     loans = relationship(
-        "Loan", backref="student", lazy=True, cascade="all, delete-orphan"
+        "Loan", backref="student", lazy=True, cascade="save-update, merge"
     )
 
 
@@ -386,10 +459,36 @@ class Loan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_loan = db.Column(db.Date)
     date_return = db.Column(db.Date)
+    expected_return_date = db.Column(db.Date, nullable=True)
+    notes = db.Column(db.String(255), nullable=True)
 
     # Foreign keys to link Student and Book
     student_id = db.Column(db.Integer, ForeignKey("student.id"), nullable=False)
     book_id = db.Column(db.Integer, ForeignKey("book.id"), nullable=False)
+
+    @property
+    def is_late(self) -> bool:
+        if self.date_return is not None or not self.expected_return_date:
+            return False
+        return self.expected_return_date < datetime.now(UTC).date()
+
+    @property
+    def days_late(self) -> int:
+        if not self.is_late or not self.expected_return_date:
+            return 0
+        return (datetime.now(UTC).date() - self.expected_return_date).days
+
+    @property
+    def is_due_soon(self) -> bool:
+        """Indique si l'emprunt doit être rendu dans les 3 jours (et non en retard)."""
+        if (
+            self.date_return is not None
+            or not self.expected_return_date
+            or self.is_late
+        ):
+            return False
+        days_left = (self.expected_return_date - datetime.now(UTC).date()).days
+        return 0 <= days_left <= 3
 
 
 class Tags(db.Model):
@@ -406,10 +505,15 @@ class Tags(db.Model):
 class Feedback(db.Model):
     __tablename__ = "feedback"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(
+        db.Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
+    author_name = db.Column(db.String(100), nullable=True)
+    author_email = db.Column(db.String(255), nullable=True)
     category = db.Column(
         db.String(50), nullable=False
-    )  # "suggestion", "bug", "general"
+    )  # "suggestion", "bug", "general", "depart"
+    departure_reason = db.Column(db.String(50), nullable=True)
     subject = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
     page_url = db.Column(db.String(255), nullable=True)

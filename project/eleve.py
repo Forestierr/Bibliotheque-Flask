@@ -20,6 +20,7 @@ from .query import (
     get_all_students_info,
     get_search_all_students_info,
     get_student_infos,
+    get_students_count,
 )
 
 eleve = Blueprint("eleve", __name__)
@@ -39,7 +40,7 @@ def ajouter_eleve():
     if request.method == "POST":
         # Vérification du quota pour les utilisateurs en plan gratuit
         if not current_user.is_premium:
-            current_count = Student.query.filter_by(user_id=current_user.id).count()
+            current_count = get_students_count(current_user.id)
             if current_count >= MAX_FREE_STUDENTS:
                 msg = _(
                     "Vous avez atteint la limite de %(max)s élèves du plan gratuit. Vos élèves existants restent utilisables. Pour en ajouter d'autres, passez Premium ou supprimez un élève existant.",
@@ -63,7 +64,7 @@ def ajouter_eleve():
 
         # verify if the student already exists
         student = Student.query.filter_by(
-            user_id=current_user.id, name=name, firstname=firstname
+            user_id=current_user.id, name=name, firstname=firstname, is_archived=False
         ).first()
         if student:
             flash(_("L'élève existe déjà."))
@@ -75,7 +76,7 @@ def ajouter_eleve():
 
         return redirect(url_for("eleve.eleve_db"))
 
-    student_count = Student.query.filter_by(user_id=current_user.id).count()
+    student_count = get_students_count(current_user.id)
     quota_reached = not current_user.is_premium and student_count >= MAX_FREE_STUDENTS
     return render_template(
         "eleve/eleve_add.html",
@@ -132,6 +133,7 @@ def search_preview():
         Student.query.filter(
             and_(
                 Student.user_id == current_user.id,
+                Student.is_archived.is_(False),
                 or_(
                     Student.name.like("%" + search + "%"),
                     Student.firstname.like("%" + search + "%"),

@@ -10,18 +10,44 @@
 
 {% block content %}
 
-    <h1 class="title is-1">
-        {{ student.name }} {{ student.firstname }}
-    </h1>
+    <div class="is-flex is-justify-content-space-between is-align-items-flex-start mb-2">
+        <div>
+            <div class="is-flex is-align-items-center" style="gap: 0.75rem; flex-wrap: wrap;">
+                <h1 class="title is-2 mb-1">
+                    {{ student.name }} {{ student.firstname }}
+                </h1>
+                {% if student.is_archived %}
+                <span class="tag is-warning is-light is-rounded mb-1" style="font-weight: 600;">
+                    <i class="fas fa-archive mr-1"></i>
+                    {{ _("Archivé") }}{% if student.archived_year %} — {{ _("Promo") }} {{ student.archived_year.year_label }}{% endif %}
+                </span>
+                {% endif %}
+            </div>
+            <h4 class="subtitle is-5 mb-0">{{ _("Nombre de livres lus :") }} <strong>{{ books|count + old_books|count }}</strong></h4>
+        </div>
+        <div class="dropdown is-right is-hoverable">
+            <div class="dropdown-trigger">
+                <button class="button is-ghost has-text-grey" aria-haspopup="true" aria-controls="dropdown-menu-student" aria-label="{{ _('Options de l\'élève') }}" style="min-height: 44px; min-width: 44px; padding: 0;">
+                    <span class="icon is-medium"><i class="fas fa-ellipsis-v"></i></span>
+                </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu-student" role="menu">
+                <div class="dropdown-content">
+                    <a href="#delete-modal-1" class="dropdown-item has-text-danger showModal">
+                        <span class="icon is-small mr-2"><i class="fas fa-user-slash"></i></span>
+                        <span>{{ _("Supprimer l'élève") }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <h4 class="subtitle is-4">{{ _("Nombre de livres lus :") }} <strong>{{ books|count + old_books|count }}</strong></h4>
-
-    <div class="buttons mb-5">
-        <a href="{{ url_for('ressource.diplome', student_id=student.id) }}" class="button is-warning is-light has-text-weight-bold">
+    <div class="buttons mb-5 mt-3">
+        <a href="{{ url_for('ressource.diplome', student_id=student.id) }}" class="button is-warning is-light has-text-weight-bold" style="min-height: 44px;">
             <span class="icon"><i class="fas fa-award"></i></span>
             <span>{{ _("Imprimer un diplôme de lecture") }}</span>
         </a>
-        <a href="{{ url_for('ressource.codes_barres') }}" class="button is-light">
+        <a href="{{ url_for('ressource.codes_barres') }}" class="button is-light" style="min-height: 44px;">
             <span class="icon"><i class="fas fa-id-card"></i></span>
             <span>{{ _("Carte de lecteur") }}</span>
         </a>
@@ -31,65 +57,66 @@
     {% for book in books %}
         <div class="container block">
         {% if loop.first %}
-            <h3 class="subtitle is-3">{% if books|count > 1 %}{{ _("Livres actuellement empruntés") }}{% else %}{{ _("Livre actuellement emprunté") }}{% endif %} ({{ books|count }})</h3>
+            <h3 class="subtitle is-4 has-text-weight-bold">{% if books|count > 1 %}{{ _("Livres actuellement empruntés") }}{% else %}{{ _("Livre actuellement emprunté") }}{% endif %} ({{ books|count }})</h3>
         {% endif %}
             <hr style="margin: 5px 0 5px 0"/>
-            <div class="container" style="margin-bottom: 10px">
-                <div class="columns is-mobile" style="margin-bottom: 0;">
+            <div class="container" style="margin-bottom: 12px">
+                <div class="columns is-mobile is-vcentered" style="margin-bottom: 4px;">
                     <div class="column">
-                        <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold	">{{ book.Book.title }}</a>
-                    </div>
-
-                    <!-- Delete modal -->
-                    <div id="delete-moda-l-{{ loop.index }}" class="modal">
-                      <div class="modal-background"></div>
-                      <div class="modal-content">
-                        <div class="modal-card">
-                            <header class="modal-card-head">
-                                <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
-                            </header>
-                            <footer class="modal-card-foot">
-                                <form action="{{ url_for('emprunt.delete_loan', id=book.Loan.id) }}" method="POST" style="display:inline;">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                    <button type="submit" class="button is-normal is-danger is-responsive">
-                                        <div class="icon-text">
-                                            <span class="icon has-text-info">
-                                                <i class="fa-solid fa-trash has-text-black"></i>
-                                            </span>
-                                            <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'emprunt") }}</span>
-                                        </div>
-                                    </button>
-                                </form>
-                                <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
-                            </footer>
+                        <div class="is-flex is-align-items-center" style="gap: 12px;">
+                            {% if current_user.show_book_covers and book.Book.image_url %}
+                            <a href="/livre/{{ book.Book.id }}" tabindex="-1" style="flex-shrink: 0;">
+                                <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" style="width: 38px; height: 51px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15);" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none';">
+                            </a>
+                            {% endif %}
+                            <div>
+                                <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold is-size-6">{{ book.Book.title }}</a>
+                                <p class="is-size-7 has-text-grey mt-1">{{ _("Emprunté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}</p>
+                            </div>
                         </div>
-                      </div>
-                      <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
-                    </div>
-
-                    <div class="column has-text-right">
-                        <form action="{{ url_for('emprunt.return_loan', id=book.Loan.id) }}" method="POST" style="display:inline;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                            <button type="submit" class="button is-success is-small">
-                                <span class="icon is-small">
-                                  <i class="fa-solid fa-calendar-check"></i>
-                                </span>
-                            </button>
-                        </form>
                     </div>
                 </div>
 
-                <div class="columns is-mobile" style="margin-bottom: 0;">
-                    <div class="column">
-                        <p>{{ _("Emprunté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}</p>
-                    </div>
-                    <div class="column has-text-right">
-                        <button class="button is-danger is-small showModal" href="#delete-moda-l-{{ loop.index }}">
-                            <span class="icon is-small">
-                              <i class="fas fa-trash"></i>
-                            </span>
+                <!-- Action row with 44px tactile target -->
+                <div class="is-flex is-align-items-center mt-2" style="gap: 8px;">
+                    <form action="{{ url_for('emprunt.return_loan', id=book.Loan.id) }}" method="POST" style="flex: 1; margin: 0;" hx-boost="false">
+                        <input type="hidden" name="next" value="{{ url_for('eleve.eleve_infos', id=student.id) }}"/>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="button is-success is-fullwidth" style="min-height: 44px; height: 44px; font-weight: 600; border-radius: 8px;">
+                            <span class="icon"><i class="fas fa-check-circle"></i></span>
+                            <span>{{ _("Retourner le livre") }}</span>
                         </button>
+                    </form>
+                    <button type="button" class="button is-light has-text-danger showModal" href="#delete-moda-l-{{ loop.index }}" title="{{ _("Supprimer l'emprunt") }}" aria-label="{{ _("Supprimer l'emprunt") }}" style="min-height: 44px; height: 44px; width: 44px; border-radius: 8px; flex-shrink: 0;">
+                        <span class="icon"><i class="fas fa-trash-alt"></i></span>
+                    </button>
+                </div>
+
+                <!-- Delete loan modal -->
+                <div id="delete-moda-l-{{ loop.index }}" class="modal">
+                  <div class="modal-background"></div>
+                  <div class="modal-content">
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">{{ _("Supprimer l'emprunt ?") }}</p>
+                        </header>
+                        <footer class="modal-card-foot">
+                            <form action="{{ url_for('emprunt.delete_loan', id=book.Loan.id) }}" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="button is-normal is-danger is-responsive" style="min-height: 44px;">
+                                    <div class="icon-text">
+                                        <span class="icon has-text-info">
+                                            <i class="fa-solid fa-trash has-text-black"></i>
+                                        </span>
+                                        <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'emprunt") }}</span>
+                                    </div>
+                                </button>
+                            </form>
+                            <button type="button" class="button is-normal is-responsive modal-cancel-btn" style="min-height: 44px;">{{ _("Annuler") }}</button>
+                        </footer>
                     </div>
+                  </div>
+                  <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
                 </div>
             </div>
 
@@ -126,13 +153,23 @@
     {% for book in old_books %}
         <div class="container block">
         {% if loop.first %}
-            <h3 class="subtitle is-3">{% if old_books|count > 1 %}{{ _("Livres empruntés précédemment") }}{% else %}{{ _("Livre emprunté précédemment") }}{% endif %} ({{ old_books|count }})</h3>
+            <h3 class="subtitle is-4 has-text-weight-bold mt-5">{% if old_books|count > 1 %}{{ _("Livres empruntés précédemment") }}{% else %}{{ _("Livre emprunté précédemment") }}{% endif %} ({{ old_books|count }})</h3>
         {% endif %}
             <hr style="margin: 5px 0 5px 0"/>
             <div class="container" style="margin-bottom: 10px">
-                <div class="columns is-mobile" style="margin-bottom: 0;">
+                <div class="columns is-mobile is-vcentered" style="margin-bottom: 0;">
                     <div class="column">
-                        <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold	">{{ book.Book.title }}</a>
+                        <div class="is-flex is-align-items-center" style="gap: 12px;">
+                            {% if current_user.show_book_covers and book.Book.image_url %}
+                            <a href="/livre/{{ book.Book.id }}" tabindex="-1" style="flex-shrink: 0;">
+                                <img src="{{ book.Book.image_url }}" alt="{{ book.Book.title }}" style="width: 38px; height: 51px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15);" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none';">
+                            </a>
+                            {% endif %}
+                            <div>
+                                <a href="/livre/{{ book.Book.id }}" class="has-text-weight-bold">{{ book.Book.title }}</a>
+                                <p class="is-size-7 has-text-grey">{{ _("Emprunté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Delete modal -->
@@ -146,7 +183,7 @@
                             <footer class="modal-card-foot">
                                 <form action="{{ url_for('emprunt.delete_loan', id=book.Loan.id) }}" method="POST" style="display:inline;">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                    <button type="submit" class="button is-normal is-danger is-responsive">
+                                    <button type="submit" class="button is-normal is-danger is-responsive" style="min-height: 44px;">
                                         <div class="icon-text">
                                             <span class="icon has-text-info">
                                                 <i class="fa-solid fa-trash has-text-black"></i>
@@ -155,23 +192,19 @@
                                         </div>
                                     </button>
                                 </form>
-                                <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
+                                <button type="button" class="button is-normal is-responsive modal-cancel-btn" style="min-height: 44px;">{{ _("Annuler") }}</button>
                             </footer>
                         </div>
                       </div>
                       <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
                     </div>
 
-                    <div class="column has-text-right">
-                        <button class="button is-danger is-small showModal" href="#delete-moda-l-{{ books|count + loop.index }}">
-                            <span class="icon is-small">
-                              <i class="fas fa-trash"></i>
-                            </span>
+                    <div class="column has-text-right is-narrow">
+                        <button type="button" class="button is-light has-text-danger is-small showModal" href="#delete-moda-l-{{ books|count + loop.index }}" title="{{ _("Supprimer l'emprunt") }}" aria-label="{{ _("Supprimer l'emprunt") }}" style="min-height: 44px; height: 44px; width: 44px; border-radius: 8px;">
+                            <span class="icon"><i class="fas fa-trash-alt"></i></span>
                         </button>
                     </div>
                 </div>
-
-                <p>{{ _("Emprunté le") }} {{ format_date(book.Loan.date_loan, format='medium') }}</p>
             </div>
 
             {# Add hr if last element #}
@@ -182,40 +215,51 @@
     {% endfor %}
     {% endif %}
 
-    <div class="container block">
+    <!-- Zone secondaire / discrète pour la suppression de l'élève -->
+    <div class="has-text-centered mt-6 mb-5" style="border-top: 1px solid #e2e8f0; padding-top: 2rem;">
         <div id="delete-modal-1" class="modal">
           <div class="modal-background"></div>
           <div class="modal-content">
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title">{{ _("Supprimer l'élève ?") }}</p>
+            <div class="modal-card" style="border-radius: 12px; overflow: hidden; max-width: 480px; text-align: left;">
+                <header class="modal-card-head" style="background-color: #ffffff; border-bottom: 1px solid #f1f5f9;">
+                    <p class="modal-card-title has-text-weight-bold has-text-danger is-size-5">
+                        <span class="icon mr-2"><i class="fas fa-exclamation-triangle"></i></span>
+                        {{ _("Supprimer l'élève ?") }}
+                    </p>
+                    <button class="delete modal-close-btn" aria-label="close"></button>
                 </header>
-                <footer class="modal-card-foot">
+                <section class="modal-card-body" style="padding: 1.5rem;">
+                    <p class="mb-3">
+                        {{ _("Êtes-vous sûr de vouloir supprimer la fiche de") }} <strong>{{ student.name }} {{ student.firstname }}</strong> ?
+                    </p>
+                    <div class="notification is-danger is-light" style="border-radius: 8px;">
+                        <p class="has-text-weight-semibold mb-2">
+                            {{ _("Cette action est irréversible.") }}
+                        </p>
+                        <p>
+                            {{ _("La suppression de cet élève supprimera également son historique de") }}
+                            <strong>{{ old_books|count }}</strong> {{ _("emprunt(s) historique(s)") }}{% if books|count > 0 %} {{ _("et") }} <strong>{{ books|count }}</strong> {{ _("emprunt(s) actuellement en cours") }}{% endif %}.
+                        </p>
+                    </div>
+                </section>
+                <footer class="modal-card-foot is-flex is-justify-content-flex-end" style="background-color: #f8fafc; border-top: 1px solid #f1f5f9; gap: 8px;">
+                    <button type="button" class="button modal-cancel-btn" style="min-height: 44px; min-width: 80px;">{{ _("Annuler") }}</button>
                     <form action="{{ url_for('eleve.eleve_delete', id=student.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <button type="submit" class="button is-normal is-danger is-responsive">
-                            <div class="icon-text">
-                                <span class="icon has-text-info">
-                                    <i class="fas fa-user-slash has-text-black"></i>
-                                </span>
-                                <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'élève") }}</span>
-                            </div>
+                        <button type="submit" class="button is-danger" style="min-height: 44px; font-weight: 600;">
+                            <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
+                            <span>{{ _("Supprimer l'élève") }}</span>
                         </button>
                     </form>
-                    <a href="/eleve/{{ student.id }}" class="button is-normal is-responsive">{{ _("Annuler") }}</a>
                 </footer>
             </div>
-            <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
           </div>
+          <button class="modal-close is-large" id="modal-close" aria-label="close"></button>
         </div>
-        <br>
-        <button id="settings-modal-btn" class="button is-normal is-danger is-responsive showModal" href="#delete-modal-1">
-            <div class="icon-text">
-                <span class="icon has-text-info">
-                    <i class="fas fa-user-slash has-text-black"></i>
-                </span>
-                <span class="has-text-black has-text-weight-semibold">{{ _("Supprimer l'élève") }}</span>
-            </div>
+
+        <button id="settings-modal-btn" type="button" class="button is-ghost has-text-grey is-size-7 showModal" href="#delete-modal-1" style="min-height: 44px;">
+            <span class="icon is-small has-text-danger mr-1"><i class="fas fa-user-slash"></i></span>
+            <span class="has-text-grey-dark">{{ _("Supprimer cet élève") }}</span>
         </button>
     </div>
 
@@ -227,21 +271,35 @@
 
     for(let modalBtn of modalBtns) {
         modalBtn.onclick = function(event) {
-            document.querySelector(event.currentTarget.getAttribute('href')).style.display = 'flex';
+            event.preventDefault();
+            const targetId = event.currentTarget.getAttribute('href');
+            if (targetId) {
+                const targetModal = document.querySelector(targetId);
+                if (targetModal) {
+                    targetModal.style.display = 'flex';
+                }
+            }
         }
     }
 
     for(let closeBtn of closeBtns) {
         closeBtn.onclick = function(event) {
-            event.target.parentNode.style.display = 'none';
+            event.target.closest('.modal').style.display = 'none';
         }
     }
 
     for(let modalBackground of modalBackgrounds) {
         modalBackground.onclick = function(event) {
-            event.target.parentNode.style.display = 'none';
+            event.target.closest('.modal').style.display = 'none';
         }
     }
+
+    document.querySelectorAll('.modal-cancel-btn, .modal-close-btn').forEach(btn => {
+        btn.onclick = function(event) {
+            event.preventDefault();
+            btn.closest('.modal').style.display = 'none';
+        };
+    });
 
     window.onkeydown = function(event) {
         if (event.key == 'Escape') {

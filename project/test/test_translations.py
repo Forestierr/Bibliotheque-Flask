@@ -686,3 +686,52 @@ def test_scan_limit_reached_translations_and_dynamic_config():
     assert (
         f"You have used your {MAX_FREE_SCANS} free scans for this week!" in html_modal
     )
+
+
+def test_mentions_legales_translations():
+    """Test that mentions-legales renders in FR, EN, and DE with translated legal terms."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-translations",
+        }
+    )
+    client = app.test_client()
+
+    # French
+    res_fr = client.get("/fr/mentions-legales")
+    assert res_fr.status_code == 200
+    html_fr = res_fr.get_data(as_text=True)
+    assert (
+        "Mentions Légales &amp; Conditions Générales" in html_fr
+        or "Mentions Légales & Conditions Générales" in html_fr
+    )
+    assert (
+        "1. CONDITIONS GÉNÉRALES D&#39;UTILISATION (CGU)" in html_fr
+        or "1. CONDITIONS GÉNÉRALES D'UTILISATION (CGU)" in html_fr
+    )
+    assert "Éditeur du service :" in html_fr
+
+    # English
+    res_en = client.get("/en/mentions-legales")
+    assert res_en.status_code == 200
+    html_en = res_en.get_data(as_text=True)
+    assert (
+        "Legal Notice &amp; General Terms" in html_en
+        or "Legal Notice & General Terms" in html_en
+    )
+    assert "1. GENERAL TERMS OF USE" in html_en
+    assert "Service Publisher:" in html_en
+    assert "service availability and account termination" in html_en.lower()
+
+    # German
+    res_de = client.get("/de/mentions-legales")
+    assert res_de.status_code == 200
+    html_de = res_de.get_data(as_text=True)
+    assert (
+        "Impressum &amp; Allgemeine Geschäftsbedingungen" in html_de
+        or "Impressum & Allgemeine Geschäftsbedingungen" in html_de
+    )
+    assert "1. ALLGEMEINE NUTZUNGSBEDINGUNGEN (AGB)" in html_de
+    assert "Herausgeber des Dienstes:" in html_de

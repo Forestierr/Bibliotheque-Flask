@@ -176,7 +176,7 @@
                         </div>
                     </div>
                     <div class="level-right">
-                        <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;">
+                        <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="button is-link is-light is-rounded">
                                 <span class="icon"><i class="fas fa-credit-card"></i></span>
@@ -195,7 +195,7 @@
             </h2>
 
             <!-- Formulaire de souscription vers Stripe Checkout -->
-            <form id="checkoutForm" action="{{ url_for('subscription.create_checkout_session') }}" method="POST">
+            <form id="checkoutForm" action="{{ url_for('subscription.create_checkout_session') }}" method="POST" hx-boost="false">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="plan_type" id="selectedPlanType" value="{{ plan_type }}">
 

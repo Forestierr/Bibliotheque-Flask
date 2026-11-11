@@ -27,6 +27,35 @@
             background: #0f172a;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
             min-height: 320px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .scan-quota-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            border-radius: 9999px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            line-height: 1.35;
+            text-align: center;
+            max-width: 100%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            word-break: normal;
+        }
+
+        @media screen and (max-width: 480px) {
+            .scan-quota-pill {
+                font-size: 0.78rem;
+                padding: 6px 12px;
+                border-radius: 12px;
+            }
         }
 
         #scanner-viewport {
@@ -235,19 +264,117 @@
             border-color: #60a5fa !important;
             font-weight: bold;
         }
+
+        /* Overlay progression et feedback du scan */
+        .scan-progress-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            animation: fadeInProgress 0.25s ease forwards;
+        }
+
+        @keyframes fadeInProgress {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .scan-progress-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 1.75rem 1.5rem;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            color: #1e293b;
+        }
+
+        .scan-progress-badge-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-family: monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #bfdbfe;
+            margin-bottom: 1rem;
+        }
+
+        .scan-progress-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .scan-progress-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1.25rem;
+            min-height: 22px;
+            line-height: 1.4;
+        }
+
+        .scan-progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scan-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            border-radius: 10px;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 25%;
+        }
     </style>
 
     {% if not current_user.is_premium %}
-    <div class="has-text-centered mb-2">
-        <span class="tag is-info is-light is-rounded has-text-weight-semibold" style="font-size: 0.85rem;">
-            <i class="fas fa-barcode mr-1"></i> {{ _("Scans cette semaine : %(used)s / %(max)s (remis à zéro dimanche à 00h00)", used=current_user.free_scans_used or 0, max=max_scans|default(30)) }}
-        </span>
+    <div class="has-text-centered mb-3 px-3" style="max-width: 100%;">
+        <div class="scan-quota-pill">
+            <i class="fas fa-barcode"></i>
+            <span>{{ _("Scans cette semaine : %(used)s / %(max)s (remis à zéro dimanche à 00h00)", used=current_user.free_scans_used or 0, max=max_scans|default(30)) }}</span>
+        </div>
     </div>
     {% endif %}
 
     <div class="container is-max-desktop scanner-container" id="scanner-container">
         <!-- Zone de flux vidéo injectée dynamiquement -->
         <div id="scanner-viewport"></div>
+
+        <!-- Overlay progression et statut du scan -->
+        <div id="scan-progress-overlay" class="scan-progress-overlay" style="display: none;">
+            <div class="scan-progress-card">
+                <div class="scan-progress-badge-code">
+                    <i class="fas fa-barcode"></i>
+                    <span id="scan-progress-code">978...</span>
+                </div>
+                <div class="scan-progress-title" id="scan-progress-title">{{ _("Code-barres détecté") }}</div>
+                <div class="scan-progress-desc" id="scan-progress-desc">{{ _("Vérification dans votre classe...") }}</div>
+                <div class="scan-progress-bar-container">
+                    <div class="scan-progress-bar-fill" id="scan-progress-bar-fill" style="width: 25%;"></div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Viseur / Hologramme de référence -->
         <div class="scanner-viewfinder-overlay">
@@ -316,16 +443,30 @@
     <!-- Aide contextuelle scanner -->
     <div id="scanner-help" class="container is-max-desktop" style="margin-top: 1rem; padding: 0 1rem;">
 
-        <!-- Message d'erreur caméra (caché par défaut) -->
-        <div id="camera-error" class="notification is-danger is-light" style="display:none; border-radius: 12px;">
-            <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-            <strong>{{ _("Impossible d'accéder à la caméra.") }}</strong>
-            {{ _("Vérifiez que vous avez autorisé l'accès à la caméra dans votre navigateur, puis rechargez la page.") }}
-            <br><br>
-            <a href="/aide#scanner" class="button is-danger is-light is-small is-rounded mt-2">
-                <span class="icon"><i class="fas fa-question-circle"></i></span>
-                <span>{{ _("Voir le guide de dépannage") }}</span>
-            </a>
+        <!-- Fallback Saisie Manuelle & Alerte Caméra -->
+        <div id="camera-fallback-card" class="box p-3 mb-3" style="border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); max-width: 100%; overflow: hidden;">
+            <div id="camera-error" class="notification is-warning is-light p-3 mb-3" style="display:none; border-radius: 8px;">
+                <span class="icon is-small mr-1"><i class="fas fa-exclamation-triangle"></i></span>
+                <span class="is-size-7">{{ _("Caméra inaccessible dans ce navigateur. Utilisez la saisie manuelle :") }}</span>
+            </div>
+            <div class="field has-addons mb-1" style="max-width: 100%;">
+                <div class="control is-expanded has-icons-left" style="min-width: 0;">
+                    <input id="manual-scan-input" class="input is-rounded" type="text" placeholder="{{ _('Saisir le code ISBN ou étiquette classe...') }}" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();submitManualCode();}">
+                    <span class="icon is-left has-text-grey"><i class="fas fa-barcode"></i></span>
+                </div>
+                <div class="control">
+                    <button type="button" class="button is-primary is-rounded px-4" onclick="submitManualCode()">
+                        <span class="has-text-weight-bold">{{ _("Valider") }}</span>
+                    </button>
+                </div>
+            </div>
+            <div class="is-flex is-justify-content-between is-align-items-center mt-2 px-1">
+                <span class="is-size-7 has-text-grey">{{ _("Ex: 9782070584628 ou BAC-A-001") }}</span>
+                <a href="/aide#scanner" class="is-size-7 has-text-grey-dark">
+                    <span class="icon is-small"><i class="fas fa-question-circle"></i></span>
+                    <span>{{ _("Aide caméra") }}</span>
+                </a>
+            </div>
         </div>
 
         <!-- Carte d'aide pliable -->
@@ -358,6 +499,66 @@
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Retour Express au Scan -->
+    <div class="modal" id="modalReturnPrompt">
+        <div class="modal-background" onclick="closeReturnPromptModal(true)"></div>
+        <div class="modal-card" style="max-width: 480px; margin: 1rem;">
+            <header class="modal-card-head" style="background: #fff; border-bottom: 1px solid #e2e8f0;">
+                <p class="modal-card-title is-size-6 has-text-weight-bold">
+                    <span class="icon has-text-info mr-1"><i class="fas fa-book-reader"></i></span>
+                    {{ _("Livre actuellement emprunté") }}
+                </p>
+                <button class="delete" aria-label="close" onclick="closeReturnPromptModal(true)"></button>
+            </header>
+            <section class="modal-card-body has-text-centered py-5">
+                <div id="return-prompt-body">
+                    <div class="mb-3">
+                        <span class="icon is-large has-text-success" style="font-size: 2.5rem;">
+                            <i class="fas fa-undo-alt"></i>
+                        </span>
+                    </div>
+                    <h4 id="return-book-title" class="title is-5 mb-2"></h4>
+                    <p class="subtitle is-6 has-text-grey mb-4">
+                        {{ _("Emprunté par") }} <strong id="return-borrower-name" class="has-text-dark"></strong>
+                    </p>
+                    <div class="notification is-success is-light is-size-6 mb-4">
+                        {{ _("Souhaitez-vous enregistrer le retour de ce livre ?") }}
+                    </div>
+                </div>
+                <div id="return-success-feedback" style="display: none;" class="py-4">
+                    <span class="icon is-large has-text-success mb-2" style="font-size: 3rem;">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                    <h4 class="title is-5 has-text-success mb-2">{{ _("Livre retourné avec succès !") }}</h4>
+                    <p class="is-size-6 has-text-grey">{{ _("Le livre est de nouveau disponible en rayon.") }}</p>
+                </div>
+            </section>
+            <footer class="modal-card-foot is-flex is-flex-direction-column" style="gap: 8px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                <div id="return-prompt-buttons" style="width: 100%;">
+                    <button type="button" class="button is-success is-fullwidth has-text-weight-bold mb-2" style="height: 44px;" id="btn-confirm-return" onclick="confirmScanReturn()">
+                        <span class="icon"><i class="fas fa-check"></i></span>
+                        <span>{{ _("Confirmer le retour") }}</span>
+                    </button>
+                    <div class="is-flex" style="gap: 8px;">
+                        <a id="btn-view-book-details" href="#" class="button is-light is-fullwidth">
+                            <span class="icon is-small"><i class="fas fa-info-circle"></i></span>
+                            <span>{{ _("Voir la fiche") }}</span>
+                        </a>
+                        <button type="button" class="button is-light is-fullwidth" onclick="closeReturnPromptModal(true)">
+                            {{ _("Scanner un autre") }}
+                        </button>
+                    </div>
+                </div>
+                <div id="return-continue-buttons" style="display: none; width: 100%;">
+                    <button type="button" class="button is-primary is-fullwidth has-text-weight-bold" style="height: 44px;" onclick="closeReturnPromptModal(true)">
+                        <span class="icon"><i class="fas fa-barcode"></i></span>
+                        <span>{{ _("Continuer à scanner") }}</span>
+                    </button>
+                </div>
+            </footer>
         </div>
     </div>
 
@@ -528,12 +729,28 @@
             // Arrêt immédiat de la détection pour économiser les ressources
             stopScanner();
 
-            // Court délai de 400ms pour laisser voir la confirmation verte
+            // Affichage de l'overlay de progression avec état
+            const overlay = document.getElementById('scan-progress-overlay');
+            const codeEl = document.getElementById('scan-progress-code');
+            const titleEl = document.getElementById('scan-progress-title');
+            const descEl = document.getElementById('scan-progress-desc');
+            const barFill = document.getElementById('scan-progress-bar-fill');
+
+            if (overlay && codeEl && titleEl && descEl && barFill) {
+                codeEl.textContent = code;
+                titleEl.textContent = {{ _("Code-barres détecté !")|tojson }};
+                descEl.textContent = {{ _("Vérification dans votre classe...")|tojson }};
+                barFill.style.width = "30%";
+                overlay.style.display = "flex";
+            }
+
+            // Court délai de 300ms pour laisser voir la confirmation
             setTimeout(() => {
                 fetch("{{ url_for('livre.livre_exist', isbn='CODE_PARAM') }}".replace("CODE_PARAM", encodeURIComponent(code)))
                     .then(response => {
                         if (response.status === 403) {
                             return response.json().then(errData => {
+                                if (overlay) overlay.style.display = "none";
                                 showScanPaywallModal(errData.message);
                                 throw new Error("scan_quota_reached");
                             });
@@ -542,30 +759,59 @@
                     })
                     .then(data => {
                         if (data.error) {
-                            console.info("Livre non trouvé en base :", code);
-                            if (data.is_isbn || isISBN(code)) {
-                                window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}&from_scan=1`;
-                            } else {
-                                window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}&from_scan=1`;
-                            }
+                            console.info("Livre non trouvé en base locale :", code);
+                            if (barFill) barFill.style.width = "75%";
+                            if (titleEl) titleEl.textContent = {{ _("Livre non catalogué")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Recherche des métadonnées et de la couverture (BnF, Google Books)...")|tojson }};
+
+                            setTimeout(() => {
+                                if (barFill) barFill.style.width = "95%";
+                                if (data.is_isbn || isISBN(code)) {
+                                    window.location.href = `/livre/ajout?isbn=${encodeURIComponent(code)}&from_scan=1`;
+                                } else {
+                                    window.location.href = `/livre/ajout?barcode=${encodeURIComponent(code)}&from_scan=1`;
+                                }
+                            }, 350);
                             return;
                         }
 
+                        if (barFill) barFill.style.width = "100%";
+
                         if (data.multiple) {
-                            window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
+                            if (titleEl) titleEl.textContent = {{ _("Plusieurs exemplaires trouvés !")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Affichage de la liste...")|tojson }};
+                            setTimeout(() => {
+                                window.location.href = `/livre?search=isbn:${encodeURIComponent(code)}`;
+                            }, 300);
+                        } else if (data.is_loaned) {
+                            // Cas B : Le livre est actuellement prêté -> Proposer le retour immédiat
+                            if (overlay) overlay.style.display = "none";
+                            showReturnPromptModal(data);
                         } else {
-                            window.location.href = `/livre/${data.id}/edit`;
+                            // Cas A : Le livre est en rayon (disponible) -> Ouvrir directement la fiche en mode prêt
+                            if (titleEl) titleEl.textContent = {{ _("Livre disponible dans votre classe !")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Ouverture du prêt...")|tojson }};
+                            setTimeout(() => {
+                                window.location.href = `/livre/${data.id}?action=pret`;
+                            }, 300);
                         }
                     })
                     .catch(error => {
                         console.error("Erreur de recherche du livre :", error);
-                        setTimeout(() => {
-                            isProcessingDetection = false;
-                            resetScannerUI();
-                            startScanner();
-                        }, 1500);
+                        if (error.message !== "scan_quota_reached") {
+                            if (titleEl) titleEl.textContent = {{ _("Erreur de connexion")|tojson }};
+                            if (descEl) descEl.textContent = {{ _("Reprise du scanner...")|tojson }};
+                            if (barFill) barFill.style.background = "#ef4444";
+                            setTimeout(() => {
+                                if (overlay) overlay.style.display = "none";
+                                if (barFill) barFill.style.background = "linear-gradient(90deg, #3b82f6, #06b6d4)";
+                                isProcessingDetection = false;
+                                resetScannerUI();
+                                startScanner();
+                            }, 1200);
+                        }
                     });
-            }, 400);
+            }, 300);
         }
 
         function handleDetectedCode(rawCode) {
@@ -807,6 +1053,98 @@
             const isOpen = content.style.display !== 'none';
             content.style.display = isOpen ? 'none' : 'block';
             chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+        }
+
+                // Saisie manuelle de code-barres
+        function submitManualCode() {
+            const input = document.getElementById('manual-scan-input');
+            if (!input) return;
+            const code = input.value.trim();
+            if (!code) return;
+            handleDetectedCode(code);
+        }
+
+        // Gestion de la modale de retour express au scan
+        let currentReturnData = null;
+
+        function showReturnPromptModal(data) {
+            currentReturnData = data;
+            const modal = document.getElementById('modalReturnPrompt');
+            const titleEl = document.getElementById('return-book-title');
+            const borrowerEl = document.getElementById('return-borrower-name');
+            const viewBtn = document.getElementById('btn-view-book-details');
+            const promptBody = document.getElementById('return-prompt-body');
+            const promptButtons = document.getElementById('return-prompt-buttons');
+            const successFeedback = document.getElementById('return-success-feedback');
+            const continueButtons = document.getElementById('return-continue-buttons');
+
+            if (titleEl) titleEl.textContent = data.title || {{ _("Livre")|tojson }};
+            if (borrowerEl) borrowerEl.textContent = data.borrower_name || {{ _("un élève")|tojson }};
+            if (viewBtn) viewBtn.href = `/livre/${data.id}`;
+
+            if (promptBody) promptBody.style.display = 'block';
+            if (promptButtons) promptButtons.style.display = 'block';
+            if (successFeedback) successFeedback.style.display = 'none';
+            if (continueButtons) continueButtons.style.display = 'none';
+
+            if (modal) modal.classList.add('is-active');
+            stopScanner();
+        }
+
+        function closeReturnPromptModal(resumeScanner = true) {
+            const modal = document.getElementById('modalReturnPrompt');
+            if (modal) modal.classList.remove('is-active');
+            currentReturnData = null;
+            if (resumeScanner) {
+                isProcessingDetection = false;
+                resetScannerUI();
+                startScanner();
+            }
+        }
+
+        function confirmScanReturn() {
+            if (!currentReturnData || !currentReturnData.loan_id) return;
+
+            const btn = document.getElementById('btn-confirm-return');
+            if (btn) btn.classList.add('is-loading');
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+
+            fetch(`/emprunt/${currentReturnData.loan_id}/return-quick`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(res => res.json())
+            .then(resData => {
+                if (btn) btn.classList.remove('is-loading');
+                const promptBody = document.getElementById('return-prompt-body');
+                const promptButtons = document.getElementById('return-prompt-buttons');
+                const successFeedback = document.getElementById('return-success-feedback');
+                const continueButtons = document.getElementById('return-continue-buttons');
+
+                if (promptBody) promptBody.style.display = 'none';
+                if (promptButtons) promptButtons.style.display = 'none';
+                if (successFeedback) successFeedback.style.display = 'block';
+                if (continueButtons) continueButtons.style.display = 'block';
+
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+                setTimeout(() => {
+                    const modal = document.getElementById('modalReturnPrompt');
+                    if (modal && modal.classList.contains('is-active')) {
+                        closeReturnPromptModal(true);
+                    }
+                }, 1800);
+            })
+            .catch(err => {
+                console.error("Erreur retour emprunt :", err);
+                if (btn) btn.classList.remove('is-loading');
+                alert({{ _("Une erreur est survenue lors du retour du livre.")|tojson }});
+            });
         }
 
         window.addEventListener('beforeunload', stopScanner);

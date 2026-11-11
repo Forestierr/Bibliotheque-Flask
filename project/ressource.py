@@ -28,7 +28,7 @@ def diplome_de_lecture_a_imprimer():
 
     if current_user.is_authenticated:
         raw_students = (
-            Student.query.filter_by(user_id=current_user.id)
+            Student.query.filter_by(user_id=current_user.id, is_archived=False)
             .order_by(Student.name, Student.firstname)
             .all()
         )
@@ -160,7 +160,7 @@ def codes_barres():
             Book.query.filter_by(user_id=current_user.id).order_by(Book.title).all()
         )
         students_list = (
-            Student.query.filter_by(user_id=current_user.id)
+            Student.query.filter_by(user_id=current_user.id, is_archived=False)
             .order_by(Student.name, Student.firstname)
             .all()
         )

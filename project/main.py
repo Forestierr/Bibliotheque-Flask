@@ -36,7 +36,7 @@ from .config_plans import (
     PRICE_YEARLY_AMOUNT,
 )
 from .email import send_email_async, send_email_confirmation, send_email_to_me
-from .models import Feedback, NewsletterDelivery
+from .models import Book, Feedback, Loan, NewsletterDelivery, Student
 from .query import (
     get_app_infos,
     get_books_count,
@@ -93,6 +93,8 @@ def set_language(lang):
 
 @main.route("/")
 def index():
+    if current_user.is_authenticated and not request.args.get("home"):
+        return redirect(url_for("main.dashboard"))
     infos = get_app_infos()
 
     return render_template(
@@ -153,6 +155,21 @@ def dashboard():
         if current_date is not None:
             months.append((current_date, current_span))
 
+    today = datetime.now(UTC).date()
+    late_loans = (
+        db.session.query(Loan, Book, Student)
+        .join(Book, Loan.book_id == Book.id)
+        .join(Student, Loan.student_id == Student.id)
+        .filter(
+            Book.user_id == current_user.id,
+            Loan.date_return.is_(None),
+            Loan.expected_return_date.is_not(None),
+            Loan.expected_return_date < today,
+        )
+        .order_by(Loan.expected_return_date.asc())
+        .all()
+    )
+
     from .config_plans import (
         GAUGE_WARNING_PERCENT,
         MAX_FREE_BOOKS,
@@ -174,6 +191,7 @@ def dashboard():
         max_books=MAX_FREE_BOOKS,
         max_scans=MAX_FREE_SCANS,
         warning_percent=GAUGE_WARNING_PERCENT,
+        late_loans=late_loans,
     )
 
 
@@ -399,6 +417,8 @@ def feedback():
 
         new_feedback = Feedback(
             user_id=current_user.id,
+            author_name=current_user.name,
+            author_email=current_user.email,
             category=category,
             subject=subject[:200],
             message=message,

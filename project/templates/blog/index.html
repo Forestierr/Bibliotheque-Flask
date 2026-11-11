@@ -157,6 +157,21 @@
             <div class="column is-6">
                 <div class="blog-card">
                     <div class="blog-card-body">
+                        <span class="blog-tag tag-organisation">{{ _("Organisation de classe") }}</span>
+                        <a href="{{ url_for('main.blog_article', article_slug='archivage-classe-fin-annee') }}" class="blog-title-link">{{ _("Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer") }}</a>
+                        <p class="blog-excerpt">{{ _("Préserver les statistiques de lecture, libérer votre quota d'élèves et valoriser les réussites : découvrez pourquoi l'archivage annuel surpasse la suppression.") }}</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> {{ _("4 min") }}</span>
+                            <span><i class="fas fa-folder"></i> {{ _("Organisation") }}</span>
+                        </div>
+                        <a href="{{ url_for('main.blog_article', article_slug='archivage-classe-fin-annee') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-6">
+                <div class="blog-card">
+                    <div class="blog-card-body">
                         <span class="blog-tag tag-communaute">{{ _("Communauté") }}</span>
                         <a href="{{ url_for('main.blog_article', article_slug='cap-100-classes') }}" class="blog-title-link">{{ _("Cap des 100 classes franchi : merci pour votre confiance !") }}</a>
                         <p class="blog-excerpt">{{ _("Plus de 100 enseignants utilisent désormais Livres en classe. Retour sur cette étape symbolique, nos chiffres clés et notre feuille de route.") }}</p>

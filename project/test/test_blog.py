@@ -118,3 +118,74 @@ def test_sitemap_contains_cap_100_classes(client):
     assert (
         'hreflang="de" href="https://livresenclasse.com/de/blog/cap-100-classes"' in xml
     )
+
+
+def test_blog_index_has_archivage_classe_card(client):
+    """Vérifie que la page index du blog affiche la carte de l'article sur l'archivage dans les 3 langues."""
+    # Français
+    res_fr = client.get("/fr/blog")
+    assert res_fr.status_code == 200
+    html_fr = res_fr.get_data(as_text=True)
+    assert "/blog/archivage-classe-fin-annee" in html_fr
+    assert "Archiver sa classe en fin d'année" in html_fr
+
+    # Anglais
+    res_en = client.get("/en/blog")
+    assert res_en.status_code == 200
+    html_en = res_en.get_data(as_text=True)
+    assert "/blog/archivage-classe-fin-annee" in html_en
+    assert "Archiving Your Classroom at the End of the Year" in html_en
+
+    # Allemand
+    res_de = client.get("/de/blog")
+    assert res_de.status_code == 200
+    html_de = res_de.get_data(as_text=True)
+    assert "/blog/archivage-classe-fin-annee" in html_de
+    assert "Klasse zum Schuljahresende archivieren" in html_de
+
+
+def test_archivage_classe_article_all_languages(client):
+    """Vérifie que l'article sur l'archivage se charge correctement dans les 3 langues avec JSON-LD."""
+    # FR
+    res_fr = client.get("/fr/blog/archivage-classe-fin-annee")
+    assert res_fr.status_code == 200
+    html_fr = res_fr.get_data(as_text=True)
+    assert (
+        "Archiver sa classe en fin d'année : pourquoi c'est bien mieux que de tout supprimer"
+        in html_fr
+    )
+    assert "Robin Forestier" in html_fr
+    assert '"@type": "BlogPosting"' in html_fr
+
+    # EN
+    res_en = client.get("/en/blog/archivage-classe-fin-annee")
+    assert res_en.status_code == 200
+    html_en = res_en.get_data(as_text=True)
+    assert (
+        "Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything"
+        in html_en
+    )
+    assert "Robin Forestier" in html_en
+    assert '"@type": "BlogPosting"' in html_en
+
+    # DE
+    res_de = client.get("/de/blog/archivage-classe-fin-annee")
+    assert res_de.status_code == 200
+    html_de = res_de.get_data(as_text=True)
+    assert (
+        "Klasse zum Schuljahresende archivieren: Warum es viel besser ist als alles zu löschen"
+        in html_de
+    )
+    assert "Robin Forestier" in html_de
+    assert '"@type": "BlogPosting"' in html_de
+
+
+def test_sitemap_contains_archivage_classe(client):
+    """Vérifie que le sitemap contient les URL et alternate hreflang de l'article d'archivage."""
+    res = client.get("/sitemap.xml")
+    assert res.status_code == 200
+    xml = res.get_data(as_text=True)
+
+    assert "https://livresenclasse.com/fr/blog/archivage-classe-fin-annee" in xml
+    assert "https://livresenclasse.com/en/blog/archivage-classe-fin-annee" in xml
+    assert "https://livresenclasse.com/de/blog/archivage-classe-fin-annee" in xml

@@ -11,13 +11,13 @@
 
 {% block content %}
 
-    <h1 class="title is-1">
+    <h1 class="title is-2 is-hidden-touch mb-3">
         {{ _("Emprunts") }}
     </h1>
 
     {% include "utils/flash_message.html" %}
 
-    {% if not loans %}
+    {% if not loans and total_loans == 0 %}
         <section class="section">
             <div class="box">
                 <article class="media">
@@ -39,66 +39,53 @@
             </div>
         </section>
     {% else %}
-        <div class="columns is-mobile">
-            <div class="column">
-                {{ search_bar(_("Rechercher un emprunt"), True, url_for("emprunt.search_preview"), url_for("emprunt.search")) }}
-            </div>
-            <div class="column is-narrow has-text-right">
-                <div class="select is-rounded">
-                    <select class="button" name="active_loan"
+        <!-- Barre de recherche pleine largeur -->
+        <div class="block mb-3">
+            {{ search_bar(_("Rechercher un emprunt"), True, url_for("emprunt.search_preview"), url_for("emprunt.search")) }}
+        </div>
+
+        <!-- Barre de filtres et de tri ergonomique -->
+        <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap mb-4" style="gap: 8px;">
+            <div class="is-flex is-align-items-center is-flex-wrap-wrap" style="gap: 8px;">
+                <div class="select is-rounded is-small">
+                    <select name="active_loan"
                         hx-post="{{ url_for('emprunt.search') }}"
                         hx-trigger="change"
                         hx-target="#search_list"
                         hx-include="[name='search'], [name='n_results'], [name='sort']">
-                        <option class="is-hidden-tablet" value="0" selected>{{ _("Tout") }}</option>
-                        <option class="is-hidden-tablet" value="1">{{ _("Actifs") }}</option>
+                        <option value="0" {% if not active_loan or active_loan == '0' %}selected{% endif %}>{{ _("Tous les emprunts") }}</option>
+                        <option value="1" {% if active_loan == '1' or active_loan == 'active' %}selected{% endif %}>{{ _("Emprunts actifs") }}</option>
+                        <option value="archive" {% if active_loan in ('archive', 'archives', '2') %}selected{% endif %}>{{ _("Archives") }}</option>
                     </select>
                 </div>
-
-            <!--
-                <button class="button is-hidden-mobile {% if only_active_loans == false %}is-hidden{% endif %}" data-active="true"
-                        hx-post="/emprunt/search"
-                        hx-trigger="click"
+                <div class="select is-rounded is-small">
+                    <select id="select-sort" name="sort"
+                        hx-post="{{ url_for('emprunt.search') }}"
+                        hx-trigger="change"
                         hx-target="#search_list"
-                        hx-include="[name='sort'], [name='n_results'], [name='search'], [name='active_loan']">
-                    <span class="icon">
-                      <i class="fa-solid fa-book"></i>
-                    </span>
-                    <span>Voir tous les emprunts</span>
-                </button>
-
-
-                <button class="button is-hidden-tablet" id="btn_active_loan">
-                    <span class="icon">
-                      <i class="fa-solid fa-book"></i>
-                    </span>
-                </button>
-
-                <button class="button is-hidden-mobile {% if only_active_loans == true %}is-hidden{% endif %}" data-active="false"
-                    hx-post="/emprunt/search"
-                    hx-trigger="click"
-                    hx-target="#search_list"
-                    hx-include="[name='sort'], [name='n_results'], [name='search'], [name='active_loan']">
-                    <span class="icon">
-                      <i class="fa-solid fa-book-open-reader"></i>
-                    </span>
-                    <span>Voir les emprunts actifs</span>
-                </button>
-
-                <button class="button is-hidden-tablet" id="active_loan">
-                    <span class="icon">
-                      <i class="fa-solid fa-book-open-reader"></i>
-                    </span>
-                </button>
-
-                <input type="hidden" name="active_loan" value="{% if only_active_loans %}1{% else %}0{% endif %}">
-            -->
+                        hx-include="[name='search'], [name='n_results'], [name='active_loan']">
+                        <option value="pertinent">{{ _("Pertinent") }}</option>
+                        <option value="recent">{{ _("Les plus récents") }}</option>
+                        <option value="ancien">{{ _("Les plus anciens") }}</option>
+                        <option value="az">A -> Z</option>
+                        <option value="za">Z -> A</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <div class="select is-rounded is-small">
+                    <select id="select-resutls" name="n_results"
+                        hx-post="{{ url_for('emprunt.search') }}"
+                        hx-trigger="change"
+                        hx-target="#search_list"
+                        hx-include="[name='search'], [name='sort'], [name='active_loan']">
+                        <option value="20">{{ _("20 résultats") }}</option>
+                        <option value="50">{{ _("50 résultats") }}</option>
+                        <option value="100">{{ _("100 résultats") }}</option>
+                    </select>
+                </div>
             </div>
         </div>
-
-        {% with date=true, url="/emprunt/search" %}
-        {% include "utils/result_sort.html" %}
-        {% endwith %}
 
         <div id="search_list">
             {% include "emprunt/emprunt_list.html" %}

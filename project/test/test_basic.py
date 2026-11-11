@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 from project import create_app
@@ -207,3 +209,74 @@ def test_contact_page_post_captcha_validation(client, monkeypatch):
     assert res.status_code == 200
     html = res.get_data(as_text=True)
     assert "Veuillez compléter le CAPTCHA." in html
+
+
+def test_pwa_htmx_boost_and_progress_bar(client):
+    """Vérifie que hx-boost et la barre de progression HTMX sont intégrés dans le layout."""
+    res = client.get("/fr/")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert '<body hx-boost="true">' in html
+    assert 'class="htmx-progress-bar"' in html
+    assert 'id="wrapper"' in html
+    assert "htmx:afterOnLoad" in html
+    assert "stopScanner" in html
+
+
+def test_service_worker_v7_and_cdn_caching(client):
+    """Vérifie que sw.js est servi avec le cache v5 et les règles de mise en cache CDN."""
+    res = client.get("/sw.js")
+    assert res.status_code == 200
+    sw_code = res.get_data(as_text=True)
+    assert "livres-en-classe-v7" in sw_code
+    assert "cdnjs.cloudflare.com" in sw_code
+    assert "unpkg.com" in sw_code
+    assert "kit.fontawesome.com" in sw_code
+    assert "HX-Boosted" in sw_code
+
+
+def test_service_worker_book_covers_caching(client):
+    """Vérifie que sw.js inclut la stratégie de mise en cache Cache-First dédiée aux couvertures."""
+    res = client.get("/sw.js")
+    assert res.status_code == 200
+    sw_code = res.get_data(as_text=True)
+    assert "livres-en-classe-covers-v1" in sw_code
+    assert "openapi.bnf.fr" in sw_code
+    assert "covers.openlibrary.org" in sw_code
+    assert "trimCache" in sw_code
+    assert "key !== COVERS_CACHE_NAME" in sw_code
+
+
+def test_manifest_pwa_start_url_and_shortcuts(client):
+    """Vérifie que le manifest.json définit start_url sur /dashboard et inclut le raccourci."""
+    res = client.get("/manifest.json")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["start_url"] == "/dashboard"
+    shortcut_urls = [s["url"] for s in data.get("shortcuts", [])]
+    assert "/dashboard" in shortcut_urls
+
+
+def test_offline_page_direct_access_and_elements(client):
+    """Vérifie que /offline est accessible directement en 200 sans redirection et propose le retry."""
+    res = client.get("/offline")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Vous êtes hors ligne" in html
+    assert "retryConnection" in html
+    assert "retry-btn" in html
+    assert "logo-w-512x512.png" in html
+    assert "Toujours pas connecté..." in html
+
+
+def test_index_authenticated_redirects_to_dashboard(client):
+    """Vérifie qu'un enseignant connecté arrivant sur / est redirigé vers son dashboard."""
+    with patch("project.main.current_user") as mock_user:
+        mock_user.is_authenticated = True
+        res = client.get("/")
+        assert res.status_code == 302
+        assert "/dashboard" in res.headers["Location"]
+
+        # Option d'accès forcé à la landing page avec ?home=1
+        res_home = client.get("/?home=1")
+        assert res_home.status_code == 200

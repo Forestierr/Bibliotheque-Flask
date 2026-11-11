@@ -225,3 +225,59 @@ def test_admin_dashboard_financial_breakdown(client, app):
     assert "Annuel" in html
     assert "revenueChart" in html
     assert "subTypesChart" in html
+
+
+def test_admin_feedbacks_departure_analytics(client, app):
+    """Vérifie l'analyse des départs et le graphique des motifs de résiliation dans /admin/feedbacks."""
+    with app.app_context():
+        fb_depart1 = Feedback(
+            subject="Départ : Tarif trop élevé / trop cher",
+            message="Formule au départ : free\n\nCommentaire : Trop cher pour mon budget",
+            category="depart",
+            departure_reason="too_expensive",
+            author_name="Départ 1",
+            author_email="depart1@ecole.fr",
+            status="nouveau",
+        )
+        fb_depart2 = Feedback(
+            subject="Départ : Tarif trop élevé / trop cher",
+            message="Formule au départ : premium",
+            category="depart",
+            departure_reason="too_expensive",
+            author_name="Départ 2",
+            author_email="depart2@ecole.fr",
+            status="nouveau",
+        )
+        fb_depart3 = Feedback(
+            subject="Départ : Quotas de la version gratuite trop limités",
+            message="Formule au départ : free",
+            category="depart",
+            departure_reason="free_limits",
+            author_name="Départ 3",
+            author_email="depart3@ecole.fr",
+            status="nouveau",
+        )
+        db.session.add_all([fb_depart1, fb_depart2, fb_depart3])
+        db.session.commit()
+
+    res = client.get("/admin/feedbacks")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+
+    # Vérification de la carte d'analyse des motifs de départ
+    assert (
+        "Analyse des Départs &amp; Churn" in html
+        or "Analyse des Départs & Churn" in html
+    )
+    assert "departureReasonsChart" in html
+    assert "Tarif trop élevé / trop cher" in html
+    assert "Principal déclencheur de départ" in html
+    assert "Départs enregistrés" in html
+    assert "depart1@ecole.fr" in html
+
+    # Vérification du filtre par catégorie "depart"
+    res_filter = client.get("/admin/feedbacks?category=depart")
+    assert res_filter.status_code == 200
+    html_filter = res_filter.get_data(as_text=True)
+    assert "depart1@ecole.fr" in html_filter
+    assert "Super outil" not in html_filter

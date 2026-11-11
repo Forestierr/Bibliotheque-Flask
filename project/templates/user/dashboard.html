@@ -212,7 +212,7 @@
         <!-- Jauge Scans hebdomadaires -->
         <div class="column is-4">
           <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
-            <span class="is-size-7 has-text-grey" title="{{ _('Remis à zéro chaque dimanche à 00h00') }}">{{ _("Scans cette semaine") }}</span>
+            <span class="is-size-7 has-text-grey" title="{{ _('Remis à zéro chaque dimanche à 00h00 UTC') }}">{{ _("Scans cette semaine") }} <span class="is-size-7 has-text-grey-light">({{ _("dimanche 00h") }})</span></span>
             <span class="is-size-7 has-text-weight-semibold">
               {{ current_user.free_scans_used or 0 }} / {{ max_scans }}
               {% if ((current_user.free_scans_used or 0) / max_scans) >= (warning_percent / 100) %}
@@ -227,23 +227,77 @@
   </div>
 </div>
 
+{% if late_loans %}
+<div class="block">
+  <div class="level mb-2 is-mobile">
+    <div class="level-left">
+      <h4 class="title is-4 mb-0" style="color: #dc2626;">
+        <span class="icon is-small mr-1"><i class="fas fa-exclamation-triangle"></i></span>
+        {{ _("Prêts en retard") }}
+        <span class="tag is-danger is-light is-rounded ml-2">{{ late_loans|length }}</span>
+      </h4>
+    </div>
+    <div class="level-right">
+      <a href="{{ url_for('emprunt.emprunt_db') }}?active_loan=1" class="is-size-7 has-text-grey">
+        {{ _("Voir tous les emprunts") }} →
+      </a>
+    </div>
+  </div>
+  <div class="box p-0" style="overflow: hidden; border: 1px solid #fecaca; border-radius: 12px;">
+    {% for item in late_loans %}
+      <div class="p-3 is-flex is-align-items-center is-justify-content-space-between" style="{% if not loop.last %}border-bottom: 1px solid #fee2e2;{% endif %} background: #fff5f5;">
+        <div class="is-flex is-align-items-center" style="gap: 10px; min-width: 0;">
+          {% if current_user.show_book_covers and item.Book.image_url %}
+            <img src="{{ item.Book.image_url }}" alt="{{ item.Book.title }}" style="width: 32px; height: 46px; object-fit: cover; border-radius: 4px; flex-shrink: 0;" loading="lazy" onerror="this.style.display='none';">
+          {% endif %}
+          <div style="min-width: 0;">
+            <a href="{{ url_for('livre.livre_infos', id=item.Book.id) }}" class="has-text-weight-bold has-text-dark is-size-6 is-block" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ item.Book.title }}
+            </a>
+            <div class="is-size-7 has-text-grey">
+              <a href="{{ url_for('eleve.eleve_infos', id=item.Student.id) }}" class="has-text-grey-dark">
+                <i class="fas fa-user-graduate mr-1"></i>{{ item.Student.name }} {{ item.Student.firstname }}
+              </a>
+              &bull;
+              <span class="has-text-danger has-text-weight-semibold">
+                {{ _("En retard de %(days)s jour(s)", days=item.Loan.days_late) }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="ml-2" style="flex-shrink: 0;">
+          <form action="{{ url_for('emprunt.return_loan', id=item.Loan.id) }}" method="POST" style="display:inline;" hx-boost="false">
+            {% include 'utils/csrf.html' %}
+            <input type="hidden" name="next" value="{{ url_for('main.dashboard') }}">
+            <button type="submit" class="button is-success is-small is-rounded has-text-weight-semibold px-3" style="height: 34px;" title="{{ _('Enregistrer le retour') }}">
+              <span class="icon is-small"><i class="fas fa-check"></i></span>
+              <span>{{ _("Rendre") }}</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
 {% if books %}
 <div class="block">
   <h4 class="title is-4 block">{{ _("Meilleurs livres") }}</h4>
-      <div class="box">
-        {% for book in books %}
-            <div class="columns is-mobile">
-                <div class="column">
-                    <a href="/livre/{{ book.Book.id }}">
-                    {{ book.Book.title }}
-                    </a>
-                </div>
-                <div class="column has-text-right">
-                    {{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}
-                </div>
+  <div class="box">
+    {% for book in books %}
+        <div class="columns is-mobile">
+            <div class="column">
+                <a href="/livre/{{ book.Book.id }}">
+                {{ book.Book.title }}
+                </a>
             </div>
-        {% endfor %}
-      </div>
+            <div class="column has-text-right">
+                {{ _("Prêté") }} <strong>{{ book.loan_count }}</strong> {{ _("fois") }}
+            </div>
+        </div>
+    {% endfor %}
+  </div>
 </div>
 {% else %}
 <div class="block">
@@ -498,16 +552,33 @@
     renderChart(result.labels, result.data);
   });
 
-  // Initial load (last 365 days)
-  window.addEventListener('DOMContentLoaded', async () => {
+  // Initial load (last 365 days) - compatible DOMContentLoaded & HTMX load
+  async function initDashboardChart() {
+    const chartCanvas = document.getElementById('studentBooksChart');
+    if (!chartCanvas) return;
+    const dateToEl = document.getElementById('date_to');
+    const dateFromEl = document.getElementById('date_from');
+    if (!dateToEl || !dateFromEl) return;
+
     const today = new Date();
     const priorDate = new Date();
     priorDate.setDate(today.getDate() - 365);
-    document.getElementById('date_to').value = today.toISOString().slice(0,10);
-    document.getElementById('date_from').value = priorDate.toISOString().slice(0,10);
-    const result = await fetchStudentBooks(priorDate.toISOString().slice(0,10), today.toISOString().slice(0,10));
-    renderChart(result.labels, result.data);
-  });
+    if (!dateToEl.value) dateToEl.value = today.toISOString().slice(0,10);
+    if (!dateFromEl.value) dateFromEl.value = priorDate.toISOString().slice(0,10);
+    try {
+      const result = await fetchStudentBooks(dateFromEl.value, dateToEl.value);
+      renderChart(result.labels, result.data);
+    } catch(err) {
+      console.warn("Chart load error:", err);
+    }
+  }
+
+  if (document.readyState !== 'loading') {
+    initDashboardChart();
+  } else {
+    document.addEventListener('DOMContentLoaded', initDashboardChart);
+  }
+  document.body.addEventListener('htmx:load', initDashboardChart);
 </script>
 
 <style>

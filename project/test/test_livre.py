@@ -69,7 +69,7 @@ def test_get_book_from_api_timeout(mock_get):
     mock_get.side_effect = requests.Timeout("Connection timed out")
     result = get_book_from_api("9782800127279")
     assert result is None
-    assert mock_get.call_count == 2
+    assert mock_get.call_count == 3
     for call_obj in mock_get.call_args_list:
         assert call_obj[1].get("timeout") == 5
 
@@ -201,6 +201,77 @@ def test_livre_delete_all(mock_get_books, mock_user, client):
     with patch("project.livre.db.session"):
         response = client.post("/livre/delete_all")
         assert response.status_code == 302
+
+
+def test_livre_delete_all_preserves_isbn_books_and_deletes_non_isbn(app, client):
+    from project import db
+    from project.models import Book, BookTags, Loan, Student, Tags, User
+
+    with app.app_context():
+        db.create_all()
+
+        user = User(
+            name="Prof Livres",
+            email="delete_books@test.com",
+            password="hash",
+            is_verified=True,
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # Livre avec ISBN
+        book_isbn = Book(
+            title="Harry Potter",
+            author="J.K. Rowling",
+            isbn="9782070584628",
+            barcode="BAC-HP",
+            user_id=user.id,
+        )
+        # Livre sans ISBN (fait maison)
+        book_no_isbn = Book(
+            title="Cahier de poésie maison",
+            author="Classe",
+            isbn=None,
+            barcode="BAC-POESIE",
+            user_id=user.id,
+        )
+        db.session.add_all([book_isbn, book_no_isbn])
+        db.session.commit()
+
+        student = Student(name="Lucas", user_id=user.id)
+        db.session.add(student)
+        db.session.commit()
+
+        loan = Loan(book_id=book_isbn.id, student_id=student.id)
+        tag = Tags(name="Roman", user_id=user.id)
+        db.session.add_all([loan, tag])
+        db.session.commit()
+
+        bt = BookTags(book_id=book_isbn.id, tag_id=tag.id)
+        db.session.add(bt)
+        db.session.commit()
+
+        with client.session_transaction() as sess:
+            sess["_user_id"] = str(user.id)
+
+        response = client.post("/livre/delete_all")
+        assert response.status_code == 302
+
+        # Le livre avec ISBN est conservé comme orphelin pour le catalogue collaboratif
+        preserved_book = db.session.get(Book, book_isbn.id)
+        assert preserved_book is not None
+        assert preserved_book.user_id is None
+        assert preserved_book.barcode is None
+        assert preserved_book.title == "Harry Potter"
+
+        # Les prêts et tags personnels sont nettoyés
+        assert len(preserved_book.loans) == 0
+        assert len(preserved_book.book_tags) == 0
+
+        # Le livre sans ISBN est définitivement supprimé
+        deleted_book = db.session.get(Book, book_no_isbn.id)
+        assert deleted_book is None
 
 
 # Test recherche preview (POST)
@@ -363,3 +434,313 @@ def test_scan_counter_incremented_when_api_finds_book(client, app):
             resp_reload = client.get("/livre/ajout?isbn=9782070612758")
             assert resp_reload.status_code == 200
             assert u.free_scans_used == 6
+
+
+def test_get_book_from_bnf_success():
+    from project.livre import get_book_from_bnf
+
+    xml_response = b"""<?xml version="1.0" encoding="UTF-8"?>
+    <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <srw:records>
+            <srw:record>
+                <srw:recordData>
+                    <dc:title>Le petit prince / Antoine de Saint-Exup\xc3\xa9ry</dc:title>
+                    <dc:creator>Saint-Exup\xc3\xa9ry, Antoine de (1900-1944). Auteur du texte</dc:creator>
+                    <dc:publisher>Gallimard (Paris)</dc:publisher>
+                    <dc:date>2007</dc:date>
+                    <dc:description>Collection : Folio junior ; 100</dc:description>
+                </srw:recordData>
+            </srw:record>
+        </srw:records>
+    </srw:searchRetrieveResponse>
+    """
+
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.content = xml_response
+
+    mock_cover_resp = MagicMock()
+    mock_cover_resp.status_code = 200
+    mock_cover_resp.headers = {"Content-Type": "image/jpeg"}
+
+    with patch("project.livre.requests.get") as mock_get:
+        mock_get.side_effect = [mock_resp, mock_cover_resp]
+        book = get_book_from_bnf("9782070612758")
+
+        assert book is not None
+        assert book["title"] == "Le petit prince"
+        assert book["authors"] == "Antoine de Saint-Exupéry"
+        assert book["editor"] == "Gallimard"
+        assert book["year"] == "2007"
+        assert book["type"] == "Folio junior"
+        assert "recupererImage" in book["image_url"]
+
+
+def test_book_image_url_persistence(client, app):
+    """Vérifie que le champ image_url est bien persisté lors de l'ajout d'un livre."""
+    from project import db
+    from project.models import Book, User
+
+    with app.app_context():
+        user = User(id=401, email="image_test@test.com", plan="premium")
+        db.session.add(user)
+        db.session.commit()
+        u = db.session.get(User, 401)
+
+        with (
+            patch("flask_login.utils._get_user", return_value=u),
+            patch("project.livre.current_user", u),
+        ):
+            resp = client.post(
+                "/livre/ajout",
+                data={
+                    "title": "Livre Illustré",
+                    "author": "Illustrateur",
+                    "editor": "Éditions Test",
+                    "year": "2024",
+                    "type": "Album",
+                    "isbn": "9782070612758",
+                    "image_url": "https://example.com/cover.jpg",
+                },
+                follow_redirects=True,
+            )
+            assert resp.status_code == 200
+            created = Book.query.filter_by(title="Livre Illustré").first()
+            assert created is not None
+            assert created.image_url == "https://example.com/cover.jpg"
+
+
+def test_user_show_book_covers_setting(client, app):
+    """Vérifie que l'utilisateur peut activer ou désactiver l'affichage des couvertures."""
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        user = User(
+            id=402,
+            email="covers_pref@test.com",
+            name="Prof Test",
+            plan="free",
+            show_book_covers=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+        u = db.session.get(User, 402)
+
+        with (
+            patch("flask_login.utils._get_user", return_value=u),
+            patch("project.auth.current_user", u),
+        ):
+            # 1. Désactiver les couvertures (décocher la case)
+            resp = client.post(
+                "/reglage",
+                data={
+                    "name": "Prof Test",
+                    "email": "covers_pref@test.com",
+                    "preferred_language": "fr",
+                    # absence de show_book_covers = case décochée
+                },
+                follow_redirects=True,
+            )
+            assert resp.status_code == 200
+            u_updated = db.session.get(User, 402)
+            assert u_updated.show_book_covers is False
+
+            # 2. Réactiver les couvertures
+            resp2 = client.post(
+                "/reglage",
+                data={
+                    "name": "Prof Test",
+                    "email": "covers_pref@test.com",
+                    "preferred_language": "fr",
+                    "show_book_covers": "1",
+                },
+                follow_redirects=True,
+            )
+            assert resp2.status_code == 200
+            u_updated2 = db.session.get(User, 402)
+            assert u_updated2.show_book_covers is True
+
+
+def test_ajouter_livre_with_unsubmitted_tags_in_raw_input(client, app):
+    """Vérifie qu'un tag saisi dans tags_input_raw (sans avoir appuyé sur Entrée) est bien enregistré."""
+    from unittest.mock import patch
+
+    from project import db
+    from project.models import Book, BookTags, Tags, User
+
+    with app.app_context():
+        user = User(
+            id=410,
+            email="tagstest@test.com",
+            name="Prof Tags",
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+        u = db.session.get(User, 410)
+
+        with (
+            patch("flask_login.utils._get_user", return_value=u),
+            patch("project.livre.current_user", u),
+        ):
+            resp = client.post(
+                "/livre/ajout",
+                data={
+                    "title": "Livre avec Tag non validé par Enter",
+                    "author": "Auteur Test",
+                    "tags": "",  # champ masqué vide car pas de clic Enter
+                    "tags_input_raw": "Aventure, Fantastique",  # texte restant dans le champ
+                },
+                follow_redirects=True,
+            )
+            assert resp.status_code == 200
+
+            book = Book.query.filter_by(
+                title="Livre avec Tag non validé par Enter", user_id=410
+            ).first()
+            assert book is not None
+
+            book_tags = BookTags.query.filter_by(book_id=book.id).all()
+            tag_ids = [bt.tag_id for bt in book_tags]
+            tags_in_db = Tags.query.filter(Tags.id.in_(tag_ids)).all()
+            tag_names = {t.name for t in tags_in_db}
+            assert "Aventure" in tag_names
+            assert "Fantastique" in tag_names
+
+            from project.query import get_book_tags
+
+            fetched_tags = get_book_tags(410, book.id)
+            fetched_names = [t.name for t in fetched_tags]
+            assert "Aventure" in fetched_names
+            assert "Fantastique" in fetched_names
+
+            # Vérifie que la page d'édition GET reçoit et affiche bien les tags
+            resp_edit_get = client.get(f"/livre/{book.id}/edit")
+            assert resp_edit_get.status_code == 200
+            content = resp_edit_get.get_data(as_text=True)
+            assert "Aventure" in content
+            assert "Fantastique" in content
+
+
+def test_edit_livre_with_unsubmitted_tags_in_raw_input(client, app):
+    """Vérifie que la modification d'un livre prend en compte le texte saisi dans tags_input_raw."""
+    from unittest.mock import patch
+
+    from project import db
+    from project.models import Book, BookTags, Tags, User
+
+    with app.app_context():
+        user = User(
+            id=411,
+            email="tagstest_edit@test.com",
+            name="Prof Tags Edit",
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+        u = db.session.get(User, 411)
+
+        book = Book(
+            id=510,
+            title="Livre Avant Edit",
+            user_id=411,
+        )
+        db.session.add(book)
+        db.session.commit()
+
+        with (
+            patch("flask_login.utils._get_user", return_value=u),
+            patch("project.livre.current_user", u),
+        ):
+            resp = client.post(
+                "/livre/510/edit",
+                data={
+                    "title": "Livre Après Edit",
+                    "tags": "Roman",
+                    "tags_input_raw": "Policier",
+                },
+                follow_redirects=True,
+            )
+            assert resp.status_code == 200
+
+            book_tags = BookTags.query.filter_by(book_id=510).all()
+            tag_ids = [bt.tag_id for bt in book_tags]
+            tags_in_db = Tags.query.filter(Tags.id.in_(tag_ids)).all()
+            tag_names = {t.name for t in tags_in_db}
+            assert "Roman" in tag_names
+            assert "Policier" in tag_names
+
+
+def test_reglage_next_redirection(client, app):
+    """Vérifie que la sauvegarde des réglages redirige vers le paramètre next si fourni."""
+    from unittest.mock import patch
+
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        user = User(
+            id=412,
+            email="reglage_next@test.com",
+            name="Prof Next",
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+        u = db.session.get(User, 412)
+
+        with (
+            patch("flask_login.utils._get_user", return_value=u),
+            patch("project.auth.current_user", u),
+        ):
+            resp = client.post(
+                "/reglage",
+                data={
+                    "name": "Prof Next Modifié",
+                    "email": "reglage_next@test.com",
+                    "preferred_language": "fr",
+                    "next": "/livre",
+                },
+                follow_redirects=False,
+            )
+            assert resp.status_code == 302
+            assert resp.headers["Location"] == "/livre"
+            u_updated = db.session.get(User, 412)
+            assert u_updated.name == "Prof Next Modifié"
+
+
+def test_livre_exist_loaned_status(client, app):
+    from datetime import UTC, datetime
+
+    from project import db
+    from project.models import Book, Loan, Student, User
+
+    with app.app_context():
+        user = User.query.filter_by(email="test@test.com").first()
+        if not user:
+            user = User(email="test@test.com", password="hash", name="Test")
+            db.session.add(user)
+            db.session.commit()
+
+        book = Book(title="Livre Emprunte", user_id=user.id, isbn="9780000000001")
+        student = Student(name="Martin", firstname="Sophie", user_id=user.id)
+        db.session.add_all([book, student])
+        db.session.commit()
+
+        loan = Loan(
+            book_id=book.id,
+            student_id=student.id,
+            date_loan=datetime.now(tz=UTC).date(),
+        )
+        db.session.add(loan)
+        db.session.commit()
+
+        with patch("project.livre.current_user", user):
+            resp = client.get("/livre/9780000000001/exist")
+            assert resp.status_code == 200
+            data = resp.get_json()
+            assert data["id"] == book.id
+            assert data["is_loaned"] is True
+            assert data["loan_id"] == loan.id
+            assert data["borrower_name"] == "Sophie Martin"

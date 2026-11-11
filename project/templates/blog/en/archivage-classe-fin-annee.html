@@ -1,0 +1,231 @@
+<!-- templates/blog/en/archivage-classe-fin-annee.html -->
+
+{% from "utils/navbar.html" import navbar %}
+
+{% extends "base.html" %}
+
+{% block title %}{{ _("Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything") }}{% endblock %}
+{% block meta_description %}{{ _("Discover why archiving your school year cohort instead of deleting students and loans preserves reading statistics, resets your free tier quota, and celebrates student reading achievements.") }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ lang_url('en', external=True) }}"
+  },
+  "headline": {{ _("Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything")|tojson }},
+  "description": {{ _("Discover why archiving your school year cohort instead of deleting students and loans preserves reading statistics, resets your free tier quota, and celebrates student reading achievements.")|tojson }},
+  "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
+  "author": {
+    "@type": "Person",
+    "name": "Robin Forestier",
+    "jobTitle": "Creator of Livres en classe"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png"
+    }
+  },
+  "inLanguage": "en",
+  "datePublished": "2026-11-07",
+  "dateModified": "2026-11-07"
+}
+</script>
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Ma Bibliothèque")) }}
+{% endblock %}
+
+{% block content %}
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                
+                <!-- Table of Contents (Desktop: Left) -->
+                <div class="column is-3 is-hidden-touch">
+                    <div style="position: sticky; top: 100px;">
+                        <div class="box has-background-white-bis" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. The Back-to-School Dilemma</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Why Deleting Everything Is a Mistake</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. The 4 Benefits of Archiving</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. The 3-Step Closing Wizard</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Celebrating Reading & Diplomas</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="column is-7">
+                    
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                      <ul>
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Class Archiving</a></li>
+                      </ul>
+                    </nav>
+
+                    <span class="tag is-primary is-light is-rounded mb-3" style="font-weight: 600; letter-spacing: 0.5px;">
+                        <i class="fas fa-archive mr-2" style="color: #00d1b2;"></i> {{ _("Organisation de classe") }}
+                    </span>
+
+                    <h1 class="title is-1 mb-5">Archiving Your Classroom at the End of the Year: Why It Beats Deleting Everything</h1>
+                    <p class="subtitle is-5 has-text-grey">Reading time: 4 min | By Robin Forestier, creator of Livres en classe</p>
+
+                    <div class="content is-medium mt-6">
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            Every June and September, teachers encounter the very same question: <em>what should I do with my student roster from the past year and their loan history?</em>
+                        </p>
+                        
+                        <p class="is-size-5" style="line-height: 1.8; color: #2c3e50;">
+                            Out of habit or lack of time, many choose to delete all students with one click to "start fresh". However, that means losing months of valuable progress. <strong>Annual archiving</strong> was built specifically to solve this puzzle: start with a clean slate while preserving and celebrating everything your students accomplished.
+                        </p>
+
+                        <hr class="my-6">
+
+                        <!-- Mobile Table of Contents -->
+                        <div class="box has-background-white-bis is-hidden-desktop mb-6" style="border: 1px solid #f0f0f0; box-shadow: none;">
+                            <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Table of Contents</p>
+                            <ul class="menu-list" style="font-size: 0.95rem;">
+                                <li><a href="#section-1" style="color: #4a4a4a;">1. The Back-to-School Dilemma</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Why Deleting Everything Is a Mistake</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. The 4 Benefits of Archiving</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. The 3-Step Closing Wizard</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Celebrating Reading & Diplomas</a></li>
+                            </ul>
+                        </div>
+
+                        <h2 id="section-1">1. The Trap of Radical Deletion</h2>
+                        <p>
+                            As summer holidays begin, it is tempting to head over to Settings and click <em>"Delete all students"</em>. In an instant, the class list is wiped clean and ready for the next cohort.
+                        </p>
+                        <p>
+                            Yet by doing this, you permanently erase:
+                        </p>
+                        <ul>
+                            <li><strong>Reading leaderboards</strong>: who read the most books? Which students made tremendous breakthroughs in reading independence?</li>
+                            <li><strong>Your classroom's hit books</strong>: which titles were checked out 25 times? Which novels sat untouched and might need to be highlighted differently or replaced?</li>
+                            <li><strong>Pedagogical records</strong>: no objective figures left for school reports, reading assessments, or parent-teacher conferences.</li>
+                        </ul>
+
+                        <h2 id="section-2" class="mt-6">2. Why Deleting Data Is a Missed Opportunity</h2>
+                        <p>
+                            Classroom reading is not simply an inventory workflow; it is an educational journey. Erasing past records is like tossing out the ship's log at the end of the voyage.
+                        </p>
+                        <p>
+                            Furthermore, if a child forgot to return a book before the holidays, deleting their profile also removes the active loan. The book disappears from your radar, making it nearly impossible to trace in September.
+                        </p>
+
+                        <h2 id="section-3" class="mt-6">3. The 4 Big Advantages of Annual Archiving</h2>
+                        
+                        <!-- Benefit Grid -->
+                        <div class="columns is-multiline my-4">
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-success mb-2"><i class="fas fa-unlock-alt mr-2"></i> Instant Quota Reset</h4>
+                                    <p class="is-size-6 has-text-dark">Archived students no longer count toward the 40-student limit of the free plan. You start your next school year with 0 active students without losing any history.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-link mb-2"><i class="fas fa-chart-line mr-2"></i> Reading Highlights & Top Readers</h4>
+                                    <p class="is-size-6 has-text-dark">Automatic calculation of key class metrics: total books read, class average per student, most popular book, and the podium of top readers.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-purple mb-2" style="color: #9333ea;"><i class="fas fa-shield-alt mr-2"></i> Safeguard Against Lost Books</h4>
+                                    <p class="is-size-6 has-text-dark">The wizard checks for outstanding loans before closing. If a student is staying in your multi-grade class next year and keeping a book for the summer, you can easily keep them active.</p>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="box p-4" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; height: 100%;">
+                                    <h4 class="title is-5 has-text-warning-dark mb-2"><i class="fas fa-print mr-2"></i> Printable A4 Summary</h4>
+                                    <p class="is-size-6 has-text-dark">Generate and print a handsome annual certificate and class summary sheet for your teaching portfolio or classroom display.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 id="section-4" class="mt-6">4. How the 3-Step Wizard Works</h2>
+                        <p>
+                            In <strong>Livres en classe</strong>, we built a simple, step-by-step assistant located in your Account Settings:
+                        </p>
+                        <ol>
+                            <li><strong>Step 1: Check Current Loans</strong>. The wizard alerts you if any books are still checked out. Settle returns with a single click or flag students keeping a book over summer.</li>
+                            <li><strong>Step 2: Annual Summary & Statistics</strong>. Review your classroom reading achievements: total loans, books per student, and the top 3 favorite books of the cohort.</li>
+                            <li><strong>Step 3: Secure Closing & Fresh Year</strong>. Seal the cohort under a clean label (e.g. <em>2025-2026</em>). Your dashboard is instantly refreshed, ready for your new students.</li>
+                        </ol>
+
+                        <h2 id="section-5" class="mt-6">5. Celebrating Milestones: Diplomas & Continuity</h2>
+                        <p>
+                            Archiving also turns the end of the school year into a rewarding celebration. With your archive numbers in hand, you can award students their customized <strong>Super Reader Diplomas</strong> or validate their reading passports.
+                        </p>
+                        <p>
+                            Teaching a multi-grade classroom or looping with your students? You can reactivate an archived student at any moment with their entire reading log intact.
+                        </p>
+
+                        <!-- Author Signature -->
+                        <div class="box mt-5 p-5" style="border-left: 4px solid #3273dc; background: #fafbfc;">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-48x48">
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #3273dc; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem;">
+                                            RF
+                                        </div>
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-5 mb-1" style="color: #2c3e50;">Robin</p>
+                                    <p class="subtitle is-6 has-text-grey">Creator of Livres en classe</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Box -->
+                        <div class="box has-background-white-bis has-text-centered p-5 my-6" style="border: 1px solid #eef0f5; border-radius: 12px;">
+                            <h3 class="title is-4">Ready for a Smooth Back-to-School Transition?</h3>
+                            <p class="mb-4">Archive your class in 2 minutes or join hundreds of teachers streamlining their classroom library today.</p>
+                            <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded">Try Livres en classe for Free</a>
+                        </div>
+
+                        <!-- Related Articles -->
+                        <hr class="my-6">
+                        <div class="box mt-6" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);">
+                            <h3 class="title is-4 mb-4">📚 You Might Also Like...</h3>
+                            <div class="columns">
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='suivi-emprunts-livres-eleves') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">CLASSROOM ROUTINES</p>
+                                        <p class="has-text-weight-bold has-text-dark">Tracking Classroom Book Loans: Tips and Modern Solutions</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                                <div class="column">
+                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                        <p class="is-size-7 has-text-grey mb-2">ORGANIZATION</p>
+                                        <p class="has-text-weight-bold has-text-dark">How to Set Up an Efficient Classroom Library</p>
+                                        <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- End content -->
+                </div> <!-- End column is-7 -->
+            </div> <!-- End columns -->
+        </div> <!-- End container -->
+    </section>
+
+{% endblock %}

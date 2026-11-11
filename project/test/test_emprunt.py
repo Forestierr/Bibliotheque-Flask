@@ -557,3 +557,154 @@ def test_search_default_branch(client, app, logged_in_user):
         mock_search.assert_called_once()
         call_args = mock_search.call_args[0]
         assert call_args[2] == "all"  # Type de recherche
+
+
+def test_return_loan_quick_htmx_success(client, app, logged_in_user):
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 1
+        mock_loan.date_return = None
+        mock_loan.date_loan = datetime.now(tz=UTC).date()
+        mock_loan.student_id = 1
+
+        mock_book = MagicMock()
+        mock_book.id = 1
+        mock_book.title = "Livre Test"
+        mock_book.user_id = 1
+        mock_book.image_url = None
+
+        mock_student = MagicMock()
+        mock_student.id = 1
+        mock_student.name = "Dupont"
+        mock_student.firstname = "Jean"
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+        ):
+            mock_session.query().filter().first.side_effect = [
+                mock_loan,
+                mock_book,
+                mock_student,
+            ]
+            response = client.post(
+                "/emprunt/1/return-quick", headers={"HX-Request": "true"}
+            )
+            assert response.status_code == 200
+            assert mock_loan.date_return == datetime.now(tz=UTC).date()
+            mock_session.commit.assert_called_once()
+            assert "loan-item-1" in response.get_data(as_text=True)
+
+
+def test_return_loan_quick_json_success(client, app, logged_in_user):
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 1
+        mock_loan.date_return = None
+        mock_book = MagicMock()
+        mock_book.id = 1
+        mock_book.title = "Livre Test"
+        mock_book.user_id = 1
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+        ):
+            mock_session.query().filter().first.side_effect = [mock_loan, mock_book]
+            response = client.post(
+                "/emprunt/1/return-quick", headers={"Accept": "application/json"}
+            )
+            assert response.status_code == 200
+            data = response.get_json()
+            assert data["success"] is True
+            assert data["loan_id"] == 1
+
+
+def test_return_loan_redirects_to_next_book_page(client, app, logged_in_user):
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 7
+        mock_loan.book_id = 3
+        mock_loan.date_return = None
+
+        mock_book = MagicMock()
+        mock_book.id = 3
+        mock_book.user_id = 1
+        mock_book.title = "Livre 3"
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+        ):
+            mock_session.query().filter().first.side_effect = [mock_loan, mock_book]
+            response = client.post("/emprunt/7", data={"next": "/fr/livre/3"})
+            assert response.status_code == 302
+            assert response.headers.get("Location") == "/fr/livre/3"
+
+
+def test_return_loan_hx_request_issues_hx_redirect(client, app, logged_in_user):
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 7
+        mock_loan.book_id = 3
+        mock_loan.date_return = None
+
+        mock_book = MagicMock()
+        mock_book.id = 3
+        mock_book.user_id = 1
+        mock_book.title = "Livre 3"
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+        ):
+            mock_session.query().filter().first.side_effect = [mock_loan, mock_book]
+            response = client.post(
+                "/emprunt/7",
+                data={"next": "/fr/livre/3"},
+                headers={"HX-Request": "true"},
+            )
+            assert response.status_code == 200
+            assert response.headers.get("HX-Redirect") == "/fr/livre/3"
+
+
+def test_emprunt_search_with_archive_filter(client, app, logged_in_user):
+    """Vérifier que le filtre 'archive' est bien transmis à get_loans_with_infos."""
+    with (
+        app.app_context(),
+        patch("project.emprunt.current_user", logged_in_user),
+        patch("project.emprunt.get_loans_count", return_value=12),
+        patch(
+            "project.emprunt.get_loans_with_infos", return_value=([], 3)
+        ) as mock_loans,
+        app.test_request_context("/emprunt/search", method="POST"),
+    ):
+        response = client.post(
+            "/emprunt/search",
+            data={
+                "search": "",
+                "sort": "pertinent",
+                "n_results": "20",
+                "page": "1",
+                "active_loan": "archive",
+            },
+        )
+        assert response.status_code == 200
+        mock_loans.assert_called_once()
+        assert mock_loans.call_args[0][1] == "archive"
+
+
+def test_emprunt_get_with_archive_param(client, app, logged_in_user):
+    """Vérifier que /emprunt?active_loan=archive appelle get_loans_with_infos avec 'archive'."""
+    with (
+        app.app_context(),
+        patch("project.emprunt.current_user", logged_in_user),
+        patch("project.emprunt.get_loans_count", return_value=5),
+        patch(
+            "project.emprunt.get_loans_with_infos", return_value=([], 0)
+        ) as mock_loans,
+    ):
+        response = client.get("/emprunt?active_loan=archive")
+        assert response.status_code == 200
+        mock_loans.assert_called_once()
+        assert mock_loans.call_args[0][1] == "archive"

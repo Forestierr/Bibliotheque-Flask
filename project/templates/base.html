@@ -53,9 +53,13 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link rel="preconnect" href="https://kit.fontawesome.com" crossorigin />
     <link rel="preconnect" href="https://ka-f.fontawesome.com" crossorigin />
+    <link rel="preconnect" href="https://openapi.bnf.fr" crossorigin />
+    <link rel="preconnect" href="https://covers.openlibrary.org" crossorigin />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
     <link rel="dns-prefetch" href="https://kit.fontawesome.com" />
     <link rel="dns-prefetch" href="https://ka-f.fontawesome.com" />
+    <link rel="dns-prefetch" href="https://openapi.bnf.fr" />
+    <link rel="dns-prefetch" href="https://covers.openlibrary.org" />
     <link rel="dns-prefetch" href="https://js.hcaptcha.com" />
 
     {% block head_extra %}{% endblock %}
@@ -122,7 +126,8 @@
     </style>
 </head>
 
-<body>
+<body hx-boost="true">
+<div class="htmx-progress-bar" aria-hidden="true"></div>
 
 <!-- Matomo -->
 <script>
@@ -141,30 +146,30 @@
 <!-- End Matomo Code -->
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      // Get all "navbar-burger" elements
+    function initNavbarBurger() {
       const $navbarBurgers = Array.prototype.slice.call(
         document.querySelectorAll(".navbar-burger"),
         0
       );
 
-      // Add a click event on each of them
       $navbarBurgers.forEach((el) => {
-        el.addEventListener("click", () => {
-          // Get the target from the "data-target" attribute
-          const target = el.dataset.target;
-          const $target = document.getElementById(target);
-
-          // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-          el.classList.toggle("is-active");
-          $target.classList.toggle("is-active");
-        });
+        if (!el.dataset.hasBurgerListener) {
+          el.dataset.hasBurgerListener = "true";
+          el.addEventListener("click", () => {
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+            el.classList.toggle("is-active");
+            if ($target) $target.classList.toggle("is-active");
+          });
+        }
       });
-    });
+    }
+    document.addEventListener("DOMContentLoaded", initNavbarBurger);
+    document.body.addEventListener("htmx:load", initNavbarBurger);
 </script>
 
 <section class="hero is-fullheight">
-    <div id="wrpper">
+    <div id="wrapper">
        <div class="hero-head block">
             {# Navbar #}
             {% block navbar %}
@@ -179,13 +184,13 @@
 
     {% if request.endpoint in ['main.index', 'main.install', 'auth.login', 'auth.signup', 'main.mentions_legales', 'main.apropos'] %}
         {# pass #}
-    {% elif request.endpoint == 'livre.livre_db' %}
+    {% elif request.endpoint == 'livre.livre_db' or (request.endpoint and request.endpoint.startswith('livre.') and request.endpoint != 'livre.livre_scann') %}
         {{ footer_mobile(1) }}
-    {% elif request.endpoint == 'livre.livre_scann' %}
+    {% elif request.endpoint == 'eleve.eleve_db' or request.endpoint == 'eleve.eleve_infos' or (request.endpoint and request.endpoint.startswith('eleve.')) %}
         {{ footer_mobile(2) }}
-    {% elif request.endpoint == 'eleve.eleve_db' or request.endpoint == 'eleve.eleve_infos' %}
+    {% elif request.endpoint == 'livre.livre_scann' %}
         {{ footer_mobile(3) }}
-    {% elif request.endpoint == 'emprunt.emprunt_db' %}
+    {% elif request.endpoint == 'emprunt.emprunt_db' or (request.endpoint and request.endpoint.startswith('emprunt.')) %}
         {{ footer_mobile(4) }}
     {% elif request.endpoint == 'auth.reglage' %}
         {{ footer_mobile(5) }}
@@ -218,6 +223,22 @@
     document.body.addEventListener('htmx:afterSwap', attachDeleteHandlers);
 
     // Configurer HTMX pour inclure le token CSRF dans toutes les requêtes
+    // Synchroniser Matomo Analytics sur les navigations boostées par HTMX
+    document.body.addEventListener('htmx:afterOnLoad', (evt) => {
+        if (window._paq && evt.detail && evt.detail.successful) {
+            window._paq.push(['setCustomUrl', window.location.href]);
+            window._paq.push(['setDocumentTitle', document.title]);
+            window._paq.push(['trackPageView']);
+        }
+    });
+
+    // Libérer la caméra si on quitte la page de scan via HTMX
+    document.body.addEventListener('htmx:beforeSwap', () => {
+        if (typeof stopScanner === 'function') {
+            try { stopScanner(); } catch (e) {}
+        }
+    });
+
     document.body.addEventListener('htmx:configRequest', (event) => {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
         if (csrfToken) {

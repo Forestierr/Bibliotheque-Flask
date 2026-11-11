@@ -38,6 +38,7 @@ from .models import (
     Student,
     User,
 )
+from .query import delete_user_account
 
 admin = Blueprint("admin", __name__)
 
@@ -379,10 +380,9 @@ def verify_user(user_id):
 def delete_user(user_id):
     user = db.get_or_404(User, user_id)
     email = user.email
-    db.session.delete(user)
-    db.session.commit()
+    delete_user_account(user)
     flash(
-        f"Le compte {email} et toutes ses données associées ont été supprimés.",
+        f"Le compte {email} a été supprimé. Les livres avec ISBN ont été conservés dans le catalogue collaboratif.",
         "success",
     )
     return redirect(request.referrer or url_for("admin.users"))
@@ -1161,7 +1161,53 @@ def feedbacks():
         "nouveau": Feedback.query.filter_by(status="nouveau").count(),
         "en_cours": Feedback.query.filter_by(status="en_cours").count(),
         "traite": Feedback.query.filter_by(status="traite").count(),
+        "depart": Feedback.query.filter_by(category="depart").count(),
+        "bug": Feedback.query.filter_by(category="bug").count(),
+        "suggestion": Feedback.query.filter_by(category="suggestion").count(),
+        "general": Feedback.query.filter_by(category="general").count(),
     }
+
+    # Statistiques et distribution des motifs de départ
+    departure_reasons_def = [
+        ("too_expensive", "Tarif trop élevé / cher", "#ef4444"),
+        ("free_limits", "Quotas gratuit limités", "#f59e0b"),
+        ("no_longer_needed", "Plus d'utilité / Fin d'année", "#3b82f6"),
+        ("missing_features", "Fonctions manquantes", "#8b5cf6"),
+        ("too_complex", "Trop complexe", "#ec4899"),
+        ("other", "Autre raison", "#64748b"),
+    ]
+
+    all_departures = Feedback.query.filter_by(category="depart").all()
+    total_departures = len(all_departures)
+
+    reason_counts = {key: 0 for key, _, _ in departure_reasons_def}
+    for dep in all_departures:
+        r = dep.departure_reason
+        if r in reason_counts:
+            reason_counts[r] += 1
+        else:
+            reason_counts["other"] += 1
+
+    chart_departure_labels = [label for _, label, _ in departure_reasons_def]
+    chart_departure_data = [reason_counts[key] for key, _, _ in departure_reasons_def]
+    chart_departure_colors = [color for _, _, color in departure_reasons_def]
+
+    top_reason_key = None
+    top_reason_count = 0
+    if total_departures > 0:
+        sorted_reasons = sorted(
+            reason_counts.items(), key=lambda item: item[1], reverse=True
+        )
+        top_reason_key, top_reason_count = sorted_reasons[0]
+
+    top_reason_label = next(
+        (label for k, label, _ in departure_reasons_def if k == top_reason_key), "Aucun"
+    )
+    top_reason_pct = (
+        round((top_reason_count / total_departures * 100), 1)
+        if total_departures > 0
+        else 0
+    )
 
     return render_template(
         "admin/feedbacks.html",
@@ -1170,6 +1216,13 @@ def feedbacks():
         current_status=status_filter,
         current_category=category_filter,
         active_page="feedbacks",
+        total_departures=total_departures,
+        top_reason_label=top_reason_label,
+        top_reason_count=top_reason_count,
+        top_reason_pct=top_reason_pct,
+        chart_departure_labels=chart_departure_labels,
+        chart_departure_data=chart_departure_data,
+        chart_departure_colors=chart_departure_colors,
     )
 
 

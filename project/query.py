@@ -4,7 +4,7 @@ query.py: This file contains all the queries to the database.
 
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import and_, func, or_, text
+from sqlalchemy import and_, case, func, or_, text
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import collate
 
@@ -212,6 +212,7 @@ def get_books_student_tags(current_user_id, n_par_page, page) -> list:
         .outerjoin(Student, Loan.student_id == Student.id)
         .outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
         .outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
+        .order_by(Book.id.desc())
         .limit(n_par_page)
         .offset((page - 1) * n_par_page)
         .all()
@@ -229,7 +230,9 @@ Get all students
 
 def get_students(current_user_id) -> list:
     students = (
-        db.session.query(Student).filter(Student.user_id == current_user_id).all()
+        db.session.query(Student)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
+        .all()
     )
     return students
 
@@ -243,9 +246,32 @@ Get the number of students
 
 def get_students_count(current_user_id) -> int:
     students_count = (
-        db.session.query(Student).filter(Student.user_id == current_user_id).count()
+        db.session.query(Student)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
+        .count()
     )
     return students_count
+
+
+def get_archived_students(current_user_id) -> list:
+    return (
+        db.session.query(Student)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(True))
+        .order_by(Student.archived_at.desc(), collate(Student.name, "NOCASE"))
+        .all()
+    )
+
+
+def get_students_by_archive_id(current_user_id, archive_id) -> list:
+    return (
+        db.session.query(Student)
+        .filter(
+            Student.user_id == current_user_id,
+            Student.archived_year_id == archive_id,
+        )
+        .order_by(collate(Student.name, "NOCASE"), collate(Student.firstname, "NOCASE"))
+        .all()
+    )
 
 
 """
@@ -294,7 +320,7 @@ def get_all_students_info(current_user_id) -> list:
             last_loan_subquery.c.last_loan,
             func.coalesce(subquery_loan_count.c.loan_count, 0).label("loan_count"),
         )
-        .filter(Student.user_id == current_user_id)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
         .outerjoin(
             Loan, and_(Student.id == Loan.student_id, Loan.date_return.is_(None))
         )
@@ -334,6 +360,7 @@ def get_search_all_students_info(current_user_id, search) -> list:
         .filter(
             and_(
                 Student.user_id == current_user_id,
+                Student.is_archived.is_(False),
                 or_(
                     Student.name.like("%" + search + "%"),
                     Student.firstname.like("%" + search + "%"),
@@ -437,7 +464,7 @@ Get loans with the book and the student
 def get_loans_with_infos(
     current_user_id,
     actualy_loan=False,
-    sort="Loan.id",
+    sort="pertinent",
     sort_order="asc",
     n_books_by_page=10,
     page=1,
@@ -446,18 +473,30 @@ def get_loans_with_infos(
         Book.user_id == current_user_id
     )
 
-    if actualy_loan:
+    if actualy_loan in (True, "1", "active"):
         query = query.filter(Loan.date_return.is_(None))
+        query = query.filter(Student.is_archived.is_not(True))
+    elif actualy_loan in ("archive", "archives", "2"):
+        query = query.filter(Student.is_archived.is_(True))
+    else:
+        query = query.filter(Student.is_archived.is_not(True))
 
     query = query.join(Book, Loan.book_id == Book.id).join(
         Student, Loan.student_id == Student.id
     )
 
-    query = query.order_by(
-        collate(text(sort), "NOCASE").desc()
-        if sort_order == "desc"
-        else collate(text(sort), "NOCASE")
-    )
+    if sort == "pertinent":
+        query = query.order_by(
+            case((Loan.date_return.is_(None), 0), else_=1).asc(),
+            Loan.date_loan.desc(),
+            Loan.id.desc(),
+        )
+    else:
+        query = query.order_by(
+            collate(text(sort), "NOCASE").desc()
+            if sort_order == "desc"
+            else collate(text(sort), "NOCASE")
+        )
 
     n_books = query.count()
 
@@ -649,7 +688,7 @@ def get_students_most_borrowed(current_user_id, n_students=5) -> list:
             Student,
             func.coalesce(subquery_loan_count.c.loan_count, 0).label("loan_count"),
         )
-        .filter(Student.user_id == current_user_id)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
         .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
         .order_by(subquery_loan_count.c.loan_count.desc())
         .limit(n_students)
@@ -794,7 +833,7 @@ Get all the books, sorted.
 
 
 def get_books_sorted(
-    current_user_id, sort="Book.id", sort_order="asc", n_par_page=10, page=1
+    current_user_id, sort="pertinent", sort_order="asc", n_par_page=10, page=1
 ) -> list:
     subquery_tags = (
         db.session.query(
@@ -811,7 +850,7 @@ def get_books_sorted(
         .subquery()
     )
 
-    books = (
+    query = (
         db.session.query(
             Book,
             Student,
@@ -823,14 +862,18 @@ def get_books_sorted(
         .outerjoin(Student, Loan.student_id == Student.id)
         .outerjoin(subquery_tags, Book.id == subquery_tags.c.book_id)
         .outerjoin(subquery_loan_count, Book.id == subquery_loan_count.c.book_id)
-        .order_by(
+    )
+
+    if sort == "pertinent":
+        query = query.order_by(Book.id.desc())
+    else:
+        query = query.order_by(
             collate(text(sort), "NOCASE").desc()
             if sort_order == "desc"
             else collate(text(sort), "NOCASE")
         )
-        .limit(n_par_page)
-        .offset((page - 1) * n_par_page)
-    )
+
+    books = query.limit(n_par_page).offset((page - 1) * n_par_page)
 
     return books
 
@@ -916,11 +959,24 @@ def search_books_by_types(
             )
         )
 
-    query = query.order_by(
-        collate(text(sort), "NOCASE").desc()
-        if sort_order == "desc"
-        else collate(text(sort), "NOCASE")
-    )
+    if sort == "pertinent":
+        if search_value:
+            clean_search = search_value.strip()
+            relevance = case(
+                (Book.title.ilike(clean_search), 1),
+                (Book.title.ilike(f"{clean_search}%"), 2),
+                (Book.title.ilike(f"%{clean_search}%"), 3),
+                else_=4,
+            )
+            query = query.order_by(relevance.asc(), Book.title.asc(), Book.id.desc())
+        else:
+            query = query.order_by(Book.id.desc())
+    else:
+        query = query.order_by(
+            collate(text(sort), "NOCASE").desc()
+            if sort_order == "desc"
+            else collate(text(sort), "NOCASE")
+        )
 
     n_books = query.count()
 
@@ -986,8 +1042,13 @@ def search_loans_by_types(
         Book.user_id == current_user_id
     )
 
-    if actualy_loan:
+    if actualy_loan in (True, "1", "active"):
         query = query.filter(Loan.date_return.is_(None))
+        query = query.filter(Student.is_archived.is_not(True))
+    elif actualy_loan in ("archive", "archives", "2"):
+        query = query.filter(Student.is_archived.is_(True))
+    else:
+        query = query.filter(Student.is_archived.is_not(True))
 
     query = query.join(Book, Loan.book_id == Book.id).join(
         Student, Loan.student_id == Student.id
@@ -1027,11 +1088,18 @@ def search_loans_by_types(
             )
         )
 
-    query = query.order_by(
-        collate(text(sort), "NOCASE").desc()
-        if sort_order == "desc"
-        else collate(text(sort), "NOCASE")
-    )
+    if sort == "pertinent":
+        query = query.order_by(
+            case((Loan.date_return.is_(None), 0), else_=1).asc(),
+            Loan.date_loan.desc(),
+            Loan.id.desc(),
+        )
+    else:
+        query = query.order_by(
+            collate(text(sort), "NOCASE").desc()
+            if sort_order == "desc"
+            else collate(text(sort), "NOCASE")
+        )
 
     n_books = query.count()
 
@@ -1108,7 +1176,7 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
             func.coalesce(func.count(Loan.id), 0).label("books_read"),
         )
         .outerjoin(Loan, Loan.student_id == Student.id)
-        .filter(Student.user_id == current_user_id)
+        .filter(Student.user_id == current_user_id, Student.is_archived.is_(False))
         .filter(
             (Loan.date_loan >= date_from) & (Loan.date_loan <= date_to)
             | (Loan.id.is_(None))
@@ -1118,3 +1186,129 @@ def get_books_read_by_students(current_user_id, date_from, date_to):
         .all()
     )
     return results
+
+
+def delete_user_account(user, reason=None, details=None):
+    """
+    Supprime un compte utilisateur et ses données personnelles,
+    tout en conservant les fiches de livres avec ISBN pour la base collaborative
+    et les autres utilisateurs.
+    """
+    import os
+    import re
+    from datetime import UTC, datetime
+
+    import stripe
+    from flask import current_app
+
+    from .models import (
+        Book,
+        Feedback,
+        NewsletterDelivery,
+        Student,
+        Tags,
+    )
+
+    user_id = user.id
+    user_email = user.email
+    user_name = user.name
+    effective_plan = getattr(user, "effective_plan", "inconnu")
+
+    # 1. Annulation de l'abonnement Stripe si existant et actif
+    if getattr(user, "stripe_subscription_id", None):
+        try:
+            stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+            if stripe_secret:
+                stripe.api_key = stripe_secret
+                stripe.Subscription.cancel(user.stripe_subscription_id)
+        except Exception as exc:  # noqa: BLE001
+            current_app.logger.warning(
+                "Erreur annulation Stripe pour %s : %s", user_email, exc
+            )
+
+    # 2. Enregistrement du questionnaire de sortie dans le dashboard admin (Feedback)
+    if reason or details:
+        clean_reason = reason or "non_specifie"
+        reason_labels = {
+            "too_expensive": "Tarif trop élevé / trop cher",
+            "free_limits": "Quotas de la version gratuite trop limités",
+            "no_longer_needed": "Je n'en ai plus l'utilité (changement de niveau, départ...)",
+            "missing_features": "Il manque des fonctionnalités importantes",
+            "too_complex": "Trop difficile ou complexe à utiliser",
+            "other": "Autre raison",
+            "non_specifie": "Non spécifié",
+        }
+        reason_label = reason_labels.get(clean_reason, clean_reason)
+        msg_lines = [f"Formule au départ : {effective_plan}"]
+        if details:
+            msg_lines.append(f"Commentaire de l'enseignant :\n{details}")
+
+        departure_fb = Feedback(
+            user_id=None,
+            author_name=user_name or "Enseignant",
+            author_email=user_email,
+            category="depart",
+            departure_reason=clean_reason,
+            subject=f"Départ : {reason_label}",
+            message="\n\n".join(msg_lines),
+            page_url="/reglage?tab=danger",
+            status="nouveau",
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(departure_fb)
+
+    # Détachement des feedbacks existants créés par cet utilisateur
+    Feedback.query.filter_by(user_id=user_id).update(
+        {
+            "user_id": None,
+            "author_name": user_name or "Enseignant",
+            "author_email": user_email,
+        }
+    )
+
+    # 3. Traitement des livres : conservation des fiches avec ISBN pour la base collaborative
+    user_books = Book.query.filter_by(user_id=user_id).all()
+    for book in user_books:
+        clean_isbn = re.sub(r"[^0-9X]", "", str(book.isbn or "")).strip().upper()
+        if clean_isbn:
+            # Nettoyage des prêts et tags associés à cette copie
+            for loan in list(book.loans):
+                db.session.delete(loan)
+            for bt in list(book.book_tags):
+                db.session.delete(bt)
+
+            # Vérifier si un exemplaire orphelin existe déjà dans la base
+            orphan_exists = Book.query.filter(
+                Book.id != book.id,
+                Book.isbn == book.isbn,
+                Book.user_id.is_(None),
+            ).first()
+
+            if orphan_exists:
+                db.session.delete(book)
+            else:
+                book.user_id = None
+                book.barcode = None
+        else:
+            db.session.delete(book)
+
+    # 4. Suppression des élèves (et prêts restants par cascade)
+    user_students = Student.query.filter_by(user_id=user_id).all()
+    for st in user_students:
+        for loan in list(st.loans):
+            db.session.delete(loan)
+        db.session.delete(st)
+
+    # 5. Suppression des tags personnalisés
+    user_tags = Tags.query.filter_by(user_id=user_id).all()
+    for tag in user_tags:
+        for bt in list(tag.book_tags):
+            db.session.delete(bt)
+        db.session.delete(tag)
+
+    # 6. Détachement des livraisons de newsletter
+    NewsletterDelivery.query.filter_by(user_id=user_id).update({"user_id": None})
+
+    # 7. Suppression de l'utilisateur lui-même (archives d'année scolaire et feedbacks cascade-delete)
+    db.session.delete(user)
+    db.session.commit()

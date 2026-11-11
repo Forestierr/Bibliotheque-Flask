@@ -3,12 +3,15 @@ import logging
 import math
 import os
 import re
-from datetime import UTC, datetime
+import time
+import xml.etree.ElementTree as ET
+from datetime import UTC, datetime, timedelta
 
 import requests
 from flask import (
     Blueprint,
     flash,
+    has_app_context,
     jsonify,
     make_response,
     redirect,
@@ -26,7 +29,7 @@ from .config_plans import (
     MAX_FREE_SCANS,
     PRICE_YEARLY_AMOUNT,
 )
-from .models import Book, BookTags, Loan, Tags
+from .models import Book, BookTags, Loan, Student, Tags
 from .query import (
     get_book_actual_loan,
     get_book_by_id,
@@ -71,7 +74,7 @@ def livre_db():
                 current_user.id,
                 split[0],
                 search_val,
-                "Book.id",
+                "pertinent",
                 "asc",
                 n_books_by_page,
                 page,
@@ -81,7 +84,7 @@ def livre_db():
                 current_user.id,
                 "all",
                 search_query,
-                "Book.id",
+                "pertinent",
                 "asc",
                 n_books_by_page,
                 page,
@@ -115,6 +118,173 @@ def livre_db():
     )
 
 
+def check_bnf_cover(isbn, timeout=5):
+    """Vérifie si la BnF possède une image de couverture pour cet ISBN."""
+    if not isbn:
+        return False
+    url = f"https://openapi.bnf.fr/couverture/image/image/recupererImage?ISBN={isbn}&couverture=1&taille=originale"
+    try:
+        r = requests.get(url, stream=True, timeout=timeout)
+        ct = r.headers.get("Content-Type", "")
+        ok = r.status_code == 200 and "image" in ct
+        r.close()
+        return ok
+    except (requests.RequestException, OSError, StopIteration):
+        return False
+
+
+def check_openlibrary_cover(isbn, timeout=5):
+    """Vérifie si OpenLibrary possède une couverture pour cet ISBN."""
+    if not isbn:
+        return False
+    url = f"https://covers.openlibrary.org/b/isbn/{isbn}-M.jpg?default=false"
+    try:
+        r = requests.get(url, stream=True, timeout=timeout)
+        ok = r.status_code == 200
+        r.close()
+        return ok
+    except (requests.RequestException, OSError, StopIteration):
+        return False
+
+
+def resolve_cover_url(isbn, default_img=None):
+    """
+    Résout la meilleure URL d'image de couverture pour un ISBN :
+    1. Image déjà fournie
+    2. BnF (Taille originale officielle)
+    3. Open Library (Couverture moyenne)
+    """
+    if default_img:
+        return default_img
+    if not isbn:
+        return None
+    clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper())
+    if not clean_isbn:
+        return None
+    if check_bnf_cover(clean_isbn):
+        return f"https://openapi.bnf.fr/couverture/image/image/recupererImage?ISBN={clean_isbn}&couverture=1&taille=originale"
+    if check_openlibrary_cover(clean_isbn):
+        return f"https://covers.openlibrary.org/b/isbn/{clean_isbn}-M.jpg"
+    return None
+
+
+def clean_bnf_creator(raw):
+    """Nettoie le créateur issu de la notice BnF Dublin Core."""
+    if not raw:
+        return ""
+    s = re.sub(r"\.\s+[A-ZÀ-ÿa-z\s]+$", "", raw.strip())
+    s = re.sub(r"\s*\([0-9\.\-\s]+\)", "", s).strip()
+    if "," in s:
+        parts = [p.strip() for p in s.split(",", 1)]
+        if len(parts) == 2 and parts[1]:
+            s = f"{parts[1]} {parts[0]}"
+    return s.strip()
+
+
+def get_book_from_bnf(isbn):
+    """Interroge l'API SRU de la BnF (Bibliothèque nationale de France)."""
+    url = f"https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.isbn+adj+%22{isbn}%22&recordSchema=dublincore"
+    headers = {"User-Agent": "Bibliotheque-Flask/1.0"}
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        response.raise_for_status()
+        content = getattr(response, "content", None)
+        if not isinstance(content, (bytes, bytearray, str)):
+            return None
+        root = ET.fromstring(content)
+        ns = {
+            "srw": "http://www.loc.gov/zing/srw/",
+            "dc": "http://purl.org/dc/elements/1.1/",
+        }
+        records = root.findall(".//srw:recordData", ns)
+        if not records:
+            return None
+
+        rec = records[0]
+        raw_title = rec.findtext(".//dc:title", default="", namespaces=ns)
+        raw_creator = rec.findtext(".//dc:creator", default="", namespaces=ns)
+        raw_publisher = rec.findtext(".//dc:publisher", default="", namespaces=ns)
+        raw_date = rec.findtext(".//dc:date", default="", namespaces=ns)
+        descriptions = [d.text for d in rec.findall(".//dc:description", ns) if d.text]
+
+        title = raw_title.split(" / ")[0].strip() if raw_title else None
+        author = clean_bnf_creator(raw_creator)
+        editor = raw_publisher.split("(")[0].strip() if raw_publisher else None
+        year_match = re.search(r"\b(19\d\d|20\d\d)\b", raw_date)
+        year = year_match.group(1) if year_match else None
+
+        if author and title and title.endswith(author):
+            title = title[: -len(author)].strip()
+        if title:
+            title = re.sub(
+                r"\s*\(Nouvelle\s*éd\.?\)", "", title, flags=re.IGNORECASE
+            ).strip()
+
+        book_type = None
+        for desc in descriptions:
+            if "Collection :" in desc:
+                book_type = desc.replace("Collection :", "").split(";")[0].strip()
+                break
+
+        image_url = None
+        if check_bnf_cover(isbn):
+            image_url = f"https://openapi.bnf.fr/couverture/image/image/recupererImage?ISBN={isbn}&couverture=1&taille=originale"
+
+        return {
+            "title": title,
+            "authors": author,
+            "author": author,
+            "editor": editor,
+            "year": year,
+            "type": book_type,
+            "isbn": isbn,
+            "image_url": image_url,
+        }
+    except (
+        requests.RequestException,
+        ET.ParseError,
+        ValueError,
+        IndexError,
+        KeyError,
+        TypeError,
+        StopIteration,
+        OSError,
+    ) as e:
+        logger.warning(
+            "Erreur lors de la récupération des données de l'API BnF pour l'ISBN %s : %s",
+            isbn,
+            e,
+        )
+    return None
+
+
+def get_book_from_db(isbn):
+    """Vérifie si un livre avec cet ISBN a déjà été enregistré dans la base collaborative."""
+    if not isbn or not has_app_context():
+        return None
+    try:
+        book = (
+            db.session.query(Book)
+            .filter(Book.isbn == isbn, Book.title.isnot(None), Book.title != "")
+            .order_by(Book.id.desc())
+            .first()
+        )
+        if book:
+            return {
+                "title": book.title,
+                "authors": book.author,
+                "author": book.author,
+                "editor": book.editor,
+                "year": str(book.year) if book.year else None,
+                "type": book.type,
+                "isbn": book.isbn,
+                "image_url": getattr(book, "image_url", None),
+            }
+    except (AttributeError, ValueError, OSError) as e:
+        logger.debug("Erreur lecture Book cache local : %s", e)
+    return None
+
+
 def get_book_from_google_api(isbn):
     api_key = os.getenv("GOOGLE_BOOK_API_KEY")
     url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}"
@@ -122,38 +292,59 @@ def get_book_from_google_api(isbn):
         url += f"&key={api_key}"
 
     headers = {"User-Agent": "Bibliotheque-Flask/1.0"}
-    try:
-        response = requests.get(url, headers=headers, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-        if isinstance(data, dict) and data.get("totalItems", 0) > 0:
-            items = data.get("items")
-            if items and isinstance(items, list) and isinstance(items[0], dict):
-                book = items[0].get("volumeInfo", {})
-                title = book.get("title", None)
-                authors = ", ".join(book.get("authors", []))
-                editor = book.get("publisher", None)
-                raw_year = book.get("publishedDate", None)
-                year = None
-                if raw_year:
-                    match = re.search(r"\b(19\d\d|20\d\d)\b", str(raw_year))
-                    year = match.group(1) if match else raw_year
-                type = book.get("subtitle", None)
+    max_retries = 1
+    for attempt in range(max_retries + 1):
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+            if response.status_code in (503, 429) and attempt < max_retries:
+                time.sleep(0.3 * (attempt + 1))
+                continue
+            response.raise_for_status()
+            data = response.json()
+            if isinstance(data, dict) and data.get("totalItems", 0) > 0:
+                items = data.get("items")
+                if items and isinstance(items, list) and isinstance(items[0], dict):
+                    book = items[0].get("volumeInfo", {})
+                    title = book.get("title", None)
+                    authors = ", ".join(book.get("authors", []))
+                    editor = book.get("publisher", None)
+                    raw_year = book.get("publishedDate", None)
+                    year = None
+                    if raw_year:
+                        match = re.search(r"\b(19\d\d|20\d\d)\b", str(raw_year))
+                        year = match.group(1) if match else raw_year
+                    type = book.get("subtitle", None)
 
-                return {
-                    "title": title,
-                    "authors": authors,
-                    "editor": editor,
-                    "year": year,
-                    "type": type,
-                    "isbn": isbn,
-                }
-    except (requests.RequestException, ValueError) as e:
-        logger.warning(
-            "Erreur lors de la récupération des données de l'API Google Books pour l'ISBN %s : %s",
-            isbn,
-            e,
-        )
+                    image_links = book.get("imageLinks", {})
+                    image_url = image_links.get("thumbnail") or image_links.get(
+                        "smallThumbnail"
+                    )
+                    if image_url:
+                        image_url = image_url.replace("http://", "https://").replace(
+                            "&edge=curl", ""
+                        )
+
+                    return {
+                        "title": title,
+                        "authors": authors,
+                        "author": authors,
+                        "editor": editor,
+                        "year": year,
+                        "type": type,
+                        "isbn": isbn,
+                        "image_url": image_url,
+                    }
+            break
+        except requests.Timeout:
+            logger.warning("Timeout lors de la requete Google Books pour ISBN %s", isbn)
+            break
+        except (requests.RequestException, ValueError) as e:
+            if attempt >= max_retries:
+                logger.warning(
+                    "Erreur lors de la récupération des données de l'API Google Books pour l'ISBN %s : %s",
+                    isbn,
+                    e,
+                )
     return None
 
 
@@ -193,13 +384,20 @@ def get_book_from_open_library(isbn):
                 year = match.group(1) if match else raw_year
             type = book.get("subtitle", None)
 
+            cover = book.get("cover", {})
+            image_url = cover.get("large") or cover.get("medium") or cover.get("small")
+            if image_url:
+                image_url = image_url.replace("http://", "https://")
+
             return {
                 "title": title,
                 "authors": authors,
+                "author": authors,
                 "editor": publishers,
                 "year": year,
                 "type": type,
                 "isbn": isbn,
+                "image_url": image_url,
             }
     except (requests.RequestException, ValueError) as e:
         logger.warning(
@@ -213,15 +411,35 @@ def get_book_from_open_library(isbn):
 def get_book_from_api(isbn):
     # Nettoyage de l'ISBN (suppression des tirets et espaces)
     clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper()) if isbn else isbn
+    if not clean_isbn:
+        return None
+
+    # 0. Cache local collaboratif en DB
+    cached = get_book_from_db(clean_isbn)
+    if cached and cached.get("title"):
+        if not cached.get("image_url"):
+            cached["image_url"] = resolve_cover_url(clean_isbn)
+        return cached
 
     # 1. Tentative avec Google Books API
     book = get_book_from_google_api(clean_isbn)
-    if book:
+    if book and book.get("title"):
+        if not book.get("image_url"):
+            book["image_url"] = resolve_cover_url(clean_isbn)
         return book
 
     # 2. Fallback avec Open Library API
     book = get_book_from_open_library(clean_isbn)
-    if book:
+    if book and book.get("title"):
+        if not book.get("image_url"):
+            book["image_url"] = resolve_cover_url(clean_isbn)
+        return book
+
+    # 3. Fallback avec BnF (dépôt légal officiel français)
+    book = get_book_from_bnf(clean_isbn)
+    if book and book.get("title"):
+        if not book.get("image_url"):
+            book["image_url"] = resolve_cover_url(clean_isbn)
         return book
 
     return None
@@ -249,6 +467,9 @@ def livre_infos(id):
     # Get the tags of the book
     tags = get_book_tags(current_user.id, id)
 
+    default_days = getattr(current_user, "default_loan_duration_days", None) or 14
+    default_expected_date = datetime.now(UTC).date() + timedelta(days=default_days)
+
     return render_template(
         "livre/livre_info.html",
         book=book,
@@ -256,6 +477,7 @@ def livre_infos(id):
         old_loans=old_loans,
         students=students,
         tags=tags,
+        default_expected_date=default_expected_date,
     )
 
 
@@ -290,27 +512,23 @@ def livre_ajout():
             if request.form.get("barcode") and request.form.get("barcode").strip()
             else None
         )
-        tags = request.form.get("tags") if request.form.get("tags") else None
+        image_url = (
+            request.form.get("image_url").strip()
+            if request.form.get("image_url") and request.form.get("image_url").strip()
+            else None
+        )
+        if not image_url and isbn:
+            clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper())
+            image_url = resolve_cover_url(clean_isbn)
+        tags_hidden = request.form.get("tags") or ""
+        tags_raw = request.form.get("tags_input_raw") or ""
+        combined_tags_str = f"{tags_hidden},{tags_raw}"
+        tags = [t.strip() for t in combined_tags_str.split(",") if t.strip()]
+        tags = list(dict.fromkeys(tags))
 
         if not title:
             flash(_("Veuillez ajouter un titre."), "error")
             return redirect(url_for("livre.livre_ajout"))
-
-        tags_in_db = Tags.query.filter_by(user_id=current_user.id).all()
-        tags_in_db = [tag.name for tag in tags_in_db]
-
-        # If the tag is not in the database, we add it
-        if tags:
-            tags = tags.split(",")
-            # Remove spaces at the beginning and end of each tag
-            tags = [tag.strip() for tag in tags if tag.strip()]
-            for tag in tags:
-                if tag == "":
-                    continue
-                if tag not in tags_in_db:
-                    new_tag = Tags(name=tag, user_id=current_user.id)
-                    db.session.add(new_tag)
-                    db.session.commit()
 
         new_book = Book(
             title=title,
@@ -320,19 +538,23 @@ def livre_ajout():
             type=type,
             isbn=isbn,
             barcode=barcode,
+            image_url=image_url,
             user_id=current_user.id,
         )
         db.session.add(new_book)
+        db.session.flush()
 
         # Add the tags to the book
         if tags:
             for tag in tags:
-                if tag == "":
-                    continue
-                tag_id = (
-                    Tags.query.filter_by(name=tag, user_id=current_user.id).first().id
-                )
-                book_tag = BookTags(book_id=new_book.id, tag_id=tag_id)
+                tag_obj = Tags.query.filter_by(
+                    name=tag, user_id=current_user.id
+                ).first()
+                if not tag_obj:
+                    tag_obj = Tags(name=tag, user_id=current_user.id)
+                    db.session.add(tag_obj)
+                    db.session.flush()
+                book_tag = BookTags(book_id=new_book.id, tag_id=tag_obj.id)
                 db.session.add(book_tag)
 
         db.session.commit()
@@ -455,6 +677,14 @@ def livre_edit(id):
             if request.form.get("barcode") and request.form.get("barcode").strip()
             else None
         )
+        image_url = (
+            request.form.get("image_url").strip()
+            if request.form.get("image_url") and request.form.get("image_url").strip()
+            else None
+        )
+        if not image_url and isbn and (isbn != book.isbn or not book.image_url):
+            clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper())
+            image_url = resolve_cover_url(clean_isbn)
         student = request.form.get("student")
         tags = request.form.get("tags")
 
@@ -470,6 +700,10 @@ def livre_edit(id):
         book.type = type
         book.isbn = isbn
         book.barcode = barcode
+        if image_url:
+            book.image_url = image_url
+        elif "image_url" in request.form and not request.form.get("image_url").strip():
+            book.image_url = None
 
         # take the student in the database
         if student:
@@ -507,25 +741,24 @@ def livre_edit(id):
         for book_tag in book_tags:
             db.session.delete(book_tag)
 
-        tags = tags.split(",")
+        tags_hidden = request.form.get("tags") or ""
+        tags_raw = request.form.get("tags_input_raw") or ""
+        combined_tags_str = f"{tags_hidden},{tags_raw}"
+        tags = [t.strip() for t in combined_tags_str.split(",") if t.strip()]
+        tags = list(dict.fromkeys(tags))
 
-        # Get all tags from the current user
-        tags_in_db = Tags.query.filter_by(user_id=current_user.id).all()
-        tags_in_db = [tag.name for tag in tags_in_db]
-
-        # If the tag is not in the database, we add it
-        for tag in tags:
-            if tag == "":
-                continue
-            if tag not in tags_in_db:
-                new_tag = Tags(name=tag, user_id=current_user.id)
-                db.session.add(new_tag)
-                db.session.commit()
-
-            # Add the tags to the book
-            tag_id = Tags.query.filter_by(name=tag, user_id=current_user.id).first().id
-            book_tag = BookTags(book_id=id, tag_id=tag_id)
-            db.session.add(book_tag)
+        # Add the tags to the book
+        if tags:
+            for tag in tags:
+                tag_obj = Tags.query.filter_by(
+                    name=tag, user_id=current_user.id
+                ).first()
+                if not tag_obj:
+                    tag_obj = Tags(name=tag, user_id=current_user.id)
+                    db.session.add(tag_obj)
+                    db.session.flush()
+                book_tag = BookTags(book_id=id, tag_id=tag_obj.id)
+                db.session.add(book_tag)
 
         db.session.commit()
 
@@ -603,14 +836,41 @@ def livre_edit_student(id):
         flash(_("L'élève n'existe pas."), "error")
         return redirect(url_for("livre.livre_infos", id=id))
 
+    date_loan = datetime.now(tz=UTC).date()
+    expected_return_date = None
+    expected_str = request.form.get("expected_return_date")
+    if expected_str:
+        try:
+            expected_return_date = datetime.strptime(
+                expected_str.strip(), "%Y-%m-%d"
+            ).date()
+        except ValueError:
+            expected_return_date = None
+
+    if not expected_return_date:
+        duration_days = getattr(current_user, "default_loan_duration_days", 14) or 14
+        expected_return_date = date_loan + timedelta(days=duration_days)
+
     # Create a new loan
     loan = Loan(
         student_id=student.id,
         book_id=id,
-        date_loan=datetime.now(tz=UTC).date(),
+        date_loan=date_loan,
+        expected_return_date=expected_return_date,
     )
     db.session.add(loan)
     db.session.commit()
+
+    book = get_book_by_id(current_user.id, id)
+    student_name = f"{student.firstname} {student.name}".strip()
+    flash(
+        _(
+            "Le livre '%(title)s' a bien été prêté à %(name)s.",
+            title=book.title if book else "",
+            name=student_name,
+        ),
+        "success",
+    )
 
     return redirect(url_for("livre.livre_infos", id=id))
 
@@ -664,7 +924,36 @@ def livre_exist(isbn):
             db.session.commit()
 
         if len(books) == 1:
-            data = {"id": books[0].id, "multiple": False}
+            book = books[0]
+            active_loan = (
+                db.session.query(Loan)
+                .filter(Loan.book_id == book.id, Loan.date_return.is_(None))
+                .first()
+            )
+            borrower_name = None
+            loan_id = None
+            if active_loan:
+                student = (
+                    db.session.query(Student)
+                    .filter(Student.id == active_loan.student_id)
+                    .first()
+                )
+                if student:
+                    borrower_name = f"{student.firstname} {student.name}".strip()
+                loan_id = active_loan.id
+
+            book_title = (
+                book.title if isinstance(getattr(book, "title", None), str) else ""
+            )
+
+            data = {
+                "id": book.id,
+                "title": book_title,
+                "multiple": False,
+                "is_loaned": active_loan is not None,
+                "loan_id": loan_id,
+                "borrower_name": borrower_name,
+            }
         else:
             data = {"ids": [b.id for b in books], "multiple": True}
         return make_response(jsonify(data), 200)
@@ -685,7 +974,28 @@ def livre_delete_all():
     books = get_books(current_user.id)
 
     for book in books:
-        db.session.delete(book)
+        clean_isbn = re.sub(r"[^0-9X]", "", str(book.isbn or "")).strip().upper()
+        if clean_isbn:
+            # Nettoyage des prêts et tags associés à cette copie personnelle
+            for loan in list(book.loans):
+                db.session.delete(loan)
+            for bt in list(book.book_tags):
+                db.session.delete(bt)
+
+            # Vérifier si un exemplaire orphelin existe déjà dans la base collective
+            orphan_exists = Book.query.filter(
+                Book.id != book.id,
+                Book.isbn == book.isbn,
+                Book.user_id.is_(None),
+            ).first()
+
+            if orphan_exists:
+                db.session.delete(book)
+            else:
+                book.user_id = None
+                book.barcode = None
+        else:
+            db.session.delete(book)
 
     db.session.commit()
 
@@ -737,7 +1047,7 @@ def search(page=1):
     sort_order = "asc"
     match sort:
         case "pertinent":
-            sort = "Book.id"
+            sort = "pertinent"
         case "az":
             sort = "Book.title"
         case "za":
@@ -749,7 +1059,7 @@ def search(page=1):
         case "m_emprunte":
             sort = "loan_count"
         case _:
-            sort = "Book.id"
+            sort = "pertinent"
 
     n_books = get_books_count(current_user.id)
 

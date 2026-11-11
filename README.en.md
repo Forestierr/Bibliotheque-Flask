@@ -1,126 +1,130 @@
-# LivresEnClasse.com — Classroom Library Management
+<p align="center">
+  <a href="https://livresenclasse.com/en/" target="_blank" rel="noopener noreferrer">
+    <img src="project/static/image/icons/logo-w-512x512.png" width="100" height="100" alt="Livres en Classe Logo">
+  </a>
+</p>
 
-[![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
-[![Framework](https://img.shields.io/badge/flask-3.0-lightgrey.svg)](https://flask.palletsprojects.com/)
-[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-green.svg)](LICENSE.md)
-[![Code style](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Testing](https://img.shields.io/badge/tests-pytest-yellow.svg)](project/test/)
+<h1 align="center">Livres en Classe</h1>
 
-[Version française](README.md)
+<p align="center">
+  <strong>The free classroom library management software for teachers</strong><br>
+  Catalog your books by barcode scan, manage loans, track student reading progress, and foster a love of reading in your classroom.
+</p>
 
-**LivresEnClasse.com** (Bibliothèque-Flask) is a web application designed specifically for teachers to easily manage their classroom library, track student book loans, and enrich their catalog using barcode scanning.
+<p align="center">
+  <a href="https://livresenclasse.com/en/"><strong>Visit the official website: livresenclasse.com →</strong></a>
+</p>
 
----
+<p align="center">
+  <a href="README.md">Version française</a> •
+  <a href="#why-use-livres-en-classe">Features</a> •
+  <a href="#application-overview">Overview</a> •
+  <a href="#plans--pricing">Plans & Pricing</a> •
+  <a href="#self-hosting--development">Self-Hosting</a> •
+  <a href="#license">License</a>
+</p>
 
-## Table of Contents
-
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Local Quickstart](#local-quickstart)
-- [Technical Documentation](#technical-documentation)
-- [Code Quality & Tests](#code-quality--tests)
-- [License](#license)
-
----
-
-## Key Features
-
-- **Barcode scanning & multi-API enrichment**: Instant recognition via webcam/smartphone (HTML5-QRCode) with fallback search across the **Bibliothèque nationale de France (BnF SRU Dublin Core)**, **Google Books**, and **Open Library**.
-- **Student & loan management**: One-click loans and returns, reading history, overdue book indicators.
-- **Classroom tools & printing**: Generation of printable vector barcode sheets and themed storage bin labels.
-- **Freemium SaaS Model & Stripe**: Free quotas (40 students, 500 books, 30 scans/week), 30-day trial period, lifetime Founder status, and unlimited Premium subscription powered by Stripe Checkout and the Stripe Customer Portal.
-- **Multilingual & International SEO**: Full support for French 🇫🇷, English 🇬🇧, and German 🇩🇪 with dedicated URLs (`/fr/`, `/en/`, `/de/`) and `hreflang` tags.
-- **Security & Privacy**: Secure authentication (Werkzeug/Scrypt), anti-bot & anti-spam protection (hCaptcha), strict data isolation per teacher, and no data destruction policy.
-
----
-
-## Tech Stack
-
-- **Backend**: Python 3.12, Flask 3, Flask-Login, Flask-WTF, Flask-Babel 4
-- **ORM & Database**: SQLAlchemy, Flask-Migrate (Alembic), SQLite (stored in `instance/db.sqlite`)
-- **Frontend**: Jinja2, Semantic HTML5, Responsive CSS3 (fluid design system), Vanilla JavaScript
-- **Production & Containerization**: Gunicorn, Traefik (reverse proxy & Let's Encrypt TLS), Authelia (2FA /admin), Docker Compose, Cloudflare Tunnel
+<p align="center">
+  <a href="https://livresenclasse.com"><img src="https://img.shields.io/badge/Service-Online-22c55e.svg" alt="Online service"></a>
+  <a href="https://livresenclasse.com"><img src="https://img.shields.io/badge/Platform-Web_%26_PWA-3b82f6.svg" alt="Web & PWA"></a>
+  <img src="https://img.shields.io/badge/Languages-FR_%7C_EN_%7C_DE-orange.svg" alt="Languages">
+  <img src="https://img.shields.io/badge/Plan-Free_available-blue.svg" alt="Free plan available">
+  <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-PolyForm_Noncommercial-emerald.svg" alt="PolyForm License"></a>
+</p>
 
 ---
 
-## Local Quickstart
+## Why use Livres en Classe?
 
-To launch the project in a local development environment in 5 steps:
+Designed specifically for primary and elementary school teachers, **Livres en Classe** replaces handwritten paper logbooks and messy spreadsheets with a fluid, visual, and modern web application.
 
-```bash
-# 1. Clone the repository and enter the directory
-git clone https://github.com/Forestierr/Bibliotheque-Flask.git
-cd Bibliotheque-Flask
-
-# 2. Create and activate a Python 3.12 virtual environment
-python -m venv venv
-# On Linux / macOS: source venv/bin/activate
-# On Windows (PowerShell): .\venv\Scripts\Activate.ps1
-
-# 3. Install application and tooling dependencies
-pip install --upgrade pip
-pip install -r project/requirements.txt
-pip install ruff pytest
-
-# 4. Set up environment variables
-cp .env.example .env
-
-# 5. Apply database migrations and run the development server
-export FLASK_APP=project   # Windows PowerShell: $env:FLASK_APP="project"
-flask db upgrade
-flask run -p 5000 -h 127.0.0.1
-```
-
-Then visit the application in your browser at: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**.
-
-> **Camera / HTTPS Note:** Modern browsers restrict webcam access to secure contexts (HTTPS or localhost). To test barcode scanning on a mobile device connected to your local network, launch the server with:
-> ```bash
-> flask run -p 5000 -h 0.0.0.0 --cert adhoc
-> ```
+| Save time | Track progress | 100% Mobile & Camera |
+| :--- | :--- | :--- |
+| **No more messy paper logbooks.** Register a loan or a return in one click. Find any book instantly with ultra-fast search. | **Analyze your students' reading habits.** See who read what, spot overdue books automatically, and encourage reluctant readers. | **Scan directly from your smartphone.** Use your phone or tablet camera without purchasing expensive barcode equipment. |
 
 ---
 
-## Technical Documentation
+## Application Overview
 
-To delve deeper into the architecture, deployment, and maintenance of the project, consult the detailed guides in the [`/docs`](docs/) directory:
+### 1. A complete overview of your school library
+The dashboard centralizes all critical classroom metrics: book count, enrolled students, active loans, annual reading activity chart, and priority overdue alerts with one-click inline returns.
 
-| Document | Description |
-| :--- | :--- |
-| [**Software Architecture**](docs/architecture.md) | 11 Blueprints modular design, Mermaid HTTP request lifecycle, Jinja2 filters, middlewares, and multi-worker scheduler. |
-| [**Database**](docs/base-de-donnees.md) | Complete Entity-Relationship diagram (`erDiagram`), detail of the 9 tables, Alembic migrations management, and SQLite backup strategy. |
-| [**Production Deployment**](docs/deploiement.md) | Step-by-step guide for production servers, Traefik stack, Authelia, Cloudflare Tunnel, GHCR images, and data persistence. |
-| [**External APIs & Integrations**](docs/apis-externes.md) | Specifications for BnF SRU (Dublin Core), Google Books, Open Library queries, Stripe webhooks, and hCaptcha (including BnF legal obligations). |
-| [**Configuration & Environment**](docs/configuration.md) | Comprehensive dictionary of `.env` variables, pricing constants (`config_plans.py`), session cookies, and environment flags. |
-| [**Operations & Maintenance**](docs/maintenance.md) | CLI script utilities (`scripts/`), manual quota management, Founder account administration, and common troubleshooting. |
+<p align="center">
+  <img src="project/static/image/store/play_store/1_dashboard_desktop.png" width="800" alt="Livres en Classe Dashboard">
+</p>
 
 ---
 
-## Code Quality & Tests
+### 2. All classroom books in one place
+Scan ISBN barcodes with your device's camera. The app automatically fetches bibliographic records (title, author, publisher, cover artwork) across the **Bibliothèque nationale de France (BnF)**, **Google Books**, and **Open Library**.
 
-The project enforces automated validation checks on GitHub Actions ([`.github/workflows/pr-validation.yml`](.github/workflows/pr-validation.yml)):
+<p align="center">
+  <img src="project/static/image/store/play_store/2_livres_desktop.png" width="800" alt="Book catalog">
+</p>
 
-- **Formatting & Linting**:
-  ```bash
-  ruff format project/
-  ruff check project/
-  ```
-- **Automated Tests**:
-  ```bash
-  pytest project/test/
-  ```
-- **Internationalization (i18n)**:  
-  Before committing changes affecting localized text, compiled binary `.mo` files must be updated:
-  ```bash
-  pybabel compile -d project/translations
-  ```
+---
 
-See [**CONTRIBUTING.md**](CONTRIBUTING.md) for full contribution guidelines.
+### 3. Who read what? Track your students
+Follow each student's reading journey, organize themed book bins with custom tags, and export annual end-of-year reading summaries when closing your class.
+
+<p align="center">
+  <img src="project/static/image/store/play_store/3_eleves_desktop.png" width="800" alt="Student roster and reading history">
+</p>
+
+---
+
+## Plans & Pricing
+
+Fair, transparent pricing tailored for classroom budgets:
+
+| Feature | Free Plan | Premium Plan |
+| :--- | :---: | :---: |
+| **Price** | **0.- CHF** / lifetime | **3.- CHF / month** or **30.- CHF / year** |
+| **Maximum students** | Up to 40 students | **Unlimited** |
+| **Books in catalog** | Up to 500 books | **Unlimited** |
+| **Barcode scans** | 30 scans per week | **Unlimited** |
+| **Loan history** | 10 months history | **Unlimited** |
+| **Data exports** | Online viewing | **Full Excel exports** (books, students, loans) |
+| **Classroom tools & printing** | — | **Printable vector barcode sheets & bin labels** |
+| **Annual classroom archive** | Online summary | **Official printable report** (top books & readers) |
+
+**30-day free trial** granted automatically to all new accounts, no credit card required.
+
+**[Sign up for free on LivresEnClasse.com →](https://livresenclasse.com/en/)**
+
+---
+
+## Self-Hosting & Development
+
+**Livres en Classe** is a *Source-Available* project. The official, production-ready, hosted service is operated on [livresenclasse.com](https://livresenclasse.com).
+
+For developers wishing to contribute to the code or run their own autonomous instance:
+
+* **Local Installation & Self-hosting Guide**: [**`docs/self-hosting.md`**](docs/self-hosting.md)  
+  *(Prerequisites: Python 3.12, SQLite, API keys configuration, and HTTPS certificate for camera support).*
+* **Detailed Software Architecture**: [**`docs/architecture.md`**](docs/architecture.md)
+* **Database Schema & Migrations**: [**`docs/base-de-donnees.md`**](docs/base-de-donnees.md)
+* **Production Deployment Guide (Docker / Traefik)**: [**`docs/deploiement.md`**](docs/deploiement.md)
+* **Contribution Guidelines**: [**`CONTRIBUTING.md`**](CONTRIBUTING.md)
+
+### Tech Stack
+- **Backend**: Python 3.12, Flask 3, Flask-Login, Flask-Babel 4 (i18n French / English / German)
+- **Database**: SQLAlchemy 2.0, Flask-Migrate (Alembic), SQLite
+- **Frontend**: Jinja2, Bulma CSS, HTMX, Vanilla JavaScript, Service Worker (PWA)
+- **Integrated Services**: BnF SRU API, Google Books API, Open Library, Stripe Checkout, hCaptcha
 
 ---
 
 ## License
 
-This project is licensed under the **[PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)** (Source-Available) — see [LICENSE.md](LICENSE.md).
+This project is licensed under the **[PolyForm Noncommercial License 1.0.0](LICENSE.md)** (Source-Available):
 
-- **Permitted**: Personal, educational, classroom, academic use, and non-commercial open-source contributions.
-- **Prohibited**: Commercial exploitation, direct/indirect monetization, reselling, or competing SaaS hosting without prior written consent.
+- **Allowed**: Personal, pedagogical, and educational use (schools, teachers, non-profit education), security auditing, and open-source contributions.
+- **Prohibited**: Commercial exploitation, monetization, resale, or competing paid SaaS hosting without prior written consent from the author.
+
+---
+
+<p align="center">
+  Crafted with care for teachers and their students<br>
+  <strong><a href="https://livresenclasse.com/en/">LivresEnClasse.com</a></strong>
+</p>

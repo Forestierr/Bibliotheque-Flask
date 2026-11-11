@@ -68,6 +68,27 @@
             </div>
 
             <div class="field">
+                <label class="label" for="image_url">
+                    <span>{{ _("Image de couverture (URL)") }}</span>
+                </label>
+                <div class="control has-icons-left">
+                    <input class="input" type="url" name="image_url" id="image_url" placeholder="{{ _('https://... (URL de l\'image)') }}" {% if book.image_url %}value="{{ book.image_url }}"{% endif %}>
+                    <span class="icon is-small is-left">
+                        <i class="fas fa-image"></i>
+                    </span>
+                </div>
+                <p class="help">{{ _("Laissez vide pour conserver ou rechercher automatiquement via l'ISBN.") }}</p>
+                {% if book.image_url %}
+                <div class="mt-2 is-flex is-align-items-center" style="gap: 10px;">
+                    <figure class="image" style="width: 44px; height: 62px; flex-shrink: 0; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.15);">
+                        <img src="{{ book.image_url }}" alt="Aperçu" style="width: 100%; height: 100%; object-fit: cover;">
+                    </figure>
+                    <span class="is-size-7 has-text-grey">{{ _("Aperçu de la couverture actuelle") }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="field">
                 <label class="label" for="barcode">
                     <span>{{ _("Référence classe") }}</span>
                     <span class="has-text-grey is-size-7 has-text-weight-normal">({{ _("Code-barres exemplaire / Rangement bac") }})</span>
@@ -85,17 +106,27 @@
                 <label class="label" for="tags">{{ _("Étiquettes") }}</label>
                 <div class="control">
                     <div class="tags-input-container">
-                        <div id="tags-list" class="tags {% if not book_tags %}is-hidden{% endif %}"></div>
+                        <div id="tags-list" class="tags {% if not book_tags %}is-hidden{% endif %}">
+                            {% for tag in book_tags %}
+                                {% if tag %}
+                                    <div class="tag is-info" data-tag="{{ tag }}">
+                                        <span>{{ tag }}</span>
+                                        <button class="delete is-small" type="button" aria-label="{{ _('Supprimer') }}"></button>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                         <input
                                 id="tags-input"
                                 class="input"
                                 type="text"
+                                name="tags_input_raw"
                                 placeholder="{{ _('Ajouter une étiquette ou une catégorie') }}"
                                 autocomplete="off"
                         />
                     </div>
                 </div>
-                <input type="hidden" name="tags" id="tags-hidden-input" value="{{ book_tags[0] }}" />
+                <input type="hidden" name="tags" id="tags-hidden-input" value="{{ book_tags|join(',') }}" />
                 <div class="dropdown" id="suggestions-dropdown">
                     <div class="dropdown-menu">
                         <div class="dropdown-content" id="suggestions-list"></div>
@@ -168,110 +199,220 @@
         </button>
     </div>
 
-    <!-- Script pour les tags -->
+    <!-- Script pour les tags et modale -->
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const existingTags = {{ tags|tojson }}; // Liste des tags existants
-      const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
-      const tagsInput = document.getElementById("tags-input");
-      const tagsList = document.getElementById("tags-list");
-      const tagsHiddenInput = document.getElementById("tags-hidden-input");
-      const suggestionsDropdown = document.getElementById("suggestions-dropdown");
-      const suggestionsList = document.getElementById("suggestions-list");
+    (function() {
+      function initTags() {
+        const tagsInput = document.getElementById("tags-input");
+        if (!tagsInput || tagsInput.dataset.tagsInitialized === "true") return;
+        tagsInput.dataset.tagsInitialized = "true";
 
-      window.onload = function () {
-        for (let tag of {{ book_tags|tojson }}) {
-            if (tag) {
-                addTag(tag);
+        const existingTags = {{ tags|tojson }}; // Liste des tags existants
+        const selectedTags = new Set(); // Ensemble pour les tags sélectionnés
+        const tagsList = document.getElementById("tags-list");
+        const tagsHiddenInput = document.getElementById("tags-hidden-input");
+        const suggestionsDropdown = document.getElementById("suggestions-dropdown");
+        const suggestionsList = document.getElementById("suggestions-list");
+
+        // Attacher les écouteurs de suppression sur les tags déjà rendus dans le DOM
+        const existingTagEls = tagsList ? tagsList.querySelectorAll(".tag[data-tag]") : [];
+        if (existingTagEls.length > 0) {
+          existingTagEls.forEach(tagElement => {
+            const tagName = tagElement.getAttribute("data-tag");
+            if (tagName) {
+              selectedTags.add(tagName);
+              const removeBtn = tagElement.querySelector(".delete");
+              if (removeBtn) {
+                removeBtn.addEventListener("click", () => {
+                  selectedTags.delete(tagName);
+                  tagElement.remove();
+                  updateHiddenInput();
+                });
+              }
             }
-        }
-      }
-
-      // Mise à jour des suggestions
-      function updateSuggestions() {
-        const input = tagsInput.value.toLowerCase();
-        const suggestions = existingTags.filter(tag =>
-          tag.toLowerCase().includes(input) && !selectedTags.has(tag)
-        );
-
-        suggestionsList.innerHTML = suggestions
-          .map(tag => `<a class="dropdown-item">${tag}</a>`)
-          .join("");
-
-        if (suggestions.length > 0) {
-          suggestionsDropdown.classList.add("is-active");
+          });
         } else {
-          suggestionsDropdown.classList.remove("is-active");
+          // Fallback d'initialisation si non pré-rendus
+          for (let tag of {{ book_tags|tojson }}) {
+            if (tag) {
+              addTag(tag);
+            }
+          }
         }
-      }
+        updateHiddenInput();
 
-      // Ajouter un tag
-      function addTag(tag) {
-        if (tagsList.classList.contains("is-hidden")) {
-          tagsList.classList.remove("is-hidden");
+        // Mise à jour des suggestions
+        function updateSuggestions() {
+          const input = tagsInput.value.toLowerCase().trim();
+          if (!input) {
+            suggestionsDropdown.classList.remove("is-active");
+            suggestionsList.innerHTML = "";
+            return;
+          }
+          const suggestions = existingTags.filter(tag =>
+            tag.toLowerCase().includes(input) && !selectedTags.has(tag)
+          );
+
+          suggestionsList.innerHTML = suggestions
+            .map(tag => `<a class="dropdown-item">${tag}</a>`)
+            .join("");
+
+          if (suggestions.length > 0) {
+            suggestionsDropdown.classList.add("is-active");
+          } else {
+            suggestionsDropdown.classList.remove("is-active");
+          }
         }
 
-        if (tag && !selectedTags.has(tag)) {
-          selectedTags.add(tag);
+        // Ajouter un tag (gère les séparateurs par virgule et texte restant)
+        function addTag(tag) {
+          if (!tag) return;
+          const parts = tag.split(",").map(t => t.trim()).filter(Boolean);
+          for (const cleanTag of parts) {
+            if (tagsList && tagsList.classList.contains("is-hidden")) {
+              tagsList.classList.remove("is-hidden");
+            }
 
-          const tagElement = document.createElement("div");
-          tagElement.className = "tag is-info";
-          tagElement.textContent = tag;
+            if (cleanTag && !selectedTags.has(cleanTag)) {
+              selectedTags.add(cleanTag);
 
-          const removeButton = document.createElement("button");
-          removeButton.className = "delete is-small";
-          removeButton.addEventListener("click", () => {
-            selectedTags.delete(tag);
-            tagsList.removeChild(tagElement);
-            updateHiddenInput();
+              const tagElement = document.createElement("div");
+              tagElement.className = "tag is-info";
+              tagElement.setAttribute("data-tag", cleanTag);
+
+              const textSpan = document.createElement("span");
+              textSpan.textContent = cleanTag;
+              tagElement.appendChild(textSpan);
+
+              const removeButton = document.createElement("button");
+              removeButton.className = "delete is-small";
+              removeButton.type = "button";
+              removeButton.setAttribute("aria-label", "{{ _('Supprimer') }}");
+              removeButton.addEventListener("click", () => {
+                selectedTags.delete(cleanTag);
+                tagElement.remove();
+                updateHiddenInput();
+              });
+
+              tagElement.appendChild(removeButton);
+              if (tagsList) {
+                tagsList.appendChild(tagElement);
+              }
+            }
+          }
+          tagsInput.value = "";
+          updateHiddenInput();
+          updateSuggestions();
+        }
+
+        // Met à jour le champ masqué avec les tags sélectionnés
+        function updateHiddenInput() {
+          if (!tagsHiddenInput) return;
+          tagsHiddenInput.value = Array.from(selectedTags).join(",");
+          if (tagsList) {
+            if (selectedTags.size === 0) {
+              tagsList.classList.add("is-hidden");
+            } else {
+              tagsList.classList.remove("is-hidden");
+            }
+          }
+        }
+
+        // Gestion des suggestions au clic / touch
+        let suggestionHandled = false;
+        function selectSuggestion(item) {
+          if (!item) return;
+          const tag = item.textContent.trim();
+          if (tag) {
+            addTag(tag);
+          }
+          tagsInput.value = "";
+          if (suggestionsDropdown) {
+            suggestionsDropdown.classList.remove("is-active");
+          }
+          suggestionHandled = true;
+          setTimeout(() => { suggestionHandled = false; }, 300);
+        }
+
+        if (suggestionsList) {
+          suggestionsList.addEventListener("pointerdown", (event) => {
+            const item = event.target.closest(".dropdown-item");
+            if (item) {
+              event.preventDefault();
+              selectSuggestion(item);
+            }
           });
 
-          tagElement.appendChild(removeButton);
-          tagsList.appendChild(tagElement);
-          updateHiddenInput();
+          suggestionsList.addEventListener("click", (event) => {
+            if (suggestionHandled) {
+              event.preventDefault();
+              return;
+            }
+            const item = event.target.closest(".dropdown-item");
+            if (item) {
+              event.preventDefault();
+              selectSuggestion(item);
+            }
+          });
         }
 
-        tagsInput.value = "";
-        updateSuggestions();
+        // Événements sur tagsInput
+        tagsInput.addEventListener("input", updateSuggestions);
+
+        tagsInput.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.keyCode === 13) {
+            // Entrée dans le champ tags : ajoute le tag sans jamais valider le formulaire
+            event.preventDefault();
+            event.stopPropagation();
+            if (tagsInput.value.trim()) {
+              addTag(tagsInput.value);
+            }
+            return false;
+          }
+          if (event.key === ",") {
+            event.preventDefault();
+            if (tagsInput.value.trim()) {
+              addTag(tagsInput.value);
+            }
+          }
+        });
+
+        // Gestion de la soumission du formulaire
+        const editBookForm = tagsInput.closest("form");
+        if (editBookForm) {
+          editBookForm.addEventListener("submit", (e) => {
+            // Si le champ tags est sélectionné lors de l'appui sur Entrée, on ajoute le tag sans soumettre le formulaire
+            if (document.activeElement === tagsInput) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (tagsInput.value.trim()) {
+                addTag(tagsInput.value);
+              }
+              return false;
+            }
+            // Sinon (clic sur Enregistrer ou Entrée dans un autre champ) : valider le formulaire complet
+            if (tagsInput.value.trim()) {
+              addTag(tagsInput.value);
+            }
+            updateHiddenInput();
+          });
+        }
+
+        document.addEventListener("click", event => {
+          if (suggestionsDropdown && !suggestionsDropdown.contains(event.target) && event.target !== tagsInput) {
+            suggestionsDropdown.classList.remove("is-active");
+          }
+        });
       }
 
-      // Met à jour le champ masqué avec les tags sélectionnés
-      function updateHiddenInput() {
-        tagsHiddenInput.value = Array.from(selectedTags).join(",");
-        if (selectedTags.size === 0) {
-          tagsList.classList.add("is-hidden");
-        }
-      }
+      function initDeleteModal() {
+        const btn = document.querySelector('#showModal');
+        const modalDlg = document.querySelector('#delete-modal');
+        const modalCloseBtn = document.querySelector('#modal-close');
+        if (!btn || !modalDlg || !modalCloseBtn) return;
+        if (btn.dataset.modalInitialized === "true") return;
+        btn.dataset.modalInitialized = "true";
 
-      // Gestion des événements
-      tagsInput.addEventListener("input", updateSuggestions);
-
-      tagsInput.addEventListener("keydown", event => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          addTag(tagsInput.value);
-        }
-      });
-
-      suggestionsList.addEventListener("click", event => {
-        if (event.target.classList.contains("dropdown-item")) {
-          addTag(event.target.textContent);
-        }
-      });
-
-      document.addEventListener("click", event => {
-        if (!suggestionsDropdown.contains(event.target) && event.target !== tagsInput) {
-          suggestionsDropdown.classList.remove("is-active");
-        }
-      });
-    });
-    </script>
-
-    <!-- Script pour les modals -->
-    <script>
-        var btn = document.querySelector('#showModal');
-        var modalDlg = document.querySelector('#delete-modal');
-        var modalCloseBtn = document.querySelector('#modal-close');
         btn.addEventListener('click', function(){
           modalDlg.classList.add('is-active');
         });
@@ -279,6 +420,20 @@
         modalCloseBtn.addEventListener('click', function(){
           modalDlg.classList.remove('is-active');
         });
+      }
+
+      function initPage() {
+        initTags();
+        initDeleteModal();
+      }
+
+      if (document.readyState !== 'loading') {
+        initPage();
+      } else {
+        document.addEventListener('DOMContentLoaded', initPage);
+      }
+      document.body.addEventListener('htmx:load', initPage);
+    })();
     </script>
 
 
