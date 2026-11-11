@@ -1,4 +1,6 @@
 # livre.py
+import hashlib
+import io
 import logging
 import math
 import os
@@ -118,6 +120,53 @@ def livre_db():
     )
 
 
+def isbn10_to_isbn13(isbn10: str) -> str | None:
+    """Convertit un ISBN-10 en ISBN-13 (préfixe 978)."""
+    clean = re.sub(r"[^0-9X]", "", str(isbn10).upper())
+    if len(clean) != 10:
+        return None
+    body = "978" + clean[:9]
+    try:
+        check = (
+            10 - sum(int(d) * (3 if i % 2 else 1) for i, d in enumerate(body)) % 10
+        ) % 10
+        return body + str(check)
+    except ValueError:
+        return None
+
+
+def isbn13_to_isbn10(isbn13: str) -> str | None:
+    """Convertit un ISBN-13 (commençant par 978) en ISBN-10."""
+    clean = re.sub(r"[^0-9X]", "", str(isbn13).upper())
+    if len(clean) != 13 or not clean.startswith("978"):
+        return None
+    core = clean[3:12]
+    try:
+        total = sum(int(d) * (10 - i) for i, d in enumerate(core))
+        rem = (11 - (total % 11)) % 11
+        check = "X" if rem == 10 else str(rem)
+        return core + check
+    except ValueError:
+        return None
+
+
+def get_isbn_candidates(raw_isbn: str) -> list[str]:
+    """Retourne la liste des variantes valides d'un ISBN (13 en priorité, puis 10)."""
+    clean = re.sub(r"[^0-9X]", "", str(raw_isbn).upper())
+    candidates = []
+    if len(clean) == 13:
+        candidates.append(clean)
+        i10 = isbn13_to_isbn10(clean)
+        if i10 and i10 not in candidates:
+            candidates.append(i10)
+    elif len(clean) == 10:
+        i13 = isbn10_to_isbn13(clean)
+        if i13:
+            candidates.append(i13)
+        candidates.append(clean)
+    return candidates
+
+
 def check_bnf_cover(isbn, timeout=5):
     """Vérifie si la BnF possède une image de couverture pour cet ISBN."""
     if not isbn:
@@ -147,24 +196,137 @@ def check_openlibrary_cover(isbn, timeout=5):
         return False
 
 
+GOOGLE_PLACEHOLDER_HASHES = {
+    "d7c21c65fc861fc5128753e9e091b23c",  # Placeholder gris par défaut de Google Books (10 794 octets)
+    "e89e0e364e83c0ecfba5da41007c9a2c",  # PNG transparent 1x1 d'absence de couverture (1 269 octets)
+    "a64fa89d7ebc97075c1d363fc5fea71f",  # Dummy zoom 0/2 (9 103 octets)
+}
+
+
+def is_google_placeholder(content: bytes) -> bool:
+    """Détecte si une image renvoyée par Google Books est un placeholder générique vide."""
+    if not content or len(content) < 1500 or len(content) == 10794:
+        return True
+    md5 = hashlib.md5(content).hexdigest()
+    if md5 in GOOGLE_PLACEHOLDER_HASHES:
+        return True
+    try:
+        from PIL import Image
+
+        im = Image.open(io.BytesIO(content))
+        # Le placeholder gris Google mesure 128x184 px avec un fond uni gris (151, 160, 167)
+        if im.size == (128, 184):
+            p = im.getpixel((10, 10))
+            if (
+                isinstance(p, tuple)
+                and len(p) >= 3
+                and abs(p[0] - 151) <= 5
+                and abs(p[1] - 160) <= 5
+                and abs(p[2] - 167) <= 5
+            ):
+                return True
+    except (OSError, ValueError):
+        pass
+    return False
+
+
+def check_google_books_cover(isbn, api_key=None, timeout=5):
+    """
+    Récupère une URL d'image de couverture valide via Google Books.
+    Privilégie l'endpoint CDN direct (0 consommation de quota Google Cloud)
+    en filtrant impérativement les placeholders gris génériques,
+    et utilise l'API Volumes officielle en complément si nécessaire.
+    """
+    if not isbn:
+        return None
+
+    # 1. Endpoint direct CDN vid=isbn (ne requiert aucune clé, 0 quota consommé)
+    direct_url = f"https://books.google.com/books/content?vid=isbn:{isbn}&printsec=frontcover&img=1&zoom=1"
+    try:
+        r = requests.get(
+            direct_url,
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+            timeout=timeout,
+        )
+        ct = r.headers.get("Content-Type", "")
+        if (
+            r.status_code == 200
+            and "image/jpeg" in ct
+            and not is_google_placeholder(r.content)
+        ):
+            return direct_url
+    except (requests.RequestException, OSError, StopIteration):
+        pass
+
+    # 2. API officielle Volumes en fallback si une clé est disponible
+    api_key = api_key or os.getenv("GOOGLE_BOOK_API_KEY")
+    if api_key:
+        api_url = (
+            f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}&key={api_key}"
+        )
+        headers = {"User-Agent": "Bibliotheque-Flask/1.0"}
+        try:
+            r = requests.get(api_url, headers=headers, timeout=timeout)
+            if r.status_code == 200:
+                data = r.json()
+                for item in data.get("items", []):
+                    vol = item.get("volumeInfo", {})
+                    image_links = vol.get("imageLinks", {})
+                    img = image_links.get("thumbnail") or image_links.get(
+                        "smallThumbnail"
+                    )
+                    if img:
+                        clean_url = img.replace("http://", "https://").replace(
+                            "&edge=curl", ""
+                        )
+                        try:
+                            check_r = requests.get(
+                                clean_url, headers=headers, timeout=timeout
+                            )
+                            if check_r.status_code == 200 and not is_google_placeholder(
+                                check_r.content
+                            ):
+                                return clean_url
+                        except (requests.RequestException, OSError, StopIteration):
+                            return clean_url
+        except (requests.RequestException, ValueError, OSError, StopIteration):
+            pass
+
+    return None
+
+
 def resolve_cover_url(isbn, default_img=None):
     """
     Résout la meilleure URL d'image de couverture pour un ISBN :
     1. Image déjà fournie
     2. BnF (Taille originale officielle)
-    3. Open Library (Couverture moyenne)
+    3. Google Books (API + direct)
+    4. Open Library (Couverture moyenne)
     """
     if default_img:
         return default_img
     if not isbn:
         return None
-    clean_isbn = re.sub(r"[^0-9X]", "", str(isbn).upper())
-    if not clean_isbn:
+    candidates = get_isbn_candidates(isbn)
+    if not candidates:
         return None
-    if check_bnf_cover(clean_isbn):
-        return f"https://openapi.bnf.fr/couverture/image/image/recupererImage?ISBN={clean_isbn}&couverture=1&taille=originale"
-    if check_openlibrary_cover(clean_isbn):
-        return f"https://covers.openlibrary.org/b/isbn/{clean_isbn}-M.jpg"
+
+    # 1. BnF (priorité qualité officielle originale)
+    for cand in candidates:
+        if check_bnf_cover(cand):
+            return f"https://openapi.bnf.fr/couverture/image/image/recupererImage?ISBN={cand}&couverture=1&taille=originale"
+
+    # 2. Google Books
+    for cand in candidates:
+        g_img = check_google_books_cover(cand)
+        if g_img:
+            return g_img
+
+    # 3. Open Library
+    for cand in candidates:
+        if check_openlibrary_cover(cand):
+            return f"https://covers.openlibrary.org/b/isbn/{cand}-M.jpg"
+
     return None
 
 

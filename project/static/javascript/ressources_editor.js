@@ -1,10 +1,28 @@
 // static/javascript/ressources_editor.js
 
-document.addEventListener('DOMContentLoaded', function () {
+function initRessourcesEditor() {
     initTwoWayDataBinding();
     initThemeSwatches();
     initZoomControls();
     initResetButtons();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRessourcesEditor);
+} else {
+    initRessourcesEditor();
+}
+
+// Support des navigations HTMX
+document.addEventListener('htmx:afterOnLoad', function () {
+    if (document.querySelector('.studio-wrapper') || document.querySelector('.a4-sheet')) {
+        setTimeout(initRessourcesEditor, 50);
+    }
+});
+document.addEventListener('htmx:historyRestore', function () {
+    if (document.querySelector('.studio-wrapper') || document.querySelector('.a4-sheet')) {
+        setTimeout(initRessourcesEditor, 50);
+    }
 });
 
 /**
@@ -301,6 +319,11 @@ function initZoomControls() {
 
     // Ajustement initial automatique et réactivité
     fitToScreen();
+    setTimeout(fitToScreen, 50);
+    setTimeout(fitToScreen, 200);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitToScreen);
+    }
     window.addEventListener('resize', fitToScreen);
     window.addEventListener('orientationchange', () => setTimeout(fitToScreen, 150));
     window.addEventListener('load', fitToScreen);

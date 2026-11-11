@@ -26,7 +26,7 @@
         <div class="column">
             <p class="has-text-weight-bold mb-2">{{ _("Ressources") }}</p>
             <a href="{{ url_for('main.blog_index') }}" class="has-text-grey-dark">Blog</a><br/>
-            <a href="{{ url_for('ressource.index') }}" class="has-text-grey-dark">{{ _("Ressources gratuites") }}</a><br/>
+            <a href="{{ url_for('ressource.index') }}" hx-boost="false" class="has-text-grey-dark">{{ _("Ressources gratuites") }}</a><br/>
             <a href="{{ url_for('main.enseignants_index') }}" class="has-text-grey-dark">{{ _("Guides enseignants") }}</a><br/>
             <a href="{{ url_for('main.contact') }}" class="has-text-grey-dark">{{ _("Contact") }}</a><br/>
             <a href="{{ url_for('main.apropos') }}" class="has-text-grey-dark">{{ _("A propos") }}</a>

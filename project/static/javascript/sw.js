@@ -1,7 +1,7 @@
 // sw.js
 // Service Worker for PWA — livresenclasse.com
 
-const CACHE_NAME = "livres-en-classe-v7";
+const CACHE_NAME = "livres-en-classe-v8";
 const COVERS_CACHE_NAME = "livres-en-classe-covers-v1";
 const OFFLINE_URL = "/offline";
 
@@ -23,7 +23,7 @@ const STATIC_ASSETS = [
 
 // ─── Install : précache TOUT de façon garantie ────────────────────────────────
 self.addEventListener("install", (event) => {
-  console.log("[Service Worker] Installing v7...");
+  console.log("[Service Worker] Installing v8...");
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       console.log("[Service Worker] Pre-caching shell & core dependencies...");
@@ -44,7 +44,7 @@ self.addEventListener("install", (event) => {
 
 // ─── Activate : nettoyage des anciens caches ───────────────────────────────────
 self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating v7...");
+  console.log("[Service Worker] Activating v8...");
   event.waitUntil(
     caches.keys()
       .then((keys) =>

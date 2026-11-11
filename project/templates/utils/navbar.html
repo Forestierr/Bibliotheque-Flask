@@ -385,7 +385,7 @@
                 <span class="icon"><i class="fas fa-exchange-alt"></i></span>
                 <span>{{ _('Emprunts') }}</span>
             </a>
-            <a href="{{ url_for('ressource.index') }}" class="navbar-item navbar-item-custom {% if request.endpoint and 'ressource.' in request.endpoint %}is-active-link{% endif %}">
+            <a href="{{ url_for('ressource.index') }}" hx-boost="false" class="navbar-item navbar-item-custom {% if request.endpoint and 'ressource.' in request.endpoint %}is-active-link{% endif %}">
                 <span class="icon"><i class="fas fa-print"></i></span>
                 <span>{{ _('Ressources') }}</span>
             </a>
@@ -507,7 +507,7 @@
             <a href="{{ url_for('main.enseignants_index') }}" class="navbar-item navbar-item-custom {% if 'enseignants' in request.path %}is-active-link{% endif %}">
                 {{ _('Guides') }}
             </a>
-            <a href="{{ url_for('ressource.index') }}" class="navbar-item navbar-item-custom {% if 'ressources' in request.path %}is-active-link{% endif %}">
+            <a href="{{ url_for('ressource.index') }}" hx-boost="false" class="navbar-item navbar-item-custom {% if 'ressources' in request.path %}is-active-link{% endif %}">
                 {{ _('Ressources') }}
             </a>
             <a href="{{ url_for('main.blog_index') }}" class="navbar-item navbar-item-custom {% if 'blog' in request.path %}is-active-link{% endif %}">

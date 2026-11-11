@@ -126,7 +126,7 @@
     </style>
 </head>
 
-<body hx-boost="true">
+<body {% block body_attrs %}hx-boost="true"{% endblock %}>
 <div class="htmx-progress-bar" aria-hidden="true"></div>
 
 <!-- Matomo -->

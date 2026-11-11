@@ -4,6 +4,8 @@
 
 {% extends "base.html" %}
 
+{% block body_attrs %}hx-boost="false"{% endblock %}
+
 {% block head_extra %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/ressources_editor.css') }}">
 <style id="pagePrintOrientation">
@@ -22,11 +24,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="studio-wrapper">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ressources_editor.css') }}">
+<div class="studio-wrapper" hx-boost="false">
     <!-- Barre d'outils supérieure du studio -->
     <div class="studio-toolbar no-print">
         <div class="studio-toolbar-title">
-            <a href="{{ url_for('ressource.index') }}">
+            <a href="{{ url_for('ressource.index') }}" hx-boost="false">
                 <i class="fas fa-arrow-left"></i>
                 <span>{{ _("Toutes les ressources") }}</span>
             </a>
