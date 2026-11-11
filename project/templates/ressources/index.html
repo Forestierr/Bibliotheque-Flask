@@ -4,6 +4,8 @@
 
 {% extends "base.html" %}
 
+{% block body_attrs %}hx-boost="false"{% endblock %}
+
 {% block title %}{{ _("Ressources personnalisables & imprimables | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Outils gratuits et personnalisables pour enseignants : diplômes de lecture, marque-pages, charte de classe, bingo lecture, étiquettes de bacs et codes-barres prêts à imprimer.") }}{% endblock %}
 
@@ -204,7 +206,7 @@
     }
 </style>
 
-<section class="section">
+<section class="section" hx-boost="false">
     <div class="container" style="max-width: 1080px; margin: 0 auto;">
 
         <!-- En-tête sobre et pro -->

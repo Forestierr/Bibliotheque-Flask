@@ -12,6 +12,18 @@ from .subscription import premium_required
 ressource = Blueprint("ressource", __name__)
 
 
+@ressource.after_request
+def handle_htmx_boost(response):
+    """
+    Si une requête arrive boostée par HTMX sur le studio de ressources,
+    demander à HTMX d'effectuer un chargement natif complet du navigateur (HX-Refresh)
+    afin que l'ensemble des feuilles de style et scripts d'initialisation de l'aperçu s'exécutent.
+    """
+    if request.headers.get("HX-Boosted") == "true":
+        response.headers["HX-Refresh"] = "true"
+    return response
+
+
 @ressource.route("/ressources")
 def index():
     """Catalogue principal des ressources pédagogiques et outils imprimables."""

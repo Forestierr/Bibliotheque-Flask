@@ -223,12 +223,12 @@ def test_pwa_htmx_boost_and_progress_bar(client):
     assert "stopScanner" in html
 
 
-def test_service_worker_v7_and_cdn_caching(client):
-    """Vérifie que sw.js est servi avec le cache v5 et les règles de mise en cache CDN."""
+def test_service_worker_v8_and_cdn_caching(client):
+    """Vérifie que sw.js est servi avec le cache v8 et les règles de mise en cache CDN."""
     res = client.get("/sw.js")
     assert res.status_code == 200
     sw_code = res.get_data(as_text=True)
-    assert "livres-en-classe-v7" in sw_code
+    assert "livres-en-classe-v8" in sw_code
     assert "cdnjs.cloudflare.com" in sw_code
     assert "unpkg.com" in sw_code
     assert "kit.fontawesome.com" in sw_code

@@ -10,19 +10,25 @@ Usage :
 
 import argparse
 import os
-import re
 import sys
 import time
 
 # Ajout du dossier racine au PATH Python
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
 from project import create_app, db
-from project.livre import check_bnf_cover, check_openlibrary_cover
+from project.livre import (
+    check_bnf_cover,
+    check_google_books_cover,
+    check_openlibrary_cover,
+    get_isbn_candidates,
+    is_google_placeholder,
+)
 from project.models import Book
 
 
@@ -32,9 +38,58 @@ def log(msg, *args):
     print(f"{now_str} [ENRICH] {formatted}", flush=True)
 
 
-def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
+def enrich_books(
+    dry_run=False,
+    limit=None,
+    delay=0.1,
+    batch_commit=25,
+    clean_placeholders=True,
+    use_google_api=False,
+):
     app = create_app()
     with app.app_context():
+        log("==================================================")
+        log("  DÉMARRAGE DE L'ENRICHISSEMENT DES COUVERTURES   ")
+        log("==================================================")
+
+        # 0. Nettoyage des éventuels placeholders gris Google déjà enregistrés en base
+        if clean_placeholders:
+            existing_google = Book.query.filter(
+                Book.image_url.like("%books.google.com%")
+            ).all()
+            if existing_google:
+                placeholder_cache = {}
+                cleaned = 0
+                for b in existing_google:
+                    if b.image_url not in placeholder_cache:
+                        try:
+                            r = requests.get(
+                                b.image_url,
+                                headers={
+                                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                                },
+                                timeout=4,
+                            )
+                            placeholder_cache[b.image_url] = (
+                                r.status_code == 200
+                                and is_google_placeholder(r.content)
+                            )
+                        except (requests.RequestException, OSError):
+                            placeholder_cache[b.image_url] = False
+
+                    if placeholder_cache.get(b.image_url):
+                        if not dry_run:
+                            b.image_url = None
+                        cleaned += 1
+
+                if cleaned > 0:
+                    if not dry_run:
+                        db.session.commit()
+                    log(
+                        "Nettoyage : %d placeholder(s) gris Google Books supprimé(s) de la base.",
+                        cleaned,
+                    )
+
         total_books = Book.query.count()
         books_without_cover_query = Book.query.filter(
             Book.isbn.isnot(None),
@@ -43,9 +98,6 @@ def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
         )
         total_without_cover = books_without_cover_query.count()
 
-        log("==================================================")
-        log("  DÉMARRAGE DE L'ENRICHISSEMENT DES COUVERTURES   ")
-        log("==================================================")
         log("Livres au total en base de données : %d", total_books)
         log("Livres sans couverture ayant un ISBN : %d", total_without_cover)
 
@@ -79,9 +131,20 @@ def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
         if dry_run:
             log("MODE SIMULATION (--dry-run) : aucune modification en base.")
 
+        google_api_key = os.getenv("GOOGLE_BOOK_API_KEY") if use_google_api else None
+        if google_api_key:
+            log(
+                "Mode API Google Volumes activé (--use-google-api). Attention au quota journalier !"
+            )
+        else:
+            log(
+                "Mode CDN direct Google Books activé (0 requête API consommée, aucun quota)."
+            )
+
         stats = {
             "processed": 0,
             "bnf_found": 0,
+            "google_found": 0,
             "openlibrary_found": 0,
             "not_found": 0,
             "books_updated": 0,
@@ -91,10 +154,10 @@ def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
         uncommitted_count = 0
 
         for idx, raw_isbn in enumerate(unique_isbns, start=1):
-            clean_isbn = re.sub(r"[^0-9X]", "", str(raw_isbn).upper())
+            candidates = get_isbn_candidates(raw_isbn)
 
-            # Validation élémentaire ISBN (10 ou 13 caractères)
-            if len(clean_isbn) not in (10, 13):
+            # Validation élémentaire ISBN
+            if not candidates:
                 stats["not_found"] += 1
                 continue
 
@@ -102,16 +165,35 @@ def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
             source = None
 
             # 1. Vérification BnF (prioritaire, qualité originale officielle)
-            if check_bnf_cover(clean_isbn):
-                cover_url = f"https://openapi.bnf.fr/couverture/image/image/recupererImage?ISBN={clean_isbn}&couverture=1&taille=originale"
-                source = "BnF"
-                stats["bnf_found"] += 1
-            # 2. Vérification Open Library
-            elif check_openlibrary_cover(clean_isbn):
-                cover_url = f"https://covers.openlibrary.org/b/isbn/{clean_isbn}-M.jpg"
-                source = "OpenLibrary"
-                stats["openlibrary_found"] += 1
-            else:
+            for cand in candidates:
+                if check_bnf_cover(cand):
+                    cover_url = f"https://openapi.bnf.fr/couverture/image/image/recupererImage?ISBN={cand}&couverture=1&taille=originale"
+                    source = "BnF"
+                    stats["bnf_found"] += 1
+                    break
+
+            # 2. Vérification Google Books (API + direct)
+            if not cover_url:
+                for cand in candidates:
+                    g_img = check_google_books_cover(cand, api_key=google_api_key)
+                    if g_img:
+                        cover_url = g_img
+                        source = "GoogleBooks"
+                        stats["google_found"] += 1
+                        break
+
+            # 3. Vérification Open Library (fallback)
+            if not cover_url:
+                for cand in candidates:
+                    if check_openlibrary_cover(cand):
+                        cover_url = (
+                            f"https://covers.openlibrary.org/b/isbn/{cand}-M.jpg"
+                        )
+                        source = "OpenLibrary"
+                        stats["openlibrary_found"] += 1
+                        break
+
+            if not cover_url:
                 stats["not_found"] += 1
 
             stats["processed"] += 1
@@ -134,7 +216,7 @@ def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
                     idx,
                     len(unique_isbns),
                     (idx / len(unique_isbns)) * 100,
-                    clean_isbn,
+                    candidates[0],
                     source,
                     count_matching,
                 )
@@ -144,7 +226,7 @@ def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
                     idx,
                     len(unique_isbns),
                     (idx / len(unique_isbns)) * 100,
-                    clean_isbn,
+                    candidates[0],
                 )
 
             # Commit par lots réguliers
@@ -167,8 +249,11 @@ def enrich_books(dry_run=False, limit=None, delay=0.1, batch_commit=25):
         log("Temps écoulé : %.2f secondes", elapsed)
         log("ISBNs traités : %d", stats["processed"])
         log("Couvertures trouvées via BnF : %d", stats["bnf_found"])
+        log("Couvertures trouvées via Google Books : %d", stats["google_found"])
         log("Couvertures trouvées via OpenLibrary : %d", stats["openlibrary_found"])
-        total_found = stats["bnf_found"] + stats["openlibrary_found"]
+        total_found = (
+            stats["bnf_found"] + stats["google_found"] + stats["openlibrary_found"]
+        )
         pct = (total_found / max(1, stats["processed"])) * 100
         log("Total couvertures trouvées : %d (%.1f%%)", total_found, pct)
         log("ISBNs sans couverture trouvée : %d", stats["not_found"])
@@ -201,6 +286,16 @@ if __name__ == "__main__":
         default=25,
         help="Nombre de modifications avant chaque commit (défaut: 25)",
     )
+    parser.add_argument(
+        "--no-clean-placeholders",
+        action="store_true",
+        help="Désactive le nettoyage automatique des placeholders gris Google existants",
+    )
+    parser.add_argument(
+        "--use-google-api",
+        action="store_true",
+        help="Active l'API Google Books Volumes en secours (attention: consomme le quota de 1 000 req/jour). Par défaut: CDN direct sans quota.",
+    )
     args = parser.parse_args()
 
     enrich_books(
@@ -208,4 +303,6 @@ if __name__ == "__main__":
         limit=args.limit,
         delay=args.delay,
         batch_commit=args.batch_commit,
+        clean_placeholders=not args.no_clean_placeholders,
+        use_google_api=args.use_google_api,
     )

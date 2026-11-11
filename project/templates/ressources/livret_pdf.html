@@ -4,6 +4,8 @@
 
 {% extends "base.html" %}
 
+{% block body_attrs %}hx-boost="false"{% endblock %}
+
 {% block title %}{{ _("Convertisseur PDF en Livret A5 imprimable gratuit | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Transformez n'importe quel document PDF en livret A5 prêt à imprimer. Imposition automatique pour piqûre à cheval, cahiers cousus ou spirale. Entièrement gratuit.") }}{% endblock %}
 
