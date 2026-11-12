@@ -1451,3 +1451,205 @@ def test_stripe_webhook_with_real_stripe_event_object(client, app):
             assert u.plan == "premium"
             assert u.stripe_subscription_status == "active"
             assert u.subscription_end_at is not None
+
+
+def test_stripe_webhook_invoice_payment_failed(client, app):
+    """Vérifie que l'échec de paiement (invoice.payment_failed) passe le compte en 'past_due' et notifie l'utilisateur."""
+    with app.app_context():
+        user = User(
+            id=120,
+            email="pastdue@test.com",
+            plan="premium",
+            stripe_customer_id="cus_payment_fail",
+            stripe_subscription_status="active",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    payload = {
+        "id": "evt_invoice_failed_1",
+        "type": "invoice.payment_failed",
+        "data": {
+            "object": {
+                "id": "in_fail_123",
+                "customer": "cus_payment_fail",
+            }
+        },
+    }
+
+    with (
+        patch("stripe.Webhook.construct_event", return_value=payload),
+        patch("project.subscription.send_html_email"),
+    ):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(payload),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            u = db.session.get(User, 120)
+            assert u.stripe_subscription_status == "past_due"
+
+    # Cas limite : client Stripe inconnu
+    payload_unknown = {
+        "id": "evt_invoice_failed_2",
+        "type": "invoice.payment_failed",
+        "data": {
+            "object": {
+                "id": "in_fail_999",
+                "customer": "cus_unknown",
+            }
+        },
+    }
+    with patch("stripe.Webhook.construct_event", return_value=payload_unknown):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(payload_unknown),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+
+def test_stripe_webhook_subscription_deleted_founder_immunity(client, app):
+    """Règle d'or : vérifie qu'un Membre Fondateur ne perd JAMAIS son statut en cas de webhook customer.subscription.deleted."""
+    with app.app_context():
+        founder = User(
+            id=121,
+            email="founder_immune@test.com",
+            plan="founder",
+            stripe_customer_id="cus_founder_del",
+            stripe_subscription_id="sub_founder_del",
+            stripe_subscription_status="active",
+        )
+        db.session.add(founder)
+        db.session.commit()
+
+    payload = {
+        "id": "evt_sub_del_founder",
+        "type": "customer.subscription.deleted",
+        "data": {
+            "object": {
+                "id": "sub_founder_del",
+                "customer": "cus_founder_del",
+            }
+        },
+    }
+
+    with patch("stripe.Webhook.construct_event", return_value=payload):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(payload),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            u = db.session.get(User, 121)
+            # Le plan reste 'founder' et n'est JAMAIS rétrogradé en 'free'
+            assert u.plan == "founder"
+            assert u.is_premium is True
+            assert u.stripe_subscription_status == "canceled"
+
+
+def test_create_checkout_session_missing_key_and_error(client, app):
+    """Vérifie la robustesse de /subscription/create-checkout-session si STRIPE_SECRET_KEY manque ou si Stripe échoue."""
+    with app.app_context():
+        user = User(id=122, email="checkout_err@test.com", plan="free")
+        db.session.add(user)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "122"
+
+    # 1. STRIPE_SECRET_KEY non configurée
+    with patch.dict(os.environ, {"STRIPE_SECRET_KEY": ""}, clear=False):
+        resp = client.post(
+            "/subscription/create-checkout-session",
+            data={"plan_type": "yearly"},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 302
+        assert "/tarifs" in resp.headers.get("Location", "")
+
+    # 2. Erreur levée par l'API Stripe
+    with (
+        patch.dict(os.environ, {"STRIPE_SECRET_KEY": "sk_test_fake"}),
+        patch(
+            "stripe.checkout.Session.create", side_effect=Exception("Stripe API down")
+        ),
+    ):
+        resp = client.post(
+            "/subscription/create-checkout-session",
+            data={"plan_type": "monthly"},
+            follow_redirects=False,
+        )
+        assert resp.status_code == 302
+        assert "/tarifs" in resp.headers.get("Location", "")
+
+
+def test_portail_abonne_stripe_exception(client, app):
+    """Vérifie que /portail-abonne redirige proprement avec message flash en cas d'erreur de l'API Stripe."""
+    with app.app_context():
+        user = User(
+            id=123,
+            email="portal_err@test.com",
+            plan="premium",
+            stripe_customer_id="cus_err_test",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "123"
+
+    with (
+        patch.dict(os.environ, {"STRIPE_SECRET_KEY": "sk_test_fake"}),
+        patch(
+            "stripe.billing_portal.Session.create",
+            side_effect=Exception("Stripe down"),
+        ),
+    ):
+        resp = client.get("/portail-abonne", follow_redirects=False)
+        assert resp.status_code == 302
+        assert "/reglage" in resp.headers.get("Location", "")
+
+
+def test_subscription_success_page_session_sync(client, app):
+    """Vérifie la synchronisation synchrone du statut premium lors de la visite de /subscription/success avec session_id."""
+    with app.app_context():
+        user = User(id=124, email="success_sync@test.com", plan="free")
+        db.session.add(user)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "124"
+
+    mock_session = {
+        "payment_status": "paid",
+        "status": "complete",
+        "customer": "cus_synced_124",
+        "subscription": "sub_synced_124",
+        "metadata": {"plan_type": "yearly"},
+    }
+
+    with (
+        patch.dict(os.environ, {"STRIPE_SECRET_KEY": "sk_test_fake"}),
+        patch("stripe.checkout.Session.retrieve", return_value=mock_session),
+    ):
+        resp = client.get(
+            "/subscription/success?session_id=cs_sync_test", follow_redirects=False
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            u = db.session.get(User, 124)
+            assert u.plan == "premium"
+            assert u.stripe_subscription_status == "active"
+            assert u.stripe_customer_id == "cus_synced_124"
+            assert u.stripe_subscription_id == "sub_synced_124"
+            assert u.stripe_price_id == "yearly"

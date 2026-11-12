@@ -90,6 +90,9 @@ def ajouter_eleve():
 @login_required
 def eleve_infos(id):
     student, books, old_books = get_student_infos(current_user.id, id)
+    if not student:
+        flash(_("Élève introuvable."), "error")
+        return redirect(url_for("eleve.eleve_db"))
 
     return render_template(
         "eleve/eleve_info.html", student=student, books=books, old_books=old_books
@@ -100,6 +103,9 @@ def eleve_infos(id):
 @login_required
 def eleve_delete(id):
     student = Student.query.filter_by(user_id=current_user.id, id=id).first()
+    if not student:
+        flash(_("Élève introuvable."), "error")
+        return redirect(url_for("eleve.eleve_db"))
 
     loans = Loan.query.filter_by(student_id=student.id).all()
     for loan in loans:

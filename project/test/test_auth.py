@@ -512,3 +512,136 @@ def test_reglage_danger_zone_shows_promo_retention_box(app):
         assert "promoRetentionBox" in html
         assert "PROMO30" in html
         assert "too_expensive" in html
+
+
+def test_password_reset_request_validation(app):
+    """Vérifie la validation de la demande de réinitialisation de mot de passe."""
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        db.create_all()
+        user = User(
+            name="Marie",
+            email="marie_reset@test.com",
+            password="hash",
+            is_verified=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        client = app.test_client()
+
+        # 1. Demande avec email vide
+        with client:
+            resp_empty = client.post(
+                "/reset_password", data={"email": ""}, follow_redirects=True
+            )
+            assert resp_empty.status_code == 200
+            flashed = get_flashed_messages()
+            assert any("Vous devez indiquer votre email" in msg for msg in flashed)
+
+        # 2. Demande avec email inconnu
+        with client:
+            resp_unknown = client.post(
+                "/reset_password",
+                data={"email": "inconnu@test.com"},
+                follow_redirects=True,
+            )
+            assert resp_unknown.status_code == 200
+            flashed = get_flashed_messages()
+            assert any(
+                "Aucun utilisateur trouvé avec cet email" in msg for msg in flashed
+            )
+
+        # 3. Demande avec email valide
+        with (
+            client,
+            patch("project.auth.send_email_reset_password") as mock_send_email,
+        ):
+            resp_ok = client.post(
+                "/reset_password",
+                data={"email": "marie_reset@test.com"},
+                follow_redirects=True,
+            )
+            assert resp_ok.status_code == 200
+            mock_send_email.assert_called_once()
+            flashed = get_flashed_messages()
+            assert any("instructions de réinitialisation" in msg for msg in flashed)
+
+
+def test_password_reset_token_security_and_replay_invalidation(app):
+    """Vérifie la sécurité cryptographique des jetons de réinitialisation et l'invalidation immédiate après usage (anti-rejeu)."""
+    from werkzeug.security import check_password_hash, generate_password_hash
+
+    from project import db
+    from project.models import User
+
+    with app.app_context():
+        db.create_all()
+        initial_hash = generate_password_hash("ancien_mdp")
+        user = User(
+            id=77,
+            name="Paul",
+            email="paul_token@test.com",
+            password=initial_hash,
+            is_verified=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        token = user.get_reset_password_token()
+        assert token is not None
+
+        # 1. Cas limite : jeton corrompu / falsifié
+        assert User.validate_reset_password_token("token_invalide", 77) is None
+
+        # 2. Cas limite : mauvais user_id
+        assert User.validate_reset_password_token(token, 9999) is None
+
+        # 3. Validation réussie du token valide
+        validated_user = User.validate_reset_password_token(token, 77)
+        assert validated_user is not None
+        assert validated_user.id == 77
+
+        client = app.test_client()
+
+        # 4. GET avec mauvais token -> redirection
+        resp_bad = client.get("/reset_password/faux_token/77", follow_redirects=False)
+        assert resp_bad.status_code == 302
+        assert "/reset_password" in resp_bad.headers.get("Location", "")
+
+        # 5. POST avec confirmation divergente
+        with client:
+            resp_mismatch = client.post(
+                f"/reset_password/{token}/77",
+                data={"password": "nouveau_mdp_123", "password2": "autre_chose"},
+                follow_redirects=True,
+            )
+            assert resp_mismatch.status_code == 200
+            flashed = get_flashed_messages()
+            assert any(
+                "Les mots de passe ne correspondent pas" in msg for msg in flashed
+            )
+
+        # 6. POST avec succès -> mot de passe mis à jour
+        with client:
+            resp_success = client.post(
+                f"/reset_password/{token}/77",
+                data={
+                    "password": "nouveau_mdp_123",
+                    "password2": "nouveau_mdp_123",
+                },
+                follow_redirects=False,
+            )
+            assert resp_success.status_code == 302
+            assert "/login" in resp_success.headers.get("Location", "")
+
+            # Vérification du nouveau hash en base
+            db.session.expire_all()
+            updated_user = db.session.get(User, 77)
+            assert check_password_hash(updated_user.password, "nouveau_mdp_123")
+
+        # 7. SÉCURITÉ MAJEURE (Anti-rejeu) : le même token est désormais INVALIDE
+        # car le salt du token dérive de user.password, qui a changé !
+        assert User.validate_reset_password_token(token, 77) is None

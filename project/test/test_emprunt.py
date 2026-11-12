@@ -846,3 +846,73 @@ def test_sqlite_pragmas_configured_on_connect(app):
     with app.app_context(), db.engine.connect() as conn:
         timeout = conn.exec_driver_sql("PRAGMA busy_timeout").scalar()
         assert timeout == 30000
+
+
+def test_return_loan_quick_not_found_variants(client, app, logged_in_user):
+    """Vérifie que le retour rapide d'un prêt inexistant gère proprement HTMX (404 HTML), JSON (404 JSON) et formulaire (redirect flash)."""
+    with app.app_context(), patch("project.emprunt.current_user", logged_in_user):
+        # 1. Requête HTMX
+        resp_htmx = client.post(
+            "/emprunt/99999/return-quick",
+            headers={"HX-Request": "true"},
+        )
+        assert resp_htmx.status_code == 404
+        assert "Emprunt introuvable" in resp_htmx.get_data(as_text=True)
+
+        # 2. Requête JSON
+        resp_json = client.post(
+            "/emprunt/99999/return-quick",
+            headers={"Accept": "application/json"},
+        )
+        assert resp_json.status_code == 404
+        assert "error" in resp_json.get_json()
+
+        # 3. Requête classique navigateur
+        resp_browser = client.post(
+            "/emprunt/99999/return-quick",
+            follow_redirects=False,
+        )
+        assert resp_browser.status_code == 302
+
+
+def test_return_loan_cross_user_isolation(client, app, logged_in_user):
+    """Vérifie qu'un enseignant ne peut pas retourner l'emprunt d'un livre appartenant à un autre enseignant (403)."""
+    with app.app_context():
+        # Création d'un livre appartenant à un AUTRE utilisateur (id=99)
+        other_user = User(id=99, email="other_teacher@test.com", password="hash")
+        db.session.add(other_user)
+        db.session.commit()
+
+        book = Book(id=201, title="Livre Autre Enseignant", user_id=99)
+        student = Student(id=201, name="Petit", firstname="Paul", user_id=99)
+        db.session.add_all([book, student])
+        db.session.commit()
+
+        loan = Loan(id=201, book_id=201, student_id=201, date_return=None)
+        db.session.add(loan)
+        db.session.commit()
+
+        with patch("project.emprunt.current_user", logged_in_user):
+            # 1. Tentative en JSON -> 403 Forbidden
+            resp_json = client.post(
+                f"/emprunt/{loan.id}/return-quick",
+                headers={"Accept": "application/json"},
+            )
+            assert resp_json.status_code == 403
+            assert "Accès non autorisé" in resp_json.get_json().get("error", "")
+
+            # 2. Tentative en HTMX -> 403 Forbidden
+            resp_htmx = client.post(
+                f"/emprunt/{loan.id}/return-quick",
+                headers={"HX-Request": "true"},
+            )
+            assert resp_htmx.status_code == 403
+            assert "Accès non autorisé" in resp_htmx.get_data(as_text=True)
+
+            # 3. Tentative via la route classique /emprunt/<id>
+            resp_classic = client.post(f"/emprunt/{loan.id}", follow_redirects=False)
+            assert resp_classic.status_code == 302
+
+            # Vérification en base : l'emprunt n'a JAMAIS été retourné
+            db.session.refresh(loan)
+            assert loan.date_return is None

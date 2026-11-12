@@ -843,3 +843,165 @@ def test_livre_edit_student_locked_exhausted(client, app):
             assert resp.status_code == 302
             loan = Loan.query.filter_by(book_id=book.id, student_id=student.id).first()
             assert loan is None
+
+
+def test_livre_duplicate_and_delete_flow():
+    """Vérifie la duplication d'un livre (avec ses tags) et sa suppression individuelle."""
+    from project.models import BookTags, Tags
+
+    app = create_app(
+        {
+            "TESTING": True,
+            "WTF_CSRF_ENABLED": False,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "secret-dup-del",
+        }
+    )
+    with app.app_context():
+        db.create_all()
+
+        user = User(id=1, email="prof_dup@test.com", password="hash", plan="premium")
+        db.session.add(user)
+        db.session.commit()
+
+        orig_book = Book(
+            title="Harry Potter",
+            author="J.K. Rowling",
+            editor="Gallimard",
+            year=1997,
+            type="Roman",
+            isbn="9782070584628",
+            user_id=1,
+        )
+        tag = Tags(name="Fantastique", user_id=1)
+        db.session.add_all([orig_book, tag])
+        db.session.commit()
+
+        bt = BookTags(book_id=orig_book.id, tag_id=tag.id)
+        db.session.add(bt)
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "1"
+
+        # 1. Duplication du livre
+        resp_dup = client.get(
+            f"/fr/livre/{orig_book.id}/duplique", follow_redirects=False
+        )
+        assert resp_dup.status_code == 302
+        new_book = Book.query.filter(Book.user_id == 1, Book.id != orig_book.id).first()
+        assert new_book is not None
+        assert new_book.title == "Harry Potter"
+        assert new_book.author == "J.K. Rowling"
+        assert new_book.isbn == "9782070584628"
+
+        # Tags dupliqués
+        new_bt = BookTags.query.filter_by(book_id=new_book.id, tag_id=tag.id).first()
+        assert new_bt is not None
+
+        # 2. Suppression individuelle du livre dupliqué
+        resp_del = client.post(
+            f"/fr/livre/{new_book.id}/delete", follow_redirects=False
+        )
+        assert resp_del.status_code == 302
+        assert db.session.get(Book, new_book.id) is None
+        # Le livre original est toujours là
+        assert db.session.get(Book, orig_book.id) is not None
+
+        # 3. Cas limite : dupliquer ou supprimer un livre inexistant
+        resp_dup_none = client.get("/fr/livre/99999/duplique", follow_redirects=False)
+        assert resp_dup_none.status_code == 302
+        resp_del_none = client.post("/fr/livre/99999/delete", follow_redirects=False)
+        assert resp_del_none.status_code == 302
+
+
+def test_livre_multi_tenant_isolation():
+    """Test d'isolation : l'enseignant B ne peut ni dupliquer ni supprimer les livres de l'enseignant A."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "WTF_CSRF_ENABLED": False,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "secret-livre-isolation",
+        }
+    )
+    with app.app_context():
+        db.create_all()
+
+        user1 = User(id=1, email="owner@test.com", password="hash", plan="premium")
+        user2 = User(id=2, email="attacker@test.com", password="hash", plan="premium")
+        book_user1 = Book(id=101, title="Livre Privé", user_id=1)
+        db.session.add_all([user1, user2, book_user1])
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "2"
+
+        # User 2 tente de dupliquer le livre de User 1
+        resp_dup = client.get("/fr/livre/101/duplique", follow_redirects=False)
+        assert resp_dup.status_code == 302
+        assert Book.query.filter_by(user_id=2).count() == 0
+
+        # User 2 tente de supprimer le livre de User 1
+        resp_del = client.post("/fr/livre/101/delete", follow_redirects=False)
+        assert resp_del.status_code == 302
+        # Le livre existe toujours pour User 1
+        assert db.session.get(Book, 101) is not None
+        assert db.session.get(Book, 101).user_id == 1
+
+
+def test_livre_dynamic_quota_reclamation():
+    """Vérifie la libération dynamique de place : à 500 livres (quota max), supprimer 1 livre débloque immédiatement l'ajout."""
+    from project.config_plans import MAX_FREE_BOOKS
+
+    app = create_app(
+        {
+            "TESTING": True,
+            "WTF_CSRF_ENABLED": False,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "secret-quota-reclaim",
+        }
+    )
+    with app.app_context():
+        db.create_all()
+
+        # Utilisateur gratuit avec période d'essai expirée
+        user = User(
+            id=10,
+            email="free_quota@test.com",
+            password="hash",
+            plan="free",
+            trial_ends_at=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # Création de 500 livres (quota max)
+        books = [
+            Book(id=1000 + i, title=f"Livre {i}", user_id=10)
+            for i in range(MAX_FREE_BOOKS)
+        ]
+        db.session.bulk_save_objects(books)
+        db.session.commit()
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "10"
+
+        # 1. Tentative de duplication au quota -> bloqué
+        resp_dup_blocked = client.get("/fr/livre/1000/duplique", follow_redirects=False)
+        assert resp_dup_blocked.status_code == 302
+        assert "/tarifs" in resp_dup_blocked.headers.get("Location", "")
+
+        # 2. Suppression d'un livre (libération dynamique)
+        resp_del = client.post("/fr/livre/1000/delete", follow_redirects=False)
+        assert resp_del.status_code == 302
+        assert Book.query.filter_by(user_id=10).count() == MAX_FREE_BOOKS - 1
+
+        # 3. La duplication est maintenant immédiatement autorisée !
+        resp_dup_ok = client.get("/fr/livre/1001/duplique", follow_redirects=False)
+        assert resp_dup_ok.status_code == 302
+        assert "/tarifs" not in resp_dup_ok.headers.get("Location", "")
+        assert Book.query.filter_by(user_id=10).count() == MAX_FREE_BOOKS
