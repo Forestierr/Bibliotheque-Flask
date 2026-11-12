@@ -228,6 +228,7 @@ def test_service_worker_v8_and_cdn_caching(client):
     res = client.get("/sw.js")
     assert res.status_code == 200
     sw_code = res.get_data(as_text=True)
+    res.close()
     assert "livres-en-classe-v8" in sw_code
     assert "cdnjs.cloudflare.com" in sw_code
     assert "unpkg.com" in sw_code
@@ -240,6 +241,7 @@ def test_service_worker_book_covers_caching(client):
     res = client.get("/sw.js")
     assert res.status_code == 200
     sw_code = res.get_data(as_text=True)
+    res.close()
     assert "livres-en-classe-covers-v1" in sw_code
     assert "openapi.bnf.fr" in sw_code
     assert "covers.openlibrary.org" in sw_code
@@ -252,6 +254,7 @@ def test_manifest_pwa_start_url_and_shortcuts(client):
     res = client.get("/manifest.json")
     assert res.status_code == 200
     data = res.get_json()
+    res.close()
     assert data["start_url"] == "/dashboard"
     shortcut_urls = [s["url"] for s in data.get("shortcuts", [])]
     assert "/dashboard" in shortcut_urls
