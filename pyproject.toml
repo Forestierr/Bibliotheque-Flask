@@ -11,3 +11,16 @@ exclude = [
 [tool.ruff.lint]
 # Aucune règle n'est ignorée, code strictement vérifié
 
+[tool.coverage.run]
+branch = true
+omit = [
+    "project/test/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]
+
