@@ -4,8 +4,9 @@ import pytest
 import requests
 
 # On suppose que tu as une factory create_app dans project/__init__.py
-from project import create_app
+from project import create_app, db
 from project.livre import get_book_from_api
+from project.models import Book, Loan, Student, User
 
 
 @pytest.fixture
@@ -744,3 +745,101 @@ def test_livre_exist_loaned_status(client, app):
             assert data["is_loaned"] is True
             assert data["loan_id"] == loan.id
             assert data["borrower_name"] == "Sophie Martin"
+
+
+def test_livre_edit_student_success(client, app):
+    """Vérifier l'attribution normale d'un livre à un élève."""
+    with app.app_context():
+        user = User(email="prof_loan@test.com", password="hash", name="Prof Loan")
+        db.session.add(user)
+        db.session.commit()
+
+        book = Book(title="Livre Pour Eleve", user_id=user.id)
+        student = Student(name="Dupont", firstname="Leo", user_id=user.id)
+        db.session.add_all([book, student])
+        db.session.commit()
+
+        with patch("project.livre.current_user", user):
+            resp = client.post(
+                f"/livre/{book.id}/edit-student",
+                data={"student_id": str(student.id)},
+            )
+            assert resp.status_code == 302
+            loan = Loan.query.filter_by(book_id=book.id, student_id=student.id).first()
+            assert loan is not None
+            assert loan.date_return is None
+
+
+def test_livre_edit_student_retry_on_locked(client, app):
+    """Vérifier que livre_edit_student réessaie et réussit après un verrou temporaire SQLite."""
+    from sqlalchemy.exc import OperationalError
+
+    with app.app_context():
+        user = User(email="prof_retry@test.com", password="hash", name="Prof Retry")
+        db.session.add(user)
+        db.session.commit()
+
+        book = Book(title="Livre Verrouille", user_id=user.id)
+        student = Student(name="Durand", firstname="Lea", user_id=user.id)
+        db.session.add_all([book, student])
+        db.session.commit()
+
+        counter = {"calls": 0}
+        real_commit = db.session.commit
+
+        def fake_commit():
+            counter["calls"] += 1
+            if counter["calls"] == 1:
+                raise OperationalError(
+                    "INSERT INTO loan", {}, Exception("database is locked")
+                )
+            return real_commit()
+
+        with (
+            patch("project.livre.current_user", user),
+            patch.object(db.session, "commit", side_effect=fake_commit),
+            patch("project.livre.time.sleep") as mock_sleep,
+        ):
+            resp = client.post(
+                f"/livre/{book.id}/edit-student",
+                data={"student_id": str(student.id)},
+            )
+            assert resp.status_code == 302
+            assert counter["calls"] == 2
+            mock_sleep.assert_called_once()
+            loan = Loan.query.filter_by(book_id=book.id, student_id=student.id).first()
+            assert loan is not None
+
+
+def test_livre_edit_student_locked_exhausted(client, app):
+    """Vérifier qu'un verrou persistant ne plante pas l'application en 500 et annule proprement."""
+    from sqlalchemy.exc import OperationalError
+
+    with app.app_context():
+        user = User(email="prof_exhaust@test.com", password="hash", name="Prof Exhaust")
+        db.session.add(user)
+        db.session.commit()
+
+        book = Book(title="Livre Echec", user_id=user.id)
+        student = Student(name="Petit", firstname="Luc", user_id=user.id)
+        db.session.add_all([book, student])
+        db.session.commit()
+
+        with (
+            patch("project.livre.current_user", user),
+            patch.object(
+                db.session,
+                "commit",
+                side_effect=OperationalError(
+                    "INSERT INTO loan", {}, Exception("database is locked")
+                ),
+            ),
+            patch("project.livre.time.sleep"),
+        ):
+            resp = client.post(
+                f"/livre/{book.id}/edit-student",
+                data={"student_id": str(student.id)},
+            )
+            assert resp.status_code == 302
+            loan = Loan.query.filter_by(book_id=book.id, student_id=student.id).first()
+            assert loan is None

@@ -4,7 +4,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from project import create_app
+from project import create_app, db
+from project.models import Book, Loan, Student, User
 
 
 @pytest.fixture
@@ -708,3 +709,140 @@ def test_emprunt_get_with_archive_param(client, app, logged_in_user):
         assert response.status_code == 200
         mock_loans.assert_called_once()
         assert mock_loans.call_args[0][1] == "archive"
+
+
+def test_search_preview_typed_search_real_db(client, app):
+    """Test d'intégration réel pour search_preview avec recherche typée (évite les TypeErrors masqués par mock)."""
+    with app.app_context():
+        user = User(
+            name="Enseignant Test",
+            email="prof_preview@test.fr",
+            password="hash",
+            is_verified=True,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        student = Student(name="Dupont", firstname="Alice", user_id=user.id)
+        book = Book(
+            title="Harry Potter à l'école des sorciers",
+            author="J.K. Rowling",
+            isbn="9782070584628",
+            user_id=user.id,
+        )
+        db.session.add_all([student, book])
+        db.session.commit()
+
+        loan = Loan(
+            book_id=book.id,
+            student_id=student.id,
+            date_loan=datetime.now(tz=UTC).date(),
+        )
+        db.session.add(loan)
+        db.session.commit()
+
+        with patch("project.emprunt.current_user", user):
+            # 1. Recherche typée par titre
+            response = client.post(
+                "/emprunt/search-preview",
+                data={"search": "titre:Harry", "active_loan": "1"},
+            )
+            assert response.status_code == 200
+            content = response.get_data(as_text=True)
+            assert "Harry Potter" in content
+
+            # 2. Recherche typée par élève
+            response = client.post(
+                "/emprunt/search-preview",
+                data={"search": "eleve:Dupont", "active_loan": "1"},
+            )
+            assert response.status_code == 200
+            content = response.get_data(as_text=True)
+            assert "Harry Potter" in content
+
+
+def test_return_loan_quick_retry_on_locked(client, app, logged_in_user):
+    """Vérifier que return_loan_quick réessaie et réussit après un verrou temporaire SQLite."""
+    from sqlalchemy.exc import OperationalError
+
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 42
+        mock_loan.book_id = 10
+        mock_loan.date_return = None
+
+        mock_book = MagicMock()
+        mock_book.id = 10
+        mock_book.user_id = logged_in_user.id
+        mock_book.title = "Livre Bloqué Temporairement"
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+            patch("project.emprunt.time.sleep") as mock_sleep,
+        ):
+            mock_session.query().filter().first.side_effect = [
+                mock_loan,
+                mock_book,
+                mock_loan,
+            ]
+            # Premier commit échoue avec database is locked, le deuxième réussit
+            mock_session.commit.side_effect = [
+                OperationalError("UPDATE loan", {}, Exception("database is locked")),
+                None,
+            ]
+
+            response = client.post(
+                "/emprunt/42/return-quick",
+                headers={"Accept": "application/json"},
+            )
+            assert response.status_code == 200
+            data = response.get_json()
+            assert data["success"] is True
+            assert mock_session.commit.call_count == 2
+            mock_sleep.assert_called_once()
+
+
+def test_return_loan_quick_locked_exhausted_retries(client, app, logged_in_user):
+    """Vérifier que return_loan_quick renvoie une erreur 500 propre en JSON si le verrou persiste."""
+    from sqlalchemy.exc import OperationalError
+
+    with app.app_context():
+        mock_loan = MagicMock()
+        mock_loan.id = 42
+        mock_loan.book_id = 10
+
+        mock_book = MagicMock()
+        mock_book.id = 10
+        mock_book.user_id = logged_in_user.id
+
+        with (
+            patch("project.emprunt.current_user", logged_in_user),
+            patch("project.emprunt.db.session") as mock_session,
+            patch("project.emprunt.time.sleep"),
+        ):
+            mock_session.query().filter().first.side_effect = [
+                mock_loan,
+                mock_book,
+                mock_loan,
+                mock_loan,
+            ]
+            mock_session.commit.side_effect = OperationalError(
+                "UPDATE loan", {}, Exception("database is locked")
+            )
+
+            response = client.post(
+                "/emprunt/42/return-quick",
+                headers={"Accept": "application/json"},
+            )
+            assert response.status_code == 500
+            data = response.get_json()
+            assert "error" in data
+            assert mock_session.rollback.called
+
+
+def test_sqlite_pragmas_configured_on_connect(app):
+    """Vérifier que le busy_timeout est configuré à 30000ms lors de la connexion."""
+    with app.app_context(), db.engine.connect() as conn:
+        timeout = conn.exec_driver_sql("PRAGMA busy_timeout").scalar()
+        assert timeout == 30000

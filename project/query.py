@@ -1030,13 +1030,13 @@ Get the loans that match the search
 
 def search_loans_by_types(
     current_user_id,
-    actualy_loan,
-    search_type,
-    search_value,
-    sort,
-    sort_order,
-    n_books_by_page,
-    page,
+    actualy_loan="0",
+    search_type="all",
+    search_value="",
+    sort="Book.title",
+    sort_order="asc",
+    n_books_by_page=20,
+    page=1,
 ):
     query = db.session.query(Loan, Book, Student).filter(
         Book.user_id == current_user_id
@@ -1141,10 +1141,17 @@ def delete_unverified_users():
     )
 
     count = len(unverified_users)
+    if count == 0:
+        return 0
+
     for user in unverified_users:
         db.session.delete(user)
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
     return count
 
 

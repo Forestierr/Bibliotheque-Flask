@@ -3,6 +3,7 @@
 import locale
 import logging
 import os
+import sqlite3
 from datetime import UTC, datetime, timedelta
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -25,11 +26,34 @@ from flask_mail import Mail, Message  # noqa: F401
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
 from .email_error import MailCriticalHandler
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    """
+    Optimise SQLite pour la haute concurrence (multi-workers Gunicorn) :
+    - Mode WAL (Write-Ahead Logging) : lecteurs et scripteurs ne se bloquent plus mutuellement.
+    - synchronous=NORMAL : synchronisation disque ultra-rapide et sûre en mode WAL.
+    - busy_timeout=30000 : attente jusqu'à 30 secondes en cas de verrou temporaire avant erreur.
+    - foreign_keys=ON : intégrité référentielle active.
+    """
+    if isinstance(dbapi_connection, sqlite3.Connection):
+        cursor = dbapi_connection.cursor()
+        try:
+            cursor.execute("PRAGMA journal_mode=WAL;")
+            cursor.execute("PRAGMA synchronous=NORMAL;")
+            cursor.execute("PRAGMA busy_timeout=30000;")
+            cursor.execute("PRAGMA foreign_keys=ON;")
+        finally:
+            cursor.close()
+
 
 mail = Mail()
 csrf = CSRFProtect()
@@ -86,6 +110,14 @@ def create_app(test_config=None):
 
     if test_config:
         app.config.update(test_config)
+
+    # Configuration optimisée du moteur de base de données pour la concurrence
+    engine_options = dict(app.config.get("SQLALCHEMY_ENGINE_OPTIONS") or {})
+    if "sqlite" in app.config.get("SQLALCHEMY_DATABASE_URI", ""):
+        connect_args = dict(engine_options.get("connect_args", {}))
+        connect_args.setdefault("timeout", 30)
+        engine_options["connect_args"] = connect_args
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 
     os.makedirs(app.instance_path, exist_ok=True)
     db.init_app(app)
@@ -253,11 +285,16 @@ def create_app(test_config=None):
             _last_cleanup["ts"] = now
             from .query import delete_unverified_users
 
-            count = delete_unverified_users()
-            if count:
-                app.logger.info(
-                    "Nettoyage automatique : %d compte(s) non vérifié(s) supprimé(s).",
-                    count,
+            try:
+                count = delete_unverified_users()
+                if count:
+                    app.logger.info(
+                        "Nettoyage automatique : %d compte(s) non vérifié(s) supprimé(s).",
+                        count,
+                    )
+            except Exception as e:  # noqa: BLE001
+                app.logger.warning(
+                    "Nettoyage automatique : reporté suite à une erreur : %s", e
                 )
 
     @login_manager.user_loader

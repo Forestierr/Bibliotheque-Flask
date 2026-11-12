@@ -8,6 +8,7 @@ Remplace les tâches cron externes pour :
 import json
 import logging
 import os
+import random
 import threading
 import time
 from datetime import UTC, datetime
@@ -64,6 +65,8 @@ def reset_weekly_scans(app) -> int:
                 "Scheduler: Erreur lors de la réinitialisation des scans : %s", e
             )
             return 0
+        finally:
+            db.session.remove()
 
 
 def downgrade_expired_subscriptions(app) -> int:
@@ -107,6 +110,8 @@ def downgrade_expired_subscriptions(app) -> int:
                 e,
             )
             return 0
+        finally:
+            db.session.remove()
 
 
 def _should_run_tasks(app, min_interval_seconds: int) -> bool:
@@ -177,8 +182,8 @@ def start_background_scheduler(app, interval_seconds: int = 600):
             "Scheduler d'arrière-plan démarré (intervalle: %d secondes).",
             interval_seconds,
         )
-        # Attente initiale de 5 secondes pour laisser le serveur finaliser son démarrage
-        time.sleep(5)
+        # Attente initiale étalée (5-10 secondes) pour éviter les accès simultanés entre workers Gunicorn
+        time.sleep(5 + random.uniform(0, 5))
 
         while True:
             try:

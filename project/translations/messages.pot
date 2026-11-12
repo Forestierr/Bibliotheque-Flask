@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-11 20:46+0100\n"
+"POT-Creation-Date: 2026-11-12 22:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,8 +39,8 @@ msgstr ""
 msgid "Action invalide."
 msgstr ""
 
-#: project/archive.py:244 project/emprunt.py:126 project/emprunt.py:130
-#: project/emprunt.py:131 project/emprunt.py:190
+#: project/archive.py:244 project/emprunt.py:144 project/emprunt.py:148
+#: project/emprunt.py:149 project/emprunt.py:230
 msgid "Emprunt introuvable."
 msgstr ""
 
@@ -206,17 +206,22 @@ msgstr ""
 msgid "L'élève existe déjà."
 msgstr ""
 
-#: project/emprunt.py:97 project/emprunt.py:174
+#: project/emprunt.py:103 project/emprunt.py:214
 #, python-format
 msgid "Le livre '%(title)s' a bien été marqué comme retourné."
 msgstr ""
 
-#: project/emprunt.py:103 project/emprunt.py:138 project/emprunt.py:142
-#: project/emprunt.py:143 project/emprunt.py:196
+#: project/emprunt.py:117 project/emprunt.py:179 project/emprunt.py:184
+#: project/emprunt.py:186 project/templates/livre/livre_scann.html:1154
+msgid "Une erreur est survenue lors du retour du livre."
+msgstr ""
+
+#: project/emprunt.py:121 project/emprunt.py:156 project/emprunt.py:160
+#: project/emprunt.py:161 project/emprunt.py:236
 msgid "Accès non autorisé."
 msgstr ""
 
-#: project/emprunt.py:167
+#: project/emprunt.py:207
 msgid "Livre retourné avec succès."
 msgstr ""
 
@@ -256,28 +261,44 @@ msgstr ""
 msgid "Le livre que vous souhaitiez dupliquer n'existe pas."
 msgstr ""
 
-#: project/livre.py:982
+#: project/livre.py:991
+msgid "Une erreur est survenue lors de la duplication du livre."
+msgstr ""
+
+#: project/livre.py:995
 msgid "L'exemplaire a été dupliqué avec succès !"
 msgstr ""
 
-#: project/livre.py:992
+#: project/livre.py:1005
 msgid "Le livre reste dans la bibliothèque."
 msgstr ""
 
-#: project/livre.py:998
+#: project/livre.py:1011
 msgid "L'élève n'existe pas."
 msgstr ""
 
-#: project/livre.py:1030
+#: project/livre.py:1053
+msgid "Une erreur est survenue lors du prêt du livre."
+msgstr ""
+
+#: project/livre.py:1060
 #, python-format
 msgid "Le livre '%(title)s' a bien été prêté à %(name)s."
 msgstr ""
 
-#: project/livre.py:1049
+#: project/livre.py:1075
+msgid "Livre introuvable."
+msgstr ""
+
+#: project/livre.py:1095
+msgid "Une erreur est survenue lors de la suppression du livre."
+msgstr ""
+
+#: project/livre.py:1099
 msgid "Le livre a été supprimé."
 msgstr ""
 
-#: project/livre.py:1066
+#: project/livre.py:1116
 #, python-format
 msgid ""
 "Vous avez atteint votre quota de %(max)s scans gratuits pour cette "
@@ -285,7 +306,7 @@ msgid ""
 "Premium pour scanner en illimité."
 msgstr ""
 
-#: project/livre.py:1164
+#: project/livre.py:1214
 msgid "Tous les livres ont été supprimés."
 msgstr ""
 
@@ -4551,10 +4572,6 @@ msgstr ""
 
 #: project/templates/livre/livre_scann.html:1090
 msgid "un élève"
-msgstr ""
-
-#: project/templates/livre/livre_scann.html:1154
-msgid "Une erreur est survenue lors du retour du livre."
 msgstr ""
 
 #: project/templates/ressources/base_editor.html:56

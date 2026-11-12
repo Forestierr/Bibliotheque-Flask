@@ -958,26 +958,39 @@ def livre_duplique(id):
 
     new_title = book.title
 
-    new_book = Book(
-        title=new_title,
-        author=book.author,
-        editor=book.editor,
-        year=book.year,
-        type=book.type,
-        isbn=book.isbn,
-        user_id=current_user.id,
-    )
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            new_book = Book(
+                title=new_title,
+                author=book.author,
+                editor=book.editor,
+                year=book.year,
+                type=book.type,
+                isbn=book.isbn,
+                user_id=current_user.id,
+            )
+            db.session.add(new_book)
+            db.session.flush()
 
-    db.session.add(new_book)
-    db.session.commit()
+            # Add the same tags to the new book
+            tags = get_book_tags(current_user.id, id)
+            for tag in tags:
+                book_tag = BookTags(book_id=new_book.id, tag_id=tag.id)
+                db.session.add(book_tag)
 
-    # Add the same tags to the new book
-    tags = get_book_tags(current_user.id, id)
-    for tag in tags:
-        book_tag = BookTags(book_id=new_book.id, tag_id=tag.id)
-        db.session.add(book_tag)
-
-    db.session.commit()
+            db.session.commit()
+            break
+        except Exception as e:  # noqa: BLE001
+            db.session.rollback()
+            if attempt < max_retries - 1 and "locked" in str(e).lower():
+                time.sleep(0.1 * (attempt + 1))
+                continue
+            logger.error("Erreur lors de la duplication du livre %s : %s", id, e)
+            flash(
+                _("Une erreur est survenue lors de la duplication du livre."), "error"
+            )
+            return redirect(url_for("livre.livre_infos", id=id))
 
     flash(_("L'exemplaire a été dupliqué avec succès !"), "success")
     return redirect(url_for("livre.livre_infos", id=new_book.id))
@@ -1013,15 +1026,32 @@ def livre_edit_student(id):
         duration_days = getattr(current_user, "default_loan_duration_days", 14) or 14
         expected_return_date = date_loan + timedelta(days=duration_days)
 
-    # Create a new loan
-    loan = Loan(
-        student_id=student.id,
-        book_id=id,
-        date_loan=date_loan,
-        expected_return_date=expected_return_date,
-    )
-    db.session.add(loan)
-    db.session.commit()
+    # Create a new loan with retry logic for SQLite concurrency
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            loan = Loan(
+                student_id=student.id,
+                book_id=id,
+                date_loan=date_loan,
+                expected_return_date=expected_return_date,
+            )
+            db.session.add(loan)
+            db.session.commit()
+            break
+        except Exception as e:  # noqa: BLE001
+            db.session.rollback()
+            if attempt < max_retries - 1 and "locked" in str(e).lower():
+                time.sleep(0.1 * (attempt + 1))
+                continue
+            logger.error(
+                "Erreur lors de l'attribution du livre %s à l'élève %s : %s",
+                id,
+                student_id,
+                e,
+            )
+            flash(_("Une erreur est survenue lors du prêt du livre."), "error")
+            return redirect(url_for("livre.livre_infos", id=id))
 
     book = get_book_by_id(current_user.id, id)
     student_name = f"{student.firstname} {student.name}".strip()
@@ -1041,10 +1071,30 @@ def livre_edit_student(id):
 @login_required
 def livre_delete(id):
     book = get_book_by_id(current_user.id, id)
+    if not book:
+        flash(_("Livre introuvable."), "error")
+        return redirect(url_for("livre.livre_db"))
 
-    # Delete the book
-    db.session.delete(book)
-    db.session.commit()
+    # Delete the book with retry logic
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            book = get_book_by_id(current_user.id, id)
+            if not book:
+                break
+            db.session.delete(book)
+            db.session.commit()
+            break
+        except Exception as e:  # noqa: BLE001
+            db.session.rollback()
+            if attempt < max_retries - 1 and "locked" in str(e).lower():
+                time.sleep(0.1 * (attempt + 1))
+                continue
+            logger.error("Erreur lors de la suppression du livre %s : %s", id, e)
+            flash(
+                _("Une erreur est survenue lors de la suppression du livre."), "error"
+            )
+            return redirect(url_for("livre.livre_infos", id=id))
 
     flash(_("Le livre a été supprimé."), "info")
 
