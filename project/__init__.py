@@ -231,10 +231,11 @@ def create_app(test_config=None):
         }
 
     app.logger.addHandler(handler)
-    mail_handler = MailCriticalHandler(
-        mail_instance=mail, app=app, recipients=os.getenv("MAIL_USERNAME")
-    )
-    app.logger.addHandler(mail_handler)
+    if not app.config.get("TESTING") and os.getenv("MAIL_USERNAME"):
+        mail_handler = MailCriticalHandler(
+            mail_instance=mail, app=app, recipients=os.getenv("MAIL_USERNAME")
+        )
+        app.logger.addHandler(mail_handler)
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
