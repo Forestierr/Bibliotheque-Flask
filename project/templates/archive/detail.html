@@ -104,11 +104,19 @@
                         <span>{{ _("Export Excel") }}</span>
                     </a>
                 {% else %}
-                    <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-light has-text-weight-semibold" title="{{ _('Fonctionnalité réservée aux membres Premium') }}">
-                        <span class="icon"><i class="fas fa-crown"></i></span>
-                        <span>{{ _("Imprimer / Excel (Premium)") }}</span>
-                    </a>
+                    <button type="button" class="button is-warning is-light has-text-weight-semibold" onclick="openModal('modalPremiumArchive')" title="{{ _('Fonctionnalité réservée aux membres Premium') }}">
+                        <span class="icon"><i class="fas fa-lock"></i></span>
+                        <span>{{ _("Imprimer le bilan (PDF)") }}</span>
+                    </button>
+                    <button type="button" class="button is-light has-text-weight-semibold" onclick="openModal('modalPremiumArchive')" title="{{ _('Fonctionnalité réservée aux membres Premium') }}">
+                        <span class="icon has-text-success"><i class="fas fa-file-excel"></i></span>
+                        <span>{{ _("Export Excel") }}</span>
+                    </button>
                 {% endif %}
+                <a href="{{ url_for('ressource.diplome_de_lecture_a_imprimer') }}" class="button is-link is-light has-text-weight-semibold" title="{{ _('Générer les diplômes de lecture pour les élèves') }}">
+                    <span class="icon has-text-warning-dark"><i class="fas fa-award"></i></span>
+                    <span>{{ _("Diplômes de lecture") }}</span>
+                </a>
                 <button class="button is-ghost has-text-danger showModal" href="#delete-archive-modal" title="{{ _('Supprimer cette archive') }}">
                     <span class="icon"><i class="fas fa-trash-alt"></i></span>
                 </button>
@@ -251,14 +259,48 @@
     </div>
 </div>
 
+<!-- Modal In-Situ : Bilan Annuel & Exports Excel -->
+<div id="modalPremiumArchive" class="modal">
+    <div class="modal-background" onclick="closeModal('modalPremiumArchive')"></div>
+    <div class="modal-card" style="border-radius: 14px; overflow: hidden; max-width: 520px;">
+        <header class="modal-card-head" style="background: #fef3c7;">
+            <p class="modal-card-title has-text-warning-dark">
+                <span class="icon mr-2"><i class="fas fa-crown"></i></span>
+                {{ _("Bilan annuel imprimable & Exports Excel") }}
+            </p>
+            <button class="delete" aria-label="close" onclick="closeModal('modalPremiumArchive')"></button>
+        </header>
+        <section class="modal-card-body">
+            <p class="mb-3" style="font-weight: 600; color: #1e293b;">
+                {{ _("Valorisez le travail de votre classe et conservez une trace pérenne de l'année écoulée.") }}
+            </p>
+            <p class="has-text-grey is-size-6 mb-3">
+                {{ _("L'impression du bilan officiel en PDF et l'export Excel complet (palmarès des lectures, podium des livres, statistiques par élève) sont inclus dans la formule complète.") }}
+            </p>
+            <div class="notification is-info is-light py-2 px-3 mb-0" style="border-radius: 8px; font-size: 0.82rem;">
+                <span class="icon is-small mr-1"><i class="fas fa-info-circle"></i></span>
+                <span>{{ _("Éligible au financement par la coopérative scolaire (OCCE), les crédits mairie ou votre budget de classe.") }}</span>
+            </div>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end;">
+            <button class="button is-light" onclick="closeModal('modalPremiumArchive')">{{ _("Fermer") }}</button>
+            <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-dark has-text-weight-bold">
+                <span class="icon"><i class="fas fa-bolt"></i></span>
+                <span>{{ _("Découvrir la formule complète") }}</span>
+            </a>
+        </footer>
+    </div>
+</div>
+
 <!-- Modal Suppression Archive -->
 <div id="delete-archive-modal" class="modal">
-    <div class="modal-background"></div>
+    <div class="modal-background" onclick="closeModal('delete-archive-modal')"></div>
     <div class="modal-card">
         <header class="modal-card-head">
             <p class="modal-card-title has-text-danger">
                 <i class="fas fa-exclamation-triangle mr-2"></i>{{ _("Supprimer l'archive %(year)s ?", year=archive.year_label) }}
             </p>
+            <button class="delete" aria-label="close" onclick="closeModal('delete-archive-modal')"></button>
         </header>
         <section class="modal-card-body">
             <p class="mb-3">
@@ -270,7 +312,7 @@
             </div>
         </section>
         <footer class="modal-card-foot is-justify-content-flex-end">
-            <button class="button closeModal">{{ _("Annuler") }}</button>
+            <button class="button closeModal" onclick="closeModal('delete-archive-modal')">{{ _("Annuler") }}</button>
             <form action="{{ url_for('archive.delete', archive_id=archive.id) }}" method="POST" style="display: inline;">
                 {% include 'utils/csrf.html' %}
                 <button type="submit" class="button is-danger has-text-weight-bold">
@@ -281,4 +323,27 @@
         </footer>
     </div>
 </div>
+
+<script>
+function openModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('is-active');
+}
+function closeModal(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('is-active');
+}
+document.querySelectorAll('.showModal').forEach(btn => {
+    btn.addEventListener('click', e => {
+        e.preventDefault();
+        const target = (btn.getAttribute('href') || btn.getAttribute('data-target') || '').replace('#', '');
+        if (target) openModal(target);
+    });
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.is-active').forEach(m => m.classList.remove('is-active'));
+    }
+});
+</script>
 {% endblock %}

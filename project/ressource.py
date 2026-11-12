@@ -2,12 +2,11 @@
 
 from flask import Blueprint, redirect, render_template, request, url_for
 from flask_babel import gettext as _
-from flask_login import current_user
+from flask_login import current_user, login_required
 from sqlalchemy import func
 
 from . import db
 from .models import Book, Loan, Student, Tags
-from .subscription import premium_required
 
 ressource = Blueprint("ressource", __name__)
 
@@ -137,7 +136,7 @@ def bingo():
 
 
 @ressource.route("/ressources/etiquettes")
-@premium_required
+@login_required
 def etiquettes():
     """Générateur de planches d'étiquettes de genres pour bacs et tranches."""
     user_tags = []
@@ -145,7 +144,11 @@ def etiquettes():
         user_tags = (
             Tags.query.filter_by(user_id=current_user.id).order_by(Tags.name).all()
         )
-    return render_template("ressources/etiquettes.html", user_tags=user_tags)
+    return render_template(
+        "ressources/etiquettes.html",
+        user_tags=user_tags,
+        is_premium_resource=True,
+    )
 
 
 @ressource.route("/ressources/fiche-de-lecture-a-imprimer")
@@ -162,7 +165,7 @@ def fiches_avis():
 
 
 @ressource.route("/ressources/codes-barres")
-@premium_required
+@login_required
 def codes_barres():
     """Générateur de planches de codes-barres (livres ou cartes élèves)."""
     books_list = []
@@ -180,6 +183,7 @@ def codes_barres():
         "ressources/codes_barres.html",
         books_list=books_list,
         students_list=students_list,
+        is_premium_resource=True,
     )
 
 

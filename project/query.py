@@ -5,7 +5,6 @@ query.py: This file contains all the queries to the database.
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import and_, case, func, or_, text
-from sqlalchemy.orm import aliased
 from sqlalchemy.sql import collate
 
 from . import db
@@ -311,8 +310,6 @@ def get_all_students_info(current_user_id) -> list:
         .subquery()
     )
 
-    last_loan_alias = aliased(Loan, last_loan_subquery)
-
     students = (
         db.session.query(
             Student,
@@ -325,7 +322,7 @@ def get_all_students_info(current_user_id) -> list:
             Loan, and_(Student.id == Loan.student_id, Loan.date_return.is_(None))
         )
         .outerjoin(Book, Loan.book_id == Book.id)
-        .outerjoin(last_loan_alias, Student.id == last_loan_alias.student_id)
+        .outerjoin(last_loan_subquery, Student.id == last_loan_subquery.c.student_id)
         .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
         .group_by(Student.id)
         .order_by(collate(Student.name, "NOCASE"), collate(Student.firstname, "NOCASE"))
@@ -348,8 +345,6 @@ def get_search_all_students_info(current_user_id, search) -> list:
         .subquery()
     )
 
-    last_loan_alias = aliased(Loan, last_loan_subquery)
-
     students = (
         db.session.query(
             Student,
@@ -371,7 +366,7 @@ def get_search_all_students_info(current_user_id, search) -> list:
             Loan, and_(Student.id == Loan.student_id, Loan.date_return.is_(None))
         )
         .outerjoin(Book, Loan.book_id == Book.id)
-        .outerjoin(last_loan_alias, Student.id == last_loan_alias.student_id)
+        .outerjoin(last_loan_subquery, Student.id == last_loan_subquery.c.student_id)
         .outerjoin(subquery_loan_count, Student.id == subquery_loan_count.c.student_id)
         .group_by(Student.id)
         .order_by(collate(Student.name, "NOCASE"), collate(Student.firstname, "NOCASE"))
@@ -1030,13 +1025,13 @@ Get the loans that match the search
 
 def search_loans_by_types(
     current_user_id,
-    actualy_loan,
-    search_type,
-    search_value,
-    sort,
-    sort_order,
-    n_books_by_page,
-    page,
+    actualy_loan="0",
+    search_type="all",
+    search_value="",
+    sort="Book.title",
+    sort_order="asc",
+    n_books_by_page=20,
+    page=1,
 ):
     query = db.session.query(Loan, Book, Student).filter(
         Book.user_id == current_user_id
@@ -1141,10 +1136,17 @@ def delete_unverified_users():
     )
 
     count = len(unverified_users)
+    if count == 0:
+        return 0
+
     for user in unverified_users:
         db.session.delete(user)
 
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise
     return count
 
 

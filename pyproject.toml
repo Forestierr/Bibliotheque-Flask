@@ -11,3 +11,25 @@ exclude = [
 [tool.ruff.lint]
 # Aucune règle n'est ignorée, code strictement vérifié
 
+[tool.coverage.run]
+branch = true
+omit = [
+    "project/test/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # Dépréciation issue de la bibliothèque externe Flask-Login (en attente de mise à jour upstream)
+    "ignore:datetime\\.datetime\\.utcnow\\(\\) is deprecated:DeprecationWarning:flask_login",
+    # Nettoyage des connexions SQLite :memory: par le GC sous Python 3.13
+    "ignore:unclosed database in <sqlite3.Connection:ResourceWarning",
+]
+
+
