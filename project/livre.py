@@ -999,6 +999,11 @@ def livre_duplique(id):
 @livre.route("/livre/<id>/edit-student", methods=["POST"])
 @login_required
 def livre_edit_student(id):
+    book = get_book_by_id(current_user.id, id)
+    if not book:
+        flash(_("Le livre que vous souhaitez modifier n'existe pas."), "error")
+        return redirect(url_for("livre.livre_db"))
+
     student_id = request.form.get("student_id")
 
     if not student_id:
@@ -1053,7 +1058,6 @@ def livre_edit_student(id):
             flash(_("Une erreur est survenue lors du prêt du livre."), "error")
             return redirect(url_for("livre.livre_infos", id=id))
 
-    book = get_book_by_id(current_user.id, id)
     student_name = f"{student.firstname} {student.name}".strip()
     flash(
         _(

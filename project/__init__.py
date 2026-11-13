@@ -84,6 +84,8 @@ logging.getLogger().addHandler(handler)
 def create_app(test_config=None):
     app = Flask(__name__)
 
+    is_prod = os.getenv("FLASK_ENV") == "production"
+
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
         "SQLALCHEMY_DATABASE_URI", "sqlite:///db.sqlite"
@@ -97,7 +99,6 @@ def create_app(test_config=None):
     app.config["MAIL_USE_SSL"] = True
 
     # Configuration de la durée et sécurité des sessions / cookies
-    is_prod = os.getenv("FLASK_ENV") == "production"
     app.config["SESSION_COOKIE_SECURE"] = is_prod
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
@@ -110,6 +111,24 @@ def create_app(test_config=None):
 
     if test_config:
         app.config.update(test_config)
+
+    # Sécurité en production (FND-07) : refuser la clé par défaut ou absente
+    if is_prod and not app.config.get("TESTING"):
+        effective_secret = app.config.get("SECRET_KEY")
+        if not effective_secret or effective_secret == "dev-secret-key":
+            raise RuntimeError(
+                "SECRET_KEY doit obligatoirement être configuré avec une valeur robuste et secrète en production (FLASK_ENV=production)."
+            )
+
+    # Avertissement anti-bot hCaptcha en production (FND-04)
+    if (
+        is_prod
+        and not app.config.get("TESTING")
+        and not os.getenv("HCAPTCHA_SECRET_KEY")
+    ):
+        logging.getLogger(__name__).warning(
+            "HCAPTCHA_SECRET_KEY non configuré en production (FLASK_ENV=production) : la vérification anti-bot est inactive."
+        )
 
     # Configuration optimisée du moteur de base de données pour la concurrence
     engine_options = dict(app.config.get("SQLALCHEMY_ENGINE_OPTIONS") or {})

@@ -1630,11 +1630,12 @@ def test_subscription_success_page_session_sync(client, app):
         sess["_user_id"] = "124"
 
     mock_session = {
+        "client_reference_id": "124",
         "payment_status": "paid",
         "status": "complete",
         "customer": "cus_synced_124",
         "subscription": "sub_synced_124",
-        "metadata": {"plan_type": "yearly"},
+        "metadata": {"plan_type": "yearly", "user_id": "124"},
     }
 
     with (

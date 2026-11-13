@@ -6,114 +6,166 @@
 {% block admin_header_subtitle %}Vue d'ensemble de tous les livres enregistrés par les enseignants sur la plateforme.{% endblock %}
 
 {% block admin_actions %}
-<div class="tags has-addons mb-0">
-  <span class="tag is-medium is-light">Total catalogue</span>
-  <span class="tag is-medium is-primary has-text-weight-bold">{{ total_books }}</span>
-</div>
+<span class="stat-card-badge is-neutral" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+  {{ total_books }} livre{% if total_books > 1 %}s{% endif %}
+</span>
 {% endblock %}
 
 {% block admin_content %}
-<div class="admin-card">
-  <!-- Barre de recherche -->
-  <form method="GET" action="{{ url_for('admin.livres') }}" class="mb-5">
-    <div class="field has-addons">
-      <div class="control has-icons-left is-expanded">
-        <input class="input is-rounded" type="text" name="q" value="{{ search_query or '' }}" placeholder="Rechercher par titre, auteur ou ISBN...">
-        <span class="icon is-small is-left">
-          <i class="fas fa-search"></i>
-        </span>
-      </div>
-      <div class="control">
-        <button type="submit" class="button is-primary is-rounded px-5">
-          <span>Rechercher</span>
-        </button>
-      </div>
-      {% if search_query %}
-        <div class="control ml-2">
-          <a href="{{ url_for('admin.livres') }}" class="button is-light is-rounded" title="Effacer la recherche">
-            <span class="icon is-small"><i class="fas fa-times"></i></span>
-          </a>
+<style>
+  .sortable-th {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+  .sortable-th:hover {
+    color: #475569 !important;
+  }
+  .sort-arrow {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.7rem;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    color: #94a3b8;
+  }
+  .sortable-th:hover .sort-arrow {
+    opacity: 0.4;
+  }
+  .sortable-th.is-sorted {
+    color: #0f172a !important;
+  }
+  .sortable-th.is-sorted .sort-arrow {
+    opacity: 1 !important;
+    color: #0f172a;
+    font-weight: 700;
+  }
+</style>
+
+<div class="admin-card" style="padding: 0 !important; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);">
+  <!-- Barre d'outils intégrée avec recherche instantanée/Entrée -->
+  <div style="padding: 0.85rem 1.25rem; border-bottom: 1px solid #f1f5f9;">
+    <form method="GET" action="{{ url_for('admin.livres') }}">
+      <div class="field mb-0">
+        <div class="control has-icons-left" style="position: relative; max-width: 480px;">
+          <input class="input is-rounded" type="text" name="q" value="{{ search_query or '' }}" placeholder="Rechercher par titre, auteur ou ISBN... (Entrée pour valider)" style="border-color: #e2e8f0; font-size: 0.82rem; height: 2.2rem; background: #f8fafc; padding-right: 2.5rem;">
+          <span class="icon is-small is-left" style="color: #94a3b8; font-size: 0.75rem;">
+            <i class="fas fa-search"></i>
+          </span>
+          {% if search_query %}
+            <a href="{{ url_for('admin.livres') }}" class="button is-small is-white is-rounded" style="position: absolute; right: 6px; top: 4px; height: 1.7rem; width: 1.7rem; padding: 0; border: none; color: #94a3b8;" title="Effacer la recherche">
+              <span class="icon is-small" style="font-size: 0.7rem;"><i class="fas fa-times"></i></span>
+            </a>
+          {% endif %}
         </div>
-      {% endif %}
-    </div>
-  </form>
+      </div>
+    </form>
+  </div>
 
   <!-- Table des livres -->
-  <div class="table-container">
-    <table class="table is-fullwidth is-hoverable" style="vertical-align: middle;">
+  <div class="table-container mb-0" style="overflow-x: auto;">
+    <table class="table is-fullwidth mb-0" style="border-collapse: collapse; min-width: 800px; vertical-align: middle;">
       <thead>
-        <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
-          <th style="width: 60px;">ID</th>
-          <th>LIVRE</th>
-          <th>GENRE / TYPE</th>
-          <th>ISBN / CODE-BARRES</th>
-          <th>ENSEIGNANT (PROPRIÉTAIRE)</th>
-          <th class="has-text-centered">EMPRUNTS</th>
+        <tr style="background: #fafbfd; border-bottom: 1px solid #f1f5f9;">
+          <th class="sortable-th" data-sort-col="title" style="padding: 0.75rem 1.25rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; width: 44%; min-width: 280px;">
+            Livre <span class="sort-arrow">↓</span>
+          </th>
+          <th style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; width: 22%;">ISBN / Code-barres</th>
+          <th class="sortable-th" data-sort-col="teacher" style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; width: 22%;">
+            Enseignant <span class="sort-arrow">↓</span>
+          </th>
+          <th style="padding: 0.75rem 1.25rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: right; text-transform: uppercase; width: 12%;">Disponibilité</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="booksTbody">
         {% for b in books %}
-          <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
-            <td class="has-text-grey-light is-size-7">#{{ b.id }}</td>
-            <td>
-              <div class="has-text-weight-bold" style="color: #0f172a;">{{ b.title or 'Sans titre' }}</div>
-              <div class="is-size-7 has-text-grey">
-                {% if b.author %}{{ b.author }}{% else %}Auteur inconnu{% endif %}
-                {% if b.editor %}&bull; {{ b.editor }}{% endif %}
-                {% if b.year %}&bull; ({{ b.year }}){% endif %}
+          <tr class="book-row"
+              data-title="{{ (b.title or '')|lower }}"
+              data-teacher="{{ (b.user.name or b.user.email or '')|lower if b.user else '' }}"
+              style="border-bottom: 1px solid #f8fafc;">
+            <!-- Titre, auteur, éditeur, type -->
+            <td style="padding: 0.85rem 1.25rem; vertical-align: middle;">
+              <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.85rem; line-height: 1.35;">
+                {{ b.title or 'Sans titre' }}
+              </div>
+              <div class="is-flex is-align-items-center is-flex-wrap-wrap mt-1" style="gap: 0.35rem; font-size: 0.75rem; color: #64748b;">
+                <span>{{ b.author or 'Auteur inconnu' }}</span>
+                {% if b.editor %}
+                  <span style="color: #cbd5e1;">&bull;</span>
+                  <span>{{ b.editor }}</span>
+                {% endif %}
+                {% if b.year %}
+                  <span style="color: #cbd5e1;">&bull;</span>
+                  <span>{{ b.year }}</span>
+                {% endif %}
+                {% if b.type %}
+                  <span class="tag is-rounded is-small ml-1" style="background: #f1f5f9; color: #475569; font-size: 0.68rem; height: 1.35rem; padding: 0 0.45rem; font-weight: 500;">
+                    {{ b.type }}
+                  </span>
+                {% endif %}
               </div>
             </td>
-            <td>
-              {% if b.type %}
-                <span class="tag is-light is-rounded is-small">{{ b.type }}</span>
-              {% else %}
-                <span class="has-text-grey-light is-size-7">-</span>
-              {% endif %}
-            </td>
-            <td>
+
+            <!-- ISBN ou Code-barres -->
+            <td style="padding: 0.85rem 0.75rem; vertical-align: middle;">
               {% if b.isbn %}
-                <code style="font-size: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 2px 6px;">{{ b.isbn }}</code>
+                <code style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.72rem; color: #475569; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; font-variant-numeric: tabular-nums;">
+                  {{ b.isbn }}
+                </code>
               {% elif b.barcode %}
-                <span class="is-size-7 has-text-grey"><i class="fas fa-barcode mr-1"></i>{{ b.barcode }}</span>
+                <span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.72rem; color: #64748b;">
+                  {{ b.barcode }}
+                </span>
               {% else %}
-                <span class="has-text-grey-light is-size-7">-</span>
+                <span style="color: #cbd5e1; font-size: 0.75rem;">—</span>
               {% endif %}
             </td>
-            <td>
+
+            <!-- Enseignant -->
+            <td style="padding: 0.85rem 0.75rem; vertical-align: middle;">
               {% if b.user %}
-                <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
-                  <div style="width: 26px; height: 26px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.65rem;">
+                <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
+                  <div style="width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; color: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.72rem; flex-shrink: 0; border: 1px solid #e2e8f0;">
                     {{ (b.user.name or b.user.email)[:2]|upper }}
                   </div>
-                  <div>
-                    <div class="has-text-weight-semibold is-size-7" style="color: #1e293b;">{{ b.user.name or 'Enseignant' }}</div>
-                    <div class="is-size-7 has-text-grey">{{ b.user.email }}</div>
+                  <div style="min-width: 0;">
+                    <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.8rem; line-height: 1.2;">
+                      {{ b.user.name or 'Enseignant' }}
+                    </div>
+                    <div style="font-size: 0.72rem; color: #64748b; margin-top: 1px;">
+                      {{ b.user.email }}
+                    </div>
                   </div>
                 </div>
               {% else %}
-                <span class="tag is-warning is-light is-small">Orphelin</span>
+                <span class="tag is-rounded is-small" style="background: #fffbeb; color: #b45309; font-size: 0.7rem;">Orphelin</span>
               {% endif %}
             </td>
-            <td class="has-text-centered">
+
+            <!-- Disponibilité / Emprunt -->
+            <td style="padding: 0.85rem 1.25rem; vertical-align: middle; text-align: right;">
               {% set active_loans = b.loans | selectattr('date_return', 'none') | list if b.loans else [] %}
               {% if active_loans | length > 0 %}
-                <span class="tag is-warning is-light is-rounded is-small" title="Actuellement emprunté">
-                  <i class="fas fa-clock mr-1"></i> En prêt
+                <span class="tag is-rounded is-small" style="background: #fffbeb; color: #b45309; font-size: 0.7rem; font-weight: 500;" title="Actuellement emprunté">
+                  En prêt
                 </span>
               {% else %}
-                <span class="tag is-success is-light is-rounded is-small" title="Disponible dans la bibliothèque">
-                  <i class="fas fa-check mr-1"></i> Dispo
+                <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-size: 0.7rem; font-weight: 500;" title="Disponible dans la bibliothèque">
+                  Disponible
                 </span>
               {% endif %}
             </td>
           </tr>
         {% else %}
           <tr>
-            <td colspan="6" class="has-text-centered py-6">
-              <span class="icon is-large has-text-grey-light"><i class="fas fa-book-open fa-3x"></i></span>
-              <p class="has-text-grey mt-3">Aucun livre trouvé{% if search_query %} pour « {{ search_query }} »{% endif %}.</p>
+            <td colspan="4" class="has-text-centered py-6">
+              <span class="icon is-medium has-text-grey-light mb-2"><i class="fas fa-book-open fa-lg"></i></span>
+              <p class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.85rem;">Aucun livre trouvé{% if search_query %} pour « {{ search_query }} »{% endif %}</p>
               {% if search_query %}
-                <a href="{{ url_for('admin.livres') }}" class="button is-small is-light mt-2">Réinitialiser le filtre</a>
+                <a href="{{ url_for('admin.livres') }}" class="button is-small is-white is-rounded mt-2" style="border: 1px solid #e2e8f0; font-size: 0.72rem;">Réinitialiser la recherche</a>
               {% endif %}
             </td>
           </tr>
@@ -123,10 +175,56 @@
   </div>
 
   {% if books|length >= 100 %}
-    <div class="notification is-light is-size-7 mt-4" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-      <span class="icon has-text-info mr-1"><i class="fas fa-info-circle"></i></span>
+    <div style="padding: 0.75rem 1.25rem; background: #fafbfd; border-top: 1px solid #f1f5f9; font-size: 0.72rem; color: #64748b;">
+      <span class="icon is-small has-text-grey mr-1" style="font-size: 0.65rem;"><i class="fas fa-info-circle"></i></span>
       Affichage limité aux 100 premiers résultats pour optimiser les performances. Utilisez la recherche pour filtrer un livre spécifique.
     </div>
   {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let currentSortCol = null;
+  let currentSortDir = 'asc';
+
+  function sortBooks(column) {
+    const tbody = document.getElementById('booksTbody');
+    if (!tbody) return;
+
+    if (currentSortCol === column) {
+      currentSortDir = (currentSortDir === 'asc') ? 'desc' : 'asc';
+    } else {
+      currentSortCol = column;
+      currentSortDir = 'asc';
+    }
+
+    document.querySelectorAll('.sortable-th').forEach(th => {
+      const col = th.dataset.sortCol;
+      const arrow = th.querySelector('.sort-arrow');
+      if (col === currentSortCol) {
+        th.classList.add('is-sorted');
+        if (arrow) arrow.textContent = currentSortDir === 'asc' ? '↑' : '↓';
+      } else {
+        th.classList.remove('is-sorted');
+        if (arrow) arrow.textContent = '↓';
+      }
+    });
+
+    const rowsArray = Array.from(tbody.querySelectorAll('.book-row'));
+    rowsArray.sort((rowA, rowB) => {
+      const valA = (rowA.dataset[currentSortCol] || '').toLowerCase();
+      const valB = (rowB.dataset[currentSortCol] || '').toLowerCase();
+      return currentSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    });
+
+    rowsArray.forEach(row => tbody.appendChild(row));
+  }
+
+  document.querySelectorAll('.sortable-th').forEach(th => {
+    th.addEventListener('click', () => {
+      sortBooks(th.dataset.sortCol);
+    });
+  });
+});
+</script>
 {% endblock %}

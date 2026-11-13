@@ -2,94 +2,122 @@
 
 {% block admin_title %}Paramètres du Système - Administration{% endblock %}
 
-{% block admin_header_title %}Paramètres & Configuration Système{% endblock %}
+{% block admin_header_title %}Paramètres &amp; Configuration Système{% endblock %}
 {% block admin_header_subtitle %}Vue d'ensemble de l'infrastructure, des intégrations externes et des règles freemium.{% endblock %}
+
+{% block admin_actions %}
+<a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 500; color: #0f172a; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+  <span class="icon is-small mr-1" style="color: #635bff;"><i class="fab fa-stripe-s"></i></span>
+  <span>Dashboard Stripe</span>
+  <span class="icon is-small ml-1" style="font-size: 0.65rem; color: #94a3b8;"><i class="fas fa-external-link-alt"></i></span>
+</a>
+{% endblock %}
 
 {% block admin_content %}
 <div class="columns is-multiline">
   <!-- Carte 1: État des Services & Intégrations -->
   <div class="column is-12-tablet is-6-desktop">
     <div class="admin-card h-100">
-      <h2 class="title is-5 mb-4" style="font-weight: 700; color: #1e293b;">
-        <span class="icon is-small has-text-primary mr-2"><i class="fas fa-server"></i></span>
-        Intégrations & Services
+      <h2 class="title is-6 mb-4" style="font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.04em;">
+        Intégrations &amp; Services
       </h2>
 
-      <div class="is-flex is-align-items-center is-justify-content-space-between p-3 mb-3" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <!-- Stripe -->
+      <div class="is-flex is-align-items-center is-justify-content-space-between p-3 mb-3" style="background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
         <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
-          <span class="icon has-text-primary"><i class="fab fa-stripe fa-2x"></i></span>
+          <span class="icon has-text-grey" style="font-size: 1.1rem;"><i class="fab fa-stripe fa-lg"></i></span>
           <div>
-            <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.9rem;">Passerelle Stripe</div>
-            <div class="is-size-7 has-text-grey">Paiements par abonnement & coupons</div>
+            <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.88rem;">Passerelle Stripe</div>
+            <div class="is-size-7 has-text-grey">Paiements par abonnement &amp; facturation</div>
           </div>
         </div>
         <div>
           {% if system_info.stripe_configured %}
-            <span class="tag is-success is-light is-rounded has-text-weight-semibold">
+            <span class="tag is-rounded has-text-weight-semibold" style="background: #ecfdf5; color: #059669; font-size: 0.72rem;">
               <i class="fas fa-check-circle mr-1"></i> Connecté
             </span>
           {% else %}
-            <span class="tag is-danger is-light is-rounded has-text-weight-semibold">
+            <span class="tag is-rounded has-text-weight-semibold" style="background: #fffbeb; color: #b45309; font-size: 0.72rem;">
               <i class="fas fa-exclamation-circle mr-1"></i> Non configuré
             </span>
           {% endif %}
         </div>
       </div>
 
-      <div class="is-flex is-align-items-center is-justify-content-space-between p-3 mb-3" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <!-- Serveur SMTP -->
+      <div class="is-flex is-align-items-center is-justify-content-space-between p-3 mb-3" style="background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
         <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
-          <span class="icon has-text-link"><i class="fas fa-envelope fa-lg"></i></span>
+          <span class="icon has-text-grey" style="font-size: 1.1rem;"><i class="fas fa-envelope"></i></span>
           <div>
-            <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.9rem;">Serveur SMTP (E-mails)</div>
-            <div class="is-size-7 has-text-grey">Vérification de compte & newsletters</div>
+            <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.88rem;">Serveur SMTP (E-mails)</div>
+            <div class="is-size-7 has-text-grey">Vérification de compte &amp; newsletters</div>
           </div>
         </div>
         <div>
           {% if system_info.mail_configured %}
-            <span class="tag is-success is-light is-rounded has-text-weight-semibold">
+            <span class="tag is-rounded has-text-weight-semibold" style="background: #ecfdf5; color: #059669; font-size: 0.72rem;">
               <i class="fas fa-check-circle mr-1"></i> Configuré
             </span>
           {% else %}
-            <span class="tag is-warning is-light is-rounded has-text-weight-semibold">
-              <i class="fas fa-exclamation-triangle mr-1"></i> En sommeil
+            <span class="tag is-rounded is-light has-text-weight-semibold" style="font-size: 0.72rem; color: #64748b;">
+              <i class="fas fa-pause-circle mr-1"></i> En sommeil
             </span>
           {% endif %}
         </div>
       </div>
 
-      <div class="is-flex is-align-items-center is-justify-content-space-between p-3 mb-3" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-        <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
-          <span class="icon has-text-info"><i class="fas fa-database fa-lg"></i></span>
-          <div>
-            <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.9rem;">Base de Données</div>
-            <div class="is-size-7 has-text-grey" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-              {{ system_info.database }}
+      <!-- Base de Données & Sauvegarde (Skymetrics, 0 overflow) -->
+      <div class="p-3 mb-4" style="background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+        <div class="is-flex is-align-items-center is-justify-content-space-between mb-2 is-flex-wrap-wrap" style="gap: 0.5rem;">
+          <div class="is-flex is-align-items-center" style="gap: 0.75rem; min-width: 0;">
+            <span class="icon has-text-grey" style="font-size: 1.1rem;"><i class="fas fa-database"></i></span>
+            <div style="min-width: 0;">
+              <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.88rem;">Base de Données</div>
+              <div class="is-size-7 has-text-grey" style="font-weight: 500;">
+                {{ system_info.database }}
+              </div>
             </div>
           </div>
+          <div>
+            <span class="tag is-rounded has-text-weight-semibold" style="background: #ecfdf5; color: #059669; font-size: 0.72rem;">
+              <i class="fas fa-check-circle mr-1"></i> Opérationnelle
+            </span>
+          </div>
         </div>
-        <div>
-          <span class="tag is-success is-light is-rounded has-text-weight-semibold">
-            <i class="fas fa-check-circle mr-1"></i> Opérationnelle
-          </span>
+
+        <div class="is-flex is-align-items-center is-justify-content-space-between pt-2 is-flex-wrap-wrap" style="border-top: 1px solid #f1f5f9; gap: 0.5rem;">
+          <div class="is-size-7 has-text-grey">
+            <span class="icon is-small mr-1" style="font-size: 0.65rem;"><i class="far fa-clock"></i></span>
+            {% if system_info.last_backup_date %}
+              Dernière sauvegarde : <strong style="color: #0f172a;">{{ system_info.last_backup_date }}</strong>
+            {% else %}
+              Dernière sauvegarde : <em>Aucune sauvegarde enregistrée</em>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('admin.backup_db') }}" class="button is-small is-rounded" style="background: #0f172a; color: #ffffff; font-size: 0.72rem; font-weight: 500;" title="Télécharger un instantané SQLite (.db)">
+            <span class="icon is-small mr-1"><i class="fas fa-download"></i></span>
+            <span>Sauvegarde (.db)</span>
+          </a>
         </div>
       </div>
 
-      <h3 class="title is-6 mt-4 mb-2" style="font-weight: 700; color: #64748b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em;">
+      <!-- Versions logicielles -->
+      <h3 class="title is-7 mt-4 mb-2" style="font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">
         Versions Logicielles
       </h3>
       <table class="table is-fullwidth is-narrow is-size-7" style="background: transparent;">
         <tbody>
           <tr>
-            <td class="has-text-grey">Python</td>
-            <td class="has-text-weight-semibold has-text-right">{{ system_info.python_version }}</td>
+            <td class="has-text-grey" style="border-bottom: 1px solid #f8fafc;">Python</td>
+            <td class="has-text-weight-semibold has-text-right" style="color: #0f172a; border-bottom: 1px solid #f8fafc;">{{ system_info.python_version }}</td>
           </tr>
           <tr>
-            <td class="has-text-grey">Flask</td>
-            <td class="has-text-weight-semibold has-text-right">{{ system_info.flask_version }}</td>
+            <td class="has-text-grey" style="border-bottom: 1px solid #f8fafc;">Flask</td>
+            <td class="has-text-weight-semibold has-text-right" style="color: #0f172a; border-bottom: 1px solid #f8fafc;">{{ system_info.flask_version }}</td>
           </tr>
           <tr>
-            <td class="has-text-grey">Stripe SDK (Python)</td>
-            <td class="has-text-weight-semibold has-text-right">{{ system_info.stripe_sdk_version }}</td>
+            <td class="has-text-grey" style="border-bottom: none;">Stripe SDK (Python)</td>
+            <td class="has-text-weight-semibold has-text-right" style="color: #0f172a; border-bottom: none;">{{ system_info.stripe_sdk_version }}</td>
           </tr>
         </tbody>
       </table>
@@ -99,39 +127,38 @@
   <!-- Carte 2: Configuration Freemium & Quotas -->
   <div class="column is-12-tablet is-6-desktop">
     <div class="admin-card h-100">
-      <h2 class="title is-5 mb-4" style="font-weight: 700; color: #1e293b;">
-        <span class="icon is-small has-text-warning mr-2"><i class="fas fa-coins"></i></span>
-        Constantes Freemium & Abonnements
+      <h2 class="title is-6 mb-3" style="font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.04em;">
+        Constantes Freemium &amp; Abonnements
       </h2>
 
-      <div class="notification is-light mb-4 p-3" style="background: #fdf6ec; border: 1px solid #fed7aa; border-radius: 12px; font-size: 0.8rem; color: #9a3412;">
-        <i class="fas fa-info-circle mr-1"></i> Ces constantes sont définies dans <code>project/config_plans.py</code>. Elles s'appliquent automatiquement à tous les utilisateurs du forfait Gratuit (Free).
-      </div>
+      <p class="is-size-7 has-text-grey mb-4" style="line-height: 1.45;">
+        Ces constantes sont définies dans <code>project/config_plans.py</code>. Elles s'appliquent automatiquement à tous les utilisateurs du forfait Gratuit (Free).
+      </p>
 
-      <div class="columns is-multiline is-mobile">
+      <div class="columns is-multiline is-mobile mb-2">
         <div class="column is-6">
-          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff;">
             <div class="is-size-7 has-text-grey">Élèves max gratuits</div>
             <div class="title is-4 mb-0" style="color: #0f172a; font-weight: 700;">{{ system_info.max_free_students }}</div>
             <div class="is-size-7 has-text-grey-light">par classe</div>
           </div>
         </div>
         <div class="column is-6">
-          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff;">
             <div class="is-size-7 has-text-grey">Livres max gratuits</div>
             <div class="title is-4 mb-0" style="color: #0f172a; font-weight: 700;">{{ system_info.max_free_books }}</div>
             <div class="is-size-7 has-text-grey-light">dans le catalogue</div>
           </div>
         </div>
         <div class="column is-6">
-          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff;">
             <div class="is-size-7 has-text-grey">Scans codes-barres gratuits</div>
             <div class="title is-4 mb-0" style="color: #0f172a; font-weight: 700;">{{ system_info.max_free_scans }}</div>
-            <div class="is-size-7 has-text-grey-light">total à vie du compte</div>
+            <div class="is-size-7 has-text-grey-light">par semaine (dimanche)</div>
           </div>
         </div>
         <div class="column is-6">
-          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+          <div class="p-3" style="border: 1px solid #e2e8f0; border-radius: 8px; background: #ffffff;">
             <div class="is-size-7 has-text-grey">Historique visible gratuit</div>
             <div class="title is-4 mb-0" style="color: #0f172a; font-weight: 700;">{{ system_info.free_history_months }} mois</div>
             <div class="is-size-7 has-text-grey-light">au-delà : flou bienveillant</div>
@@ -139,39 +166,21 @@
         </div>
       </div>
 
-      <div class="mt-4 pt-3" style="border-top: 1px solid #f1f5f9;">
-        <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
+      <div class="pt-3" style="border-top: 1px solid #f1f5f9;">
+        <div class="is-flex is-align-items-center is-justify-content-space-between py-2" style="border-bottom: 1px solid #f8fafc;">
           <span class="is-size-7 has-text-grey">Tarification Mensuelle :</span>
-          <span class="tag is-success is-light has-text-weight-bold">{{ "%.2f"|format(system_info.price_monthly) }} CHF / mois</span>
+          <span style="font-weight: 700; color: #0f172a; font-size: 0.88rem; font-variant-numeric: tabular-nums;">
+            {{ "%.2f"|format(system_info.price_monthly) }} CHF / mois
+          </span>
         </div>
-        <div class="is-flex is-align-items-center is-justify-content-space-between">
+        <div class="is-flex is-align-items-center is-justify-content-space-between py-2">
           <span class="is-size-7 has-text-grey">Tarification Annuelle :</span>
-          <span class="tag is-success is-light has-text-weight-bold">{{ "%.2f"|format(system_info.price_yearly) }} CHF / an</span>
+          <span style="font-weight: 700; color: #0f172a; font-size: 0.88rem; font-variant-numeric: tabular-nums;">
+            {{ "%.2f"|format(system_info.price_yearly) }} CHF / an
+          </span>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Liens & Actions Système -->
-<div class="admin-card mt-4">
-  <h2 class="title is-6 mb-3" style="font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">
-    Accès Externes Rapides
-  </h2>
-  <div class="buttons">
-    <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer" class="button is-light" style="border: 1px solid #e2e8f0; border-radius: 8px;">
-      <span class="icon has-text-primary"><i class="fab fa-stripe"></i></span>
-      <span>Dashboard Stripe</span>
-      <span class="icon is-small ml-1"><i class="fas fa-external-link-alt fa-xs"></i></span>
-    </a>
-    <a href="{{ url_for('admin.coupons') }}" class="button is-light" style="border: 1px solid #e2e8f0; border-radius: 8px;">
-      <span class="icon has-text-info"><i class="fas fa-ticket-alt"></i></span>
-      <span>Gestion des Codes Promo</span>
-    </a>
-    <a href="{{ url_for('admin.users') }}" class="button is-light" style="border: 1px solid #e2e8f0; border-radius: 8px;">
-      <span class="icon has-text-warning"><i class="fas fa-users-cog"></i></span>
-      <span>Gestion des Formules Utilisateurs</span>
-    </a>
   </div>
 </div>
 {% endblock %}

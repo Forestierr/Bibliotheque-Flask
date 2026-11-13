@@ -6,430 +6,665 @@
 {% block admin_header_subtitle %}Vue d'ensemble de l'activité, métriques clés et tendances de la plateforme.{% endblock %}
 
 {% block admin_actions %}
-<div class="buttons">
-  <a href="{{ url_for('admin.users') }}" class="button is-small is-light" style="border: 1px solid #cbd5e1; border-radius: 8px;">
-    <span class="icon is-small"><i class="fas fa-users"></i></span>
-    <span>Gérer les Utilisateurs</span>
+<div class="is-flex is-align-items-center" style="gap: 0.5rem; flex-wrap: wrap;">
+  <!-- Sélecteur de période unifié style Skymetrics -->
+  <div class="buttons has-addons mb-0" style="box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+    <a href="{{ url_for('admin.index', range='7d') }}" class="button is-small {% if selected_range == '7d' %}is-dark is-selected has-text-weight-bold{% else %}is-white{% endif %}" style="font-size: 0.72rem; border-color: #e2e8f0; padding: 0.25rem 0.6rem;">7j</a>
+    <a href="{{ url_for('admin.index', range='30d') }}" class="button is-small {% if selected_range == '30d' %}is-dark is-selected has-text-weight-bold{% else %}is-white{% endif %}" style="font-size: 0.72rem; border-color: #e2e8f0; padding: 0.25rem 0.6rem;">30j</a>
+    <a href="{{ url_for('admin.index', range='12w') }}" class="button is-small {% if selected_range == '12w' %}is-dark is-selected has-text-weight-bold{% else %}is-white{% endif %}" style="font-size: 0.72rem; border-color: #e2e8f0; padding: 0.25rem 0.6rem;">12 sem.</a>
+    <a href="{{ url_for('admin.index', range='12m') }}" class="button is-small {% if selected_range == '12m' %}is-dark is-selected has-text-weight-bold{% else %}is-white{% endif %}" style="font-size: 0.72rem; border-color: #e2e8f0; padding: 0.25rem 0.6rem;">12 mois</a>
+  </div>
+
+  <!-- Interrupteur global « Exclure les comptes de test » -->
+  <a href="{{ url_for('admin.index', range=selected_range, exclude_tests=0 if exclude_tests else 1) }}"
+     class="button is-small is-rounded {% if exclude_tests %}is-dark{% else %}is-white{% endif %}"
+     style="border: 1px solid #e2e8f0; font-size: 0.75rem; font-weight: 500;"
+     title="Exclure ou inclure les comptes de test (ex: tests internes) des statistiques et graphiques">
+    <span class="icon is-small mr-1" style="font-size: 0.65rem;">
+      {% if exclude_tests %}<i class="fas fa-check"></i>{% else %}<i class="far fa-circle"></i>{% endif %}
+    </span>
+    <span>Masquer tests</span>
+    {% if test_users_count > 0 %}
+      <span class="tag is-rounded is-small ml-1" style="font-size: 0.65rem; height: 1.25rem; padding: 0 5px; {% if exclude_tests %}background: #334155; color: #f8fafc;{% else %}background: #f1f5f9; color: #64748b;{% endif %}">
+        {{ test_users_count }}
+      </span>
+    {% endif %}
   </a>
-  <a href="{{ url_for('admin.emails') }}" class="button is-small is-primary" style="border-radius: 8px; font-weight: 600;">
-    <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
-    <span>Envoyer une Newsletter</span>
+
+  <!-- Raccourci Newsletter -->
+  <a href="{{ url_for('admin.emails') }}" class="button is-small is-rounded is-dark" style="font-size: 0.75rem; font-weight: 500;">
+    <span class="icon is-small mr-1" style="font-size: 0.7rem;"><i class="fas fa-paper-plane"></i></span>
+    <span>Newsletter</span>
   </a>
 </div>
 {% endblock %}
 
 {% block admin_content %}
-<!-- 4 Cartes Métriques Clés -->
-<div class="columns is-multiline mb-5">
-  <!-- Carte 1: Utilisateurs Totaux -->
-  <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Utilisateurs</span>
-        <span class="icon" style="background: rgba(0, 209, 178, 0.14); color: #008774; border-radius: 8px; width: 36px; height: 36px;">
-          <i class="fas fa-users"></i>
-        </span>
-      </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.total_users }}</div>
-      <p class="is-size-7 has-text-grey">
-        <span class="has-text-success has-text-weight-semibold">{{ stats.active_users }}</span> vérifiés &bull;
-        <span class="has-text-warning has-text-weight-semibold">{{ stats.unconfirmed_users }}</span> en attente
-      </p>
-      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
-        <a href="{{ url_for('admin.users') }}" class="is-size-7 has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px; color: #008774;">
-          <span>Consulter le répertoire</span>
-          <i class="fas fa-arrow-right is-size-7"></i>
+<style>
+  /* Bannière discrète d'action requise (uniquement affichée si > 0) */
+  .action-banner {
+    background: #ffffff;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .action-banner-link {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #0f172a;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    padding: 0.25rem 0.6rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+  .action-banner-link:hover {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+  }
+
+  /* Table Avatar épuré */
+  .user-avatar-initials {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  .chart-card-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .chart-card-sub {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+
+  /* Onglets pilules de métriques style Skymetrics */
+  .activity-pill-btn {
+    border: none;
+    background: transparent;
+    border-radius: 9999px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    line-height: 1.2;
+  }
+  .activity-pill-btn:hover {
+    color: #0f172a;
+  }
+  .activity-pill-btn.is-active {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+  .activity-pill-btn .pill-counter {
+    font-size: 0.68rem;
+    opacity: 0.8;
+  }
+
+  /* Tables fixes strictes sans débordement */
+  .admin-compact-table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .admin-compact-table th {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 600;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 0.5rem 0.4rem !important;
+  }
+  .admin-compact-table td {
+    padding: 0.55rem 0.4rem !important;
+    border-bottom: 1px solid #f8fafc !important;
+    vertical-align: middle;
+  }
+</style>
+
+<!-- 1. BLOC « À TRAITER » (0 pixel gaspillé si tout va bien) -->
+{% if to_process and to_process.total > 0 %}
+  <div class="action-banner">
+    <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
+      <span class="icon is-small has-text-danger"><i class="fas fa-exclamation-circle"></i></span>
+      <span style="font-size: 0.82rem; font-weight: 600; color: #991b1b;">
+        À traiter ({{ to_process.total }}) :
+      </span>
+    </div>
+    <div class="is-flex is-align-items-center" style="gap: 0.4rem; flex-wrap: wrap;">
+      {% if to_process.feedbacks > 0 %}
+        <a href="{{ url_for('admin.feedbacks', status='nouveau') }}" class="action-banner-link">
+          <span>{{ to_process.feedbacks }} nouveau(x) retour(s)</span>
+          <span class="icon is-small" style="font-size: 0.6rem;"><i class="fas fa-arrow-right"></i></span>
         </a>
-      </div>
+      {% endif %}
+      {% if to_process.max_scans > 0 %}
+        <a href="{{ url_for('admin.users', scans='max') }}" class="action-banner-link">
+          <span>{{ to_process.max_scans }} compte(s) à 30/30 scans</span>
+          <span class="icon is-small" style="font-size: 0.6rem;"><i class="fas fa-arrow-right"></i></span>
+        </a>
+      {% endif %}
+      {% if to_process.expiring_trials > 0 %}
+        <a href="{{ url_for('admin.users', trial='expiring') }}" class="action-banner-link">
+          <span>{{ to_process.expiring_trials }} essai(s) expirant &le; 7j</span>
+          <span class="icon is-small" style="font-size: 0.6rem;"><i class="fas fa-arrow-right"></i></span>
+        </a>
+      {% endif %}
     </div>
   </div>
+{% endif %}
 
-  <!-- Carte 2: Formules & Membres Premium -->
+<!-- 2. RANGÉE KPI 1 : ACTIVITÉ & USAGE -->
+<div class="columns is-multiline mb-3">
+  <!-- KPI 1 : Utilisateurs -->
   <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Abonnements</span>
-        <span class="icon has-text-warning" style="background: rgba(234, 179, 8, 0.12); border-radius: 8px; width: 36px; height: 36px;">
-          <i class="fas fa-crown"></i>
-        </span>
+    <a href="{{ url_for('admin.users') }}" class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">Utilisateurs</span>
+          {% if stats.signups_weekly_trend is not none and stats.signups_weekly_trend != 0 %}
+            {% if stats.signups_weekly_trend > 0 %}
+              <span class="stat-card-badge is-positive">+{{ stats.signups_weekly_trend }}%</span>
+            {% else %}
+              <span class="stat-card-badge is-negative">{{ stats.signups_weekly_trend }}%</span>
+            {% endif %}
+          {% else %}
+            <span class="stat-card-badge is-neutral">Total</span>
+          {% endif %}
+        </div>
+        <div class="stat-card-value">{{ stats.total_users }}</div>
       </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.paying_or_founder_users }}</div>
-      <p class="is-size-7 has-text-grey">
-        <span class="tag is-success is-light is-rounded is-small py-0 px-2" style="font-size: 0.65rem;">{{ stats.premium_users }} Premium</span>
-        <span class="tag is-warning is-light is-rounded is-small py-0 px-2" style="font-size: 0.65rem;">{{ stats.founder_users }} Fondateurs</span>
-        <span class="tag is-info is-light is-rounded is-small py-0 px-2" style="font-size: 0.65rem;">{{ stats.trial_users }} Essai</span>
-      </p>
-      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
-        <a href="{{ url_for('admin.users', plan='premium') }}" class="is-size-7 has-text-warning-dark has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px;">
-          <span>Filtrer les premiums</span>
-          <i class="fas fa-arrow-right is-size-7"></i>
-        </a>
-      </div>
-    </div>
+      <div class="stat-card-sub">{{ stats.active_users }} vérifiés sur {{ stats.total_users }}</div>
+    </a>
   </div>
 
-  <!-- Carte 3: Livres & Bibliothèque -->
+  <!-- KPI 2 : Abonnements -->
   <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Catalogue Global</span>
-        <span class="icon has-text-info" style="background: rgba(14, 165, 233, 0.1); border-radius: 8px; width: 36px; height: 36px;">
-          <i class="fas fa-book-open"></i>
-        </span>
+    <a href="{{ url_for('admin.users', plan='paying') }}" class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">Abonnements</span>
+          <span class="stat-card-badge is-neutral">{{ stats.premium_users }} premium</span>
+        </div>
+        <div class="stat-card-value">{{ stats.paying_or_founder_users }}</div>
       </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.total_books }}</div>
-      <p class="is-size-7 has-text-grey">
-        <span class="has-text-weight-semibold">{{ stats.total_students }}</span> élèves &bull;
-        <span class="has-text-weight-semibold">{{ stats.total_loans }}</span> prêts enregistrés
-      </p>
-      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
-        <a href="{{ url_for('admin.livres') }}" class="is-size-7 has-text-info has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px;">
-          <span>Explorer les livres</span>
-          <i class="fas fa-arrow-right is-size-7"></i>
-        </a>
-      </div>
-    </div>
+      <div class="stat-card-sub">{{ stats.trial_users }} en essai &bull; {{ stats.founder_users }} fondateurs</div>
+    </a>
   </div>
 
-  <!-- Carte 4: Communication & Retours -->
+  <!-- KPI 3 : Taux d'Activation -->
   <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Audience & Support</span>
-        <span class="icon has-text-danger" style="background: rgba(239, 68, 68, 0.1); border-radius: 8px; width: 36px; height: 36px;">
-          <i class="fas fa-comment-dots"></i>
-        </span>
+    <a href="{{ url_for('admin.users', activated='1') }}" class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">Activation</span>
+          <span class="is-sr-only">Taux d'Activation</span>
+          <span class="stat-card-badge is-positive">{{ stats.activated_users }}/{{ stats.total_users }}</span>
+        </div>
+        <div class="stat-card-value">{{ "%.1f"|format(stats.activation_rate) }}%</div>
       </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">{{ stats.newsletter_subscribers }}</div>
-      <p class="is-size-7 has-text-grey">
-        abonnés newsletter &bull;
-        <span class="{% if stats.new_feedbacks > 0 %}has-text-danger has-text-weight-bold{% else %}has-text-grey{% endif %}">
-          {{ stats.new_feedbacks }} ticket(s) en attente
-        </span>
-      </p>
-      <div class="mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
-        <a href="{{ url_for('admin.feedbacks') }}" class="is-size-7 has-text-danger has-text-weight-semibold is-flex is-align-items-center" style="gap: 4px;">
-          <span>Consulter les retours</span>
-          <i class="fas fa-arrow-right is-size-7"></i>
-        </a>
+      <div class="stat-card-sub">Inscrits avec &ge; 1 livre ou scan</div>
+    </a>
+  </div>
+
+  <!-- KPI 4 : Catalogue Global -->
+  <div class="column is-6-tablet is-3-desktop">
+    <a href="{{ url_for('admin.livres') }}" class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">Catalogue</span>
+          <span class="is-sr-only">Catalogue Global</span>
+          <span class="stat-card-badge is-neutral">{{ stats.total_loans }} prêts</span>
+        </div>
+        <div class="stat-card-value">{{ stats.total_books }}</div>
       </div>
-    </div>
+      <div class="stat-card-sub">{{ stats.total_students }} élèves rattachés</div>
+    </a>
   </div>
 </div>
 
-<!-- SECTION REVENUS & PERFORMANCE DES ABONNEMENTS -->
-<div class="is-flex is-align-items-center is-justify-content-space-between mb-4 mt-5">
-  <div>
-    <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
-      <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-wallet"></i></span>
-      Revenus & Performance des Abonnements
-    </h2>
-    <p class="is-size-7 has-text-grey">Indicateurs financiers récurrents (MRR/ARR) et souscriptions en cours</p>
-  </div>
-  {% if financial_stats.stripe_connected %}
-    <span class="tag is-success is-light is-rounded has-text-weight-semibold" style="border: 1px solid #bbf7d0;">
-      <span class="icon is-small mr-1"><i class="fab fa-stripe has-text-info"></i></span>
-      Stripe Actif &bull; {{ financial_stats.currency }}
-    </span>
-  {% else %}
-    <span class="tag is-light is-rounded has-text-weight-semibold" style="border: 1px solid #e2e8f0; color: #64748b;">
-      <span class="icon is-small mr-1"><i class="fas fa-database"></i></span>
-      Base locale &bull; {{ financial_stats.currency }}
-    </span>
-  {% endif %}
-</div>
-
-<!-- 4 Cartes Métriques Financières -->
-<div class="columns is-multiline mb-5">
+<!-- 3. RANGÉE KPI 2 : REVENUS & PERFORMANCE FINANCIÈRE -->
+<div class="columns is-multiline mb-4">
   <!-- MRR -->
   <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card" style="border-top: 3px solid #00b89c;">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">MRR (Mensuel)</span>
-        <span class="icon" style="background: rgba(0, 184, 156, 0.12); color: #008774; border-radius: 8px; width: 34px; height: 34px;">
-          <i class="fas fa-coins"></i>
-        </span>
+    <div class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">MRR</span>
+          <span class="is-sr-only">MRR (Mensuel)</span>
+          <span class="stat-card-badge is-neutral">{{ financial_stats.currency }}</span>
+        </div>
+        <div class="stat-card-value">
+          {{ "%.2f"|format(financial_stats.mrr) }}
+        </div>
       </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
-        {{ "%.2f"|format(financial_stats.mrr) }} <span class="is-size-6 has-text-grey">{{ financial_stats.currency }}</span>
-      </div>
-      <p class="is-size-7 has-text-grey">
-        Revenu récurrent mensuel normalisé
-      </p>
+      <div class="stat-card-sub">Revenu mensuel récurrent</div>
     </div>
   </div>
 
   <!-- ARR -->
   <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card" style="border-top: 3px solid #3b82f6;">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">ARR (Annuel)</span>
-        <span class="icon" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border-radius: 8px; width: 34px; height: 34px;">
-          <i class="fas fa-chart-line"></i>
-        </span>
+    <div class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">ARR</span>
+          <span class="is-sr-only">ARR (Annuel)</span>
+          <span class="stat-card-badge is-neutral">&times;12</span>
+        </div>
+        <div class="stat-card-value">
+          {{ "%.2f"|format(financial_stats.arr) }}
+        </div>
       </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
-        {{ "%.2f"|format(financial_stats.arr) }} <span class="is-size-6 has-text-grey">{{ financial_stats.currency }}</span>
-      </div>
-      <p class="is-size-7 has-text-grey">
-        Projection annuelle (MRR &times; 12)
-      </p>
+      <div class="stat-card-sub">Projection sur 12 mois</div>
     </div>
   </div>
 
   <!-- Total Encaissé -->
   <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card" style="border-top: 3px solid #8b5cf6;">
+    <div class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">Total encaissé</span>
+          <span class="is-sr-only">Total Encaissé</span>
+          <span class="stat-card-badge is-neutral">Cumulé</span>
+        </div>
+        <div class="stat-card-value">
+          {{ "%.2f"|format(financial_stats.total_revenue) }}
+        </div>
+      </div>
+      <div class="stat-card-sub">Factures réglées</div>
+    </div>
+  </div>
+
+  <!-- Abonnements Payants -->
+  <div class="column is-6-tablet is-3-desktop">
+    <a href="{{ url_for('admin.users', plan='premium') }}" class="stat-card">
+      <div>
+        <div class="stat-card-header">
+          <span class="stat-card-label">Payants</span>
+          <span class="is-sr-only">Abonnements Payants</span>
+          <span class="stat-card-badge is-neutral">Stripe</span>
+        </div>
+        <div class="stat-card-value">{{ financial_stats.active_subscriptions }}</div>
+      </div>
+      <div class="stat-card-sub">{{ financial_stats.monthly_subs }} mensuel &bull; {{ financial_stats.yearly_subs }} annuel</div>
+    </a>
+  </div>
+</div>
+
+<!-- 4. RANGÉE SAAS : CLASSES ACTIVES (WAU) & QUALITÉ DU SCAN ISBN -->
+<div class="columns is-multiline mb-5">
+  <!-- WAU (Classes Actives Hebdomadaires) -->
+  <div class="column is-12-tablet is-6-desktop">
+    <div class="admin-card h-100" style="padding: 1.15rem 1.25rem;">
       <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Total Encaissé</span>
-        <span class="icon" style="background: rgba(139, 92, 246, 0.1); color: #7c3aed; border-radius: 8px; width: 34px; height: 34px;">
-          <i class="fas fa-receipt"></i>
+        <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
+          <span class="icon is-small has-text-grey"><i class="fas fa-chalkboard-teacher"></i></span>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em;">
+            Classes Actives Hebdomadaires (WAU)
+          </span>
+        </div>
+        <span class="stat-card-badge {% if wau_count > 0 %}is-positive{% else %}is-neutral{% endif %}">
+          {{ "%.1f"|format(wau_rate) }}% des actifs
         </span>
       </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
-        {{ "%.2f"|format(financial_stats.total_revenue) }} <span class="is-size-6 has-text-grey">{{ financial_stats.currency }}</span>
+      <div class="is-flex is-align-items-baseline" style="gap: 0.6rem;">
+        <span class="title is-3 mb-0" style="color: #0f172a; font-weight: 800;">{{ wau_count }}</span>
+        <span class="is-size-7 has-text-grey">classe{% if wau_count > 1 %}s{% endif %} avec &ge; 1 prêt ou retour sur les 7 derniers jours</span>
       </div>
-      <p class="is-size-7 has-text-grey">
-        Volume total des factures payées
+      <p class="is-size-7 has-text-grey-light mt-1 mb-0">
+        Mesure l'utilisation rituelle de l'application en classe, au-delà de la simple inscription.
       </p>
     </div>
   </div>
 
-  <!-- Abonnements Payants Actifs -->
-  <div class="column is-6-tablet is-3-desktop">
-    <div class="stat-card" style="border-top: 3px solid #f59e0b;">
+  <!-- Taux de Santé du Scan ISBN -->
+  <div class="column is-12-tablet is-6-desktop">
+    <div class="admin-card h-100" style="padding: 1.15rem 1.25rem;">
       <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-        <span class="has-text-grey is-size-7 has-text-weight-bold" style="text-transform: uppercase; letter-spacing: 0.05em;">Abonnements Payants</span>
-        <span class="icon" style="background: rgba(245, 158, 11, 0.12); color: #d97706; border-radius: 8px; width: 34px; height: 34px;">
-          <i class="fas fa-credit-card"></i>
+        <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
+          <span class="icon is-small has-text-grey"><i class="fas fa-barcode"></i></span>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em;">
+            Qualité &amp; Santé du Scan ISBN
+          </span>
+        </div>
+        <span class="stat-card-badge {% if scan_health_rate >= 80 %}is-positive{% elif scan_health_rate >= 50 %}is-neutral{% else %}is-negative{% endif %}">
+          {{ "%.1f"|format(scan_health_rate) }}% complets
         </span>
       </div>
-      <div class="title is-3 mb-1" style="color: #0f172a; font-weight: 800;">
-        {{ financial_stats.active_subscriptions }}
+      <div class="is-flex is-align-items-baseline" style="gap: 0.6rem;">
+        <span class="title is-3 mb-0" style="color: #0f172a; font-weight: 800;">{{ scan_health_complete }}/{{ scan_health_total }}</span>
+        <span class="is-size-7 has-text-grey">livres scannés avec fiche complète (titre + auteur + couverture)</span>
       </div>
-      <p class="is-size-7 has-text-grey">
-        <span class="has-text-weight-semibold" style="color: #008774;">{{ financial_stats.monthly_subs }} mensuel</span> &bull;
-        <span class="has-text-weight-semibold" style="color: #2563eb;">{{ financial_stats.yearly_subs }} annuel</span>
+      <p class="is-size-7 has-text-grey-light mt-1 mb-0">
+        Détecte les défaillances d'API externes (BnF, OpenLibrary, Google Books) : {{ scan_health_incomplete }} incomplète(s).
       </p>
     </div>
   </div>
 </div>
 
-<!-- Graphiques Financiers : Revenus & Abonnements par type -->
+<!-- 5. SECTION GRAPHIQUE PRINCIPAL : CROISSANCE & ACTIVITÉ + RÉPARTITION DES FORMULES -->
 <div class="columns is-multiline mb-5">
-  <!-- Graphique 1: Revenus encaissés sur 6 mois (Bar Chart) -->
+  <!-- Grand graphique principal Croissance & Activité avec onglets instantanés -->
+  <div class="column is-12-tablet is-8-desktop">
+    <div class="admin-card h-100">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4 is-flex-wrap-wrap" style="gap: 0.5rem;">
+        <div>
+          <h2 class="chart-card-title">
+            Croissance &amp; Activité
+            <span class="is-sr-only">Nouvelles Inscriptions (12 dernières semaines)</span>
+          </h2>
+          <p class="chart-card-sub" id="activityMetricLabel">
+            Volume d'inscriptions sur la période ({{ selected_range }})
+          </p>
+        </div>
+
+        <!-- 4 Onglets Pilules sans rechargement de page -->
+        <div class="is-flex is-align-items-center" style="gap: 0.25rem; background: #f8fafc; padding: 3px; border-radius: 9999px; border: 1px solid #e2e8f0;">
+          <button type="button" class="activity-pill-btn is-active" data-metric="users">
+            <span>Enseignants</span>
+            <span class="pill-counter">({{ chart_totals.users }})</span>
+          </button>
+          <button type="button" class="activity-pill-btn" data-metric="books">
+            <span>Livres</span>
+            <span class="pill-counter">({{ chart_totals.books }})</span>
+          </button>
+          <button type="button" class="activity-pill-btn" data-metric="students">
+            <span>Élèves</span>
+            <span class="pill-counter">({{ chart_totals.students }})</span>
+          </button>
+          <button type="button" class="activity-pill-btn" data-metric="loans">
+            <span>Prêts</span>
+            <span class="pill-counter">({{ chart_totals.loans }})</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="position: relative; height: 230px; width: 100%;">
+        <canvas id="signupsChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Répartition des Formules (Doughnut équilibré avec métrique centrale) -->
+  <div class="column is-12-tablet is-4-desktop">
+    <div class="admin-card h-100">
+      <div class="mb-3">
+        <h2 class="chart-card-title">Répartition des Formules</h2>
+        <p class="chart-card-sub">Structure des comptes actifs</p>
+      </div>
+
+      <div style="position: relative; height: 185px; width: 100%;">
+        <canvas id="plansChart"></canvas>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+          <div style="font-size: 1.4rem; font-weight: 800; color: #0f172a; line-height: 1;">{{ total_users }}</div>
+          <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; margin-top: 3px;">Comptes</div>
+        </div>
+      </div>
+
+      <div class="is-flex is-justify-content-space-around mt-3 pt-2" style="border-top: 1px solid #f8fafc; font-size: 0.72rem; color: #64748b;">
+        <div class="has-text-centered">
+          <span>Gratuit</span>
+          <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.85rem;">{{ plans_distribution['Gratuit'] }}</div>
+        </div>
+        <div class="has-text-centered">
+          <span>Essai</span>
+          <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.85rem;">{{ plans_distribution['Essai'] }}</div>
+        </div>
+        <div class="has-text-centered">
+          <span>Premium</span>
+          <div class="has-text-weight-bold" style="color: #10b981; font-size: 0.85rem;">{{ plans_distribution['Premium'] }}</div>
+        </div>
+        <div class="has-text-centered">
+          <span>Fondateur</span>
+          <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.85rem;">{{ plans_distribution['Fondateur'] }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. SECTION REVENUS & PERFORMANCE DES ABONNEMENTS -->
+<div class="is-flex is-align-items-center is-justify-content-space-between mb-3 mt-1">
+  <h2 class="chart-card-title" style="font-size: 0.95rem;">Revenus &amp; Performance des Abonnements</h2>
+</div>
+<div class="columns is-multiline mb-5">
+  <!-- Bar Chart: Revenus sur la période sélectionnée -->
   <div class="column is-12-tablet is-7-desktop">
     <div class="admin-card h-100">
       <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
         <div>
-          <h3 class="title is-6 mb-1" style="font-weight: 700; color: #1e293b;">
-            <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-money-bill-wave"></i></span>
-            Évolution des Revenus Encaissés (6 derniers mois)
-          </h3>
-          <p class="is-size-7 has-text-grey">Volume des encaissements en {{ financial_stats.currency }}</p>
+          <h3 class="chart-card-title">Évolution des Revenus Encaissés</h3>
+          <p class="chart-card-sub">Montants encaissés sur la période en {{ financial_stats.currency }}</p>
         </div>
-        <span class="tag is-rounded has-text-weight-bold is-small" style="background: rgba(0, 184, 156, 0.12); color: #008774;">
+        <span class="stat-card-badge is-neutral">
           Total : {{ "%.2f"|format(financial_stats.total_revenue) }} {{ financial_stats.currency }}
         </span>
       </div>
-      <div style="position: relative; height: 230px; width: 100%;">
+      <div style="position: relative; height: 200px; width: 100%;">
         <canvas id="revenueChart"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- Graphique 2: Abonnements Actifs par Type (Donut Chart) -->
+  <!-- Donut Chart: Abonnements Actifs par Type -->
   <div class="column is-12-tablet is-5-desktop">
     <div class="admin-card h-100">
       <div class="mb-3">
-        <h3 class="title is-6 mb-1" style="font-weight: 700; color: #1e293b;">
-          <span class="icon is-small has-text-warning-dark mr-2"><i class="fas fa-layer-group"></i></span>
-          Abonnements Actifs par Type
-        </h3>
-        <p class="is-size-7 has-text-grey">Répartition Mensuel vs Annuel et part de MRR</p>
+        <h3 class="chart-card-title">Abonnements Actifs par Type</h3>
+        <p class="chart-card-sub">Répartition Mensuel vs Annuel</p>
       </div>
-      <div style="position: relative; height: 160px; width: 100%; display: flex; align-items: center; justify-content: center;">
+
+      <div style="position: relative; height: 185px; width: 100%;">
         <canvas id="subTypesChart"></canvas>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+          <div style="font-size: 1.4rem; font-weight: 800; color: #0f172a; line-height: 1;">{{ financial_stats.active_subscriptions }}</div>
+          <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; margin-top: 3px;">Payants</div>
+        </div>
       </div>
-      <div class="columns is-mobile mt-3 pt-2 mb-0" style="border-top: 1px solid #f1f5f9; font-size: 0.75rem;">
+
+      <div class="columns is-mobile mt-3 pt-2 mb-0" style="border-top: 1px solid #f8fafc; font-size: 0.72rem;">
         <div class="column has-text-centered py-1">
-          <span class="has-text-weight-bold" style="color: #00b89c;">● Mensuel (5 CHF)</span>
-          <div class="has-text-weight-bold is-size-6" style="color: #0f172a;">{{ financial_stats.monthly_subs }}</div>
-          <div class="is-size-7 has-text-grey">{{ "%.2f"|format(financial_stats.monthly_mrr) }} CHF/mois</div>
+          <span style="color: #64748b;">Mensuel (5 CHF)</span>
+          <div class="has-text-weight-bold" style="color: #10b981; font-size: 0.9rem;">{{ financial_stats.monthly_subs }}</div>
+          <div style="color: #94a3b8;">{{ "%.2f"|format(financial_stats.monthly_mrr) }} CHF/m</div>
         </div>
         <div class="column has-text-centered py-1">
-          <span class="has-text-weight-bold" style="color: #3b82f6;">● Annuel (30 CHF)</span>
-          <div class="has-text-weight-bold is-size-6" style="color: #0f172a;">{{ financial_stats.yearly_subs }}</div>
-          <div class="is-size-7 has-text-grey">{{ "%.2f"|format(financial_stats.yearly_mrr) }} CHF/mois</div>
+          <span style="color: #64748b;">Annuel (30 CHF)</span>
+          <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.9rem;">{{ financial_stats.yearly_subs }}</div>
+          <div style="color: #94a3b8;">{{ "%.2f"|format(financial_stats.yearly_mrr) }} CHF/m</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Graphique 3: Flux des Abonnements & Résiliations (Diverging Bar Chart) -->
+<!-- 7. FLUX DES ABONNEMENTS & RÉSILIATIONS (Barres épaisses, adieu l'aiguille de 1px !) -->
 <div class="columns is-multiline mb-5">
   <div class="column is-12">
     <div class="admin-card">
-      <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap mb-4" style="gap: 0.75rem;">
+      <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap mb-4" style="gap: 0.5rem;">
         <div>
-          <h3 class="title is-6 mb-1" style="font-weight: 700; color: #1e293b;">
-            <span class="icon is-small mr-2" style="color: #3b82f6;"><i class="fas fa-exchange-alt"></i></span>
-            Flux des Abonnements & Résiliations (6 derniers mois)
-          </h3>
-          <p class="is-size-7 has-text-grey">Nouveaux abonnements premium (en haut) vs Résiliations (en bas)</p>
+          <h3 class="chart-card-title">Flux des Abonnements &amp; Résiliations</h3>
+          <p class="chart-card-sub">Nouveaux abonnements (+) vs Résiliations (-) sur la période sélectionnée</p>
         </div>
-        <div class="tags has-addons mb-0">
-          <span class="tag is-rounded is-small has-text-weight-semibold" style="background: rgba(0, 184, 156, 0.12); color: #008774;">
-            +{{ sub_flow_stats.total_new }} abonnement(s)
-          </span>
-          <span class="tag is-rounded is-small has-text-weight-semibold" style="background: rgba(239, 68, 68, 0.12); color: #dc2626;">
-            -{{ sub_flow_stats.total_cancels }} résiliation(s)
-          </span>
-          <span class="tag is-rounded is-small has-text-weight-bold" style="background: rgba(59, 130, 246, 0.12); color: #2563eb;">
-            Solde net : {% if sub_flow_stats.net_flow > 0 %}+{% endif %}{{ sub_flow_stats.net_flow }}
-          </span>
-          <span class="tag is-rounded is-small is-light has-text-grey has-text-weight-medium">
-            Rétention : {{ sub_flow_stats.retention_rate }}% &bull; Churn : {{ sub_flow_stats.churn_rate }}%
-          </span>
+        <div class="is-flex is-align-items-center" style="gap: 0.5rem; font-size: 0.72rem; color: #64748b; flex-wrap: wrap;">
+          <span class="stat-card-badge is-positive">+{{ sub_flow_stats.total_new }} nouveaux abonnements</span>
+          <span class="stat-card-badge is-negative">-{{ sub_flow_stats.total_cancels }} résiliations</span>
+          <span class="stat-card-badge is-neutral">Solde net : {% if sub_flow_stats.net_flow > 0 %}+{% endif %}{{ sub_flow_stats.net_flow }}</span>
+          <span class="stat-card-badge is-neutral">Rétention : {{ sub_flow_stats.retention_rate }}%</span>
+          <span class="stat-card-badge is-neutral">Churn : {{ sub_flow_stats.churn_rate }}%</span>
         </div>
       </div>
-      <div style="position: relative; height: 260px; width: 100%;">
+      <div style="position: relative; height: 180px; width: 100%;">
         <canvas id="subFlowChart"></canvas>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SECTION CROISSANCE & UTILISATEURS -->
-<div class="mb-3 mt-5">
-  <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
-    <span class="icon is-small mr-2" style="color: #3b82f6;"><i class="fas fa-chart-line"></i></span>
-    Activité & Croissance Utilisateurs
-  </h2>
-  <p class="is-size-7 has-text-grey">Évolution des nouvelles inscriptions et structure globale des comptes</p>
-</div>
-
-<!-- Graphiques Analytiques (remplace les raccourcis redondants) -->
+<!-- 8. RADAR À PAYWALLS (CONVERSION FREEMIUM) -->
 <div class="columns is-multiline mb-5">
-  <!-- Courbe des inscriptions sur 30 jours -->
-  <div class="column is-12-tablet is-8-desktop">
-    <div class="admin-card h-100">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
+  <div class="column is-12">
+    <div class="admin-card">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-3 is-flex-wrap-wrap" style="gap: 0.5rem;">
         <div>
-          <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
-            <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-chart-line"></i></span>
-            Nouvelles Inscriptions (30 derniers jours)
-          </h2>
-          <p class="is-size-7 has-text-grey">Dynamique d'adhésion quotidienne sur la plateforme</p>
+          <div class="is-flex is-align-items-center" style="gap: 0.4rem;">
+            <span class="icon is-small" style="color: #0f172a;"><i class="fas fa-bolt"></i></span>
+            <h3 class="chart-card-title">Radar à Paywalls (Conversion Freemium)</h3>
+          </div>
+          <p class="chart-card-sub">
+            Enseignants gratuits ayant atteint &ge; 80 % d'une limite (30 scans, 40 élèves, 500 livres) ou dont les prêts approchent du flou (10 mois).
+          </p>
         </div>
-        <span class="tag is-rounded has-text-weight-bold is-small" style="background: rgba(0, 209, 178, 0.14); color: #007a68;">
-          {{ chart_signups_data | sum }} inscription(s)
+        <span class="stat-card-badge {% if paywall_prospects %}is-positive{% else %}is-neutral{% endif %}">
+          {{ paywall_prospects|length }} prospect{% if paywall_prospects|length > 1 %}s{% endif %} chaud{% if paywall_prospects|length > 1 %}s{% endif %}
         </span>
       </div>
-      <div style="position: relative; height: 250px; width: 100%;">
-        <canvas id="signupsChart"></canvas>
-      </div>
-    </div>
-  </div>
 
-  <!-- Répartition des Formules (Doughnut) -->
-  <div class="column is-12-tablet is-4-desktop">
-    <div class="admin-card h-100">
-      <div class="mb-3">
-        <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
-          <span class="icon is-small has-text-warning mr-2"><i class="fas fa-chart-pie"></i></span>
-          Répartition des Formules
-        </h2>
-        <p class="is-size-7 has-text-grey">Structure des comptes par formule</p>
-      </div>
-      <div style="position: relative; height: 180px; width: 100%; display: flex; align-items: center; justify-content: center;">
-        <canvas id="plansChart"></canvas>
-      </div>
-      <div class="is-flex is-justify-content-space-around mt-3 pt-2" style="border-top: 1px solid #f1f5f9; font-size: 0.75rem;">
-        <div class="has-text-centered">
-          <span class="has-text-grey">Gratuit</span>
-          <div class="has-text-weight-bold" style="color: #64748b;">{{ plans_distribution['Gratuit'] }}</div>
+      {% if paywall_prospects %}
+        <div class="table-container mb-0" style="overflow-x: auto;">
+          <table class="table is-fullwidth mb-0" style="border-collapse: collapse; font-size: 0.8rem;">
+            <thead>
+              <tr style="background: #fafbfd; border-bottom: 1px solid #f1f5f9;">
+                <th style="padding: 0.6rem 0.85rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 0.68rem;">Enseignant</th>
+                <th style="padding: 0.6rem 0.85rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 0.68rem;">Limites en Alerte (&ge; 80%)</th>
+                <th style="padding: 0.6rem 0.85rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 0.68rem; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in paywall_prospects %}
+                <tr style="border-bottom: 1px solid #f8fafc;">
+                  <td style="padding: 0.65rem 0.85rem; vertical-align: middle;">
+                    <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
+                      <div class="user-avatar-initials">
+                        {{ (p.user.name or p.user.email)[:2]|upper }}
+                      </div>
+                      <div>
+                        <a href="{{ url_for('admin.user_detail', user_id=p.user.id) }}" class="has-text-weight-bold" style="color: #0f172a; text-decoration: none;">
+                          {{ p.user.name or 'Sans nom' }}
+                        </a>
+                        <div class="is-size-7 has-text-grey">{{ p.user.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="padding: 0.65rem 0.85rem; vertical-align: middle;">
+                    <div class="is-flex is-align-items-center" style="gap: 0.4rem; flex-wrap: wrap;">
+                      {% for a in p.alerts %}
+                        <span class="tag is-rounded is-small" style="{% if a.urgency == 'danger' %}background: #fee2e2; color: #991b1b; font-weight: 700;{% else %}background: #fef3c7; color: #92400e; font-weight: 600;{% endif %} font-size: 0.7rem;">
+                          {{ a.detail }}
+                        </span>
+                      {% endfor %}
+                    </div>
+                  </td>
+                  <td style="padding: 0.65rem 0.85rem; vertical-align: middle; text-align: right;">
+                    <a href="{{ url_for('admin.user_detail', user_id=p.user.id) }}" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.72rem; color: #0f172a; font-weight: 500;">
+                      <span>Voir profil</span>
+                      <span class="icon is-small ml-1" style="font-size: 0.6rem;"><i class="fas fa-arrow-right"></i></span>
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
-        <div class="has-text-centered">
-          <span class="has-text-info">Essai</span>
-          <div class="has-text-weight-bold has-text-info">{{ plans_distribution['Essai'] }}</div>
+      {% else %}
+        <div class="p-4 has-text-centered" style="background: #f8fafc; border-radius: 8px; border: 1px dashed #e2e8f0;">
+          <p class="is-size-7 has-text-grey mb-0">
+            <span class="icon is-small mr-1" style="color: #059669;"><i class="fas fa-check-circle"></i></span>
+            Aucun enseignant gratuit n'est proche de ses limites cette semaine. Vos utilisateurs sont confortablement sous les quotas freemium.
+          </p>
         </div>
-        <div class="has-text-centered">
-          <span class="has-text-success">Premium</span>
-          <div class="has-text-weight-bold has-text-success">{{ plans_distribution['Premium'] }}</div>
-        </div>
-        <div class="has-text-centered">
-          <span class="has-text-warning-dark">Fondateur</span>
-          <div class="has-text-weight-bold has-text-warning-dark">{{ plans_distribution['Fondateur'] }}</div>
-        </div>
-      </div>
+      {% endif %}
     </div>
   </div>
 </div>
 
-<!-- Deux colonnes d'activité récente -->
+<!-- 9. SECTION DERNIÈRES ACTIVITÉS : INSCRIPTIONS & RETOURS -->
 <div class="columns is-multiline">
-  <!-- Derniers Utilisateurs Inscrits -->
+  <!-- Dernières inscriptions -->
   <div class="column is-12-tablet is-6-desktop">
     <div class="admin-card h-100">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-3">
         <div>
-          <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
-            <span class="icon is-small mr-2" style="color: #00b89c;"><i class="fas fa-user-plus"></i></span>
-            Dernières inscriptions
-          </h2>
-          <p class="is-size-7 has-text-grey">Les 5 derniers comptes créés sur la plateforme</p>
+          <h2 class="chart-card-title">Dernières inscriptions</h2>
+          <p class="chart-card-sub">Les 5 derniers comptes enregistrés</p>
         </div>
-        <a href="{{ url_for('admin.users') }}" class="button is-small is-light" style="border-radius: 8px;">
+        <a href="{{ url_for('admin.users') }}" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.72rem; font-weight: 500; padding: 0.2rem 0.5rem;">
           <span>Tout voir</span>
-          <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
+          <span class="icon is-small" style="font-size: 0.65rem;"><i class="fas fa-chevron-right"></i></span>
         </a>
       </div>
 
-      <div class="table-container">
-        <table class="table is-fullwidth is-hoverable" style="background: transparent;">
+      <div class="table-container" style="overflow-x: auto; margin-bottom: 0;">
+        <table class="admin-compact-table">
           <thead>
-            <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
-              <th>UTILISATEUR</th>
-              <th>FORMULE</th>
-              <th>STATUT</th>
-              <th class="has-text-right">DATE</th>
+            <tr>
+              <th style="width: auto;">UTILISATEUR</th>
+              <th style="width: 105px;">FORMULE</th>
+              <th style="width: 95px; text-align: right; padding-right: 0.25rem !important;">DATE</th>
             </tr>
           </thead>
           <tbody>
             {% for u in recent_users %}
-              <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
+              <tr>
                 <td>
-                  <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #e6fffa; color: #007a68; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem;">
+                  <div class="is-flex is-align-items-center" style="gap: 0.5rem; min-width: 0;">
+                    <div class="user-avatar-initials">
                       {{ (u.name or u.email)[:2]|upper }}
                     </div>
-                    <div>
-                      <div class="has-text-weight-semibold" style="color: #0f172a;">{{ u.name or 'Sans nom' }}</div>
-                      <div class="is-size-7 has-text-grey">{{ u.email }}</div>
+                    <div style="min-width: 0; overflow: hidden;">
+                      <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ u.name or 'Sans nom' }}
+                        {% if u.is_test %}
+                          <span class="tag is-rounded is-small ml-1" style="background: #f1f5f9; color: #ef4444; font-size: 0.62rem; padding: 0 4px;">Test</span>
+                        {% endif %}
+                      </div>
+                      <div class="is-size-7 has-text-grey" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ u.email }}</div>
                     </div>
                   </div>
                 </td>
                 <td>
                   {% if u.plan == 'founder' %}
-                    <span class="tag is-warning is-light is-rounded is-small">👑 Fondateur</span>
+                    <span class="tag is-rounded is-small" style="background: #f1f5f9; color: #0f172a; font-size: 0.68rem; font-weight: 600;">Fondateur</span>
                   {% elif u.is_in_trial %}
-                    <span class="tag is-info is-light is-rounded is-small">Essai ({{ u.trial_days_left }}j)</span>
+                    <span class="tag is-rounded is-small" style="background: #f0f9ff; color: #0284c7; font-size: 0.68rem; font-weight: 500;">Essai ({{ u.trial_days_left }}j)</span>
                   {% elif u.is_premium %}
-                    <span class="tag is-success is-light is-rounded is-small">Premium</span>
+                    <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-size: 0.68rem; font-weight: 600;">Premium</span>
                   {% else %}
-                    <span class="tag is-light is-rounded is-small">Gratuit</span>
+                    <span class="tag is-rounded is-small is-light" style="font-size: 0.68rem; color: #64748b;">Gratuit</span>
                   {% endif %}
                 </td>
-                <td>
-                  {% if u.is_verified %}
-                    <span class="tag is-success is-light is-rounded is-small"><i class="fas fa-check-circle mr-1"></i> Vérifié</span>
-                  {% else %}
-                    <span class="tag is-warning is-light is-rounded is-small"><i class="fas fa-clock mr-1"></i> En attente</span>
-                  {% endif %}
-                </td>
-                <td class="has-text-right is-size-7 has-text-grey">
+                <td style="text-align: right; font-size: 0.75rem; color: #64748b; font-variant-numeric: tabular-nums; white-space: nowrap; padding-right: 0.25rem !important;">
                   {% if u.created_at %}
                     {{ u.created_at.strftime('%d/%m/%Y') }}
                   {% else %}
@@ -439,7 +674,7 @@
               </tr>
             {% else %}
               <tr>
-                <td colspan="4" class="has-text-centered has-text-grey py-4">Aucun utilisateur enregistré.</td>
+                <td colspan="3" class="has-text-centered has-text-grey py-3" style="font-size: 0.8rem;">Aucun utilisateur enregistré.</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -448,60 +683,49 @@
     </div>
   </div>
 
-  <!-- Derniers Retours & Signalements de Bugs -->
+  <!-- Derniers retours & bugs -->
   <div class="column is-12-tablet is-6-desktop">
     <div class="admin-card h-100">
-      <div class="is-flex is-align-items-center is-justify-content-space-between mb-4">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-3">
         <div>
-          <h2 class="title is-5 mb-1" style="font-weight: 700; color: #1e293b;">
-            <span class="icon is-small has-text-danger mr-2"><i class="fas fa-bug"></i></span>
-            Derniers retours & bugs
-          </h2>
-          <p class="is-size-7 has-text-grey">Signalements récents des utilisateurs</p>
+          <h2 class="chart-card-title">Derniers retours &amp; bugs</h2>
+          <p class="chart-card-sub">Signalements récents des utilisateurs</p>
         </div>
-        <a href="{{ url_for('admin.feedbacks') }}" class="button is-small is-light" style="border-radius: 8px;">
+        <a href="{{ url_for('admin.feedbacks') }}" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.72rem; font-weight: 500; padding: 0.2rem 0.5rem;">
           <span>Gérer</span>
-          <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
+          <span class="icon is-small" style="font-size: 0.65rem;"><i class="fas fa-chevron-right"></i></span>
         </a>
       </div>
 
-      <div class="table-container">
-        <table class="table is-fullwidth is-hoverable" style="background: transparent;">
+      <div class="table-container" style="overflow-x: auto; margin-bottom: 0;">
+        <table class="admin-compact-table">
           <thead>
-            <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
-              <th>SUJET</th>
-              <th>EXPÉDITEUR</th>
-              <th>STATUT</th>
-              <th class="has-text-right">DATE</th>
+            <tr>
+              <th style="width: auto;">SUJET</th>
+              <th style="width: 125px;">EXPÉDITEUR</th>
+              <th style="width: 95px; text-align: right; padding-right: 0.25rem !important;">DATE</th>
             </tr>
           </thead>
           <tbody>
             {% for fb in recent_feedbacks %}
-              <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
+              <tr>
                 <td>
-                  <div class="has-text-weight-semibold" style="color: #0f172a; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ fb.subject }}">
+                  <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ fb.subject }}">
                     {{ fb.subject }}
                   </div>
-                  <div class="is-size-7 has-text-grey" style="max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  <div class="is-size-7 has-text-grey" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     {{ fb.message }}
                   </div>
                 </td>
-                <td class="is-size-7">
-                  <div>{{ fb.user.name if fb.user else 'Anonyme' }}</div>
-                  <div class="has-text-grey">{{ fb.user.email if fb.user else '-' }}</div>
-                </td>
                 <td>
-                  {% if fb.status == 'new' %}
-                    <span class="tag is-danger is-light is-rounded is-small">Nouveau</span>
-                  {% elif fb.status == 'en_cours' %}
-                    <span class="tag is-info is-light is-rounded is-small">En cours</span>
-                  {% elif fb.status == 'resolved' %}
-                    <span class="tag is-success is-light is-rounded is-small">Résolu</span>
-                  {% else %}
-                    <span class="tag is-light is-rounded is-small">{{ fb.status }}</span>
-                  {% endif %}
+                  <div style="font-size: 0.8rem; font-weight: 500; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ fb.user.name if fb.user else (fb.author_name or 'Anonyme') }}
+                  </div>
+                  <div class="is-size-7 has-text-grey" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ fb.user.email if fb.user else (fb.author_email or '-') }}
+                  </div>
                 </td>
-                <td class="has-text-right is-size-7 has-text-grey">
+                <td style="text-align: right; font-size: 0.75rem; color: #64748b; font-variant-numeric: tabular-nums; white-space: nowrap; padding-right: 0.25rem !important;">
                   {% if fb.created_at %}
                     {{ fb.created_at.strftime('%d/%m/%Y') }}
                   {% else %}
@@ -511,7 +735,7 @@
               </tr>
             {% else %}
               <tr>
-                <td colspan="4" class="has-text-centered has-text-grey py-4">Aucun retour enregistré. Tout va bien !</td>
+                <td colspan="3" class="has-text-centered has-text-grey py-3" style="font-size: 0.8rem;">Aucun retour enregistré. Tout va bien !</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -526,47 +750,67 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Graphique Courbe des Inscriptions (30j)
+  const chartSeries = {{ chart_series | tojson | safe }};
+  const chartTotals = {{ chart_totals | tojson | safe }};
+  const chartLabels = {{ chart_labels | tojson | safe }};
+
+  // 1. Graphique Principal : Croissance & Activité avec Onglets Instantanés
   const signupsCtx = document.getElementById('signupsChart');
+  let activityChart = null;
   if (signupsCtx) {
     const ctx = signupsCtx.getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 240);
-    gradient.addColorStop(0, 'rgba(0, 209, 178, 0.28)');
-    gradient.addColorStop(1, 'rgba(0, 209, 178, 0.0)');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 220);
+    gradient.addColorStop(0, 'rgba(15, 23, 42, 0.12)');
+    gradient.addColorStop(1, 'rgba(15, 23, 42, 0.0)');
 
-    new Chart(ctx, {
+    activityChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: {{ chart_signups_labels | tojson | safe }},
+        labels: chartLabels,
         datasets: [{
-          label: 'Nouvelles Inscriptions',
-          data: {{ chart_signups_data | tojson | safe }},
-          borderColor: '#00b89c',
-          borderWidth: 2.5,
+          label: 'Enseignants',
+          data: chartSeries.users,
+          borderColor: '#0f172a',
+          borderWidth: 2.2,
           backgroundColor: gradient,
           fill: true,
-          tension: 0.35,
-          pointBackgroundColor: '#00b89c',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 2,
+          tension: 0.3,
           pointRadius: 3,
           pointHoverRadius: 6,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#0f172a',
+          pointBorderWidth: 2,
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: { bottom: 6, top: 12 }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
             backgroundColor: '#0f172a',
-            titleFont: { size: 12, weight: '700' },
-            bodyFont: { size: 12 },
-            padding: 10,
-            cornerRadius: 8,
+            titleFont: { size: 11, weight: '600' },
+            bodyFont: { size: 11 },
+            padding: 8,
+            cornerRadius: 6,
+            displayColors: false,
             callbacks: {
+              title: function(items) {
+                return items[0].label;
+              },
               label: function(context) {
-                return ` ${context.parsed.y} inscription(s)`;
+                const metricNames = {
+                  users: 'enseignant(s)',
+                  books: 'livre(s)',
+                  students: 'élève(s)',
+                  loans: 'prêt(s)'
+                };
+                const activePill = document.querySelector('.activity-pill-btn.is-active');
+                const m = activePill ? activePill.dataset.metric : 'users';
+                return `${context.parsed.y} ${metricNames[m] || 'élément(s)'}`;
               }
             }
           }
@@ -575,29 +819,56 @@ document.addEventListener('DOMContentLoaded', () => {
           x: {
             grid: { display: false },
             ticks: {
-              maxTicksLimit: 10,
               color: '#94a3b8',
-              font: { size: 11 }
+              font: { size: 11 },
+              maxTicksLimit: 12,
+              autoSkip: true,
             }
           },
           y: {
             beginAtZero: true,
+            min: 0,
+            grace: '10%',
             ticks: {
-              stepSize: 1,
               precision: 0,
               color: '#94a3b8',
               font: { size: 11 }
             },
             grid: {
-              color: '#f1f5f9'
+              color: '#f8fafc'
             }
           }
         }
       }
     });
+
+    // Gestion instantanée des 4 onglets pilules (Enseignants, Livres, Élèves, Prêts)
+    const metricPills = document.querySelectorAll('.activity-pill-btn');
+    const metricSubtitles = {
+      users: "Volume d'inscriptions sur la période ({{ selected_range }})",
+      books: "Volume d'ajouts de livres au catalogue sur la période ({{ selected_range }})",
+      students: "Volume d'élèves enregistrés sur la période ({{ selected_range }})",
+      loans: "Volume d'emprunts réalisés sur la période ({{ selected_range }})"
+    };
+    metricPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        metricPills.forEach(p => p.classList.remove('is-active'));
+        pill.classList.add('is-active');
+        const metric = pill.dataset.metric;
+        if (activityChart && chartSeries[metric]) {
+          activityChart.data.datasets[0].data = chartSeries[metric];
+          activityChart.data.datasets[0].label = pill.querySelector('span:first-child').textContent;
+          const labelEl = document.getElementById('activityMetricLabel');
+          if (labelEl) {
+            labelEl.textContent = metricSubtitles[metric] || "Volume sur la période";
+          }
+          activityChart.update();
+        }
+      });
+    });
   }
 
-  // 2. Graphique Donut Répartition des Formules
+  // 2. Graphique Donut Répartition des Formules (cutout 72% avec centre statistique)
   const plansCtx = document.getElementById('plansChart');
   if (plansCtx) {
     new Chart(plansCtx, {
@@ -613,25 +884,24 @@ document.addEventListener('DOMContentLoaded', () => {
           ],
           backgroundColor: [
             '#cbd5e1',
-            '#38bdf8',
-            '#00d1b2',
-            '#f59e0b'
+            '#94a3b8',
+            '#10b981',
+            '#0f172a'
           ],
-          borderWidth: 2,
-          borderColor: '#ffffff',
-          hoverOffset: 4
+          borderWidth: 0,
+          hoverOffset: 3
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '70%',
+        cutout: '72%',
         plugins: {
           legend: { display: false },
           tooltip: {
             backgroundColor: '#0f172a',
-            padding: 10,
-            cornerRadius: 8,
+            padding: 8,
+            cornerRadius: 6,
             callbacks: {
               label: function(context) {
                 return ` ${context.label} : ${context.parsed}`;
@@ -643,18 +913,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 3. Graphique Revenus Encaissés (Bar Chart)
+  // 3. Graphique Revenus Encaissés (Barres proportionnées)
   const revCtx = document.getElementById('revenueChart');
   if (revCtx) {
+    const revData = {{ revenue_chart_data | tojson | safe }};
+    const lastIdx = revData.length - 1;
+    const barColors = revData.map((_, i) => i === lastIdx ? '#10b981' : '#e2e8f0');
+    const allZero = revData.every(v => v === 0);
+
     new Chart(revCtx, {
       type: 'bar',
       data: {
         labels: {{ revenue_chart_labels | tojson | safe }},
         datasets: [{
           label: 'Encaissements ({{ financial_stats.currency }})',
-          data: {{ revenue_chart_data | tojson | safe }},
-          backgroundColor: '#00b89c',
-          borderRadius: 6,
+          data: revData,
+          backgroundColor: barColors,
+          borderRadius: 4,
           maxBarThickness: 38,
         }]
       },
@@ -665,11 +940,12 @@ document.addEventListener('DOMContentLoaded', () => {
           legend: { display: false },
           tooltip: {
             backgroundColor: '#0f172a',
-            padding: 10,
-            cornerRadius: 8,
+            padding: 8,
+            cornerRadius: 6,
+            displayColors: false,
             callbacks: {
               label: function(context) {
-                return ' ' + context.parsed.y.toFixed(2) + ' {{ financial_stats.currency }}';
+                return context.parsed.y.toFixed(2) + ' {{ financial_stats.currency }}';
               }
             }
           }
@@ -679,20 +955,26 @@ document.addEventListener('DOMContentLoaded', () => {
             grid: { display: false },
             ticks: {
               color: '#94a3b8',
-              font: { size: 11 }
+              font: { size: 11 },
+              maxTicksLimit: 12,
+              autoSkip: true,
             }
           },
           y: {
             beginAtZero: true,
+            min: 0,
+            suggestedMax: allZero ? 50 : undefined,
             ticks: {
               color: '#94a3b8',
               font: { size: 11 },
+              stepSize: allZero ? 25 : undefined,
+              precision: 0,
               callback: function(value) {
                 return value + ' {{ financial_stats.currency }}';
               }
             },
             grid: {
-              color: '#f1f5f9'
+              color: '#f8fafc'
             }
           }
         }
@@ -700,7 +982,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Graphique Donut Abonnements par Type (Mensuel vs Annuel)
+  // 4. Graphique Donut Abonnements par Type (cutout 72% avec centre statistique)
   const subTypesCtx = document.getElementById('subTypesChart');
   if (subTypesCtx) {
     const monthlyCount = {{ financial_stats.monthly_subs }};
@@ -710,29 +992,28 @@ document.addEventListener('DOMContentLoaded', () => {
     new Chart(subTypesCtx, {
       type: 'doughnut',
       data: {
-        labels: hasSubs ? ['Mensuel (5 CHF)', 'Annuel (30 CHF)'] : ['Aucun abonnement payant'],
+        labels: hasSubs ? ['Mensuel (5 CHF)', 'Annuel (30 CHF)'] : ['Aucun abonnement'],
         datasets: [{
           data: hasSubs ? [monthlyCount, yearlyCount] : [1],
-          backgroundColor: hasSubs ? ['#00b89c', '#3b82f6'] : ['#e2e8f0'],
-          borderWidth: 2,
-          borderColor: '#ffffff',
-          hoverOffset: hasSubs ? 4 : 0
+          backgroundColor: hasSubs ? ['#10b981', '#0f172a'] : ['#f1f5f9'],
+          borderWidth: 0,
+          hoverOffset: hasSubs ? 3 : 0
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '65%',
+        cutout: '72%',
         plugins: {
           legend: { display: false },
           tooltip: {
             backgroundColor: '#0f172a',
-            padding: 10,
-            cornerRadius: 8,
+            padding: 8,
+            cornerRadius: 6,
             callbacks: {
               label: function(context) {
-                if (!hasSubs) return ' Aucun abonnement payant pour le moment';
-                return ` ${context.label} : ${context.parsed} actif(s)`;
+                if (!hasSubs) return ' Aucun abonnement actif';
+                return ` ${context.label} : ${context.parsed}`;
               }
             }
           }
@@ -741,7 +1022,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Graphique Flux Abonnements / Résiliations (Diverging Bar Chart)
+  // 5. Graphique Flux Abonnements / Résiliations (Barres épaisses, 44px max, 0px d'aiguille)
   const subFlowCtx = document.getElementById('subFlowChart');
   if (subFlowCtx) {
     const subsData = {{ subs_chart_data | tojson | safe }};
@@ -753,20 +1034,22 @@ document.addEventListener('DOMContentLoaded', () => {
         labels: {{ revenue_chart_labels | tojson | safe }},
         datasets: [
           {
-            label: 'Nouveaux abonnements (+)',
+            label: 'Nouveaux abonnements',
             data: subsData,
-            backgroundColor: '#00b89c',
-            hoverBackgroundColor: '#008774',
-            borderRadius: { topLeft: 6, topRight: 6, bottomLeft: 0, bottomRight: 0 },
-            maxBarThickness: 38,
+            backgroundColor: '#10b981',
+            borderRadius: { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 },
+            maxBarThickness: 44,
+            categoryPercentage: 0.85,
+            barPercentage: 0.9,
           },
           {
-            label: 'Résiliations (-)',
+            label: 'Résiliations',
             data: cancelsData,
             backgroundColor: '#ef4444',
-            hoverBackgroundColor: '#dc2626',
-            borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 6, bottomRight: 6 },
-            maxBarThickness: 38,
+            borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 4, bottomRight: 4 },
+            maxBarThickness: 44,
+            categoryPercentage: 0.85,
+            barPercentage: 0.9,
           }
         ]
       },
@@ -778,23 +1061,11 @@ document.addEventListener('DOMContentLoaded', () => {
           intersect: false,
         },
         plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            align: 'end',
-            labels: {
-              boxWidth: 12,
-              boxHeight: 12,
-              usePointStyle: true,
-              pointStyle: 'circle',
-              color: '#64748b',
-              font: { size: 12 }
-            }
-          },
+          legend: { display: false },
           tooltip: {
             backgroundColor: '#0f172a',
-            padding: 12,
-            cornerRadius: 8,
+            padding: 8,
+            cornerRadius: 6,
             callbacks: {
               label: function(context) {
                 const val = context.parsed.y;
@@ -824,7 +1095,9 @@ document.addEventListener('DOMContentLoaded', () => {
             grid: { display: false },
             ticks: {
               color: '#94a3b8',
-              font: { size: 11 }
+              font: { size: 11 },
+              maxTicksLimit: 12,
+              autoSkip: true,
             }
           },
           y: {
@@ -842,15 +1115,9 @@ document.addEventListener('DOMContentLoaded', () => {
             grid: {
               color: function(context) {
                 if (context.tick && context.tick.value === 0) {
-                  return '#64748b';
+                  return '#cbd5e1';
                 }
-                return '#f1f5f9';
-              },
-              lineWidth: function(context) {
-                if (context.tick && context.tick.value === 0) {
-                  return 1.5;
-                }
-                return 1;
+                return '#f8fafc';
               }
             }
           }

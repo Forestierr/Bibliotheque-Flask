@@ -239,6 +239,15 @@ def success():
             stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
             session = stripe.checkout.Session.retrieve(session_id)
             session_data = session.to_dict() if hasattr(session, "to_dict") else session
+
+            # Vérification d'identité (FND-08) : s'assurer que la session appartient à l'utilisateur connecté
+            session_user_id = session_data.get("client_reference_id") or (
+                session_data.get("metadata") or {}
+            ).get("user_id")
+            if str(session_user_id) != str(current_user.id):
+                flash(_("Session de paiement invalide ou expirée."), "error")
+                return redirect(url_for("main.dashboard"))
+
             if (
                 session_data.get("payment_status") == "paid"
                 or session_data.get("status") == "complete"
@@ -276,22 +285,21 @@ def stripe_webhook():
     payload = request.data
     sig_header = request.headers.get("Stripe-Signature", "")
     endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+    if not endpoint_secret and current_app.testing:
+        endpoint_secret = current_app.config.get("STRIPE_WEBHOOK_SECRET", "whsec_test")
 
-    event = None
-    if endpoint_secret:
-        try:
-            event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-        except ValueError as e:
-            logger.error("Payload webhook Stripe invalide : %s", e)
-            return jsonify({"error": "Invalid payload"}), 400
-        except stripe.error.SignatureVerificationError as e:
-            logger.error("Signature webhook Stripe invalide : %s", e)
-            return jsonify({"error": "Invalid signature"}), 400
-    else:
-        try:
-            event = request.get_json(force=True)
-        except (ValueError, TypeError):
-            return jsonify({"error": "No JSON payload"}), 400
+    if not endpoint_secret:
+        logger.error("STRIPE_WEBHOOK_SECRET non configuré dans l'environnement.")
+        return jsonify({"error": "Webhook secret not configured"}), 500
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except ValueError as e:
+        logger.error("Payload webhook Stripe invalide : %s", e)
+        return jsonify({"error": "Invalid payload"}), 400
+    except stripe.error.SignatureVerificationError as e:
+        logger.error("Signature webhook Stripe invalide : %s", e)
+        return jsonify({"error": "Invalid signature"}), 400
 
     if hasattr(event, "to_dict"):
         event = event.to_dict()
