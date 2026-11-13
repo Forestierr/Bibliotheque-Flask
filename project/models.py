@@ -345,7 +345,9 @@ class User(UserMixin, db.Model):
 
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
         try:
-            email = serializer.loads(token, salt="newsletter-unsubscribe")
+            email = serializer.loads(
+                token, salt="newsletter-unsubscribe", max_age=86400 * 30
+            )
         except BadSignature:
             return None
 

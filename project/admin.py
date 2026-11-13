@@ -1,4 +1,5 @@
 import importlib.metadata
+import logging
 import os
 import random
 import re
@@ -13,6 +14,7 @@ import markupsafe
 import stripe
 from flask import (
     Blueprint,
+    abort,
     current_app,
     flash,
     jsonify,
@@ -41,6 +43,30 @@ from .models import (
 from .query import delete_user_account
 
 admin = Blueprint("admin", __name__)
+logger = logging.getLogger(__name__)
+
+
+@admin.before_request
+def require_authelia_auth():
+    """
+    Défense en profondeur (FND-01) :
+    Vérifie que la requête vers le panneau d'administration provient d'une session
+    authentifiée par le reverse proxy Authelia (présence de Remote-User ou Remote-Email).
+    Bypass automatique en mode TESTING ou DEBUG.
+    """
+    if current_app.config.get("TESTING") or current_app.debug:
+        return
+
+    remote_user = request.headers.get("Remote-User") or request.headers.get(
+        "Remote-Email"
+    )
+    if not remote_user or not remote_user.strip():
+        logger.warning(
+            "Tentative d'accès non autorisé à %s sans en-tête d'authentification Authelia (IP: %s)",
+            request.path,
+            request.remote_addr,
+        )
+        abort(403)
 
 
 @admin.context_processor

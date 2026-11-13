@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-11-12 23:33+0100\n"
+"POT-Creation-Date: 2026-11-13 19:45+0100\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: de\n"
@@ -19,19 +19,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: project/admin.py:691
+#: project/admin.py:715
 msgid "Pour vous désabonner :"
 msgstr "Zum Abmelden:"
 
-#: project/admin.py:692
+#: project/admin.py:716
 msgid "Donner votre avis :"
 msgstr "Ihre Meinung äußern:"
 
-#: project/admin.py:693
+#: project/admin.py:717
 msgid "Signaler un problème :"
 msgstr "Ein Problem melden:"
 
-#: project/archive.py:177
+#: project/archive.py:178
 msgid ""
 "Des livres sont encore empruntés. Veuillez tous les arbitrer (retournés, "
 "perdus ou conservés) avant de continuer."
@@ -39,32 +39,32 @@ msgstr ""
 "Einige Bücher sind noch ausgeliehen. Bitte entscheiden Sie über alle "
 "(zurückgegeben, verloren oder behalten), bevor Sie fortfahren."
 
-#: project/archive.py:231
+#: project/archive.py:232
 msgid "Action invalide."
 msgstr "Ungültige Aktion."
 
-#: project/archive.py:244 project/emprunt.py:144 project/emprunt.py:148
-#: project/emprunt.py:149 project/emprunt.py:230
+#: project/archive.py:245 project/emprunt.py:121 project/emprunt.py:147
+#: project/emprunt.py:151 project/emprunt.py:152 project/emprunt.py:224
 msgid "Emprunt introuvable."
 msgstr "Ausleihe nicht gefunden."
 
-#: project/archive.py:255
+#: project/archive.py:256
 msgid "Le livre a été marqué comme retourné."
 msgstr "Das Buch wurde als zurückgegeben markiert."
 
-#: project/archive.py:263
+#: project/archive.py:264
 msgid "Le livre a été déclaré perdu et l'emprunt a été clôturé."
 msgstr "Das Buch wurde als verloren gemeldet und die Ausleihe abgeschlossen."
 
-#: project/archive.py:269
+#: project/archive.py:270
 msgid "L'emprunt a été marqué comme conservé pour la rentrée prochaine."
 msgstr "Die Ausleihe wurde für das nächste Schuljahr als behalten markiert."
 
-#: project/archive.py:276
+#: project/archive.py:277
 msgid "La conservation de l'emprunt a été annulée."
 msgstr "Das Behalten der Ausleihe wurde aufgehoben."
 
-#: project/archive.py:291
+#: project/archive.py:292
 msgid ""
 "Veuillez saisir exactement le mot ARCHIVER pour confirmer la clôture de "
 "l'année scolaire."
@@ -72,11 +72,11 @@ msgstr ""
 "Bitte geben Sie genau das Wort ARCHIVER ein, um den Abschluss des "
 "Schuljahres zu bestätigen."
 
-#: project/archive.py:305
+#: project/archive.py:306
 msgid "La date de début doit être antérieure à la date de fin."
 msgstr "Das Startdatum muss vor dem Enddatum liegen."
 
-#: project/archive.py:336
+#: project/archive.py:337
 #, python-format
 msgid ""
 "Impossible d'archiver les élèves suivants car ils ont encore des livres "
@@ -85,7 +85,7 @@ msgstr ""
 "Folgende Schüler können nicht archiviert werden, da sie noch Bücher "
 "ausgeliehen haben: %(names)s. Bitte klären Sie deren Ausleihen."
 
-#: project/archive.py:383
+#: project/archive.py:384
 #, python-format
 msgid ""
 "L'année scolaire %(year)s a été clôturée avec succès ! Vos élèves "
@@ -94,7 +94,7 @@ msgstr ""
 "Das Schuljahr %(year)s wurde erfolgreich abgeschlossen! Ihre abgehenden "
 "Schüler wurden archiviert und Ihr Kontingent wurde zurückgesetzt."
 
-#: project/archive.py:602
+#: project/archive.py:603
 #, python-format
 msgid ""
 "L'archive de l'année scolaire %(year)s a été supprimée et les élèves ont "
@@ -234,22 +234,17 @@ msgstr "Der Schüler existiert bereits."
 msgid "Élève introuvable."
 msgstr "Ausleihe nicht gefunden."
 
-#: project/emprunt.py:103 project/emprunt.py:214
+#: project/emprunt.py:103 project/emprunt.py:205
 #, python-format
 msgid "Le livre '%(title)s' a bien été marqué comme retourné."
 msgstr ""
 
-#: project/emprunt.py:117 project/emprunt.py:179 project/emprunt.py:184
-#: project/emprunt.py:186 project/templates/livre/livre_scann.html:1154
+#: project/emprunt.py:117 project/emprunt.py:170 project/emprunt.py:175
+#: project/emprunt.py:177 project/templates/livre/livre_scann.html:1154
 msgid "Une erreur est survenue lors du retour du livre."
 msgstr ""
 
-#: project/emprunt.py:121 project/emprunt.py:156 project/emprunt.py:160
-#: project/emprunt.py:161 project/emprunt.py:236
-msgid "Accès non autorisé."
-msgstr "Nicht autorisierter Zugriff."
-
-#: project/emprunt.py:207
+#: project/emprunt.py:198
 msgid "Livre retourné avec succès."
 msgstr ""
 
@@ -300,37 +295,42 @@ msgstr "Beim Duplizieren des Buches ist ein Fehler aufgetreten."
 msgid "L'exemplaire a été dupliqué avec succès !"
 msgstr "Das Exemplar wurde erfolgreich dupliziert!"
 
-#: project/livre.py:1005
+#: project/livre.py:1004
+#, fuzzy
+msgid "Le livre que vous souhaitez modifier n'existe pas."
+msgstr "Das Buch, das Sie bearbeiten möchten, existiert nicht."
+
+#: project/livre.py:1010
 msgid "Le livre reste dans la bibliothèque."
 msgstr "Das Buch bleibt in der Bibliothek."
 
-#: project/livre.py:1011
+#: project/livre.py:1016
 msgid "L'élève n'existe pas."
 msgstr "Der Schüler existiert nicht."
 
-#: project/livre.py:1053
+#: project/livre.py:1058
 msgid "Une erreur est survenue lors du prêt du livre."
 msgstr "Beim Ausleihen des Buches ist ein Fehler aufgetreten."
 
-#: project/livre.py:1060
+#: project/livre.py:1064
 #, python-format
 msgid "Le livre '%(title)s' a bien été prêté à %(name)s."
 msgstr ""
 
-#: project/livre.py:1075
+#: project/livre.py:1079
 #, fuzzy
 msgid "Livre introuvable."
 msgstr "Ausleihe nicht gefunden."
 
-#: project/livre.py:1095
+#: project/livre.py:1099
 msgid "Une erreur est survenue lors de la suppression du livre."
 msgstr "Beim Löschen des Buches ist ein Fehler aufgetreten."
 
-#: project/livre.py:1099
+#: project/livre.py:1103
 msgid "Le livre a été supprimé."
 msgstr "Das Buch wurde gelöscht."
 
-#: project/livre.py:1116
+#: project/livre.py:1120
 #, python-format
 msgid ""
 "Vous avez atteint votre quota de %(max)s scans gratuits pour cette "
@@ -341,7 +341,7 @@ msgstr ""
 "erreicht! Ihre Scans werden am Sonntag um Mitternacht zurückgesetzt, oder"
 " wechseln Sie zu Premium für unbegrenztes Scannen."
 
-#: project/livre.py:1214
+#: project/livre.py:1218
 msgid "Tous les livres ont été supprimés."
 msgstr "Alle Bücher wurden gelöscht."
 
@@ -410,6 +410,11 @@ msgid ""
 msgstr ""
 "Zugriff auf das Kundenportal derzeit nicht möglich. Bitte versuchen Sie "
 "es später erneut."
+
+#: project/subscription.py:248
+#, fuzzy
+msgid "Session de paiement invalide ou expirée."
+msgstr "Ungültiger oder abgelaufener Link"
 
 #: project/templates/aide.html:7
 msgid "Centre d'aide | Livres en Classe"
@@ -11237,4 +11242,7 @@ msgstr "Ausgeliehen von:"
 
 #~ msgid "Personnaliser (Premium)"
 #~ msgstr "Anpassen (Premium)"
+
+#~ msgid "Accès non autorisé."
+#~ msgstr "Nicht autorisierter Zugriff."
 

@@ -893,21 +893,21 @@ def test_return_loan_cross_user_isolation(client, app, logged_in_user):
         db.session.commit()
 
         with patch("project.emprunt.current_user", logged_in_user):
-            # 1. Tentative en JSON -> 403 Forbidden
+            # 1. Tentative en JSON -> 404 Not Found (anti-oracle d'énumération FND-06)
             resp_json = client.post(
                 f"/emprunt/{loan.id}/return-quick",
                 headers={"Accept": "application/json"},
             )
-            assert resp_json.status_code == 403
-            assert "Accès non autorisé" in resp_json.get_json().get("error", "")
+            assert resp_json.status_code == 404
+            assert "Emprunt introuvable" in resp_json.get_json().get("error", "")
 
-            # 2. Tentative en HTMX -> 403 Forbidden
+            # 2. Tentative en HTMX -> 404 Not Found
             resp_htmx = client.post(
                 f"/emprunt/{loan.id}/return-quick",
                 headers={"HX-Request": "true"},
             )
-            assert resp_htmx.status_code == 403
-            assert "Accès non autorisé" in resp_htmx.get_data(as_text=True)
+            assert resp_htmx.status_code == 404
+            assert "Emprunt introuvable" in resp_htmx.get_data(as_text=True)
 
             # 3. Tentative via la route classique /emprunt/<id>
             resp_classic = client.post(f"/emprunt/{loan.id}", follow_redirects=False)
