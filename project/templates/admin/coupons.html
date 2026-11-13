@@ -6,82 +6,112 @@
 {% block admin_header_subtitle %}Gérez les réductions, offres promotionnelles et codes de parrainage connectés à Stripe.{% endblock %}
 
 {% block admin_actions %}
-<button class="button is-primary is-small" style="border-radius: 8px; font-weight: 600;" onclick="document.getElementById('modalCreateCoupon').classList.add('is-active')">
-    <span class="icon is-small"><i class="fas fa-plus"></i></span>
+<button class="button is-small is-rounded" style="background: #0f172a; color: #ffffff; font-weight: 500; font-size: 0.78rem; border: none; padding: 0.35rem 0.85rem;" onclick="document.getElementById('modalCreateCoupon').classList.add('is-active')">
+    <span class="icon is-small mr-1" style="font-size: 0.7rem;"><i class="fas fa-plus"></i></span>
     <span>Créer un code promo</span>
 </button>
 {% endblock %}
 
 {% block admin_content %}
+<style>
+  .admin-table th {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 0.75rem 1rem !important;
+  }
+  .admin-table td {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #f8fafc !important;
+    vertical-align: middle;
+  }
+</style>
+
 {% if not stripe_configured %}
-    <div class="notification is-warning is-light mb-4" style="border-radius: 12px;">
-        <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-        <strong>Configuration requise :</strong> La variable <code>STRIPE_SECRET_KEY</code> n'est pas définie dans votre fichier <code>.env</code>. La gestion en direct avec Stripe est inactive.
+    <div class="notification is-light mb-4 is-flex is-align-items-center" style="border-radius: 10px; border: 1px solid #fef08a; background: #fefce8; padding: 0.75rem 1rem; gap: 0.6rem;">
+        <span class="icon has-text-warning"><i class="fas fa-exclamation-triangle"></i></span>
+        <span class="is-size-7" style="color: #713f12;">
+            <strong>Configuration requise :</strong> La variable <code>STRIPE_SECRET_KEY</code> n'est pas définie. La gestion en direct avec Stripe est inactive.
+        </span>
     </div>
 {% endif %}
 
 <div class="columns is-multiline">
     <!-- Codes de réduction actifs -->
     <div class="column is-12-tablet is-7-desktop">
-        <div class="admin-card">
-            <h2 class="title is-5 mb-4" style="font-weight: 700; color: #1e293b;">
-                <span class="icon mr-2 has-text-info"><i class="fas fa-tags"></i></span>
-                Codes Promotionnels Actifs ({{ promo_codes|length }})
-            </h2>
+        <div class="admin-card" style="padding: 0 !important; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);">
+            <div style="padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9;">
+                <h2 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin: 0;">
+                    Codes Promotionnels Actifs ({{ promo_codes|length }})
+                </h2>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 2px 0 0 0;">
+                    Codes utilisables par les enseignants lors du passage à Premium sur Stripe Checkout
+                </p>
+            </div>
 
             {% if not promo_codes %}
-                <p class="has-text-grey is-size-7 py-4">Aucun code promotionnel actif trouvé sur votre compte Stripe.</p>
+                <p class="has-text-centered has-text-grey is-size-7 py-6">Aucun code promotionnel actif trouvé sur votre compte Stripe.</p>
             {% else %}
-                <div class="table-container">
-                    <table class="table is-fullwidth is-hoverable" style="vertical-align: middle;">
+                <div class="table-container mb-0" style="overflow-x: auto;">
+                    <table class="table is-fullwidth admin-table mb-0" style="border-collapse: collapse;">
                         <thead>
-                            <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
-                                <th>CODE CLIENT</th>
-                                <th>RÉDUCTION</th>
-                                <th>DURÉE</th>
-                                <th>UTILISATIONS</th>
-                                <th>STATUT</th>
+                            <tr style="background: #fafbfd;">
+                                <th>Code Client</th>
+                                <th>Réduction</th>
+                                <th>Durée</th>
+                                <th style="text-align: center;">Utilisations</th>
+                                <th style="text-align: right;">Statut</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for p in promo_codes %}
-                            <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
+                            {% set c = p.coupon or (p.promotion.coupon if hasattr(p, 'promotion') and hasattr(p.promotion, 'coupon') else None) %}
+                            {% set pct = p.coupon_percent_off or (c.percent_off if c else None) %}
+                            {% set amt = p.coupon_amount_off or (c.amount_off if c else None) %}
+                            {% set curr = p.coupon_currency or (c.currency if c else 'chf') %}
+                            {% set dur = p.coupon_duration or (c.duration if c else None) %}
+                            {% set dur_mo = p.coupon_duration_in_months or (c.duration_in_months if c else None) %}
+                            <tr>
                                 <td>
-                                    <strong class="tag is-primary is-light" style="letter-spacing: 1px; font-size: 0.85rem;">{{ p.code }}</strong>
-                                </td>
-                                <td>
-                                    {% if p.coupon_percent_off %}
-                                        <span class="tag is-success is-light">-{{ p.coupon_percent_off|int }}%</span>
-                                    {% elif p.coupon_amount_off %}
-                                        <span class="tag is-success is-light">-{{ "%.2f"|format(p.coupon_amount_off / 100) }} {{ p.coupon_currency|upper }}</span>
-                                    {% else %}
-                                        <span class="tag is-light">-</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if p.coupon_duration == 'forever' %}
-                                        <span class="is-size-7 has-text-grey">À vie</span>
-                                    {% elif p.coupon_duration == 'once' %}
-                                        <span class="is-size-7 has-text-grey">1ère fois</span>
-                                    {% elif p.coupon_duration == 'repeating' %}
-                                        <span class="is-size-7 has-text-grey">{{ p.coupon_duration_in_months }} mois</span>
-                                    {% else %}
-                                        <span class="is-size-7 has-text-grey">{{ p.coupon_duration or '-' }}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <span class="is-size-7">
-                                        {{ p.times_redeemed }}
-                                        {% if p.max_redemptions %}
-                                            <span class="has-text-grey-light">/ {{ p.max_redemptions }}</span>
-                                        {% endif %}
+                                    <span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.78rem; font-weight: 600; color: #0f172a; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; border: 1px solid #e2e8f0; letter-spacing: 0.5px;">
+                                        {{ p.code }}
                                     </span>
                                 </td>
                                 <td>
-                                    {% if p.active %}
-                                        <span class="tag is-success is-light is-rounded is-small">Actif</span>
+                                    {% if pct %}
+                                        <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-weight: 600; font-size: 0.72rem;">-{{ pct|int }}%</span>
+                                    {% elif amt %}
+                                        <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-weight: 600; font-size: 0.72rem;">-{{ "%.2f"|format(amt / 100) }} {{ curr|upper }}</span>
                                     {% else %}
-                                        <span class="tag is-danger is-light is-rounded is-small">Inactif</span>
+                                        <span style="color: #cbd5e1; font-size: 0.75rem;">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if dur == 'forever' %}
+                                        <span class="is-size-7" style="color: #64748b;">À vie</span>
+                                    {% elif dur == 'once' %}
+                                        <span class="is-size-7" style="color: #64748b;">1ère échéance</span>
+                                    {% elif dur == 'repeating' %}
+                                        <span class="is-size-7" style="color: #64748b;">{{ dur_mo }} mois</span>
+                                    {% else %}
+                                        <span class="is-size-7" style="color: #64748b;">{{ dur or '—' }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    <span style="font-size: 0.78rem; color: #0f172a; font-variant-numeric: tabular-nums; font-weight: 600;">
+                                        {{ p.times_redeemed }}
+                                    </span>
+                                    {% if p.max_redemptions %}
+                                        <span style="color: #94a3b8; font-size: 0.72rem;"> / {{ p.max_redemptions }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: right;">
+                                    {% if p.active %}
+                                        <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-size: 0.7rem; font-weight: 500;">Actif</span>
+                                    {% else %}
+                                        <span class="tag is-rounded is-small" style="background: #f8fafc; color: #94a3b8; font-size: 0.7rem;">Inactif</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -95,54 +125,62 @@
 
     <!-- Modèles de Coupons Stripe de base -->
     <div class="column is-12-tablet is-5-desktop">
-        <div class="admin-card">
-            <h2 class="title is-5 mb-4" style="font-weight: 700; color: #1e293b;">
-                <span class="icon mr-2 has-text-warning"><i class="fas fa-ticket-alt"></i></span>
-                Coupons Stripe ({{ coupons|length }})
-            </h2>
+        <div class="admin-card" style="padding: 0 !important; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);">
+            <div style="padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9;">
+                <h2 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin: 0;">
+                    Coupons Stripe ({{ coupons|length }})
+                </h2>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin: 2px 0 0 0;">
+                    Règles de tarification sous-jacentes définies dans Stripe
+                </p>
+            </div>
 
             {% if not coupons %}
-                <p class="has-text-grey is-size-7 py-4">Aucun coupon trouvé.</p>
+                <p class="has-text-centered has-text-grey is-size-7 py-6">Aucun coupon trouvé.</p>
             {% else %}
-                <div class="table-container">
-                    <table class="table is-fullwidth is-hoverable" style="vertical-align: middle;">
+                <div class="table-container mb-0" style="overflow-x: auto;">
+                    <table class="table is-fullwidth admin-table mb-0" style="border-collapse: collapse;">
                         <thead>
-                            <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
-                                <th>ID COUPON</th>
-                                <th>VALEUR</th>
-                                <th>DURÉE</th>
-                                <th>VALIDE</th>
+                            <tr style="background: #fafbfd;">
+                                <th>ID Coupon</th>
+                                <th>Valeur</th>
+                                <th>Durée</th>
+                                <th style="text-align: right;">Valide</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for c in coupons %}
-                            <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
-                                <td><code style="font-size: 0.75rem;">{{ c.id }}</code></td>
+                            <tr>
+                                <td>
+                                    <span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.72rem; color: #334155; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0;">
+                                        {{ c.id }}
+                                    </span>
+                                </td>
                                 <td>
                                     {% if c.percent_off %}
-                                        <span class="tag is-info is-light">-{{ c.percent_off|int }}%</span>
+                                        <span class="tag is-rounded is-small" style="background: #f1f5f9; color: #0f172a; font-weight: 600; font-size: 0.72rem;">-{{ c.percent_off|int }}%</span>
                                     {% elif c.amount_off %}
-                                        <span class="tag is-info is-light">-{{ "%.2f"|format(c.amount_off / 100) }} {{ (c.currency or 'chf')|upper }}</span>
+                                        <span class="tag is-rounded is-small" style="background: #f1f5f9; color: #0f172a; font-weight: 600; font-size: 0.72rem;">-{{ "%.2f"|format(c.amount_off / 100) }} {{ (c.currency or 'chf')|upper }}</span>
                                     {% else %}
-                                        -
+                                        <span style="color: #cbd5e1; font-size: 0.75rem;">—</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if c.duration == 'forever' %}
-                                        <span class="is-size-7 has-text-grey">À vie</span>
+                                        <span class="is-size-7" style="color: #64748b;">À vie</span>
                                     {% elif c.duration == 'once' %}
-                                        <span class="is-size-7 has-text-grey">1ère fois</span>
+                                        <span class="is-size-7" style="color: #64748b;">1ère échéance</span>
                                     {% elif c.duration == 'repeating' %}
-                                        <span class="is-size-7 has-text-grey">{{ c.duration_in_months }} mois</span>
+                                        <span class="is-size-7" style="color: #64748b;">{{ c.duration_in_months }} mois</span>
                                     {% else %}
-                                        <span class="is-size-7 has-text-grey">{{ c.duration }}</span>
+                                        <span class="is-size-7" style="color: #64748b;">{{ c.duration }}</span>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td style="text-align: right;">
                                     {% if c.valid %}
-                                        <span class="tag is-success is-light is-rounded is-small">Oui</span>
+                                        <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-size: 0.7rem; font-weight: 500;">Oui</span>
                                     {% else %}
-                                        <span class="tag is-danger is-light is-rounded is-small">Non</span>
+                                        <span class="tag is-rounded is-small" style="background: #fef2f2; color: #dc2626; font-size: 0.7rem; font-weight: 500;">Non</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -158,29 +196,29 @@
 <!-- Modal Création Coupon & Code Promo -->
 <div id="modalCreateCoupon" class="modal">
     <div class="modal-background" onclick="document.getElementById('modalCreateCoupon').classList.remove('is-active')"></div>
-    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
-        <header class="modal-card-head">
-            <p class="modal-card-title is-size-5" style="font-weight: 700;">Créer un code promotionnel Stripe</p>
+    <div class="modal-card" style="border-radius: 12px; overflow: hidden; max-width: 480px;">
+        <header class="modal-card-head" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; padding: 1rem 1.25rem;">
+            <p class="modal-card-title has-text-weight-bold mb-0" style="font-size: 0.95rem; color: #0f172a;">Créer un code promotionnel Stripe</p>
             <button class="delete" aria-label="close" onclick="document.getElementById('modalCreateCoupon').classList.remove('is-active')"></button>
         </header>
         <form method="POST" action="{{ url_for('admin.coupons') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <section class="modal-card-body">
-                <div class="field">
-                    <label class="label">Code promotionnel (affiché à l'utilisateur)</label>
+            <section class="modal-card-body" style="padding: 1.25rem;">
+                <div class="field mb-3">
+                    <label class="label is-small" style="color: #0f172a;">Code promotionnel (affiché à l'enseignant)</label>
                     <div class="control">
-                        <input class="input" type="text" name="code" placeholder="Ex: RENTREE2026" required style="text-transform: uppercase;">
+                        <input class="input is-small is-rounded" type="text" name="code" placeholder="Ex: PROMO30" required style="text-transform: uppercase; border-color: #e2e8f0; font-family: ui-monospace, SFMono-Regular, monospace; font-weight: 600;">
                     </div>
-                    <p class="help">Le code que l'enseignant saisira lors du paiement sur Stripe Checkout.</p>
+                    <p class="help is-size-7" style="color: #94a3b8;">Le code que l'utilisateur saisira dans le champ promo de Stripe Checkout.</p>
                 </div>
 
-                <div class="columns">
+                <div class="columns is-variable is-2 mb-2">
                     <div class="column is-6">
-                        <div class="field">
-                            <label class="label">Type de réduction</label>
+                        <div class="field mb-0">
+                            <label class="label is-small" style="color: #0f172a;">Type de réduction</label>
                             <div class="control">
-                                <div class="select is-fullwidth">
-                                    <select name="discount_type">
+                                <div class="select is-small is-fullwidth is-rounded">
+                                    <select name="discount_type" style="border-color: #e2e8f0;">
                                         <option value="percent">Pourcentage (%)</option>
                                         <option value="amount">Montant fixe (CHF)</option>
                                     </select>
@@ -189,50 +227,50 @@
                         </div>
                     </div>
                     <div class="column is-6">
-                        <div class="field">
-                            <label class="label">Valeur de la réduction</label>
+                        <div class="field mb-0">
+                            <label class="label is-small" style="color: #0f172a;">Valeur</label>
                             <div class="control">
-                                <input class="input" type="number" step="0.5" name="discount_value" placeholder="Ex: 20" required min="1">
+                                <input class="input is-small is-rounded" type="number" step="0.5" name="discount_value" placeholder="Ex: 30" required min="1" style="border-color: #e2e8f0;">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="columns">
+                <div class="columns is-variable is-2 mb-2">
                     <div class="column is-6">
-                        <div class="field">
-                            <label class="label">Durée d'application</label>
+                        <div class="field mb-0">
+                            <label class="label is-small" style="color: #0f172a;">Durée</label>
                             <div class="control">
-                                <div class="select is-fullwidth">
-                                    <select name="duration" id="durationSelect" onchange="toggleDurationMonths(this.value)">
-                                        <option value="once">Une seule fois (1er paiement)</option>
-                                        <option value="repeating">Pendant plusieurs mois</option>
-                                        <option value="forever">Toujours (à vie)</option>
+                                <div class="select is-small is-fullwidth is-rounded">
+                                    <select name="duration" id="durationSelect" onchange="toggleDurationMonths(this.value)" style="border-color: #e2e8f0;">
+                                        <option value="once">1ère échéance</option>
+                                        <option value="repeating">Plusieurs mois</option>
+                                        <option value="forever">À vie (permanent)</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="column is-6" id="durationMonthsField" style="display: none;">
-                        <div class="field">
-                            <label class="label">Nombre de mois</label>
+                        <div class="field mb-0">
+                            <label class="label is-small" style="color: #0f172a;">Nombre de mois</label>
                             <div class="control">
-                                <input class="input" type="number" name="duration_in_months" placeholder="Ex: 3" min="1">
+                                <input class="input is-small is-rounded" type="number" name="duration_in_months" placeholder="Ex: 3" min="1" style="border-color: #e2e8f0;">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label class="label">Nombre maximum d'utilisations (optionnel)</label>
+                <div class="field mt-3">
+                    <label class="label is-small" style="color: #0f172a;">Nombre maximum d'utilisations (optionnel)</label>
                     <div class="control">
-                        <input class="input" type="number" name="max_redemptions" placeholder="Laisser vide pour illimité" min="1">
+                        <input class="input is-small is-rounded" type="number" name="max_redemptions" placeholder="Laisser vide pour illimité" min="1" style="border-color: #e2e8f0;">
                     </div>
                 </div>
             </section>
-            <footer class="modal-card-foot" style="justify-content: flex-end;">
-                <button type="button" class="button is-light" onclick="document.getElementById('modalCreateCoupon').classList.remove('is-active')">Annuler</button>
-                <button type="submit" class="button is-primary">Créer sur Stripe</button>
+            <footer class="modal-card-foot" style="background: #fafbfd; border-top: 1px solid #f1f5f9; justify-content: flex-end; padding: 0.75rem 1.25rem;">
+                <button type="button" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="document.getElementById('modalCreateCoupon').classList.remove('is-active')">Annuler</button>
+                <button type="submit" class="button is-small is-rounded" style="background: #0f172a; color: #ffffff; font-size: 0.75rem; font-weight: 500;">Créer sur Stripe</button>
             </footer>
         </form>
     </div>

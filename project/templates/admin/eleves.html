@@ -6,107 +6,156 @@
 {% block admin_header_subtitle %}Vue d'ensemble de tous les élèves enregistrés par les enseignants dans leurs classes.{% endblock %}
 
 {% block admin_actions %}
-<div class="tags has-addons mb-0">
-  <span class="tag is-medium is-light">Total élèves</span>
-  <span class="tag is-medium is-primary has-text-weight-bold">{{ total_students }}</span>
-</div>
+<span class="stat-card-badge is-neutral" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+  {{ total_students }} élève{% if total_students > 1 %}s{% endif %}
+</span>
 {% endblock %}
 
 {% block admin_content %}
-<div class="admin-card">
-  <!-- Barre de recherche -->
-  <form method="GET" action="{{ url_for('admin.eleves') }}" class="mb-5">
-    <div class="field has-addons">
-      <div class="control has-icons-left is-expanded">
-        <input class="input is-rounded" type="text" name="q" value="{{ search_query or '' }}" placeholder="Rechercher par nom ou prénom d'élève...">
-        <span class="icon is-small is-left">
-          <i class="fas fa-search"></i>
-        </span>
-      </div>
-      <div class="control">
-        <button type="submit" class="button is-primary is-rounded px-5">
-          <span>Rechercher</span>
-        </button>
-      </div>
-      {% if search_query %}
-        <div class="control ml-2">
-          <a href="{{ url_for('admin.eleves') }}" class="button is-light is-rounded" title="Effacer la recherche">
-            <span class="icon is-small"><i class="fas fa-times"></i></span>
-          </a>
+<style>
+  .sortable-th {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+  .sortable-th:hover {
+    color: #475569 !important;
+  }
+  .sort-arrow {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.7rem;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    color: #94a3b8;
+  }
+  .sortable-th:hover .sort-arrow {
+    opacity: 0.4;
+  }
+  .sortable-th.is-sorted {
+    color: #0f172a !important;
+  }
+  .sortable-th.is-sorted .sort-arrow {
+    opacity: 1 !important;
+    color: #0f172a;
+    font-weight: 700;
+  }
+</style>
+
+<div class="admin-card" style="padding: 0 !important; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);">
+  <!-- Barre d'outils intégrée avec recherche instantanée/Entrée -->
+  <div style="padding: 0.85rem 1.25rem; border-bottom: 1px solid #f1f5f9;">
+    <form method="GET" action="{{ url_for('admin.eleves') }}">
+      <div class="field mb-0">
+        <div class="control has-icons-left" style="position: relative; max-width: 480px;">
+          <input class="input is-rounded" type="text" name="q" value="{{ search_query or '' }}" placeholder="Rechercher par nom ou prénom d'élève... (Entrée pour valider)" style="border-color: #e2e8f0; font-size: 0.82rem; height: 2.2rem; background: #f8fafc; padding-right: 2.5rem;">
+          <span class="icon is-small is-left" style="color: #94a3b8; font-size: 0.75rem;">
+            <i class="fas fa-search"></i>
+          </span>
+          {% if search_query %}
+            <a href="{{ url_for('admin.eleves') }}" class="button is-small is-white is-rounded" style="position: absolute; right: 6px; top: 4px; height: 1.7rem; width: 1.7rem; padding: 0; border: none; color: #94a3b8;" title="Effacer la recherche">
+              <span class="icon is-small" style="font-size: 0.7rem;"><i class="fas fa-times"></i></span>
+            </a>
+          {% endif %}
         </div>
-      {% endif %}
-    </div>
-  </form>
+      </div>
+    </form>
+  </div>
 
   <!-- Table des élèves -->
-  <div class="table-container">
-    <table class="table is-fullwidth is-hoverable" style="vertical-align: middle;">
+  <div class="table-container mb-0" style="overflow-x: auto;">
+    <table class="table is-fullwidth mb-0" style="border-collapse: collapse; min-width: 750px; vertical-align: middle;">
       <thead>
-        <tr style="border-bottom: 2px solid #f1f5f9; font-size: 0.8rem; color: #64748b;">
-          <th style="width: 60px;">ID</th>
-          <th>ÉLÈVE</th>
-          <th>CLASSE / ENSEIGNANT</th>
-          <th class="has-text-centered">EMPRUNTS EN COURS</th>
-          <th class="has-text-centered">TOTAL PRÊTS HISTORIQUE</th>
+        <tr style="background: #fafbfd; border-bottom: 1px solid #f1f5f9;">
+          <th class="sortable-th" data-sort-col="name" style="padding: 0.75rem 1.25rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; width: 40%;">
+            Élève <span class="sort-arrow">↓</span>
+          </th>
+          <th class="sortable-th" data-sort-col="teacher" style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; width: 34%;">
+            Enseignant / Classe <span class="sort-arrow">↓</span>
+          </th>
+          <th class="sortable-th" data-sort-col="active_loans" style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: center; text-transform: uppercase; width: 13%;">
+            En cours <span class="sort-arrow">↓</span>
+          </th>
+          <th class="sortable-th" data-sort-col="total_loans" style="padding: 0.75rem 1.25rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: right; text-transform: uppercase; width: 13%;">
+            Historique <span class="sort-arrow">↓</span>
+          </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="studentsTbody">
         {% for s in students %}
-          <tr style="border-bottom: 1px solid #f8fafc; font-size: 0.875rem;">
-            <td class="has-text-grey-light is-size-7">#{{ s.id }}</td>
-            <td>
-              <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem;">
-                  <i class="fas fa-user-graduate"></i>
+          {% set active_loans = s.loans | selectattr('date_return', 'none') | list if s.loans else [] %}
+          {% set loan_cnt = s.loans | length if s.loans else 0 %}
+          <tr class="student-row"
+              data-name="{{ (s.firstname or '')|lower }} {{ (s.name or '')|lower }}"
+              data-teacher="{{ (s.user.name or s.user.email or '')|lower if s.user else '' }}"
+              data-active-loans="{{ active_loans|length }}"
+              data-total-loans="{{ loan_cnt }}"
+              style="border-bottom: 1px solid #f8fafc;">
+            <!-- Élève -->
+            <td style="padding: 0.85rem 1.25rem; vertical-align: middle;">
+              <div class="is-flex is-align-items-center" style="gap: 0.65rem;">
+                <div style="width: 30px; height: 30px; border-radius: 50%; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.75rem; flex-shrink: 0; border: 1px solid #e2e8f0;">
+                  {{ (s.firstname or s.name or 'E')[:1]|upper }}
                 </div>
                 <div>
-                  <div class="has-text-weight-bold" style="color: #0f172a;">
+                  <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.82rem; line-height: 1.2;">
                     {{ s.firstname or '' }} {{ s.name or '' }}
-                  </div>
-                  <div class="is-size-7 has-text-grey">
-                    Élève enregistré
                   </div>
                 </div>
               </div>
             </td>
-            <td>
+
+            <!-- Enseignant -->
+            <td style="padding: 0.85rem 0.75rem; vertical-align: middle;">
               {% if s.user %}
-                <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
-                  <div style="width: 26px; height: 26px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.65rem;">
+                <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
+                  <div style="width: 26px; height: 26px; border-radius: 50%; background: #f1f5f9; color: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.7rem; flex-shrink: 0; border: 1px solid #e2e8f0;">
                     {{ (s.user.name or s.user.email)[:2]|upper }}
                   </div>
-                  <div>
-                    <div class="has-text-weight-semibold is-size-7" style="color: #1e293b;">{{ s.user.name or 'Enseignant' }}</div>
-                    <div class="is-size-7 has-text-grey">{{ s.user.email }}</div>
+                  <div style="min-width: 0;">
+                    <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.8rem; line-height: 1.2;">
+                      {{ s.user.name or 'Enseignant' }}
+                    </div>
+                    <div style="font-size: 0.72rem; color: #64748b; margin-top: 1px;">
+                      {{ s.user.email }}
+                    </div>
                   </div>
                 </div>
               {% else %}
-                <span class="tag is-warning is-light is-small">Orphelin</span>
+                <span class="tag is-rounded is-small" style="background: #fffbeb; color: #b45309; font-size: 0.7rem;">Orphelin</span>
               {% endif %}
             </td>
-            <td class="has-text-centered">
+
+            <!-- Emprunts en cours -->
+            <td style="padding: 0.85rem 0.75rem; vertical-align: middle; text-align: center;">
               {% set active_loans = s.loans | selectattr('date_return', 'none') | list if s.loans else [] %}
               {% if active_loans | length > 0 %}
-                <span class="tag is-warning is-light is-rounded is-small">
-                  <i class="fas fa-book-reader mr-1"></i> {{ active_loans | length }} en cours
+                <span class="tag is-rounded is-small" style="background: #fffbeb; color: #b45309; font-size: 0.7rem; font-weight: 500;">
+                  {{ active_loans | length }} en cours
                 </span>
               {% else %}
-                <span class="tag is-light is-rounded is-small has-text-grey">0</span>
+                <span style="color: #cbd5e1; font-size: 0.8rem;">0</span>
               {% endif %}
             </td>
-            <td class="has-text-centered">
-              <span class="tag is-light is-rounded is-small">
-                {{ s.loans | length if s.loans else 0 }} prêt(s)
+
+            <!-- Historique total prêts -->
+            <td style="padding: 0.85rem 1.25rem; vertical-align: middle; text-align: right;">
+              {% set loan_cnt = s.loans | length if s.loans else 0 %}
+              <span style="font-size: 0.78rem; color: #64748b; font-variant-numeric: tabular-nums;">
+                {{ loan_cnt }} prêt{% if loan_cnt > 1 %}s{% endif %}
               </span>
             </td>
           </tr>
         {% else %}
           <tr>
-            <td colspan="5" class="has-text-centered py-6">
-              <span class="icon is-large has-text-grey-light"><i class="fas fa-user-graduate fa-3x"></i></span>
-              <p class="has-text-grey mt-3">Aucun élève trouvé{% if search_query %} pour « {{ search_query }} »{% endif %}.</p>
+            <td colspan="4" class="has-text-centered py-6">
+              <span class="icon is-medium has-text-grey-light mb-2"><i class="fas fa-user-graduate fa-lg"></i></span>
+              <p class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.85rem;">Aucun élève trouvé{% if search_query %} pour « {{ search_query }} »{% endif %}</p>
               {% if search_query %}
-                <a href="{{ url_for('admin.eleves') }}" class="button is-small is-light mt-2">Réinitialiser le filtre</a>
+                <a href="{{ url_for('admin.eleves') }}" class="button is-small is-white is-rounded mt-2" style="border: 1px solid #e2e8f0; font-size: 0.72rem;">Réinitialiser la recherche</a>
               {% endif %}
             </td>
           </tr>
@@ -116,10 +165,62 @@
   </div>
 
   {% if students|length >= 100 %}
-    <div class="notification is-light is-size-7 mt-4" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
-      <span class="icon has-text-info mr-1"><i class="fas fa-info-circle"></i></span>
+    <div style="padding: 0.75rem 1.25rem; background: #fafbfd; border-top: 1px solid #f1f5f9; font-size: 0.72rem; color: #64748b;">
+      <span class="icon is-small has-text-grey mr-1" style="font-size: 0.65rem;"><i class="fas fa-info-circle"></i></span>
       Affichage limité aux 100 premiers résultats pour optimiser les performances. Utilisez la recherche pour filtrer un élève spécifique.
     </div>
   {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let currentSortCol = null;
+  let currentSortDir = 'asc';
+
+  function sortStudents(column) {
+    const tbody = document.getElementById('studentsTbody');
+    if (!tbody) return;
+
+    if (currentSortCol === column) {
+      currentSortDir = (currentSortDir === 'asc') ? 'desc' : 'asc';
+    } else {
+      currentSortCol = column;
+      currentSortDir = (column === 'active_loans' || column === 'total_loans') ? 'desc' : 'asc';
+    }
+
+    document.querySelectorAll('.sortable-th').forEach(th => {
+      const col = th.dataset.sortCol;
+      const arrow = th.querySelector('.sort-arrow');
+      if (col === currentSortCol) {
+        th.classList.add('is-sorted');
+        if (arrow) arrow.textContent = currentSortDir === 'asc' ? '↑' : '↓';
+      } else {
+        th.classList.remove('is-sorted');
+        if (arrow) arrow.textContent = '↓';
+      }
+    });
+
+    const rowsArray = Array.from(tbody.querySelectorAll('.student-row'));
+    rowsArray.sort((rowA, rowB) => {
+      if (currentSortCol === 'active_loans' || currentSortCol === 'total_loans') {
+        const numA = parseFloat(rowA.dataset[currentSortCol === 'active_loans' ? 'activeLoans' : 'totalLoans'] || 0);
+        const numB = parseFloat(rowB.dataset[currentSortCol === 'active_loans' ? 'activeLoans' : 'totalLoans'] || 0);
+        return currentSortDir === 'asc' ? (numA - numB) : (numB - numA);
+      } else {
+        const valA = (rowA.dataset[currentSortCol] || '').toLowerCase();
+        const valB = (rowB.dataset[currentSortCol] || '').toLowerCase();
+        return currentSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+    });
+
+    rowsArray.forEach(row => tbody.appendChild(row));
+  }
+
+  document.querySelectorAll('.sortable-th').forEach(th => {
+    th.addEventListener('click', () => {
+      sortStudents(th.dataset.sortCol);
+    });
+  });
+});
+</script>
 {% endblock %}

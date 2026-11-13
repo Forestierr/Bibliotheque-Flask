@@ -71,6 +71,7 @@ class User(UserMixin, db.Model):
     default_loan_duration_days = db.Column(
         db.Integer, default=14, server_default="14", nullable=False
     )
+    is_test = db.Column(db.Boolean, default=False, server_default="0", nullable=False)
 
     def check_and_reset_weekly_scans(self) -> bool:
         """
@@ -368,6 +369,9 @@ class Book(db.Model):
     isbn = db.Column(db.String(100), nullable=True)
     barcode = db.Column(db.String(100), nullable=True, index=True)
     image_url = db.Column(db.String(500), nullable=True)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(UTC), nullable=True
+    )
 
     user_id = db.Column(
         db.Integer, ForeignKey("user.id")
@@ -440,6 +444,9 @@ class Student(db.Model):
     # Soft-delete / Archivage fields
     is_archived = db.Column(
         db.Boolean, default=False, server_default="0", nullable=False, index=True
+    )
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(UTC), nullable=True
     )
     archived_at = db.Column(db.DateTime, nullable=True)
     archived_year_id = db.Column(
@@ -523,6 +530,7 @@ class Feedback(db.Model):
     status = db.Column(
         db.String(30), default="nouveau", nullable=False
     )  # "nouveau", "en_cours", "traite"
+    admin_note = db.Column(db.Text, nullable=True)
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(UTC), nullable=False
     )

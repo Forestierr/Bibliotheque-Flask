@@ -6,18 +6,59 @@
 {% block admin_header_subtitle %}Consultez, filtrez et gérez les comptes enseignants, formules d'abonnement et autorisations.{% endblock %}
 
 {% block admin_actions %}
-<div class="tags has-addons mb-0">
-  <span class="tag is-light is-medium">Total inscrits</span>
-  <span class="tag is-primary is-medium has-text-weight-bold">{{ users|length }}</span>
+<div class="is-flex is-align-items-center" style="gap: 0.5rem;">
+  <a href="{{ url_for('admin.export_users', **request.args) }}" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem; color: #0f172a; font-weight: 500;">
+    <span class="icon is-small mr-1" style="color: #64748b;"><i class="fas fa-file-csv"></i></span>
+    <span>Exporter CSV</span>
+  </a>
+  <span class="stat-card-badge is-neutral" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+    {{ users|length }} enseignant{% if users|length > 1 %}s{% endif %}
+  </span>
 </div>
 {% endblock %}
 
 {% block admin_content %}
 <style>
-  /* Conteneur de la carte du tableau */
+  /* Conteneur unifié de la carte du tableau */
   .admin-users-card {
     padding: 0 !important;
     position: relative;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  }
+
+  /* En-têtes triables style Skymetrics */
+  .sortable-th {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+  .sortable-th:hover {
+    color: #475569 !important;
+  }
+  .sort-arrow {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.7rem;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    color: #94a3b8;
+  }
+  .sortable-th:hover .sort-arrow {
+    opacity: 0.4;
+  }
+  .sortable-th.is-sorted {
+    color: #0f172a !important;
+  }
+  .sortable-th.is-sorted .sort-arrow {
+    opacity: 1 !important;
+    color: #0f172a;
+    font-weight: 700;
   }
 
   /* Préservation stricte du défilement latéral du tableau sur tous les écrans */
@@ -31,22 +72,25 @@
   .user-row {
     transition: background-color 0.15s ease;
   }
+  .user-row:hover {
+    background-color: #fafbfd;
+  }
   .user-row.has-dropdown-open {
     background-color: #f8fafc;
   }
 
   /* Style soigné pour le menu des actions */
   .admin-actions-dropdown-content {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.04);
+    border-radius: 10px;
     border: 1px solid #e2e8f0;
     padding: 6px;
     background: #ffffff;
   }
   .admin-actions-dropdown-content .dropdown-item {
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 8px 12px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     display: flex;
     align-items: center;
     transition: background-color 0.15s ease, color 0.15s ease;
@@ -61,77 +105,100 @@
   }
 </style>
 
-<!-- Barre de Recherche et Filtres -->
-<div class="admin-card mb-4" style="padding: 1.25rem;">
-  <div class="columns is-variable is-2 is-multiline">
-    <!-- Recherche -->
-    <div class="column is-5-desktop is-12-tablet">
-      <div class="field mb-0">
-        <p class="control has-icons-left">
-          <input class="input is-rounded" type="text" id="searchInput" placeholder="Rechercher par ID, Email ou Nom...">
-          <span class="icon is-small is-left">
-            <i class="fas fa-search"></i>
-          </span>
-        </p>
-      </div>
+{% if active_filter_label %}
+<div class="notification mb-4 is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap" style="border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; padding: 0.75rem 1rem; gap: 0.75rem;">
+  <div class="is-flex is-align-items-center" style="gap: 0.6rem;">
+    <span class="icon has-text-grey" style="font-size: 0.85rem;"><i class="fas fa-filter"></i></span>
+    <div>
+      <span class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.82rem;">
+        Filtre actif : {{ active_filter_label }}
+      </span>
+      <span class="is-size-7 has-text-grey ml-2">
+        ({{ filtered_count }} sur {{ total_count }})
+      </span>
     </div>
+  </div>
+  <a href="{{ url_for('admin.users') }}" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; color: #0f172a; font-weight: 500; font-size: 0.72rem; padding: 0.2rem 0.6rem;">
+    <span class="icon is-small" style="font-size: 0.65rem;"><i class="fas fa-times"></i></span>
+    <span>Effacer le filtre</span>
+  </a>
+</div>
+{% endif %}
 
-    <!-- Filtre Formule -->
-    <div class="column is-4-desktop is-6-tablet">
-      <div class="field mb-0">
-        <div class="control has-icons-left is-expanded">
-          <div class="select is-rounded is-fullwidth">
-            <select id="filterPlan">
-              <option value="all">Toutes les formules</option>
-              <option value="premium">⭐ Premium (Actif)</option>
-              <option value="founder">👑 Fondateur (À vie)</option>
-              <option value="trial">⏳ En essai</option>
-              <option value="free">Gratuit</option>
-            </select>
-          </div>
-          <span class="icon is-small is-left">
-            <i class="fas fa-crown"></i>
-          </span>
+<!-- CARTE UNIQUE : FILTRES INTÉGRÉS + TABLEAU -->
+<div class="admin-card admin-users-card">
+  <!-- Barre d'outils intégrée au tableau -->
+  <div style="padding: 0.85rem 1.25rem; border-bottom: 1px solid #f1f5f9;">
+    <div class="columns is-variable is-2 is-mobile is-multiline mb-0 is-align-items-center">
+      <!-- Recherche -->
+      <div class="column is-6-desktop is-12-mobile py-1">
+        <div class="field mb-0">
+          <p class="control has-icons-left">
+            <input class="input is-rounded" type="text" id="searchInput" placeholder="Rechercher par email ou nom..." style="border-color: #e2e8f0; font-size: 0.82rem; height: 2.2rem; background: #f8fafc;">
+            <span class="icon is-small is-left" style="color: #94a3b8; font-size: 0.75rem;">
+              <i class="fas fa-search"></i>
+            </span>
+          </p>
         </div>
       </div>
-    </div>
 
-    <!-- Filtre Statut -->
-    <div class="column is-3-desktop is-6-tablet">
-      <div class="field mb-0">
-        <div class="control has-icons-left is-expanded">
-          <div class="select is-rounded is-fullwidth">
-            <select id="filterStatus">
-              <option value="all">Tous les statuts</option>
-              <option value="verified">✅ Vérifiés</option>
-              <option value="unverified">⚠️ Non vérifiés</option>
-              <option value="newsletter">✉️ Abonnés newsletter</option>
-            </select>
+      <!-- Filtre Formule -->
+      <div class="column is-3-desktop is-6-mobile py-1">
+        <div class="field mb-0">
+          <div class="control is-expanded">
+            <div class="select is-rounded is-fullwidth" style="font-size: 0.82rem;">
+              <select id="filterPlan" style="border-color: #e2e8f0; height: 2.2rem; background: #f8fafc;">
+                <option value="all">Toutes les formules</option>
+                <option value="premium">Premium</option>
+                <option value="founder">Fondateur</option>
+                <option value="trial">En essai</option>
+                <option value="free">Gratuit</option>
+              </select>
+            </div>
           </div>
-          <span class="icon is-small is-left">
-            <i class="fas fa-filter"></i>
-          </span>
+        </div>
+      </div>
+
+      <!-- Filtre Statut -->
+      <div class="column is-3-desktop is-6-mobile py-1">
+        <div class="field mb-0">
+          <div class="control is-expanded">
+            <div class="select is-rounded is-fullwidth" style="font-size: 0.82rem;">
+              <select id="filterStatus" style="border-color: #e2e8f0; height: 2.2rem; background: #f8fafc;">
+                <option value="all">Tous les statuts</option>
+                <option value="verified">Vérifiés</option>
+                <option value="unverified">Non vérifiés</option>
+                <option value="newsletter">Abonnés newsletter</option>
+                <option value="test">Comptes de test</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Tableau des Utilisateurs -->
-<div class="admin-card admin-users-card">
-  <div class="table-container mb-0">
-    <table class="table is-fullwidth is-hoverable" id="usersTable" style="margin-bottom: 0;">
+  <!-- Table des Utilisateurs -->
+  <div class="table-container mb-0" style="overflow-x: auto;">
+    <table class="table is-fullwidth mb-0" id="usersTable" style="border-collapse: collapse; min-width: 780px;">
       <thead>
-        <tr style="background: #f8fafc;">
-          <th style="padding: 1rem; width: 60px;">ID</th>
-          <th style="padding: 1rem;">Utilisateur</th>
-          <th style="padding: 1rem;">Statut</th>
-          <th style="padding: 1rem;">Formule</th>
-          <th style="padding: 1rem;">Scans</th>
-          <th style="padding: 1rem;">Newsletter</th>
-          <th style="padding: 1rem; text-align: center;">Livres</th>
-          <th style="padding: 1rem; text-align: center;">Élèves</th>
-          <th style="padding: 1rem; width: 80px; text-align: right;">Actions</th>
+        <tr style="background: #fafbfd; border-bottom: 1px solid #f1f5f9;">
+          <th class="sortable-th" data-sort-col="user" style="padding: 0.75rem 1.25rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase;">
+            Utilisateur <span class="sort-arrow">↓</span>
+          </th>
+          <th style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Statut</th>
+          <th style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Formule</th>
+          <th class="sortable-th" data-sort-col="scans" style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: center; text-transform: uppercase;">
+            Scans <span class="sort-arrow">↓</span>
+          </th>
+          <th style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: center; text-transform: uppercase;">Newsletter</th>
+          <th class="sortable-th" data-sort-col="books" style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: center; text-transform: uppercase;">
+            Livres <span class="sort-arrow">↓</span>
+          </th>
+          <th class="sortable-th" data-sort-col="students" style="padding: 0.75rem 0.75rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: center; text-transform: uppercase;">
+            Élèves <span class="sort-arrow">↓</span>
+          </th>
+          <th style="padding: 0.75rem 1.25rem; font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-align: right; text-transform: uppercase; width: 60px;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -143,102 +210,118 @@
             data-name="{{ (u.name or '')|lower }}"
             data-plan="{{ plan_category }}"
             data-verified="{{ '1' if u.is_verified else '0' }}"
-            data-newsletter="{{ '1' if u.newsletter_subscribed else '0' }}">
-          
-          <td style="padding: 1rem; vertical-align: middle;">
-            <span class="has-text-grey font-monospace is-size-7">#{{ u.id }}</span>
-          </td>
+            data-newsletter="{{ '1' if u.newsletter_subscribed else '0' }}"
+            data-test="{{ '1' if u.is_test else '0' }}"
+            data-scans="{{ u.free_scans_used or 0 }}"
+            data-books="{{ u.books|length }}"
+            data-students="{{ u.students|length }}"
+            style="border-bottom: 1px solid #f8fafc;">
 
-          <td style="padding: 1rem; vertical-align: middle;">
-            <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
-              <div class="user-avatar" style="width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;">
+          <!-- Utilisateur -->
+          <td style="padding: 0.75rem 1.25rem; vertical-align: middle;">
+            <div class="is-flex is-align-items-center" style="gap: 0.65rem;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; color: #0f172a; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.78rem; flex-shrink: 0; border: 1px solid #e2e8f0;">
                 {{ (u.name or u.email)[:2]|upper }}
               </div>
-              <div>
-                <div class="has-text-weight-semibold user-email" style="color: #0f172a; line-height: 1.2;">
-                  {{ u.email }}
-                </div>
-                <div class="is-size-7 has-text-grey user-name">
+              <div style="min-width: 0;">
+                <a href="{{ url_for('admin.user_detail', user_id=u.id) }}" class="has-text-weight-semibold user-name" style="color: #0f172a; font-size: 0.82rem; line-height: 1.2; text-decoration: none;">
                   {{ u.name or 'Sans nom' }}
+                </a>
+                {% if u.is_test %}
+                  <span class="tag is-rounded is-small ml-1" style="background: #fee2e2; color: #991b1b; font-size: 0.65rem; font-weight: 600; padding: 0 5px;">Test</span>
+                {% endif %}
+                <div class="user-email" style="font-size: 0.75rem; color: #64748b; margin-top: 1px;">
+                  {{ u.email }}
                 </div>
               </div>
             </div>
           </td>
 
-          <td style="padding: 1rem; vertical-align: middle;">
+          <!-- Statut -->
+          <td style="padding: 0.75rem 0.75rem; vertical-align: middle;">
             {% if u.is_verified %}
-              <span class="tag is-success is-light is-rounded">
-                <i class="fas fa-check-circle mr-1"></i> Vérifié
+              <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-weight: 500; font-size: 0.7rem;">
+                Vérifié
               </span>
             {% else %}
-              <span class="tag is-warning is-light is-rounded">
-                <i class="fas fa-clock mr-1"></i> En attente
+              <span class="tag is-rounded is-small" style="background: #fffbeb; color: #b45309; font-weight: 500; font-size: 0.7rem;">
+                En attente
               </span>
             {% endif %}
           </td>
 
-          <td style="padding: 1rem; vertical-align: middle;">
+          <!-- Formule -->
+          <td style="padding: 0.75rem 0.75rem; vertical-align: middle;">
             {% if u.plan == 'founder' %}
-              <span class="tag is-warning is-light is-rounded has-text-weight-bold" title="Accès illimité permanent">
-                👑 Fondateur
+              <span class="tag is-rounded is-small" style="background: #f1f5f9; color: #0f172a; font-size: 0.7rem; font-weight: 600;" title="Accès illimité permanent">
+                Fondateur
               </span>
             {% elif u.is_canceling %}
-              <span class="tag is-warning is-light is-rounded" title="Résiliation Stripe programmée">
-                ⚠️ Résilié ({{ u.effective_cancellation_date|format_date }})
+              <span class="tag is-rounded is-small" style="background: #fef2f2; color: #dc2626; font-size: 0.7rem;" title="Résiliation Stripe programmée">
+                Résilié ({{ u.effective_cancellation_date|format_date }})
               </span>
             {% elif u.is_in_trial %}
-              <span class="tag is-info is-light is-rounded" title="Période d'essai actif">
-                ⏳ Essai ({{ u.trial_days_left }}j)
+              <span class="tag is-rounded is-small" style="background: #f0f9ff; color: #0284c7; font-size: 0.7rem; font-weight: 500;" title="Période d'essai actif">
+                Essai ({{ u.trial_days_left }}j)
               </span>
             {% elif u.is_premium %}
-              <span class="tag is-success is-light is-rounded has-text-weight-semibold" title="Abonnement Stripe actif">
-                ⭐ Premium
+              <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-size: 0.7rem; font-weight: 600;" title="Abonnement Stripe actif">
+                Premium
               </span>
             {% else %}
-              <span class="tag is-light is-rounded">
+              <span class="tag is-rounded is-small is-light" style="font-size: 0.7rem; color: #64748b;">
                 Gratuit
               </span>
             {% endif %}
           </td>
 
-          <td style="padding: 1rem; vertical-align: middle;">
-            <span class="tag {% if (u.free_scans_used or 0) >= 30 and not u.is_premium %}is-danger is-light{% else %}is-light{% endif %} is-rounded" title="Scans de codes-barres cette semaine (remis à zéro dimanche à 00h00)">
+          <!-- Scans -->
+          <td style="padding: 0.75rem 0.75rem; vertical-align: middle; text-align: center;">
+            <span class="tag is-rounded is-small {% if (u.free_scans_used or 0) >= 30 and not u.is_premium %}is-danger is-light{% else %}is-light{% endif %}" style="font-size: 0.7rem; font-variant-numeric: tabular-nums;" title="Scans de codes-barres cette semaine (remis à zéro dimanche à 00h00)">
               {{ u.free_scans_used or 0 }}/30
             </span>
           </td>
 
-          <td style="padding: 1rem; vertical-align: middle;">
+          <!-- Newsletter -->
+          <td style="padding: 0.75rem 0.75rem; vertical-align: middle; text-align: center;">
             {% if u.newsletter_subscribed %}
-              <span class="tag is-success is-light is-rounded" title="Abonné à la newsletter">
-                <i class="fas fa-bell mr-1"></i> Oui
+              <span class="tag is-rounded is-small" style="background: #f8fafc; color: #0f172a; font-weight: 500; font-size: 0.7rem;" title="Abonné à la newsletter">
+                Oui
               </span>
             {% else %}
-              <span class="tag is-light is-rounded has-text-grey" title="Désabonné de la newsletter">
-                <i class="fas fa-bell-slash mr-1"></i> Non
+              <span class="is-size-7" style="color: #cbd5e1;" title="Désabonné">
+                Non
               </span>
             {% endif %}
           </td>
 
-          <td style="padding: 1rem; vertical-align: middle; text-align: center;">
-            <span class="tag is-light is-rounded has-text-weight-semibold">{{ u.books|length }}</span>
+          <!-- Livres -->
+          <td style="padding: 0.75rem 0.75rem; vertical-align: middle; text-align: center;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: #0f172a; font-variant-numeric: tabular-nums;">{{ u.books|length }}</span>
           </td>
 
-          <td style="padding: 1rem; vertical-align: middle; text-align: center;">
-            <span class="tag is-light is-rounded has-text-weight-semibold">{{ u.students|length }}</span>
+          <!-- Élèves -->
+          <td style="padding: 0.75rem 0.75rem; vertical-align: middle; text-align: center;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: #0f172a; font-variant-numeric: tabular-nums;">{{ u.students|length }}</span>
           </td>
 
-          <td style="padding: 1rem; vertical-align: middle; text-align: right;">
-            <!-- Menu Dropdown 3 Points -->
+          <!-- Actions -->
+          <td style="padding: 0.75rem 1.25rem; vertical-align: middle; text-align: right;">
             <div class="dropdown is-right">
               <div class="dropdown-trigger">
-                <button class="button is-small is-white is-rounded" aria-haspopup="true" aria-controls="dropdown-menu-{{ u.id }}" title="Actions">
-                  <span class="icon"><i class="fas fa-ellipsis-v"></i></span>
+                <button class="button is-small is-white is-rounded" aria-haspopup="true" aria-controls="dropdown-menu-{{ u.id }}" title="Actions" style="border: 1px solid #e2e8f0; width: 28px; height: 28px; padding: 0;">
+                  <span class="icon is-small" style="color: #64748b; font-size: 0.7rem;"><i class="fas fa-ellipsis-v"></i></span>
                 </button>
               </div>
               <div class="dropdown-menu" id="dropdown-menu-{{ u.id }}" role="menu" style="min-width: 200px;">
                 <div class="dropdown-content has-text-left admin-actions-dropdown-content">
+                  <a href="{{ url_for('admin.user_detail', user_id=u.id) }}" class="dropdown-item">
+                    <span class="icon is-small has-text-grey mr-2" style="font-size: 0.75rem;"><i class="fas fa-id-card"></i></span>
+                    <span>Consulter la fiche</span>
+                  </a>
+
                   <a class="dropdown-item" onclick="openPlanModal('{{ u.id }}', '{{ u.email }}', '{{ u.plan }}', '{{ u.free_scans_used or 0 }}', '{{ u.trial_days_left if u.is_in_trial else 0 }}')">
-                    <span class="icon is-small has-text-warning"><i class="fas fa-crown mr-2"></i></span>
+                    <span class="icon is-small has-text-grey mr-2" style="font-size: 0.75rem;"><i class="fas fa-sliders-h"></i></span>
                     <span>Modifier formule / quotas</span>
                   </a>
 
@@ -246,7 +329,7 @@
                   <form action="{{ url_for('admin.verify_user', user_id=u.id) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <button type="submit" class="dropdown-item" style="width: 100%; border: none; background: none; cursor: pointer;">
-                      <span class="icon is-small has-text-success"><i class="fas fa-check-circle mr-2"></i></span>
+                      <span class="icon is-small has-text-success mr-2" style="font-size: 0.75rem;"><i class="fas fa-check"></i></span>
                       <span>Forcer la vérification</span>
                     </button>
                   </form>
@@ -255,17 +338,17 @@
                   <form action="{{ url_for('admin.reset_password', user_id=u.id) }}" method="POST" onsubmit="return confirm('Générer et afficher un nouveau mot de passe temporaire pour {{ u.email }} ?');">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <button type="submit" class="dropdown-item" style="width: 100%; border: none; background: none; cursor: pointer;">
-                      <span class="icon is-small has-text-info"><i class="fas fa-key mr-2"></i></span>
-                      <span>Réinitialiser le mot de passe</span>
+                      <span class="icon is-small has-text-grey mr-2" style="font-size: 0.75rem;"><i class="fas fa-key"></i></span>
+                      <span>Réinitialiser mot de passe</span>
                     </button>
                   </form>
 
-                  <hr class="dropdown-divider">
+                  <hr class="dropdown-divider" style="margin: 4px 0; background-color: #f1f5f9;">
 
                   <form action="{{ url_for('admin.delete_user', user_id=u.id) }}" method="POST" onsubmit="return confirm('ATTENTION ! Voulez-vous vraiment supprimer DÉFINITIVEMENT le compte {{ u.email }} et toutes ses données associées ?');">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <button type="submit" class="dropdown-item has-text-danger" style="width: 100%; border: none; background: none; cursor: pointer;">
-                      <span class="icon is-small has-text-danger"><i class="fas fa-trash mr-2"></i></span>
+                      <span class="icon is-small has-text-danger mr-2" style="font-size: 0.75rem;"><i class="fas fa-trash-alt"></i></span>
                       <span>Supprimer le compte</span>
                     </button>
                   </form>
@@ -279,9 +362,9 @@
     </table>
 
     <div id="noResults" class="has-text-centered has-text-grey py-6 is-hidden">
-      <span class="icon is-large has-text-grey-light"><i class="fas fa-search fa-2x"></i></span>
-      <p class="title is-6 mt-2 mb-1">Aucun utilisateur trouvé</p>
-      <p class="is-size-7">Essayez de modifier votre recherche ou vos critères de filtre.</p>
+      <span class="icon is-medium has-text-grey-light mb-2"><i class="fas fa-search fa-lg"></i></span>
+      <p class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.85rem;">Aucun utilisateur trouvé</p>
+      <p class="is-size-7 has-text-grey">Essayez de modifier votre recherche ou vos critères de filtre.</p>
     </div>
   </div>
 </div>
@@ -289,50 +372,50 @@
 <!-- Modal Modification du Plan & Quotas -->
 <div class="modal" id="modalEditPlan">
   <div class="modal-background" onclick="closePlanModal()"></div>
-  <div class="modal-card" style="border-radius: 16px; overflow: hidden; max-width: 480px;">
-    <header class="modal-card-head" style="background: #ffffff; border-bottom: 1px solid #f1f5f9;">
-      <p class="modal-card-title is-size-5 has-text-weight-bold mb-0">Modifier la formule</p>
+  <div class="modal-card" style="border-radius: 12px; overflow: hidden; max-width: 460px;">
+    <header class="modal-card-head" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; padding: 1rem 1.25rem;">
+      <p class="modal-card-title has-text-weight-bold mb-0" style="font-size: 0.95rem; color: #0f172a;">Modifier la formule &amp; quotas</p>
       <button class="delete" aria-label="close" onclick="closePlanModal()"></button>
     </header>
     <form id="formEditPlan" method="POST" action="">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <section class="modal-card-body">
-        <p class="mb-4 is-size-7 has-text-grey">
+      <section class="modal-card-body" style="padding: 1.25rem;">
+        <p class="mb-3 is-size-7 has-text-grey">
           Utilisateur : <strong id="modalPlanUserEmail" class="has-text-dark"></strong>
         </p>
 
-        <div class="field">
-          <label class="label is-small">Formule / Plan</label>
+        <div class="field mb-3">
+          <label class="label is-small" style="color: #0f172a;">Formule / Plan</label>
           <div class="control">
-            <div class="select is-fullwidth">
+            <div class="select is-fullwidth is-small">
               <select name="plan" id="selectPlan">
-                <option value="free">Gratuit (Free - Sans abonnement)</option>
+                <option value="free">Gratuit (Sans abonnement)</option>
                 <option value="trial">Période d'essai (Trial)</option>
-                <option value="premium">⭐ Premium (Forcé actif)</option>
-                <option value="founder">👑 Fondateur (Illimité à vie)</option>
+                <option value="premium">Premium (Forcé actif)</option>
+                <option value="founder">Fondateur (Illimité à vie)</option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="field">
-          <label class="label is-small">Jours d'essai additionnels / restant</label>
+        <div class="field mb-3">
+          <label class="label is-small" style="color: #0f172a;">Jours d'essai additionnels / restant</label>
           <div class="control">
-            <input class="input" type="number" name="trial_days" id="inputTrialDays" placeholder="30" min="0">
+            <input class="input is-small" type="number" name="trial_days" id="inputTrialDays" placeholder="30" min="0">
           </div>
-          <p class="help">Indiquez 0 pour annuler immédiatement une période d'essai et repasser en full gratuit.</p>
+          <p class="help is-size-7" style="color: #94a3b8;">Indiquez 0 pour clôturer l'essai et basculer en formule gratuite.</p>
         </div>
 
-        <div class="field mt-4">
-          <label class="checkbox is-size-7">
+        <div class="field mt-3">
+          <label class="checkbox is-size-7" style="color: #0f172a;">
             <input type="checkbox" name="reset_scans" value="1">
-            <strong>Réinitialiser le compteur de scans</strong> (actuellement : <span id="modalScansCount">0</span>/30 cette semaine)
+            <strong>Réinitialiser les scans</strong> (actuellement : <span id="modalScansCount">0</span>/30 cette semaine)
           </label>
         </div>
       </section>
-      <footer class="modal-card-foot" style="background: #f8fafc; border-top: 1px solid #f1f5f9; justify-content: flex-end;">
-        <button type="button" class="button is-light is-rounded" onclick="closePlanModal()">Annuler</button>
-        <button type="submit" class="button is-primary is-rounded">Enregistrer</button>
+      <footer class="modal-card-foot" style="background: #fafbfd; border-top: 1px solid #f1f5f9; justify-content: flex-end; padding: 0.75rem 1.25rem;">
+        <button type="button" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="closePlanModal()">Annuler</button>
+        <button type="submit" class="button is-small is-rounded" style="background: #0f172a; color: #ffffff; font-size: 0.75rem; font-weight: 500;">Enregistrer</button>
       </footer>
     </form>
   </div>
@@ -360,6 +443,7 @@
         const plan = row.dataset.plan || '';
         const verified = row.dataset.verified || '';
         const newsletter = row.dataset.newsletter || '';
+        const isTest = row.dataset.test || '0';
 
         // Match recherche
         const matchesSearch = !term || id.includes(term) || email.includes(term) || name.includes(term);
@@ -372,6 +456,7 @@
         if (selectedStatus === 'verified') matchesStatus = (verified === '1');
         else if (selectedStatus === 'unverified') matchesStatus = (verified === '0');
         else if (selectedStatus === 'newsletter') matchesStatus = (newsletter === '1');
+        else if (selectedStatus === 'test') matchesStatus = (isTest === '1');
 
         if (matchesSearch && matchesPlan && matchesStatus) {
           row.style.display = '';
@@ -393,10 +478,59 @@
     if (searchInput) searchInput.addEventListener('input', applyFilters);
     if (filterPlan) filterPlan.addEventListener('change', applyFilters);
     if (filterStatus) filterStatus.addEventListener('change', applyFilters);
+
+    // Gestion du tri par colonne façon Skymetrics
+    let currentSortCol = null;
+    let currentSortDir = 'desc';
+
+    function sortTable(column) {
+      const tbody = document.querySelector('#usersTable tbody');
+      if (!tbody) return;
+
+      if (currentSortCol === column) {
+        currentSortDir = (currentSortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        currentSortCol = column;
+        currentSortDir = (column === 'user') ? 'asc' : 'desc';
+      }
+
+      document.querySelectorAll('.sortable-th').forEach(th => {
+        const col = th.dataset.sortCol;
+        const arrow = th.querySelector('.sort-arrow');
+        if (col === currentSortCol) {
+          th.classList.add('is-sorted');
+          if (arrow) arrow.textContent = currentSortDir === 'asc' ? '↑' : '↓';
+        } else {
+          th.classList.remove('is-sorted');
+          if (arrow) arrow.textContent = '↓';
+        }
+      });
+
+      const currentRows = Array.from(tbody.querySelectorAll('.user-row'));
+      currentRows.sort((rowA, rowB) => {
+        if (currentSortCol === 'user') {
+          const nameA = (rowA.dataset.name || rowA.dataset.email || '').toLowerCase();
+          const nameB = (rowB.dataset.name || rowB.dataset.email || '').toLowerCase();
+          return currentSortDir === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+        } else {
+          const numA = parseFloat(rowA.dataset[currentSortCol] || 0);
+          const numB = parseFloat(rowB.dataset[currentSortCol] || 0);
+          return currentSortDir === 'asc' ? (numA - numB) : (numB - numA);
+        }
+      });
+
+      currentRows.forEach(row => tbody.appendChild(row));
+      applyFilters();
+    }
+
+    document.querySelectorAll('.sortable-th').forEach(th => {
+      th.addEventListener('click', () => {
+        sortTable(th.dataset.sortCol);
+      });
+    });
   });
 
   function openPlanModal(userId, email, plan, scans, trialDays) {
-    // Fermer les dropdowns ouverts
     document.querySelectorAll('.user-row .dropdown.is-active').forEach(d => {
       d.classList.remove('is-active');
       const r = d.closest('.user-row');
@@ -426,7 +560,6 @@
     }
   });
 
-  // Gestion fluide et intelligente des dropdowns d'actions (position: fixed détaché du conteneur scrollable)
   function setupActionDropdowns() {
     const dropdowns = document.querySelectorAll('.user-row .dropdown');
 
@@ -455,7 +588,6 @@
       const menu = dropdown.querySelector('.dropdown-menu');
       if (!triggerBtn || !menu) return;
 
-      // Fermer tous les autres d'abord
       dropdowns.forEach(d => {
         if (d !== dropdown) closeMenu(d);
       });
@@ -464,7 +596,6 @@
       const windowWidth = window.innerWidth || document.documentElement.clientWidth;
       const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 
-      // Afficher temporairement pour mesurer les dimensions réelles
       menu.style.display = 'block';
       menu.style.visibility = 'hidden';
       menu.style.position = 'fixed';
@@ -476,7 +607,6 @@
 
       menu.style.zIndex = '1050';
 
-      // Orientation verticale : vers le haut si pas assez de place en bas
       if (spaceBelow < menuHeight && spaceAbove > spaceBelow) {
         menu.style.top = 'auto';
         menu.style.bottom = `${Math.round(windowHeight - rect.top + 4)}px`;
@@ -485,7 +615,6 @@
         menu.style.bottom = 'auto';
       }
 
-      // Alignement horizontal : aligné sur le bord droit du bouton
       const rightOffset = windowWidth - rect.right;
       menu.style.right = `${Math.max(8, Math.round(rightOffset))}px`;
       menu.style.left = 'auto';
@@ -500,7 +629,6 @@
       const menu = dropdown.querySelector('.dropdown-menu');
       let hoverTimeout = null;
 
-      // Au survol du bouton
       dropdown.addEventListener('mouseenter', () => {
         clearTimeout(hoverTimeout);
         openMenu(dropdown);
@@ -512,7 +640,6 @@
         }, 180);
       });
 
-      // Maintien ouvert quand la souris est sur le menu (position: fixed)
       if (menu) {
         menu.addEventListener('mouseenter', () => {
           clearTimeout(hoverTimeout);
@@ -524,7 +651,6 @@
         });
       }
 
-      // Au clic (support mobile, tablettes et clics directs)
       if (triggerBtn) {
         triggerBtn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -539,14 +665,12 @@
       }
     });
 
-    // Clic en dehors pour refermer
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.dropdown') && !e.target.closest('.dropdown-menu')) {
         closeAllMenus();
       }
     });
 
-    // Défilement du tableau (scroll latéral) ou de la page : refermer proprement
     const tableContainer = document.querySelector('.admin-users-card .table-container');
     if (tableContainer) {
       tableContainer.addEventListener('scroll', closeAllMenus, { passive: true });
@@ -555,7 +679,6 @@
     window.addEventListener('resize', closeAllMenus, { passive: true });
   }
 
-  // Initialisation dès le chargement de la page
   document.addEventListener('DOMContentLoaded', () => {
     setupActionDropdowns();
   });
