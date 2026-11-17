@@ -71,6 +71,7 @@ Ce document détaille l'architecture de haute disponibilité, le failover automa
   * Verrou : `/home/ubuntu/livresenclasse/FAILOVER_ACTIVE`
   * Log : `/home/ubuntu/livresenclasse/watchdog.log`
   * Base : `/home/ubuntu/livresenclasse/instance/db.sqlite`
+  * Heartbeat Healthchecks.io : `*/5 * * * *` vers `https://hc-ping.com/1bfb023a-735d-4c5f-bcc1-1f36aa649ff7`
 
 ---
 
