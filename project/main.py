@@ -264,6 +264,7 @@ def healthy():
             jsonify(
                 {
                     "status": "ok",
+                    "server": os.getenv("SERVER_NODE", "local"),
                     "database": "healthy",
                     "timestamp": datetime.now(UTC).isoformat(),
                 }

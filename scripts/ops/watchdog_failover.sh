@@ -30,6 +30,74 @@ CF_RECORD_ID_AUTH="0c0c5669254ded18c9bfee6fad244fe3"  # auth.livresenclasse.com
 # Cible Tunnel Secours Oracle
 TUNNEL_ORACLE_TARGET="d6f9880e-8118-4509-8a85-9162face663d.cfargotunnel.com"
 
+# Configuration des Alertes & Notifications
+BARK_KEY="${BARK_KEY:-79dXLJGwoScfZckHKNMuKY}"
+BARK_HOST="${BARK_HOST:-https://bark.rob1forest.com}"
+HEALTHCHECKS_UUID="${HEALTHCHECKS_UUID:-77e657b8-03fc-4576-bcbe-c0259dfa5657}"
+DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL:-}"
+TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
+TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
+
+# Charger les variables optionnelles depuis .env si présent
+ENV_FILE="/home/ubuntu/livresenclasse/.env"
+if [ -f "$ENV_FILE" ]; then
+    eval "$(grep -E '^(DISCORD_WEBHOOK_URL|TELEGRAM_BOT_TOKEN|TELEGRAM_CHAT_ID|BARK_KEY|BARK_HOST|HEALTHCHECKS_UUID)=' "$ENV_FILE" | sed -e 's/^/export /')" 2>/dev/null || true
+fi
+
+send_alert() {
+    local title="$1"
+    local message="$2"
+    local status="${3:-error}"
+
+    log "Envoi des alertes : $title..."
+
+    # 1. Healthchecks.io (Fail signal ou OK)
+    if [ -n "$HEALTHCHECKS_UUID" ]; then
+        if [ "$status" = "error" ]; then
+            curl -fsS -m 5 --retry 2 --data-raw "$title : $message" "https://hc-ping.com/${HEALTHCHECKS_UUID}/fail" >/dev/null 2>&1 || true
+            log "Notification Healthchecks.io (/fail) envoyée."
+        else
+            curl -fsS -m 5 --retry 2 --data-raw "$title : $message" "https://hc-ping.com/${HEALTHCHECKS_UUID}" >/dev/null 2>&1 || true
+            log "Notification Healthchecks.io (OK) envoyée."
+        fi
+    fi
+
+    # 2. Bark (Push iOS)
+    if [ -n "$BARK_KEY" ]; then
+        local enc_title enc_msg
+        enc_title=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$title'''))" 2>/dev/null || echo "Alerte")
+        enc_msg=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$message'''))" 2>/dev/null || echo "Failover")
+        if curl -s -m 5 "${BARK_HOST}/${BARK_KEY}/${enc_title}/${enc_msg}?group=BiblioHA&level=critical&icon=https://livresenclasse.com/static/img/logo.png" >/dev/null 2>&1; then
+            log "Notification Bark envoyée avec succès."
+        else
+            log "Échec notification Bark (serveur local possiblement éteint)."
+        fi
+    fi
+
+    # 3. Discord Webhook (si configuré)
+    if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+        local color="15158332"
+        [ "$status" = "ok" ] && color="3066993"
+        local payload
+        payload=$(python3 -c "import json; print(json.dumps({'username': 'Sentinelle Livres en Classe', 'avatar_url': 'https://livresenclasse.com/static/img/logo.png', 'embeds': [{'title': '''$title''', 'description': '''$message''', 'color': $color, 'footer': {'text': 'Oracle Cloud Always Free Zurich'}}]}))" 2>/dev/null || echo "")
+        if [ -n "$payload" ]; then
+            curl -s -m 5 -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK_URL" >/dev/null 2>&1 || true
+            log "Notification Discord envoyée."
+        fi
+    fi
+
+    # 4. Telegram Bot (si configuré)
+    if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+        local tele_text
+        tele_text=$(python3 -c "import urllib.parse; print(urllib.parse.quote('🚨 *' + '''$title''' + '*\n' + '''$message'''))" 2>/dev/null || echo "$title")
+        curl -s -m 5 -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=${tele_text}" \
+            -d "parse_mode=Markdown" >/dev/null 2>&1 || true
+        log "Notification Telegram envoyée."
+    fi
+}
+
 # 1. Vérifier qu'Oracle a lui-même accès à Internet (évite les faux positifs)
 if ! curl -s -m 3 --head https://1.1.1.1 >/dev/null 2>&1; then
     # Oracle n'a pas de réseau, on ne déclenche rien
@@ -120,6 +188,9 @@ cf_update_record "$CF_RECORD_ID_AUTH" "auth.livresenclasse.com" "$TUNNEL_ORACLE_
 # Poser le verrou de failover actif (sécurité anti-split-brain)
 touch "$LOCK_FILE"
 echo "FAILOVER_ACTIVATED_AT=$(date '+%Y-%m-%d %H:%M:%S')" > "$LOCK_FILE"
+
+# Envoi immédiat des alertes multi-canaux (Bark, Healthchecks.io, Discord/Telegram)
+send_alert "🚨 BASCULE HAUTE DISPONIBILITÉ ACTIVE" "Le serveur local (192.168.1.144) est injoignable après 3 tentatives. Le trafic de livresenclasse.com a été basculé avec succès vers le serveur de secours Oracle Cloud Zurich." "error"
 
 log "BASCULE AUTOMATIQUE RÉUSSIE. Oracle Cloud est désormais le serveur de production."
 log "Verrou $LOCK_FILE posé. La synchronisation locale est bloquée jusqu'au rapatriement."

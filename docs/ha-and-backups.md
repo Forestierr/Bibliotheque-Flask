@@ -197,6 +197,8 @@ dig +short CNAME livresenclasse.com
 
 ---
 
+---
+
 ## 9. Performances et Capacités de Charge (Benchmark k6)
 
 Un test de charge complet a été réalisé sur la VM Oracle de secours (`VM.Standard.E2.1.Micro`).
@@ -204,3 +206,34 @@ Le rapport détaillé est consultable dans [`docs/benchmark-oracle.md`](benchmar
 * **Débit maximal mesuré** : ~25 à 35 requêtes dynamiques / seconde.
 * **Taux d'échec sous charge (jusqu'à 150 VUs)** : **0.00 %** (0 erreur HTTP sur 4'700+ requêtes).
 * **Capacité estimée** : Supporte sereinement jusqu'à 1'000 utilisateurs réels simultanés (p99.9 ≤ 2.05 s).
+
+---
+
+## 10. Surveillance, Alertes Multi-Canaux & Contrôle d'État
+
+### A. Contrôle d'État en 1 seconde (`ha_status.sh`)
+Un script de diagnostic unifié est disponible sur le serveur local :
+```bash
+/home/rob1/scripts/ha_status.sh
+```
+Il vérifie et affiche en couleurs :
+1. **La cible DNS Cloudflare** : indique si le trafic pointe vers le `Tunnel Local` ou le `Tunnel Oracle (Mode Secours)`.
+2. **La sonde `/healthy`** : statut HTTP 200 et identification du serveur actif (`server: "local"` ou `"oracle-cloud"`).
+3. **Le standby Oracle** : statut opérationnel de `backup.livresenclasse.com`.
+4. **La sentinelle Oracle** : présence ou absence du verrou `FAILOVER_ACTIVE`.
+5. **Litestream** : état du service de réplication WAL continue.
+
+### B. Système d'Alertes Multi-Canaux lors d'un Failover
+Lorsqu'une panne est confirmée sur le serveur local et que la sentinelle bascule vers Oracle Cloud, le script [`watchdog_failover.sh`](file:///c:/Users/Robin/Desktop/GitHub/Bibliotheque-Flask/scripts/ops/watchdog_failover.sh) émet automatiquement des alertes sur plusieurs canaux complémentaires :
+
+1. **Bark (Push iOS)** :
+   - Notification push critique envoyée vers l'iPhone (`https://bark.rob1forest.com/...`).
+2. **Healthchecks.io (Fail Signal Cloud)** :
+   - Ping immédiat de l'endpoint d'échec (`https://hc-ping.com/77e657b8-03fc-4576-bcbe-c0259dfa5657/fail`).
+   - Même si le serveur local est totalement éteint, Healthchecks.io relaie instantanément l'alerte vers tous les canaux configurés (Discord, Telegram, Email, SMS).
+3. **Discord Webhook** *(Optionnel)* :
+   - Variable `DISCORD_WEBHOOK_URL` dans `/home/ubuntu/livresenclasse/.env` pour poster une alerte enrichie avec embed rouge dans un salon Discord privé.
+4. **Telegram Bot** *(Optionnel)* :
+   - Variables `TELEGRAM_BOT_TOKEN` et `TELEGRAM_CHAT_ID` pour envoi d'un message direct Telegram.
+
+Lors du rapatriement ([`failback_from_cloud.sh`](file:///c:/Users/Robin/Desktop/GitHub/Bibliotheque-Flask/scripts/ops/failback_from_cloud.sh)), une notification de rétablissement `✅ RETOUR À LA NORMALE` est automatiquement envoyée sur tous ces canaux et le statut Healthchecks.io repasse au vert.

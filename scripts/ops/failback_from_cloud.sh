@@ -24,6 +24,65 @@ CF_RECORD_ID_AUTH="0c0c5669254ded18c9bfee6fad244fe3"  # auth.livresenclasse.com
 # Cibles Tunnels
 TUNNEL_LOCAL_TARGET="8086dee7-aee1-48c4-9166-be6f361172e5.cfargotunnel.com"
 
+# Configuration des Alertes & Notifications
+BARK_KEY="${BARK_KEY:-79dXLJGwoScfZckHKNMuKY}"
+BARK_HOST="${BARK_HOST:-https://bark.rob1forest.com}"
+HEALTHCHECKS_UUID="${HEALTHCHECKS_UUID:-77e657b8-03fc-4576-bcbe-c0259dfa5657}"
+DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL:-}"
+TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
+TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
+
+# Charger les variables optionnelles depuis .env si présent
+ENV_FILE="/home/rob1/server/rob1forest/apps/Bibliotheque-Flask/.env"
+if [ -f "$ENV_FILE" ]; then
+    eval "$(grep -E '^(DISCORD_WEBHOOK_URL|TELEGRAM_BOT_TOKEN|TELEGRAM_CHAT_ID|BARK_KEY|BARK_HOST|HEALTHCHECKS_UUID)=' "$ENV_FILE" | sed -e 's/^/export /')" 2>/dev/null || true
+fi
+
+send_alert() {
+    local title="$1"
+    local message="$2"
+    local status="${3:-ok}"
+
+    log "Envoi des alertes : $title..."
+
+    # 1. Healthchecks.io (OK signal de rétablissement)
+    if [ -n "$HEALTHCHECKS_UUID" ]; then
+        curl -fsS -m 5 --retry 2 --data-raw "$title : $message" "https://hc-ping.com/${HEALTHCHECKS_UUID}" >/dev/null 2>&1 || true
+        log "Notification Healthchecks.io (OK) envoyée."
+    fi
+
+    # 2. Bark (Push iOS)
+    if [ -n "$BARK_KEY" ]; then
+        local enc_title enc_msg
+        enc_title=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$title'''))" 2>/dev/null || echo "Info")
+        enc_msg=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$message'''))" 2>/dev/null || echo "Failback")
+        curl -s -m 5 "${BARK_HOST}/${BARK_KEY}/${enc_title}/${enc_msg}?group=BiblioHA&level=active&icon=https://livresenclasse.com/static/img/logo.png" >/dev/null 2>&1 || true
+        log "Notification Bark envoyée."
+    fi
+
+    # 3. Discord Webhook (si configuré)
+    if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+        local color="3066993" # Vert
+        local payload
+        payload=$(python3 -c "import json; print(json.dumps({'username': 'Sentinelle Livres en Classe', 'avatar_url': 'https://livresenclasse.com/static/img/logo.png', 'embeds': [{'title': '''$title''', 'description': '''$message''', 'color': $color, 'footer': {'text': 'Serveur Local Rétabli'}}]}))" 2>/dev/null || echo "")
+        if [ -n "$payload" ]; then
+            curl -s -m 5 -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK_URL" >/dev/null 2>&1 || true
+            log "Notification Discord envoyée."
+        fi
+    fi
+
+    # 4. Telegram Bot (si configuré)
+    if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+        local tele_text
+        tele_text=$(python3 -c "import urllib.parse; print(urllib.parse.quote('✅ *' + '''$title''' + '*\n' + '''$message'''))" 2>/dev/null || echo "$title")
+        curl -s -m 5 -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=${tele_text}" \
+            -d "parse_mode=Markdown" >/dev/null 2>&1 || true
+        log "Notification Telegram envoyée."
+    fi
+}
+
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
@@ -116,6 +175,9 @@ docker restart biblio >/dev/null 2>&1 || true
 # 10. Lever le verrou FAILOVER_ACTIVE sur Oracle
 log "10. Levée du verrou FAILOVER_ACTIVE sur Oracle Cloud..."
 ssh -o BatchMode=yes "$REMOTE_HOST" "rm -f '$REMOTE_LOCK'"
+
+# Envoi immédiat de l'alerte de rétablissement
+send_alert "✅ RETOUR À LA NORMALE (FAILBACK)" "Le serveur local a repris la production. Le trafic de livresenclasse.com est de retour sur le serveur physique local." "ok"
 
 log "================================================================="
 log "=== RAPATRIEMENT TERMINÉ AVEC SUCCÈS (0 PERTE DE DONNÉE) ==="
