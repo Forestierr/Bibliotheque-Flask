@@ -194,3 +194,13 @@ dig +short CNAME livresenclasse.com
 ```
 * Si pointe vers `8086dee7...` : Trafic sur le serveur local.
 * Si pointe vers `d6f9880e...` : Trafic sur le serveur Oracle Cloud.
+
+---
+
+## 9. Performances et Capacités de Charge (Benchmark k6)
+
+Un test de charge complet a été réalisé sur la VM Oracle de secours (`VM.Standard.E2.1.Micro`).
+Le rapport détaillé est consultable dans [`docs/benchmark-oracle.md`](benchmark-oracle.md) :
+* **Débit maximal mesuré** : ~25 à 35 requêtes dynamiques / seconde.
+* **Taux d'échec sous charge (jusqu'à 150 VUs)** : **0.00 %** (0 erreur HTTP sur 4'700+ requêtes).
+* **Capacité estimée** : Supporte sereinement jusqu'à 1'000 utilisateurs réels simultanés (p99.9 ≤ 2.05 s).
