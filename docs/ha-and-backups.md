@@ -87,33 +87,25 @@ Ce document détaille l'architecture de haute disponibilité, le failover automa
 
 ---
 
-## 4. Réplication Continue Inter-Serveurs
+## 4. Réplication Continue Inter-Serveurs (En Production : Litestream Streaming - RPO < 1 s)
 
-### Option A-1 : Synchronisation Périodique (Rsync SSH - RPO ≤ 5 min)
-* **Script** : `/home/rob1/scripts/sync_to_oracle.sh`
-* **Planification Cron** : Toutes les 5 minutes (`*/5 * * * *`).
-* **Mécanique** :
-  1. Vérification de l'absence du verrou `FAILOVER_ACTIVE`.
-  2. Snapshot à chaud SQLite `sqlite3 .backup`.
-  3. Transfert différentiel rsync chiffré vers Oracle.
-  4. Remplacement atomique système (`mv`) et signal `docker exec biblio kill -HUP 1` pour que Gunicorn recharge son descripteur de fichier sans coupure.
+Le système utilise **Litestream** en production pour répliquer en temps réel au fil de l'eau chaque écriture de la base SQLite sans latence de batch :
 
-### Option A-2 : Réplication Continue Streaming (Litestream SFTP Direct - RPO < 1 s)
-Pour une synchronisation en temps réel au fil de l'eau (sans attendre 5 minutes) et sans service cloud tiers additionnel :
 * **Principe** : Litestream surveille en continu le journal WAL SQLite (`db.sqlite-wal`) sur le serveur local et diffuse chaque transaction commitée vers la VM Oracle via SFTP/SSH.
-* **Fichiers de configuration & Scripts prêts à l'emploi** :
-  * `scripts/ops/litestream.yml` : Configuration de la réplication de `instance/db.sqlite` vers `152.67.70.90` (répertoire distant `/home/ubuntu/livresenclasse/litestream_replica`).
-  * `scripts/ops/litestream.service` : Unité systemd pour faire tourner Litestream en arrière-plan avec redémarrage automatique.
-  * `scripts/ops/install_litestream.sh` : Script d'installation automatique du binaire Litestream (amd64 / arm64).
-  * `scripts/ops/restore_litestream_on_oracle.sh` : Script de restauration instantanée sur Oracle (`litestream restore -if-replica-exists`).
-* **Installation rapide** :
-  ```bash
-  # Sur le serveur local (192.168.1.144) :
-  ./scripts/ops/install_litestream.sh
-  sudo cp scripts/ops/litestream.service /etc/systemd/system/
-  sudo systemctl daemon-reload
-  sudo systemctl enable --now litestream
-  ```
+* **Service actif** : `systemctl --user status litestream` sur le serveur local (`192.168.1.144`).
+* **Configuration** : `/home/rob1/scripts/litestream.yml` (clé SSH `~/.ssh/id_oracle_sync`, cible `152.67.70.90:/home/ubuntu/livresenclasse/litestream_replica`).
+* **RPO (Perte max en cas de crash brutal)** : **< 1 seconde** (chaque écriture est expédiée en ~85 ms).
+* **Consommation** : Binaire Go léger (~16 Mo RAM, < 0.1% CPU).
+* **Sécurité Anti-Corruption lors d'un switch (Failover)** :
+  1. Lors d'une bascule, `watchdog_failover.sh` applique les derniers segments WAL via `litestream restore -if-replica-exists`.
+  2. Il vérifie immédiatement l'intégrité SQLite (`PRAGMA integrity_check;`) avant de recharger Gunicorn (`kill -HUP 1`).
+  3. Si la base est corrompue ou incomplète, la restauration est rejetée et l'ancienne base valide est conservée.
+* **Sécurité Anti-Corruption lors du retour (Failback)** :
+  1. Lors du rapatriement, `failback_from_cloud.sh` stoppe Litestream temporairement.
+  2. Il remplace la base locale par le snapshot cohérent d'Oracle, purge les anciens fichiers WAL locaux et réinitialise la réplique sur Oracle.
+  3. Litestream est redémarré proprement pour initier une nouvelle génération sans conflit d'historique.
+
+*(Note : L'ancien script rsync `sync_to_oracle.sh` reste disponible dans `scripts/ops/` à titre de secours manuel si besoin).*
 
 ---
 

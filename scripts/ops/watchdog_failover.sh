@@ -73,6 +73,26 @@ log "CRITIQUE : Serveur primaire injoignable (3 échecs consécutifs)."
 log "DÉCLENCHEMENT DE LA BASCULE AUTOMATIQUE VERS ORACLE CLOUD..."
 log "=========================================================================="
 
+# 3.1 Restauration de la dernière transaction SQLite depuis la réplique Litestream
+REPLICA_DIR="/home/ubuntu/livresenclasse/litestream_replica"
+DB_TARGET="/home/ubuntu/livresenclasse/instance/db.sqlite"
+
+if [ -d "$REPLICA_DIR/generations" ]; then
+    log "Restauration en cours de la base SQLite depuis la réplique Litestream..."
+    if /usr/local/bin/litestream restore -if-replica-exists -o "$DB_TARGET" "file://$REPLICA_DIR"; then
+        log "Restauration Litestream réussie."
+        INTEGRITY=$(sqlite3 "$DB_TARGET" "PRAGMA integrity_check;" 2>/dev/null || echo "error")
+        if [ "$INTEGRITY" = "ok" ]; then
+            log "Intégrité SQLite validée (PRAGMA integrity_check: ok)."
+            docker exec biblio kill -HUP 1 2>/dev/null || true
+        else
+            log "ATTENTION : Erreur d'intégrité SQLite ($INTEGRITY), conservation de la base précédente."
+        fi
+    else
+        log "Avertissement : La restauration Litestream a échoué, conservation de la base actuelle."
+    fi
+fi
+
 cf_update_record() {
     local record_id="$1"
     local name="$2"

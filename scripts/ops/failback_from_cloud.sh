@@ -95,10 +95,19 @@ if [ "$INTEGRITY" != "ok" ]; then
 fi
 log "Intégrité validée avec succès (ok)."
 
-# 8. Remplacement atomique de la base locale
+# 8. Remplacement atomique de la base locale & Réinitialisation Litestream
 log "8. Application de la base de données à jour sur le serveur local..."
+systemctl --user stop litestream 2>/dev/null || true
 mv "$TMP_LOCAL_SNAP" "$DB_LOCAL"
+rm -f "${DB_LOCAL}-wal" "${DB_LOCAL}-shm"
+sqlite3 "$DB_LOCAL" "PRAGMA journal_mode = WAL;"
 chmod 644 "$DB_LOCAL"
+
+# Nettoyage de l'ancienne réplique sur Oracle pour initialiser une génération propre
+ssh -o BatchMode=yes "$REMOTE_HOST" "rm -rf /home/ubuntu/livresenclasse/litestream_replica/generations/*" 2>/dev/null || true
+
+# Redémarrage de Litestream
+systemctl --user start litestream 2>/dev/null || true
 
 # 9. Redémarrer le conteneur biblio local pour recharger la connexion
 log "9. Redémarrage du conteneur biblio local..."
