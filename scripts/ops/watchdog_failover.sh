@@ -36,11 +36,11 @@ if ! curl -s -m 3 --head https://1.1.1.1 >/dev/null 2>&1; then
     exit 0
 fi
 
-# 2. Sonde du serveur primaire
+# 2. Sonde du serveur primaire (endpoint technique /healthy)
 check_primary() {
     local code
-    code=$(curl -s -m 5 -o /dev/null -w "%{http_code}" https://livresenclasse.com/fr/ 2>/dev/null || echo "000")
-    if [[ "$code" =~ ^(200|301|302|303|307|308)$ ]]; then
+    code=$(curl -s -m 5 -o /dev/null -w "%{http_code}" https://livresenclasse.com/healthy 2>/dev/null || echo "000")
+    if [[ "$code" == "200" ]]; then
         return 0
     else
         return 1
