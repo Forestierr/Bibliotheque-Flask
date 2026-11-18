@@ -283,3 +283,15 @@ def test_index_authenticated_redirects_to_dashboard(client):
         # Option d'accès forcé à la landing page avec ?home=1
         res_home = client.get("/?home=1")
         assert res_home.status_code == 200
+
+
+def test_healthy_and_healthz_endpoint(client):
+    """Vérifie que les endpoints techniques /healthy et /healthz répondent 200 JSON sans redirection."""
+    for path in ["/healthy", "/healthz", "/fr/healthy", "/fr/healthz"]:
+        res = client.get(path)
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["status"] == "ok"
+        assert data["database"] == "healthy"
+        assert "timestamp" in data
+

@@ -87,8 +87,9 @@ Ce document détaille l'architecture de haute disponibilité, le failover automa
 
 ---
 
-## 4. Réplication Continue Inter-Serveurs (RPO ≤ 5 min)
+## 4. Réplication Continue Inter-Serveurs
 
+### Option A-1 : Synchronisation Périodique (Rsync SSH - RPO ≤ 5 min)
 * **Script** : `/home/rob1/scripts/sync_to_oracle.sh`
 * **Planification Cron** : Toutes les 5 minutes (`*/5 * * * *`).
 * **Mécanique** :
@@ -97,18 +98,49 @@ Ce document détaille l'architecture de haute disponibilité, le failover automa
   3. Transfert différentiel rsync chiffré vers Oracle.
   4. Remplacement atomique système (`mv`) et signal `docker exec biblio kill -HUP 1` pour que Gunicorn recharge son descripteur de fichier sans coupure.
 
+### Option A-2 : Réplication Continue Streaming (Litestream SFTP Direct - RPO < 1 s)
+Pour une synchronisation en temps réel au fil de l'eau (sans attendre 5 minutes) et sans service cloud tiers additionnel :
+* **Principe** : Litestream surveille en continu le journal WAL SQLite (`db.sqlite-wal`) sur le serveur local et diffuse chaque transaction commitée vers la VM Oracle via SFTP/SSH.
+* **Fichiers de configuration & Scripts prêts à l'emploi** :
+  * `scripts/ops/litestream.yml` : Configuration de la réplication de `instance/db.sqlite` vers `152.67.70.90` (répertoire distant `/home/ubuntu/livresenclasse/litestream_replica`).
+  * `scripts/ops/litestream.service` : Unité systemd pour faire tourner Litestream en arrière-plan avec redémarrage automatique.
+  * `scripts/ops/install_litestream.sh` : Script d'installation automatique du binaire Litestream (amd64 / arm64).
+  * `scripts/ops/restore_litestream_on_oracle.sh` : Script de restauration instantanée sur Oracle (`litestream restore -if-replica-exists`).
+* **Installation rapide** :
+  ```bash
+  # Sur le serveur local (192.168.1.144) :
+  ./scripts/ops/install_litestream.sh
+  sudo cp scripts/ops/litestream.service /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now litestream
+  ```
+
 ---
 
 ## 5. Mécanisme de Failover Automatique (La Sentinelle)
 
 * **Script** : `/home/ubuntu/livresenclasse/watchdog_failover.sh`
 * **Planification Cron sur Oracle** : Toutes les minutes (`* * * * *`).
+* **Sonde technique dédiée (`/healthy` et `/healthz`)** :
+  * L'application Flask expose un endpoint de santé dédié non préfixé par la langue (`https://livresenclasse.com/healthy`).
+  * Il exécute une requête `SELECT 1` sur SQLite pour valider la disponibilité de la base sans surcoût de template Jinja2.
+  * Réponse type (`HTTP 200 OK`) :
+    ```json
+    {
+      "status": "ok",
+      "database": "healthy",
+      "timestamp": "2026-11-18T19:25:00.000000+00:00"
+    }
+    ```
+  * En cas d'erreur ou de base verrouillée, il renvoie immédiatement `HTTP 503 Service Unavailable`.
+  * *(Note : Dès le déploiement du code en production, la sonde du watchdog cible `/healthy` au lieu de la page lourde `/fr/`).*
 * **Détection Anti-Faux-Positifs** :
   1. Vérifie d'abord qu'Oracle a accès à Internet (`curl https://1.1.1.1`).
-  2. Sonde le site primaire (`https://livresenclasse.com/fr/`).
+  2. Sonde le endpoint de santé (`https://livresenclasse.com/healthy` ou fallback `/fr/`).
   3. Si la sonde échoue, attend 15 secondes et réessaye (2ème test).
   4. Si échec, attend 15 secondes et réessaye (3ème test).
   5. Si les 3 tests consécutifs échouent (panne confirmée > 1 min) :
+     * Si Litestream est actif : restaure la base à la seconde près (`restore_litestream_on_oracle.sh`).
      * Bascule les CNAME `livresenclasse.com` et `auth.livresenclasse.com` vers le tunnel d'Oracle via l'API Cloudflare.
      * Crée le fichier `/home/ubuntu/livresenclasse/FAILOVER_ACTIVE`.
 

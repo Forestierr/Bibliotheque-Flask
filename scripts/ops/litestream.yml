@@ -1,0 +1,14 @@
+# ==============================================================================
+# Configuration Litestream - Réplication continue WAL vers Oracle Cloud via SFTP
+# ==============================================================================
+# Litestream surveille la base SQLite locale de production et envoie
+# en temps réel (au fil de l'eau, < 1s) les segments WAL vers la VM Oracle Cloud.
+
+dbs:
+  - path: /home/rob1/server/rob1forest/apps/Bibliotheque-Flask/instance/db.sqlite
+    replicas:
+      - type: sftp
+        host: 152.67.70.90:22
+        user: ubuntu
+        key-path: /home/rob1/.ssh/id_rsa
+        path: /home/ubuntu/livresenclasse/litestream_replica

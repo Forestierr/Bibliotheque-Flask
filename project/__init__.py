@@ -367,6 +367,8 @@ def create_app(test_config=None):
         "/manifest.json",
         "/offline",
         "/sw.js",
+        "/healthy",
+        "/healthz",
         "/1452be41003e41c59435f150f75f55d8.txt",
         "/744d589148a54a93bfd6c066fce258a6.txt",
         f"/{INDEXNOW_KEY}.txt",
