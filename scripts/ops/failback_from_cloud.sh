@@ -27,15 +27,17 @@ TUNNEL_LOCAL_TARGET="8086dee7-aee1-48c4-9166-be6f361172e5.cfargotunnel.com"
 # Configuration des Alertes & Notifications
 BARK_KEY="${BARK_KEY:-79dXLJGwoScfZckHKNMuKY}"
 BARK_HOST="${BARK_HOST:-https://bark.rob1forest.com}"
-HEALTHCHECKS_UUID="${HEALTHCHECKS_UUID:-77e657b8-03fc-4576-bcbe-c0259dfa5657}"
+HEALTHCHECKS_UUID="${HEALTHCHECKS_UUID:-}"
 DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL:-}"
+DISCORD_ROLE_CRITICAL="${DISCORD_ROLE_CRITICAL:-}"
+DISCORD_ROLE_INFO="${DISCORD_ROLE_INFO:-}"
 TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
 TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
 
 # Charger les variables optionnelles depuis .env si présent
-ENV_FILE="/home/rob1/server/rob1forest/apps/Bibliotheque-Flask/.env"
+ENV_FILE="${ENV_FILE:-/home/rob1/server/rob1forest/apps/Bibliotheque-Flask/.env}"
 if [ -f "$ENV_FILE" ]; then
-    eval "$(grep -E '^(DISCORD_WEBHOOK_URL|TELEGRAM_BOT_TOKEN|TELEGRAM_CHAT_ID|BARK_KEY|BARK_HOST|HEALTHCHECKS_UUID)=' "$ENV_FILE" | sed -e 's/^/export /')" 2>/dev/null || true
+    eval "$(grep -E '^(DISCORD_WEBHOOK_URL|DISCORD_ROLE_CRITICAL|DISCORD_ROLE_INFO|TELEGRAM_BOT_TOKEN|TELEGRAM_CHAT_ID|BARK_KEY|BARK_HOST|HEALTHCHECKS_UUID)=' "$ENV_FILE" | sed -e 's/^/export /')" 2>/dev/null || true
 fi
 
 send_alert() {
@@ -63,8 +65,15 @@ send_alert() {
     # 3. Discord Webhook (si configuré)
     if [ -n "$DISCORD_WEBHOOK_URL" ]; then
         local color="3066993" # Vert
+        local mention=""
+        if [ "$status" = "error" ] && [ -n "$DISCORD_ROLE_CRITICAL" ]; then
+            color="15158332"
+            mention="<@&${DISCORD_ROLE_CRITICAL}>"
+        elif [ "$status" != "error" ] && [ -n "$DISCORD_ROLE_INFO" ]; then
+            mention="<@&${DISCORD_ROLE_INFO}>"
+        fi
         local payload
-        payload=$(python3 -c "import json; print(json.dumps({'username': 'Sentinelle Livres en Classe', 'avatar_url': 'https://livresenclasse.com/static/img/logo.png', 'embeds': [{'title': '''$title''', 'description': '''$message''', 'color': $color, 'footer': {'text': 'Serveur Local Rétabli'}}]}))" 2>/dev/null || echo "")
+        payload=$(python3 -c "import json; print(json.dumps({'username': 'Sentinelle Livres en Classe', 'avatar_url': 'https://livresenclasse.com/static/img/logo.png', 'content': '''$mention''', 'embeds': [{'title': '''$title''', 'description': '''$message''', 'color': $color, 'footer': {'text': 'Serveur Local Rétabli'}}]}))" 2>/dev/null || echo "")
         if [ -n "$payload" ]; then
             curl -s -m 5 -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK_URL" >/dev/null 2>&1 || true
             log "Notification Discord envoyée."
