@@ -79,7 +79,8 @@ DB_TARGET="/home/ubuntu/livresenclasse/instance/db.sqlite"
 
 if [ -d "$REPLICA_DIR/generations" ]; then
     log "Restauration en cours de la base SQLite depuis la réplique Litestream..."
-    if /usr/local/bin/litestream restore -if-replica-exists -o "$DB_TARGET" "file://$REPLICA_DIR"; then
+    rm -f /tmp/restore_temp.sqlite
+    if /usr/local/bin/litestream restore -if-replica-exists -o /tmp/restore_temp.sqlite "file://$REPLICA_DIR" && mv /tmp/restore_temp.sqlite "$DB_TARGET"; then
         log "Restauration Litestream réussie."
         INTEGRITY=$(sqlite3 "$DB_TARGET" "PRAGMA integrity_check;" 2>/dev/null || echo "error")
         if [ "$INTEGRITY" = "ok" ]; then

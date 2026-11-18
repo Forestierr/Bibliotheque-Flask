@@ -72,7 +72,7 @@ sleep 5
 
 # 4. Prendre le snapshot final à chaud sur Oracle
 log "4. Création de l'instantané SQLite final cohérent sur Oracle Cloud..."
-ssh -o BatchMode=yes "$REMOTE_HOST" "sqlite3 '$REMOTE_DB' \".backup '$TMP_REMOTE_SNAP'\""
+echo ".backup $TMP_REMOTE_SNAP" | ssh -o BatchMode=yes "$REMOTE_HOST" "sqlite3 '$REMOTE_DB'"
 
 # 5. Sauvegarder la base locale actuelle par précaution
 if [ -f "$DB_LOCAL" ]; then
