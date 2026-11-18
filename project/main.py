@@ -271,7 +271,7 @@ def healthy():
             200,
             {"Content-Type": "application/json; charset=utf-8"},
         )
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         current_app.logger.error(f"Health check failed: {e}")
         return (
             jsonify(

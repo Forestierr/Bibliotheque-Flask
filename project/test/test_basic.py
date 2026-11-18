@@ -294,4 +294,3 @@ def test_healthy_and_healthz_endpoint(client):
         assert data["status"] == "ok"
         assert data["database"] == "healthy"
         assert "timestamp" in data
-
