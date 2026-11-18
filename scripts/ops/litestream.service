@@ -1,0 +1,17 @@
+[Unit]
+Description=Litestream continuous SQLite replication to Oracle Cloud via SFTP
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rob1
+ExecStart=/usr/local/bin/litestream replicate -config /home/rob1/server/rob1forest/apps/Bibliotheque-Flask/scripts/ops/litestream.yml
+Restart=always
+RestartSec=5
+
+# Sécurité & limites
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

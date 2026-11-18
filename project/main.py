@@ -23,6 +23,7 @@ from flask_babel import get_locale
 from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from flask_mail import Message
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 
@@ -249,6 +250,41 @@ def llms():
         200,
         {"Content-Type": "text/plain; charset=utf-8"},
     )
+
+
+@core.route("/healthy")
+@core.route("/healthz")
+@main.route("/healthy")
+@main.route("/healthz")
+def healthy():
+    """Health check technique pour sentinelle de surveillance et load balancer."""
+    try:
+        db.session.execute(text("SELECT 1")).scalar()
+        return (
+            jsonify(
+                {
+                    "status": "ok",
+                    "database": "healthy",
+                    "timestamp": datetime.now(UTC).isoformat(),
+                }
+            ),
+            200,
+            {"Content-Type": "application/json; charset=utf-8"},
+        )
+    except Exception as e:  # noqa: BLE001
+        current_app.logger.error(f"Health check failed: {e}")
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "database": "unhealthy",
+                    "error": str(e),
+                    "timestamp": datetime.now(UTC).isoformat(),
+                }
+            ),
+            503,
+            {"Content-Type": "application/json; charset=utf-8"},
+        )
 
 
 INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "744d589148a54a93bfd6c066fce258a6")
