@@ -12,7 +12,13 @@ from project.config_plans import (
     MAX_FREE_SCANS,
     MAX_FREE_STUDENTS,
 )
-from project.models import Book, Student, User, get_current_scan_period_start
+from project.models import (
+    Book,
+    SchoolInvoice,
+    Student,
+    User,
+    get_current_scan_period_start,
+)
 
 
 @pytest.fixture
