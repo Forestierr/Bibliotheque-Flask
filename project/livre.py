@@ -5,6 +5,7 @@ import logging
 import math
 import os
 import re
+import sqlite3
 import time
 import xml.etree.ElementTree as ET
 from datetime import UTC, datetime, timedelta
@@ -12,6 +13,7 @@ from datetime import UTC, datetime, timedelta
 import requests
 from flask import (
     Blueprint,
+    current_app,
     flash,
     has_app_context,
     jsonify,
@@ -447,6 +449,103 @@ def get_book_from_db(isbn):
     return None
 
 
+def get_catalog_db_path() -> str | None:
+    """Résout le chemin vers le fichier SQLite du catalogue local (catalog.db)."""
+    configured = None
+    if has_app_context() and current_app.config.get("CATALOG_DB_PATH"):
+        configured = current_app.config.get("CATALOG_DB_PATH")
+    if not configured:
+        configured = os.getenv("CATALOG_DB_PATH")
+
+    if not configured:
+        return None
+
+    # Si le chemin configuré est absolu et existe
+    if os.path.isabs(configured):
+        return configured if os.path.isfile(configured) else None
+
+    # Si le chemin est relatif, chercher dans instance_path puis à la racine
+    candidates = []
+    if has_app_context():
+        candidates.append(
+            os.path.join(current_app.instance_path, os.path.basename(configured))
+        )
+        candidates.append(os.path.join(current_app.root_path, "..", configured))
+    candidates.append(os.path.abspath(configured))
+    candidates.append(
+        os.path.abspath(os.path.join("instance", os.path.basename(configured)))
+    )
+
+    for cand in candidates:
+        if cand and os.path.isfile(cand):
+            return os.path.abspath(cand)
+
+    return None
+
+
+def get_book_from_local_catalog(isbn: str) -> dict | None:
+    """
+    Recherche un livre par son ISBN dans la base de référence locale hors-ligne (catalog.db).
+    Lecture seule ultra-rapide (< 0.1 ms, mmap) sans dépendance réseau ni quota API.
+    Si le fichier est introuvable ou inaccessible, logge un message d'erreur/avertissement
+    et retourne None pour basculer automatiquement sur les API externes.
+    """
+    if not isbn:
+        return None
+
+    db_path = get_catalog_db_path()
+    if not db_path or not os.path.isfile(db_path):
+        configured = (
+            current_app.config.get("CATALOG_DB_PATH")
+            if has_app_context()
+            else os.getenv("CATALOG_DB_PATH")
+        )
+        logger.warning(
+            "Catalogue local (catalog.db) introuvable ou inaccessible (configuré: %s). "
+            "Recherche locale ignorée, bascule sur les API externes.",
+            configured,
+        )
+        return None
+
+    candidates = get_isbn_candidates(isbn)
+    if not candidates:
+        return None
+
+    try:
+        # Connexion en lecture seule stricte (mode=ro) pour zéro lock et haute concurrence
+        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=1.0)
+        conn.execute("PRAGMA query_only = ON;")
+        conn.execute("PRAGMA mmap_size = 2147483648;")
+        cursor = conn.cursor()
+
+        for cand in candidates:
+            row = cursor.execute(
+                "SELECT title, author, editor, year, cover_url FROM catalog WHERE isbn = ?",
+                (cand,),
+            ).fetchone()
+            if row and row[0]:
+                title, author, editor, year, cover_url = row
+                conn.close()
+                return {
+                    "title": title,
+                    "authors": author or "",
+                    "author": author or "",
+                    "editor": editor or "",
+                    "year": str(year) if year else None,
+                    "type": None,
+                    "isbn": cand,
+                    "image_url": cover_url or None,
+                }
+        conn.close()
+    except sqlite3.Error as e:
+        logger.error(
+            "Erreur lors de la lecture du catalogue local (catalog.db) pour l'ISBN %s : %s",
+            isbn,
+            e,
+        )
+    return None
+
+
 def get_book_from_google_api(isbn):
     api_key = os.getenv("GOOGLE_BOOK_API_KEY")
     url = f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}"
@@ -576,28 +675,35 @@ def get_book_from_api(isbn):
     if not clean_isbn:
         return None
 
-    # 0. Cache local collaboratif en DB
+    # 0. Cache local collaboratif en DB du site
     cached = get_book_from_db(clean_isbn)
     if cached and cached.get("title"):
         if not cached.get("image_url"):
             cached["image_url"] = resolve_cover_url(clean_isbn)
         return cached
 
-    # 1. Tentative avec Google Books API
+    # 1. Base de référence locale hors-ligne (catalog.db - Open Library + BnF)
+    book = get_book_from_local_catalog(clean_isbn)
+    if book and book.get("title"):
+        if not book.get("image_url"):
+            book["image_url"] = resolve_cover_url(clean_isbn)
+        return book
+
+    # 2. Tentative avec Google Books API
     book = get_book_from_google_api(clean_isbn)
     if book and book.get("title"):
         if not book.get("image_url"):
             book["image_url"] = resolve_cover_url(clean_isbn)
         return book
 
-    # 2. Fallback avec Open Library API
+    # 3. Fallback avec Open Library API
     book = get_book_from_open_library(clean_isbn)
     if book and book.get("title"):
         if not book.get("image_url"):
             book["image_url"] = resolve_cover_url(clean_isbn)
         return book
 
-    # 3. Fallback avec BnF (dépôt légal officiel français)
+    # 4. Fallback avec BnF (dépôt légal officiel français)
     book = get_book_from_bnf(clean_isbn)
     if book and book.get("title"):
         if not book.get("image_url"):
