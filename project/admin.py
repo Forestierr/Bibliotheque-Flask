@@ -44,6 +44,7 @@ from .models import (
     Loan,
     NewsletterCampaign,
     NewsletterDelivery,
+    SchoolInvoice,
     Student,
     User,
 )
@@ -81,12 +82,15 @@ def inject_admin_globals():
     try:
         new_feedbacks = Feedback.query.filter_by(status="nouveau").count()
         total_users = User.query.count()
+        pending_invoices = SchoolInvoice.query.filter_by(status="pending").count()
     except SQLAlchemyError:
         new_feedbacks = 0
         total_users = 0
+        pending_invoices = 0
     return {
         "new_feedbacks_count": new_feedbacks,
         "total_users_count": total_users,
+        "pending_school_invoices_count": pending_invoices,
     }
 
 
@@ -1214,6 +1218,22 @@ def eleves():
         total_students=total_students,
         search_query=q,
         active_page="eleves",
+    )
+
+
+@admin.route("/admin/factures-ecole")
+def factures_ecole():
+    invoices = SchoolInvoice.query.order_by(SchoolInvoice.created_at.desc()).all()
+    pending_count = sum(1 for inv in invoices if inv.status == "pending")
+    paid_count = sum(1 for inv in invoices if inv.status == "paid")
+    total_revenue_paid = sum(inv.amount for inv in invoices if inv.status == "paid")
+    return render_template(
+        "admin/factures_ecole.html",
+        invoices=invoices,
+        pending_count=pending_count,
+        paid_count=paid_count,
+        total_revenue_paid=total_revenue_paid,
+        active_page="factures_ecole",
     )
 
 

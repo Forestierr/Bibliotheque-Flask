@@ -1049,9 +1049,16 @@ def _handle_invoice_voided(invoice_data):
         stripe_invoice_id=invoice_id
     ).first()
     if school_inv:
-        school_inv.status = "void"
+        new_status = (
+            "expired"
+            if invoice_data.get("status") == "uncollectible"
+            else "void"
+        )
+        school_inv.status = new_status
         db.session.commit()
-        logger.info("Facture école %s marquée comme annulée (void)", invoice_id)
+        logger.info(
+            "Facture école %s marquée comme %s", invoice_id, new_status
+        )
 
 
 def _send_school_invoice_created_email(user, school_inv):

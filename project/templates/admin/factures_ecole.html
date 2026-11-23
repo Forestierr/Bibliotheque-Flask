@@ -1,0 +1,160 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Factures École - Administration{% endblock %}
+
+{% block admin_header_title %}Factures École & Mandats Administratifs{% endblock %}
+{% block admin_header_subtitle %}Suivi des factures officielles Stripe Invoicing émises pour les coopératives (OCCE), mairies et collectivités.{% endblock %}
+
+{% block admin_actions %}
+<a href="https://dashboard.stripe.com/test/invoices" target="_blank" class="button is-small is-rounded is-light" style="font-weight: 500; font-size: 0.78rem;">
+    <span class="icon is-small mr-1"><i class="fas fa-external-link-alt"></i></span>
+    <span>Voir sur Stripe Dashboard</span>
+</a>
+{% endblock %}
+
+{% block admin_content %}
+<style>
+  .admin-table th {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 0.75rem 1rem !important;
+  }
+  .admin-table td {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #f8fafc !important;
+    vertical-align: middle;
+  }
+</style>
+
+<!-- 3 Cartes de Statistiques -->
+<div class="columns is-variable is-3 mb-4">
+    <div class="column is-4">
+        <div class="stat-card">
+            <span class="stat-title">En attente de paiement</span>
+            <div class="stat-value" style="color: #d97706;">{{ pending_count }}</div>
+            <div class="stat-foot">Factures avec accès 30j en cours</div>
+        </div>
+    </div>
+    <div class="column is-4">
+        <div class="stat-card">
+            <span class="stat-title">Factures réglées</span>
+            <div class="stat-value" style="color: #10b981;">{{ paid_count }}</div>
+            <div class="stat-foot">Abonnements annuels confirmés</div>
+        </div>
+    </div>
+    <div class="column is-4">
+        <div class="stat-card">
+            <span class="stat-title">Total encaissé</span>
+            <div class="stat-value" style="color: #0f172a;">{{ "%.2f"|format(total_revenue_paid) }} €/CHF</div>
+            <div class="stat-foot">Chiffre d'affaires écoles</div>
+        </div>
+    </div>
+</div>
+
+<!-- Table des Factures École -->
+<div class="admin-card" style="padding: 0 !important; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);">
+    <div style="padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin: 0;">
+            Toutes les factures école ({{ invoices|length }})
+        </h2>
+    </div>
+
+    {% if invoices %}
+    <div class="table-container mb-0" style="overflow-x: auto;">
+        <table class="table is-fullwidth is-hoverable admin-table mb-0">
+            <thead>
+                <tr>
+                    <th>Organisme / École</th>
+                    <th>Enseignant(e)</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Échéance</th>
+                    <th>Créée le</th>
+                    <th class="has-text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inv in invoices %}
+                <tr>
+                    <td>
+                        <strong style="color: #0f172a;">{{ inv.school_name }}</strong>
+                        <div class="is-size-7 has-text-grey">
+                            {{ inv.school_billing_email }}
+                            {% if inv.order_reference %}&bull; Réf: {{ inv.order_reference }}{% endif %}
+                            {% if inv.siret_or_tax_id %}&bull; SIRET: {{ inv.siret_or_tax_id }}{% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        {% if inv.user %}
+                        <a href="{{ url_for('admin.user_detail', user_id=inv.user.id) }}" style="color: #2563eb; font-weight: 500;">
+                            {{ inv.user.name or inv.user.email }}
+                        </a>
+                        <div class="is-size-7 has-text-grey">{{ inv.user.email }}</div>
+                        {% else %}
+                        <span class="has-text-grey">Utilisateur supprimé (ID {{ inv.user_id }})</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="has-text-weight-bold" style="color: #0f172a;">
+                            {{ "%.2f"|format(inv.amount) }} {{ inv.currency }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if inv.status == 'paid' %}
+                            <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem;">
+                                Payée
+                            </span>
+                        {% elif inv.status == 'pending' %}
+                            <span class="tag is-warning is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem;">
+                                En attente
+                            </span>
+                        {% elif inv.status == 'expired' %}
+                            <span class="tag is-danger is-light is-rounded" style="font-size: 0.72rem;">
+                                Expirée
+                            </span>
+                        {% else %}
+                            <span class="tag is-light is-rounded" style="font-size: 0.72rem;">
+                                {{ inv.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="is-size-7 {% if inv.is_overdue %}has-text-danger has-text-weight-bold{% else %}has-text-grey{% endif %}">
+                            {{ inv.due_at.strftime('%d/%m/%Y') if inv.due_at else '-' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="is-size-7 has-text-grey">
+                            {{ inv.created_at.strftime('%d/%m/%Y') if inv.created_at else '-' }}
+                        </span>
+                    </td>
+                    <td class="has-text-right">
+                        <div class="buttons is-right are-small mb-0">
+                            {% if inv.hosted_invoice_url %}
+                            <a href="{{ inv.hosted_invoice_url }}" target="_blank" class="button is-small is-light is-rounded" title="Page Stripe">
+                                <span class="icon is-small"><i class="fas fa-external-link-alt"></i></span>
+                            </a>
+                            {% endif %}
+                            {% if inv.invoice_pdf_url %}
+                            <a href="{{ inv.invoice_pdf_url }}" target="_blank" class="button is-small is-link is-light is-rounded" title="Télécharger PDF">
+                                <span class="icon is-small"><i class="fas fa-file-pdf"></i></span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="padding: 3rem 1.5rem; text-align: center; color: #94a3b8;">
+        <span class="icon is-large mb-2"><i class="fas fa-file-invoice fa-2x"></i></span>
+        <p class="is-size-6">Aucune facture école n'a encore été émise.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
