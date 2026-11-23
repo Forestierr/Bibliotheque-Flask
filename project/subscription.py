@@ -700,7 +700,7 @@ def stripe_webhook():
         _handle_subscription_deleted(data_object)
     elif event_type == "invoice.payment_failed":
         _handle_invoice_payment_failed(data_object)
-    elif event_type == "invoice.paid":
+    elif event_type in ("invoice.paid", "invoice.payment_succeeded"):
         _handle_invoice_paid(data_object)
     elif event_type in ("invoice.voided", "invoice.marked_uncollectible"):
         _handle_invoice_voided(data_object)
