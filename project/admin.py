@@ -1237,6 +1237,76 @@ def factures_ecole():
     )
 
 
+@admin.route("/admin/factures-ecole/<int:invoice_id>/sync", methods=["POST"])
+def admin_sync_facture_ecole(invoice_id):
+    school_inv = db.session.get(SchoolInvoice, invoice_id)
+    if not school_inv:
+        flash(_("Facture école introuvable."), "error")
+        return redirect(url_for("admin.factures_ecole"))
+
+    stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+    if not stripe_secret:
+        flash(_("Clé Stripe non configurée."), "error")
+        return redirect(url_for("admin.factures_ecole"))
+
+    try:
+        from .subscription import _handle_invoice_paid, _handle_invoice_voided
+
+        stripe.api_key = stripe_secret
+        st_inv = stripe.Invoice.retrieve(school_inv.stripe_invoice_id)
+        inv_status = getattr(st_inv, "status", None)
+        if inv_status == "paid":
+            _handle_invoice_paid(st_inv)
+            flash(
+                _("Facture synchronisée : marquée comme payée et compte prolongé."),
+                "success",
+            )
+        elif inv_status in ("void", "uncollectible"):
+            _handle_invoice_voided(st_inv)
+            flash(_("Facture synchronisée : annulée dans Stripe."), "warning")
+        else:
+            flash(
+                _(
+                    "Facture toujours en attente sur Stripe (statut: %(status)s).",
+                    status=inv_status,
+                ),
+                "info",
+            )
+    except Exception as e:  # noqa: BLE001
+        flash(_("Erreur synchronisation Stripe : %(err)s", err=str(e)), "error")
+
+    return redirect(url_for("admin.factures_ecole"))
+
+
+@admin.route("/admin/factures-ecole/<int:invoice_id>/mark-paid", methods=["POST"])
+def admin_mark_facture_ecole_paid(invoice_id):
+    school_inv = db.session.get(SchoolInvoice, invoice_id)
+    if not school_inv:
+        flash(_("Facture école introuvable."), "error")
+        return redirect(url_for("admin.factures_ecole"))
+
+    stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+    if stripe_secret and school_inv.stripe_invoice_id:
+        try:
+            stripe.api_key = stripe_secret
+            stripe.Invoice.pay(school_inv.stripe_invoice_id, paid_out_of_band=True)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("Marquage payé Stripe hors bande échoué : %s", e)
+
+    from .subscription import _handle_invoice_paid
+
+    _handle_invoice_paid({
+        "id": school_inv.stripe_invoice_id,
+        "invoice_pdf": school_inv.invoice_pdf_url,
+        "hosted_invoice_url": school_inv.hosted_invoice_url,
+    })
+    flash(
+        _("Facture école validée et compte utilisateur prolongé pour 365 jours !"),
+        "success",
+    )
+    return redirect(url_for("admin.factures_ecole"))
+
+
 @admin.route("/admin/parametres")
 def parametres():
     stripe_configured = bool(os.getenv("STRIPE_SECRET_KEY"))

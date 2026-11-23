@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-23 17:56+0100\n"
+"POT-Creation-Date: 2026-11-23 22:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,15 +16,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: project/admin.py:1447
+#: project/admin.py:1244 project/admin.py:1285 project/subscription.py:627
+msgid "Facture école introuvable."
+msgstr "Facture école introuvable."
+
+#: project/admin.py:1249
+msgid "Clé Stripe non configurée."
+msgstr "Clé Stripe non configurée."
+
+#: project/admin.py:1261
+msgid "Facture synchronisée : marquée comme payée et compte prolongé."
+msgstr "Facture synchronisée : marquée comme payée et compte prolongé."
+
+#: project/admin.py:1266
+msgid "Facture synchronisée : annulée dans Stripe."
+msgstr "Facture synchronisée : annulée dans Stripe."
+
+#: project/admin.py:1270
+#, python-format
+msgid "Facture toujours en attente sur Stripe (statut: %(status)s)."
+msgstr "Facture toujours en attente sur Stripe (statut: %(status)s)."
+
+#: project/admin.py:1276
+#, python-format
+msgid "Erreur synchronisation Stripe : %(err)s"
+msgstr "Erreur synchronisation Stripe : %(err)s"
+
+#: project/admin.py:1304
+msgid "Facture école validée et compte utilisateur prolongé pour 365 jours !"
+msgstr "Facture école validée et compte utilisateur prolongé pour 365 jours !"
+
+#: project/admin.py:1537
 msgid "Pour vous désabonner :"
 msgstr "Pour vous désabonner :"
 
-#: project/admin.py:1448
+#: project/admin.py:1538
 msgid "Donner votre avis :"
 msgstr "Donner votre avis :"
 
-#: project/admin.py:1449
+#: project/admin.py:1539
 msgid "Signaler un problème :"
 msgstr "Signaler un problème :"
 
@@ -406,21 +436,17 @@ msgid ""
 " l'administrateur."
 msgstr "Le service de facturation Stripe est en cours de configuration. Contactez l'administrateur."
 
-#: project/subscription.py:600
+#: project/subscription.py:592
 msgid ""
 "Votre facture école a été générée avec succès. Votre accès Premium est "
 "débloqué pour 30 jours !"
 msgstr "Votre facture école a été générée avec succès. Votre accès Premium est débloqué pour 30 jours !"
 
-#: project/subscription.py:616
+#: project/subscription.py:608
 msgid ""
 "Une erreur est survenue lors de la création de la facture Stripe. "
 "Veuillez vérifier les informations ou réessayer ultérieurement."
 msgstr "Une erreur est survenue lors de la création de la facture Stripe. Veuillez vérifier les informations ou réessayer ultérieurement."
-
-#: project/subscription.py:635
-msgid "Facture école introuvable."
-msgstr "Facture école introuvable."
 
 #: project/templates/aide.html:7
 msgid "Centre d'aide | Livres en Classe"

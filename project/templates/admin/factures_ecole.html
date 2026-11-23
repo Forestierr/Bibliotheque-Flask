@@ -143,6 +143,20 @@
                                 <span class="icon is-small"><i class="fas fa-file-pdf"></i></span>
                             </a>
                             {% endif %}
+                            {% if inv.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('admin.admin_sync_facture_ecole', invoice_id=inv.id) }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="button is-small is-info is-light is-rounded" title="Synchroniser avec Stripe">
+                                    <span class="icon is-small"><i class="fas fa-sync-alt"></i></span>
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin.admin_mark_facture_ecole_paid', invoice_id=inv.id) }}" style="display:inline;" onsubmit="return confirm('Confirmer la validation du paiement et prolonger l\'accès enseignant pour 365 jours ?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="button is-small is-success is-light is-rounded" title="Marquer comme payée">
+                                    <span class="icon is-small"><i class="fas fa-check"></i></span>
+                                </button>
+                            </form>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>

@@ -2017,16 +2017,18 @@ def test_flux_b_facture_ecole_creation_and_grace_period(client, app):
         assert "/subscription/facture-ecole/confirmation/" in resp_post.headers["Location"]
 
         # Vérifier les appels Stripe
+        mock_invoice_create.assert_called_once()
+        inv_kwargs = mock_invoice_create.call_args[1]
+        assert inv_kwargs["currency"] == "eur"
+        assert inv_kwargs["collection_method"] == "send_invoice"
+        assert inv_kwargs["days_until_due"] == 30
+        assert "Exonéré de TVA selon l'art. 10 de la Loi fédérale suisse" in inv_kwargs["footer"]
+
         mock_item_create.assert_called_once()
         item_kwargs = mock_item_create.call_args[1]
         assert item_kwargs["amount"] == 3000
         assert item_kwargs["currency"] == "eur"
-
-        mock_invoice_create.assert_called_once()
-        inv_kwargs = mock_invoice_create.call_args[1]
-        assert inv_kwargs["collection_method"] == "send_invoice"
-        assert inv_kwargs["days_until_due"] == 30
-        assert "Exonéré de TVA selon l'art. 10 de la Loi fédérale suisse" in inv_kwargs["footer"]
+        assert item_kwargs["invoice"] == "in_school_draft_204"
 
         mock_send_inv.assert_called_once_with("in_school_final_204")
 

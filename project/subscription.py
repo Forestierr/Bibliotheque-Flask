@@ -489,28 +489,10 @@ def facture_ecole():
             }
             customer = stripe.Customer.create(**cust_params)
 
-            # 2. Créer la ligne de facture (InvoiceItem)
-            item_description = (
-                f"Abonnement annuel Livres en Classe (Année scolaire) — "
-                f"Enseignant(e) : {current_user.name or current_user.email}"
-            )
-            if order_reference:
-                item_description += f" (Réf: {order_reference})"
-
-            stripe.InvoiceItem.create(
-                customer=customer.id,
-                amount=unit_amount,
-                currency=currency,
-                description=item_description,
-                metadata={
-                    "user_id": str(current_user.id),
-                    "school_name": school_name,
-                },
-            )
-
-            # 3. Créer la facture Stripe Invoicing avec échéance à 30 jours
+            # 2. Créer le brouillon de facture Stripe Invoicing avec devise explicite
             invoice_params = {
                 "customer": customer.id,
+                "currency": currency,
                 "collection_method": "send_invoice",
                 "days_until_due": 30,
                 "auto_advance": True,
@@ -521,22 +503,12 @@ def facture_ecole():
                     "school_billing_email": school_billing_email,
                     "flow": "flux_b_school_invoice",
                 },
+                "payment_settings": {
+                    "payment_method_types": ["card", "customer_balance"],
+                },
             }
 
             try:
-                invoice_params["payment_settings"] = {
-                    "payment_method_types": ["card", "customer_balance"],
-                    "payment_method_options": {
-                        "customer_balance": {
-                            "funding_type": "bank_transfer",
-                            "bank_transfer": {
-                                "type": "eu_bank_transfer"
-                                if currency == "eur"
-                                else "ch_bank_transfer",
-                            },
-                        },
-                    },
-                }
                 created_inv = stripe.Invoice.create(**invoice_params)
             except Exception as pay_err:  # noqa: BLE001
                 logger.warning(
@@ -545,6 +517,26 @@ def facture_ecole():
                 )
                 invoice_params.pop("payment_settings", None)
                 created_inv = stripe.Invoice.create(**invoice_params)
+
+            # 3. Créer la ligne de facture attachée directement à cette facture
+            item_description = (
+                f"Abonnement annuel Livres en Classe (Année scolaire) — "
+                f"Enseignant(e) : {current_user.name or current_user.email}"
+            )
+            if order_reference:
+                item_description += f" (Réf: {order_reference})"
+
+            stripe.InvoiceItem.create(
+                customer=customer.id,
+                invoice=created_inv.id,
+                amount=unit_amount,
+                currency=currency,
+                description=item_description,
+                metadata={
+                    "user_id": str(current_user.id),
+                    "school_name": school_name,
+                },
+            )
 
             # 4. Finaliser la facture pour générer hosted_invoice_url et PDF
             try:
@@ -634,6 +626,25 @@ def facture_ecole_confirmation(invoice_id):
     if not school_inv or school_inv.user_id != current_user.id:
         flash(_("Facture école introuvable."), "error")
         return redirect(url_for("auth.reglage"))
+
+    # Auto-synchronisation avec Stripe si la facture est encore marquée pending
+    if school_inv.status == "pending" and school_inv.stripe_invoice_id:
+        stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+        if stripe_secret and not current_app.config.get("TESTING"):
+            try:
+                stripe.api_key = stripe_secret
+                st_inv = stripe.Invoice.retrieve(school_inv.stripe_invoice_id)
+                st_status = getattr(st_inv, "status", None)
+                if st_status == "paid":
+                    _handle_invoice_paid(st_inv)
+                elif st_status in ("void", "uncollectible"):
+                    _handle_invoice_voided(st_inv)
+            except Exception as sync_err:  # noqa: BLE001
+                logger.warning(
+                    "Erreur auto-sync confirmation facture école %s : %s",
+                    school_inv.id,
+                    sync_err,
+                )
 
     return render_template(
         "subscription/facture_ecole_confirmation.html",
@@ -1002,6 +1013,7 @@ def _handle_invoice_paid(invoice_data):
                 if end_aware > now:
                     base_date = end_aware
             user.subscription_end_at = base_date + timedelta(days=365)
+            user.trial_ends_at = None
             db.session.commit()
             logger.info(
                 "Facture école %s payée. Compte de l'utilisateur %s prolongé pour 365 jours jusqu'au %s",
@@ -1061,6 +1073,19 @@ def _handle_invoice_voided(invoice_data):
         )
 
 
+def _safe_external_url(endpoint, **values):
+    """Génère une URL absolue même hors contexte de requête active."""
+    try:
+        return url_for(endpoint, _external=True, **values)
+    except Exception:  # noqa: BLE001
+        base_url = os.getenv("BASE_URL", "https://livresenclasse.com").rstrip("/")
+        try:
+            rel = url_for(endpoint, **values)
+        except Exception:  # noqa: BLE001
+            rel = "/"
+        return f"{base_url}{rel}"
+
+
 def _send_school_invoice_created_email(user, school_inv):
     app = current_app._get_current_object()
     user_email = user.email
@@ -1079,10 +1104,9 @@ def _send_school_invoice_created_email(user, school_inv):
     def _send():
         with app.app_context():
             try:
-                confirmation_url = url_for(
+                confirmation_url = _safe_external_url(
                     "subscription.facture_ecole_confirmation",
                     invoice_id=inv_copy["id"],
-                    _external=True,
                 )
                 html_body = render_template(
                     "email/email_school_invoice_created.html",
@@ -1124,7 +1148,7 @@ def _send_school_invoice_paid_email(user, school_inv):
     def _send():
         with app.app_context():
             try:
-                reglage_url = url_for("auth.reglage", _external=True)
+                reglage_url = _safe_external_url("auth.reglage")
                 html_body = render_template(
                     "email/email_school_invoice_paid.html",
                     user=user_copy,

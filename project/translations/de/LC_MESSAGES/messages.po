@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-11-23 17:56+0100\n"
+"POT-Creation-Date: 2026-11-23 22:11+0100\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: de\n"
@@ -19,15 +19,46 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: project/admin.py:1447
+#: project/admin.py:1244 project/admin.py:1285 project/subscription.py:627
+#, fuzzy
+msgid "Facture école introuvable."
+msgstr "Ausleihe nicht gefunden."
+
+#: project/admin.py:1249
+msgid "Clé Stripe non configurée."
+msgstr ""
+
+#: project/admin.py:1261
+msgid "Facture synchronisée : marquée comme payée et compte prolongé."
+msgstr ""
+
+#: project/admin.py:1266
+msgid "Facture synchronisée : annulée dans Stripe."
+msgstr ""
+
+#: project/admin.py:1270
+#, python-format
+msgid "Facture toujours en attente sur Stripe (statut: %(status)s)."
+msgstr ""
+
+#: project/admin.py:1276
+#, python-format
+msgid "Erreur synchronisation Stripe : %(err)s"
+msgstr ""
+
+#: project/admin.py:1304
+msgid "Facture école validée et compte utilisateur prolongé pour 365 jours !"
+msgstr ""
+
+#: project/admin.py:1537
 msgid "Pour vous désabonner :"
 msgstr "Zum Abmelden:"
 
-#: project/admin.py:1448
+#: project/admin.py:1538
 msgid "Donner votre avis :"
 msgstr "Ihre Meinung äußern:"
 
-#: project/admin.py:1449
+#: project/admin.py:1539
 msgid "Signaler un problème :"
 msgstr "Ein Problem melden:"
 
@@ -455,13 +486,13 @@ msgstr ""
 "Der Stripe-Zahlungsdienst wird derzeit eingerichtet. Bitte kontaktieren "
 "Sie den Administrator."
 
-#: project/subscription.py:600
+#: project/subscription.py:592
 msgid ""
 "Votre facture école a été générée avec succès. Votre accès Premium est "
 "débloqué pour 30 jours !"
 msgstr ""
 
-#: project/subscription.py:616
+#: project/subscription.py:608
 #, fuzzy
 msgid ""
 "Une erreur est survenue lors de la création de la facture Stripe. "
@@ -469,11 +500,6 @@ msgid ""
 msgstr ""
 "Beim Zugriff auf die Zahlung ist ein Fehler aufgetreten. Bitte versuchen "
 "Sie es später erneut oder kontaktieren Sie den Support."
-
-#: project/subscription.py:635
-#, fuzzy
-msgid "Facture école introuvable."
-msgstr "Ausleihe nicht gefunden."
 
 #: project/templates/aide.html:7
 msgid "Centre d'aide | Livres en Classe"
