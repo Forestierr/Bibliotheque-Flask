@@ -207,8 +207,14 @@ def create_checkout_session():
     try:
         session = stripe.checkout.Session.create(**checkout_params)
         return redirect(session.url, code=303)
-    except Exception:
-        logger.exception("Erreur lors de la création de session Stripe Checkout")
+    except Exception as e:
+        if current_app.testing:
+            logger.warning(
+                "Erreur simulée lors de la création de session Stripe Checkout : %s",
+                e,
+            )
+        else:
+            logger.exception("Erreur lors de la création de session Stripe Checkout")
         flash(
             _(
                 "Une erreur est survenue lors de l'accès au paiement. Veuillez réessayer ultérieurement ou contacter le support."
@@ -242,8 +248,11 @@ def portail_abonne():
             return_url=url_for("auth.reglage", _external=True),
         )
         return redirect(portal_session.url, code=303)
-    except Exception:
-        logger.exception("Erreur Stripe Portal")
+    except Exception as e:
+        if current_app.testing:
+            logger.warning("Erreur simulée Stripe Portal : %s", e)
+        else:
+            logger.exception("Erreur Stripe Portal")
         flash(
             _(
                 "Impossible d'accéder au portail de gestion pour le moment. Veuillez réessayer ultérieurement."
@@ -600,8 +609,14 @@ def facture_ecole():
                 )
             )
 
-        except Exception:
-            logger.exception("Erreur lors de la création de la facture école Stripe")
+        except Exception as e:
+            if current_app.testing:
+                logger.warning(
+                    "Erreur simulée lors de la création de la facture école Stripe : %s",
+                    e,
+                )
+            else:
+                logger.exception("Erreur lors de la création de la facture école Stripe")
             db.session.rollback()
             flash(
                 _(
