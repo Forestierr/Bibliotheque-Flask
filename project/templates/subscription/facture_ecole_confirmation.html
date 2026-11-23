@@ -1,0 +1,157 @@
+<!-- templates/subscription/facture_ecole_confirmation.html -->
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Facture École Générée & Accès 30 jours Actif | Livres en Classe") }}{% endblock %}
+{% block meta_robots %}
+<meta name="robots" content="noindex, follow" />
+{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Confirmation Facture École")) }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .invoice-confirm-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid hsl(0, 0%, 88%);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        padding: 2.5rem 2rem;
+    }
+    .badge-icon-header {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        margin-bottom: 1.25rem;
+    }
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid hsl(0, 0%, 93%);
+        font-size: 0.95rem;
+    }
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    @media (max-width: 768px) {
+        .invoice-confirm-card {
+            padding: 1.5rem 1.1rem;
+        }
+        .detail-row {
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+    }
+</style>
+
+<section class="section">
+    <div class="container" style="max-width: 700px; margin: 0 auto;">
+
+        {% include "utils/flash_message.html" %}
+
+        <div class="invoice-confirm-card has-text-centered">
+            
+            <div class="badge-icon-header">
+                <i class="fas fa-check"></i>
+            </div>
+
+            <h1 class="title is-2 mb-2" style="font-weight: 800; color: hsl(0, 0%, 15%);">
+                {{ _("Facture école générée avec succès !") }}
+            </h1>
+            <p class="subtitle is-5 has-text-grey mb-5">
+                {{ _("Votre accès Premium est débloqué immédiatement pour les 30 prochains jours.") }}
+            </p>
+
+            <div class="notification is-success is-light has-text-left mb-5" style="border-radius: 12px; border-left: 4px solid #10b981;">
+                <p class="has-text-weight-bold mb-1" style="color: #065f46;">
+                    <i class="fas fa-bolt mr-1"></i> {{ _("Votre classe profite de l'accès Premium sans attendre") }}
+                </p>
+                <p class="is-size-6" style="color: #047857; margin-bottom: 0;">
+                    {{ _("Vous pouvez dès à présent ajouter tous vos élèves, cataloguer vos livres sans limite, scanner des codes-barres et imprimer vos étiquettes de bacs.") }}
+                </p>
+            </div>
+
+            <!-- Détails de la facture -->
+            <div class="box has-background-white-ter has-text-left mb-5" style="border-radius: 12px; border: 1px solid hsl(0, 0%, 90%);">
+                <h3 class="title is-6 mb-3 has-text-weight-bold" style="color: hsl(0, 0%, 25%);">
+                    <i class="fas fa-file-invoice mr-1 text-link"></i> {{ _("Récapitulatif de la facture") }}
+                </h3>
+                <div class="detail-row">
+                    <span class="has-text-grey">{{ _("Organisme / École :") }}</span>
+                    <span class="has-text-weight-bold">{{ invoice.school_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="has-text-grey">{{ _("Email du secrétariat :") }}</span>
+                    <span><code>{{ invoice.school_billing_email }}</code></span>
+                </div>
+                <div class="detail-row">
+                    <span class="has-text-grey">{{ _("Montant net à payer :") }}</span>
+                    <span class="has-text-weight-bold has-text-link">{{ "%.2f"|format(invoice.amount) }} {{ invoice.currency }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="has-text-grey">{{ _("Statut du paiement :") }}</span>
+                    {% if invoice.status == 'paid' %}
+                        <span class="tag is-success is-light is-rounded has-text-weight-bold">
+                            <i class="fas fa-check mr-1"></i> {{ _("Payée") }}
+                        </span>
+                    {% else %}
+                        <span class="tag is-warning is-light is-rounded has-text-weight-bold">
+                            <i class="fas fa-clock mr-1"></i> {{ _("En attente de règlement (Échéance : %(due)s)", due=invoice.due_at|format_date) }}
+                        </span>
+                    {% endif %}
+                </div>
+                {% if invoice.order_reference %}
+                <div class="detail-row">
+                    <span class="has-text-grey">{{ _("Référence interne :") }}</span>
+                    <span>{{ invoice.order_reference }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="buttons is-centered mb-5">
+                {% if invoice.hosted_invoice_url %}
+                <a href="{{ invoice.hosted_invoice_url }}" target="_blank" class="button is-link is-rounded has-text-weight-bold">
+                    <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+                    <span>{{ _("Ouvrir la page de facture Stripe") }}</span>
+                </a>
+                {% endif %}
+                {% if invoice.invoice_pdf_url %}
+                <a href="{{ invoice.invoice_pdf_url }}" target="_blank" class="button is-link is-light is-rounded has-text-weight-bold">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>{{ _("Télécharger le PDF de facture") }}</span>
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="notification is-light has-text-left mb-5" style="border-radius: 10px; font-size: 0.9rem;">
+                <p class="has-text-weight-bold mb-1">
+                    <i class="fas fa-paper-plane mr-1 has-text-info"></i> {{ _("Que se passe-t-il ensuite ?") }}
+                </p>
+                <ol style="margin-left: 1.25rem; margin-top: 0.35rem; color: hsl(0, 0%, 35%);">
+                    <li class="mb-1">{{ _("Stripe a envoyé un e-mail avec le lien de paiement et les coordonnées bancaires (IBAN virtuel SEPA) au secrétariat.") }}</li>
+                    <li class="mb-1">{{ _("Votre comptabilité ou secrétariat effectue le règlement par virement ou carte.") }}</li>
+                    <li>{{ _("Dès réception des fonds par Stripe, votre compte est prolongé automatiquement pour 365 jours complets.") }}</li>
+                </ol>
+            </div>
+
+            <a href="{{ url_for('main.dashboard') }}" class="button is-primary is-medium is-rounded has-text-weight-bold" style="padding: 0 2rem;">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>{{ _("Aller sur mon tableau de bord") }}</span>
+            </a>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}

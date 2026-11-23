@@ -173,7 +173,28 @@
             </p>
         </div>
 
+        <!-- Bandeau de réassurance Financement École / Coopérative -->
+        <div class="notification is-info is-light mb-6" style="border-radius: 12px; border-left: 5px solid #2563eb; padding: 1.25rem 1.5rem;">
+            <div class="is-flex is-align-items-center is-justify-content-space-between" style="flex-wrap: wrap; gap: 1rem;">
+                <div style="flex: 1 1 500px;">
+                    <p class="title is-6 mb-1" style="color: #1e3a8a; font-weight: 700;">
+                        <i class="fas fa-school mr-2"></i>{{ _("100%% finançable par votre coopérative scolaire ou mairie")|replace("%%", "%") }}
+                    </p>
+                    <p class="is-size-6" style="color: #1e40af; margin-bottom: 0; line-height: 1.45;">
+                        {{ _("Finançable par votre coopérative scolaire (OCCE, Sou des écoles), vos crédits mairie ou votre budget de classe. Facture acquittée officielle délivrée immédiatement pour remboursement, ou facture envoyée directement à votre secrétariat avec paiement sous 30 jours.") }}
+                    </p>
+                </div>
+                <div style="flex-shrink: 0;">
+                    <a href="{{ url_for('subscription.facture_ecole') }}" class="button is-link is-rounded has-text-weight-bold">
+                        <span class="icon"><i class="fas fa-file-invoice"></i></span>
+                        <span>{{ _("Facture école 30 jours") }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         {% if current_user.is_authenticated %}
+
             {% if current_user.plan == 'founder' %}
             <div class="notification is-warning is-light mb-6" style="border-radius: 12px; border-left: 5px solid #d69e2e;">
                 <div class="media">
@@ -377,6 +398,12 @@
                         <span>{{ _("Souscrire pour 30.- CHF / an") }}</span>
                     </a>
                     {% endif %}
+
+                    <div class="has-text-centered mt-3">
+                        <a href="{{ url_for('subscription.facture_ecole') }}" class="is-size-7 has-text-link has-text-weight-semibold">
+                            <i class="fas fa-file-invoice mr-1"></i>{{ _("Votre école règle directement ? Facture sous 30j") }} &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -428,6 +455,11 @@
                             <td><strong>{{ _("Codes de réduction / bons d'école") }}</strong></td>
                             <td class="has-text-centered">-</td>
                             <td class="has-text-centered has-text-weight-bold has-text-dark">{{ _("Acceptés sur Stripe") }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>{{ _("Facture officielle école / OCCE") }}</strong></td>
+                            <td class="has-text-centered">-</td>
+                            <td class="has-text-centered has-text-weight-bold has-text-dark"><i class="fas fa-check mr-1"></i> {{ _("Oui (remboursement ou virement direct sous 30j)") }}</td>
                         </tr>
                     </tbody>
                 </table>

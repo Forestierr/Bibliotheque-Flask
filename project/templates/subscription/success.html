@@ -66,13 +66,19 @@
             </div>
 
             <p class="is-size-6 has-text-grey mb-5">
-                {{ _("Un reçu a été envoyé à votre adresse e-mail. Vous pouvez gérer ou résilier votre abonnement à tout moment depuis la page Réglages.") }}
+                {{ _("Un reçu a été envoyé à votre adresse e-mail. Vous pouvez également télécharger votre facture acquittée ci-dessous pour votre dossier de remboursement coopérative ou mairie.") }}
             </p>
 
-            <a href="{{ url_for('main.dashboard') }}" class="button is-link is-medium is-rounded has-text-weight-bold" style="padding: 0 2rem;">
-                <span class="icon"><i class="fas fa-home"></i></span>
-                <span>{{ _("Aller sur mon tableau de bord") }}</span>
-            </a>
+            <div class="buttons is-centered mb-4">
+                <a href="{{ url_for('subscription.facture_acquittee') }}" target="_blank" class="button is-link is-light is-medium is-rounded has-text-weight-bold">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>{{ _("Télécharger ma facture acquittée (PDF)") }}</span>
+                </a>
+                <a href="{{ url_for('main.dashboard') }}" class="button is-link is-medium is-rounded has-text-weight-bold" style="padding: 0 2rem;">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>{{ _("Aller sur mon tableau de bord") }}</span>
+                </a>
+            </div>
         </div>
     </div>
 </section>

@@ -295,11 +295,57 @@
                     </div>
                 </div>
 
-                <div class="notification is-light mb-5" style="border-radius: 10px; font-size: 0.9rem;">
+                <div class="notification is-light mb-4" style="border-radius: 10px; font-size: 0.9rem;">
                     <span class="icon has-text-info mr-1"><i class="fas fa-tag"></i></span>
                     <strong>{{ _("Code de réduction ou bon d'école ?") }}</strong>
                     {{ _("Vous pourrez saisir votre code promo directement sur l'écran sécurisé de paiement Stripe.") }}
                 </div>
+
+                <!-- Options de facturation école / coopérative (Flux A) -->
+                <div class="box has-background-white-ter mb-4" style="border-radius: 12px; border: 1px solid hsl(0, 0%, 88%);">
+                    <div class="field">
+                        <label class="checkbox has-text-weight-bold" style="color: #1e3a8a; cursor: pointer; display: flex; align-items: flex-start; gap: 0.5rem;">
+                            <input type="checkbox" name="is_school_reimbursement" id="schoolReimbursementCheck" value="1" onchange="toggleSchoolFields()" style="margin-top: 3px; transform: scale(1.15);">
+                            <span>{{ _("Établir la facture au nom de ma coopérative scolaire / école (pour remboursement)") }}</span>
+                        </label>
+                        <p class="help has-text-grey" style="margin-top: 4px; margin-left: 1.6rem;">
+                            {{ _("Cochez cette case si vous avancez la somme et vous faites rembourser par votre coopérative (OCCE, Sou des écoles) ou mairie.") }}
+                        </p>
+                    </div>
+
+                    <div id="schoolFieldsContainer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed hsl(0, 0%, 85%);">
+                        <div class="field mb-3">
+                            <label class="label is-small" for="school_name">{{ _("Nom exact de l'organisme payeur") }} <span class="has-text-danger">*</span></label>
+                            <div class="control has-icons-left">
+                                <input class="input is-small" type="text" id="school_name" name="school_name" placeholder="{{ _('Ex : Coopérative scolaire OCCE École Victor Hugo') }}">
+                                <span class="icon is-small is-left"><i class="fas fa-university"></i></span>
+                            </div>
+                        </div>
+                        <div class="field mb-3">
+                            <label class="label is-small" for="school_address">{{ _("Adresse postale de l'établissement") }} <span class="has-text-danger">*</span></label>
+                            <div class="control has-icons-left">
+                                <input class="input is-small" type="text" id="school_address" name="school_address" placeholder="{{ _('Numéro, rue, code postal et ville') }}">
+                                <span class="icon is-small is-left"><i class="fas fa-map-marker-alt"></i></span>
+                            </div>
+                        </div>
+                        <p class="is-size-7 has-text-info">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            {{ _("Le reçu officiel sera libellé au nom de votre école avec votre identifiant fiscal (SIRET/IDE) pour un remboursement comptable sans blocage.") }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Alternative Flux B (École règle directement) -->
+                <div class="notification is-light mb-5" style="border-radius: 10px; font-size: 0.88rem; background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <i class="fas fa-file-invoice text-link mr-1"></i>
+                    <strong>{{ _("Votre école exige de régler directement (Mairie, Secrétariat) ?") }}</strong>
+                    <br>
+                    {{ _("Vous ne souhaitez pas avancer les frais ?") }}
+                    <a href="{{ url_for('subscription.facture_ecole') }}" class="has-text-link has-text-weight-bold" style="text-decoration: underline;">
+                        {{ _("Générer une facture école à 30 jours (virement SEPA ou carte) avec accès Premium immédiat →") }}
+                    </a>
+                </div>
+
 
                 <!-- Bouton d'action principal -->
                 {% if current_user.is_authenticated %}
@@ -454,6 +500,24 @@ function selectPlan(plan) {
         billingFrequencyText.textContent = "{{ _('Abonnement mensuel renouvelé à 3.- CHF TTC / mois') }}";
         if (btnSubmitText) {
             btnSubmitText.textContent = "{{ _('Procéder au paiement sécurisé (3.- CHF TTC / mois)') }}";
+        }
+    }
+}
+
+function toggleSchoolFields() {
+    var check = document.getElementById('schoolReimbursementCheck');
+    var container = document.getElementById('schoolFieldsContainer');
+    var nameInput = document.getElementById('school_name');
+    var addrInput = document.getElementById('school_address');
+    if (check && container) {
+        if (check.checked) {
+            container.style.display = 'block';
+            if (nameInput) nameInput.required = true;
+            if (addrInput) addrInput.required = true;
+        } else {
+            container.style.display = 'none';
+            if (nameInput) nameInput.required = false;
+            if (addrInput) addrInput.required = false;
         }
     }
 }

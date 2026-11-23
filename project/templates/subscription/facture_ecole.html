@@ -1,0 +1,308 @@
+<!-- templates/subscription/facture_ecole.html -->
+{% from "utils/navbar.html" import navbar %}
+{% extends "base.html" %}
+
+{% block title %}{{ _("Demande de Facture École (OCCE, Mairie, Coopérative) | Livres en Classe") }}{% endblock %}
+{% block meta_robots %}
+<meta name="robots" content="noindex, follow" />
+{% endblock %}
+{% block meta_description %}{{ _("Générez une facture officielle Stripe au nom de votre coopérative scolaire ou mairie et profitez d'un accès Premium immédiat de 30 jours.") }}{% endblock %}
+
+{% block navbar %}
+    {{ navbar(current_user, _("Facture École")) }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .school-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid hsl(0, 0%, 88%);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        padding: 2.2rem 2rem;
+    }
+    .grace-period-banner {
+        background: linear-gradient(135deg, hsl(217, 91%, 97%), hsl(217, 100%, 94%));
+        border: 1px solid hsl(217, 80%, 85%);
+        border-radius: 12px;
+        padding: 1.25rem 1.25rem;
+        margin-bottom: 2rem;
+    }
+    .currency-selector-box {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .currency-option {
+        flex: 1;
+        border: 2px solid hsl(0, 0%, 88%);
+        border-radius: 10px;
+        padding: 0.9rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: hsl(0, 0%, 99%);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .currency-option:hover {
+        border-color: #2563eb;
+    }
+    .currency-option.is-selected {
+        border-color: #2563eb;
+        background: hsl(217, 100%, 99%);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+    }
+    .currency-option input[type="radio"] {
+        accent-color: #2563eb;
+        transform: scale(1.2);
+    }
+    @media (max-width: 768px) {
+        .currency-selector-box {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .school-card {
+            padding: 1.5rem 1.1rem;
+        }
+    }
+</style>
+
+<section class="section">
+    <div class="container" style="max-width: 760px; margin: 0 auto;">
+
+        {% include "utils/flash_message.html" %}
+
+        <!-- En-tête -->
+        <div class="has-text-centered mb-5">
+            <span class="tag is-info is-light is-rounded has-text-weight-bold mb-2">
+                <i class="fas fa-school mr-1"></i> {{ _("Financement Établissement / Coopérative") }}
+            </span>
+            <h1 class="title is-2 mb-2" style="font-weight: 800; color: hsl(0, 0%, 15%);">
+                {{ _("Facture officielle pour votre école") }}
+            </h1>
+            <p class="subtitle is-5 has-text-grey" style="max-width: 600px; margin: 0 auto;">
+                {{ _("Transmettez une facture Stripe officielle à votre secrétariat, mairie ou coopérative (OCCE) avec paiement sous 30 jours (virement SEPA ou carte).") }}
+            </p>
+        </div>
+
+        <!-- Bannière Accès Immédiat 30 jours -->
+        <div class="grace-period-banner">
+            <div class="media">
+                <div class="media-left">
+                    <span class="icon is-large has-text-link">
+                        <i class="fas fa-bolt fa-2x"></i>
+                    </span>
+                </div>
+                <div class="media-content">
+                    <p class="title is-5 mb-1" style="color: #1e3a8a;">
+                        {{ _("Accès Premium immédiat pendant 30 jours") }}
+                    </p>
+                    <p class="is-size-6" style="color: #1e40af; line-height: 1.45;">
+                        {{ _("Ne perdez pas de temps : dès la validation de ce formulaire, votre classe bascule instantanément en Premium. Vous pouvez cataloguer vos livres et imprimer vos étiquettes sans attendre le traitement comptable du secrétariat.") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {% if pending_invoice %}
+        <!-- Facture déjà en cours -->
+        <div class="notification is-warning is-light mb-5" style="border-radius: 12px; border-left: 5px solid #d97706;">
+            <div class="level">
+                <div class="level-left">
+                    <div>
+                        <p class="title is-5 mb-1 has-text-warning-dark">
+                            {{ _("Une facture école est déjà en cours de règlement") }}
+                        </p>
+                        <p class="is-size-6 has-text-grey">
+                            {{ _("Facture émise le %(date)s pour %(school)s (échéance : %(due)s).", date=pending_invoice.created_at|format_date, school=pending_invoice.school_name, due=pending_invoice.due_at|format_date) }}
+                        </p>
+                    </div>
+                </div>
+                <div class="level-right">
+                    <a href="{{ url_for('subscription.facture_ecole_confirmation', invoice_id=pending_invoice.id) }}" class="button is-warning is-dark is-rounded">
+                        <span class="icon"><i class="fas fa-file-invoice"></i></span>
+                        <span>{{ _("Voir la facture") }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="school-card">
+            <h2 class="title is-4 mb-4" style="font-weight: 700; color: hsl(0, 0%, 20%);">
+                {{ _("Coordonnées de l'organisme payeur") }}
+            </h2>
+
+            <form id="schoolInvoiceForm" method="POST" action="{{ url_for('subscription.facture_ecole') }}" hx-boost="false">
+                {% include 'utils/csrf.html' %}
+
+                <!-- Sélection Pays & Devise -->
+                <label class="label mb-2">{{ _("1. Pays et devise de facturation") }}</label>
+                <div class="currency-selector-box">
+                    <label class="currency-option is-selected" id="optEUR">
+                        <input type="radio" name="country_currency" value="EUR" checked onchange="toggleCurrency('EUR')">
+                        <div>
+                            <span class="has-text-weight-bold is-block">France & Union Européenne</span>
+                            <span class="is-size-7 has-text-grey">30.00 € TTC / an &bull; Virement SEPA (IBAN dédié) ou CB</span>
+                        </div>
+                    </label>
+                    <label class="currency-option" id="optCHF">
+                        <input type="radio" name="country_currency" value="CHF" onchange="toggleCurrency('CHF')">
+                        <div>
+                            <span class="has-text-weight-bold is-block">Suisse</span>
+                            <span class="is-size-7 has-text-grey">30.00 CHF TTC / an &bull; Virement bancaire ou CB</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Nom de l'organisme / École -->
+                <div class="field mb-4">
+                    <label class="label" for="school_name">
+                        {{ _("2. Nom officiel de l'organisme payeur") }} <span class="has-text-danger">*</span>
+                    </label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="text" id="school_name" name="school_name" 
+                               placeholder="{{ _('Ex : Coopérative scolaire OCCE École Victor Hugo, ou Mairie de Lyon') }}" 
+                               required value="{{ user_school_name or '' }}">
+                        <span class="icon is-small is-left"><i class="fas fa-university"></i></span>
+                    </div>
+                    <p class="help has-text-grey">{{ _("Important : inscrivez le libellé exact exigé par votre comptabilité pour le règlement.") }}</p>
+                </div>
+
+                <!-- Adresse de l'établissement -->
+                <div class="field mb-4">
+                    <label class="label" for="school_address">
+                        {{ _("3. Adresse complète de l'établissement") }} <span class="has-text-danger">*</span>
+                    </label>
+                    <div class="control">
+                        <textarea class="textarea" id="school_address" name="school_address" rows="2" 
+                                  placeholder="{{ _('Numéro, rue, code postal, ville et pays') }}" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Email de facturation (secrétariat / mairie) -->
+                <div class="field mb-4">
+                    <label class="label" for="school_billing_email">
+                        {{ _("4. Adresse e-mail de facturation (Secrétariat, Direction ou Trésorier)") }} <span class="has-text-danger">*</span>
+                    </label>
+                    <div class="control has-icons-left">
+                        <input class="input" type="email" id="school_billing_email" name="school_billing_email" 
+                               placeholder="{{ _('secretariat@ecole.fr ou tresorier.occe@...') }}" required>
+                        <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+                    </div>
+                    <p class="help has-text-grey">{{ _("Stripe adressera directement la facture officielle à cette adresse. Vous recevrez également une copie.") }}</p>
+                </div>
+
+                <div class="columns is-variable is-3 mb-4">
+                    <!-- Numéro SIRET / IDE -->
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label" for="siret_or_tax_id">
+                                {{ _("Numéro SIRET ou IDE") }} <span class="has-text-grey has-text-weight-normal">({{ _("Facultatif") }})</span>
+                            </label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="text" id="siret_or_tax_id" name="siret_or_tax_id" placeholder="{{ _('14 chiffres (France) ou CHE-... (Suisse)') }}">
+                                <span class="icon is-small is-left"><i class="fas fa-id-card"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Référence bon de commande -->
+                    <div class="column is-6">
+                        <div class="field">
+                            <label class="label" for="order_reference">
+                                {{ _("Réf. de commande / Engagement") }} <span class="has-text-grey has-text-weight-normal">({{ _("Facultatif") }})</span>
+                            </label>
+                            <div class="control has-icons-left">
+                                <input class="input" type="text" id="order_reference" name="order_reference" placeholder="{{ _('Ex : BC-2026-042') }}">
+                                <span class="icon is-small is-left"><i class="fas fa-hashtag"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Récapitulatif & Mention légale -->
+                <div class="box has-background-white-ter mb-5" style="border-radius: 12px; border: 1px solid hsl(0, 0%, 90%);">
+                    <div class="level is-mobile mb-2">
+                        <div class="level-left">
+                            <span class="has-text-weight-bold" style="color: hsl(0, 0%, 25%);">{{ _("Total facture annuelle (net à payer) :") }}</span>
+                        </div>
+                        <div class="level-right">
+                            <span class="title is-4 has-text-link mb-0" id="displayAmount">30.00 €</span>
+                        </div>
+                    </div>
+                    <p class="is-size-7 has-text-grey" style="line-height: 1.4; margin-bottom: 0;">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        {{ _("Prestation de services de logiciel éducatif. Exonéré de TVA selon l'art. 10 de la Loi fédérale suisse régissant la taxe sur la valeur ajoutée (LTVA). Montant net à payer sans taxe additionnelle.") }}
+                    </p>
+                </div>
+
+                <!-- Bouton de soumission -->
+                <button type="submit" class="button is-link is-fullwidth is-medium is-rounded has-text-weight-bold" id="btnSubmitSchoolInvoice">
+                    <span class="icon mr-1"><i class="fas fa-paper-plane"></i></span>
+                    <span>{{ _("Générer la facture officielle & Activer mes 30 jours Premium") }}</span>
+                </button>
+            </form>
+
+            <div class="has-text-centered mt-4">
+                <a href="{{ url_for('subscription.tarifs') }}" class="is-size-7 has-text-grey" style="text-decoration: underline;">
+                    {{ _("← Revenir aux tarifs") }}
+                </a>
+            </div>
+        </div>
+
+        <!-- Réassurance 3 piliers -->
+        <div class="columns is-multiline mt-5">
+            <div class="column is-4">
+                <div class="box" style="height: 100%;">
+                    <p class="title is-6 mb-2 has-text-weight-bold" style="color: #2563eb;">
+                        <i class="fas fa-receipt mr-1"></i> {{ _("100%% Conforme OCCE")|replace("%%", "%") }}
+                    </p>
+                    <p class="is-size-7 has-text-grey">
+                        {{ _("Libellé exact de votre coopérative et mentions légales requises pour un remboursement ou un règlement comptable sans blocage.") }}
+                    </p>
+                </div>
+            </div>
+            <div class="column is-4">
+                <div class="box" style="height: 100%;">
+                    <p class="title is-6 mb-2 has-text-weight-bold" style="color: #2563eb;">
+                        <i class="fas fa-university mr-1"></i> {{ _("Virement SEPA ou CB") }}
+                    </p>
+                    <p class="is-size-7 has-text-grey">
+                        {{ _("Le secrétariat ou la mairie peut payer en ligne par carte bancaire ou par virement bancaire sur un IBAN virtuel dédié fourni par Stripe.") }}
+                    </p>
+                </div>
+            </div>
+            <div class="column is-4">
+                <div class="box" style="height: 100%;">
+                    <p class="title is-6 mb-2 has-text-weight-bold" style="color: #2563eb;">
+                        <i class="fas fa-shield-alt mr-1"></i> {{ _("Zéro reconduction tacite") }}
+                    </p>
+                    <p class="is-size-7 has-text-grey">
+                        {{ _("Facture annuelle ponctuelle respectant l'exercice budgétaire public. Aucun abonnement tacite ni prélèvement surprise l'année suivante.") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function toggleCurrency(curr) {
+        var optEUR = document.getElementById('optEUR');
+        var optCHF = document.getElementById('optCHF');
+        var displayAmount = document.getElementById('displayAmount');
+        if (curr === 'EUR') {
+            optEUR.classList.add('is-selected');
+            optCHF.classList.remove('is-selected');
+            displayAmount.textContent = '30.00 €';
+        } else {
+            optCHF.classList.add('is-selected');
+            optEUR.classList.remove('is-selected');
+            displayAmount.textContent = '30.00 CHF';
+        }
+    }
+</script>
+{% endblock %}
