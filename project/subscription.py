@@ -28,7 +28,6 @@ from .config_plans import (
     MAX_FREE_STUDENTS,
     PRICE_MONTHLY_AMOUNT,
     PRICE_YEARLY_AMOUNT,
-    PRICE_YEARLY_EUR_AMOUNT,
     STRIPE_TAX_EXEMPTION_NOTICE,
     TRIAL_PERIOD_DAYS,
 )
@@ -170,7 +169,7 @@ def create_checkout_session():
             cust = stripe.Customer.create(**cust_params)
             current_user.stripe_customer_id = cust.id
             db.session.commit()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             logger.warning("Erreur pré-création stripe.Customer: %s", e)
 
     # Réutiliser le client Stripe s'il existe déjà
@@ -312,7 +311,7 @@ def success():
                                 current_user.stripe_latest_invoice_pdf = (
                                     retrieved_inv.invoice_pdf
                                 )
-                        except Exception as inv_err:
+                        except Exception as inv_err:  # noqa: BLE001
                             logger.warning(
                                 "Erreur récupération facture acquittée Stripe : %s",
                                 inv_err,
@@ -325,7 +324,7 @@ def success():
                             "invoice_pdf"
                         )
                 db.session.commit()
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:  # noqa: BLE001  # noqa: BLE001
             logger.warning("Erreur vérification session_id success : %s", e)
 
     return render_template("subscription/success.html")
@@ -387,7 +386,7 @@ def facture_acquittee():
                         return redirect(latest_pdf, code=302)
                     if latest_hosted:
                         return redirect(latest_hosted, code=302)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:  # noqa: BLE001  # noqa: BLE001
             logger.warning("Erreur récupération facture acquittée Stripe : %s", e)
 
 
@@ -539,7 +538,7 @@ def facture_ecole():
                     },
                 }
                 created_inv = stripe.Invoice.create(**invoice_params)
-            except Exception as pay_err:
+            except Exception as pay_err:  # noqa: BLE001
                 logger.warning(
                     "Fallback création facture sans payment_settings custom : %s",
                     pay_err,
@@ -550,13 +549,13 @@ def facture_ecole():
             # 4. Finaliser la facture pour générer hosted_invoice_url et PDF
             try:
                 finalized_inv = stripe.Invoice.finalize_invoice(created_inv.id)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 finalized_inv = stripe.Invoice.retrieve(created_inv.id)
 
             # 5. Envoyer l'e-mail officiel Stripe au secrétariat
             try:
                 stripe.Invoice.send_invoice(finalized_inv.id)
-            except Exception as send_err:
+            except Exception as send_err:  # noqa: BLE001
                 logger.warning(
                     "Notification Stripe send_invoice échouée : %s", send_err
                 )
@@ -911,7 +910,7 @@ def _handle_subscription_deleted(sub):
                         html_body=html_body,
                     )
                     logger.info("Email de résiliation envoyé à %s", user_email)
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:  # noqa: BLE001  # noqa: BLE001
                     logger.warning(
                         "Impossible d'envoyer l'email de résiliation : %s", e
                     )
@@ -949,7 +948,7 @@ def _handle_invoice_payment_failed(invoice):
                         html_body=html_body,
                     )
                     logger.info("Email d'échec de paiement envoyé à %s", user_email)
-                except Exception as e:  # noqa: BLE001
+                except Exception as e:  # noqa: BLE001  # noqa: BLE001
                     logger.warning(
                         "Impossible d'envoyer l'email d'échec de paiement : %s", e
                     )
@@ -1091,7 +1090,7 @@ def _send_school_invoice_created_email(user, school_inv):
                     html_body=html_body,
                 )
                 logger.info("Email facture école créée envoyé à %s", user_email)
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:  # noqa: BLE001  # noqa: BLE001
                 logger.warning(
                     "Impossible d'envoyer l'email facture école créée : %s", e
                 )
@@ -1135,7 +1134,7 @@ def _send_school_invoice_paid_email(user, school_inv):
                     "Email confirmation règlement facture école envoyé à %s",
                     user_email,
                 )
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:  # noqa: BLE001  # noqa: BLE001
                 logger.warning(
                     "Impossible d'envoyer l'email de confirmation de paiement école : %s",
                     e,

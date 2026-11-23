@@ -3,7 +3,8 @@ import os
 from threading import Thread
 
 from flask import current_app, render_template, url_for
-from flask_babel import force_locale, gettext as _
+from flask_babel import force_locale
+from flask_babel import gettext as _
 from flask_mail import Message
 
 from . import mail

@@ -1859,6 +1859,7 @@ def test_flux_a_checkout_session_b2b_metadata(client, app):
         assert resp.headers["Location"] == "https://checkout.stripe.com/pay/cs_test_b2b_123"
 
         # Vérifier les paramètres transmis à Stripe
+        mock_cust_create.assert_called_once()
         mock_sess_create.assert_called_once()
         call_kwargs = mock_sess_create.call_args[1]
         assert call_kwargs["tax_id_collection"] == {"enabled": True}
@@ -1998,7 +1999,7 @@ def test_flux_b_facture_ecole_creation_and_grace_period(client, app):
         # 1. GET page du formulaire
         resp_get = client.get("/subscription/facture-ecole")
         assert resp_get.status_code == 200
-        assert "Facture officielle pour votre école".encode("utf-8") in resp_get.data
+        assert "Facture officielle pour votre école".encode() in resp_get.data
 
         # 2. POST soumission du formulaire
         resp_post = client.post(
