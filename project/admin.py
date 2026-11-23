@@ -1,4 +1,7 @@
+import glob
 import importlib.metadata
+import json
+import logging
 import os
 import random
 import re
@@ -13,22 +16,28 @@ import markupsafe
 import stripe
 from flask import (
     Blueprint,
+    Response,
+    abort,
     current_app,
     flash,
     jsonify,
     redirect,
     render_template,
     request,
+    send_file,
+    session,
     url_for,
 )
 from flask_babel import force_locale
 from flask_babel import gettext as _
+from flask_login import current_user
 from flask_mail import Message
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
 
 from . import config_plans, db, mail
+from .email import send_email_verification
 from .models import (
     Book,
     Feedback,
@@ -41,6 +50,30 @@ from .models import (
 from .query import delete_user_account
 
 admin = Blueprint("admin", __name__)
+logger = logging.getLogger(__name__)
+
+
+@admin.before_request
+def require_authelia_auth():
+    """
+    Défense en profondeur (FND-01) :
+    Vérifie que la requête vers le panneau d'administration provient d'une session
+    authentifiée par le reverse proxy Authelia (présence de Remote-User ou Remote-Email).
+    Bypass automatique en mode TESTING ou DEBUG.
+    """
+    if current_app.config.get("TESTING") or current_app.debug:
+        return
+
+    remote_user = request.headers.get("Remote-User") or request.headers.get(
+        "Remote-Email"
+    )
+    if not remote_user or not remote_user.strip():
+        logger.warning(
+            "Tentative d'accès non autorisé à %s sans en-tête d'authentification Authelia (IP: %s)",
+            request.path,
+            request.remote_addr,
+        )
+        abort(403)
 
 
 @admin.context_processor
@@ -60,72 +93,244 @@ def inject_admin_globals():
 @admin.route("/admin")
 def index():
     now = datetime.now(UTC)
-    total_users = User.query.count()
-    active_users = User.query.filter_by(is_verified=True).count()
-    unconfirmed_users = max(0, total_users - active_users)
-    premium_users = User.query.filter_by(plan="premium").count()
-    founder_users = User.query.filter_by(plan="founder").count()
-    paying_or_founder_users = premium_users + founder_users
-    trial_users = User.query.filter(User.trial_ends_at > now).count()
-    free_users = max(0, total_users - paying_or_founder_users - trial_users)
-    newsletter_subscribers = User.query.filter_by(newsletter_subscribed=True).count()
+    today = now.date()
 
-    total_books = Book.query.count()
-    total_students = Student.query.count()
-    total_loans = Loan.query.count()
-    total_scans = db.session.query(func.sum(User.free_scans_used)).scalar() or 0
+    # 1. Gestion unifiée de la période (?range=7d|30d|12w|12m)
+    range_arg = request.args.get("range", "").strip().lower()
+    if range_arg in ("7d", "30d", "12w", "12m"):
+        selected_range = range_arg
+        session["admin_range"] = selected_range
+    else:
+        selected_range = session.get("admin_range", "30d")
+
+    # 2. Interrupteur global « Exclure les comptes de test » (?exclude_tests=1|0)
+    exclude_arg = request.args.get("exclude_tests")
+    if exclude_arg is not None:
+        exclude_tests = exclude_arg in ("1", "true", "True")
+        session["admin_exclude_tests"] = exclude_tests
+    else:
+        exclude_tests = session.get("admin_exclude_tests", False)
+
+    test_users_count = User.query.filter_by(is_test=True).count()
+
+    # Requête de base pour les utilisateurs
+    base_user_q = User.query
+    if exclude_tests:
+        base_user_q = base_user_q.filter(User.is_test.is_(False))
+
+    total_users = base_user_q.count()
+    active_users = base_user_q.filter_by(is_verified=True).count()
+    unconfirmed_users = max(0, total_users - active_users)
+    premium_users = base_user_q.filter_by(plan="premium").count()
+    founder_users = base_user_q.filter_by(plan="founder").count()
+    paying_or_founder_users = premium_users + founder_users
+    trial_users = base_user_q.filter(User.trial_ends_at > now).count()
+    free_users = max(0, total_users - paying_or_founder_users - trial_users)
+    newsletter_subscribers = base_user_q.filter_by(newsletter_subscribed=True).count()
+
+    if exclude_tests:
+        total_books = (
+            Book.query.join(User, Book.user_id == User.id)
+            .filter(User.is_test.is_(False))
+            .count()
+        )
+        total_students = (
+            Student.query.join(User, Student.user_id == User.id)
+            .filter(User.is_test.is_(False))
+            .count()
+        )
+        total_loans = (
+            Loan.query.join(Student, Loan.student_id == Student.id)
+            .join(User, Student.user_id == User.id)
+            .filter(User.is_test.is_(False))
+            .count()
+        )
+        total_scans = (
+            db.session.query(func.sum(User.free_scans_used))
+            .filter(User.is_test.is_(False))
+            .scalar()
+            or 0
+        )
+    else:
+        total_books = Book.query.count()
+        total_students = Student.query.count()
+        total_loans = Loan.query.count()
+        total_scans = db.session.query(func.sum(User.free_scans_used)).scalar() or 0
 
     new_feedbacks = Feedback.query.filter_by(status="nouveau").count()
     total_feedbacks = Feedback.query.count()
 
-    recent_users = User.query.order_by(User.id.desc()).limit(5).all()
+    # Bloc « À traiter »
+    pending_feedbacks = new_feedbacks
+    max_scans_users_count = base_user_q.filter(
+        User.free_scans_used >= config_plans.MAX_FREE_SCANS,
+        User.plan.notin_(["founder", "premium"]),
+    ).count()
+    seven_days_later = now + timedelta(days=7)
+    expiring_trials_count = base_user_q.filter(
+        User.plan.notin_(["founder", "premium"]),
+        User.trial_ends_at.isnot(None),
+        User.trial_ends_at > now,
+        User.trial_ends_at <= seven_days_later,
+    ).count()
+    total_to_process = pending_feedbacks + max_scans_users_count + expiring_trials_count
+    to_process = {
+        "total": total_to_process,
+        "feedbacks": pending_feedbacks,
+        "max_scans": max_scans_users_count,
+        "expiring_trials": expiring_trials_count,
+    }
+
+    # Taux d'activation (utilisateurs ayant au moins 1 livre ou scans enregistrés)
+    user_ids_with_books = (
+        db.session.query(Book.user_id).filter(Book.user_id.isnot(None)).distinct()
+    )
+    activated_users_count = base_user_q.filter(
+        (User.id.in_(user_ids_with_books)) | (User.free_scans_used > 0)
+    ).count()
+    activation_rate = (
+        round((activated_users_count / total_users * 100), 1)
+        if total_users > 0
+        else 0.0
+    )
+
+    # 3. SaaS Métrique : Classes Actives Hebdomadaires (WAU)
+    seven_days_ago_date = today - timedelta(days=7)
+    wau_loan_q = (
+        db.session.query(Student.user_id)
+        .join(Loan, Loan.student_id == Student.id)
+        .join(User, Student.user_id == User.id)
+        .filter(
+            (Loan.date_loan >= seven_days_ago_date)
+            | (Loan.date_return >= seven_days_ago_date)
+        )
+    )
+    if exclude_tests:
+        wau_loan_q = wau_loan_q.filter(User.is_test.is_(False))
+    wau_user_ids = {u[0] for u in wau_loan_q.distinct().all() if u[0]}
+    wau_count = len(wau_user_ids)
+    active_denom = active_users if active_users > 0 else total_users
+    wau_rate = round((wau_count / active_denom * 100), 1) if active_denom > 0 else 0.0
+
+    # 4. SaaS Métrique : Taux de Santé du Scan ISBN
+    scanned_books_q = Book.query.filter(
+        (Book.isbn.isnot(None)) | (Book.barcode.isnot(None))
+    )
+    if exclude_tests:
+        scanned_books_q = scanned_books_q.join(User, Book.user_id == User.id).filter(
+            User.is_test.is_(False)
+        )
+    scanned_books = scanned_books_q.all()
+    scan_health_total = len(scanned_books)
+    scan_health_complete = 0
+    for b in scanned_books:
+        has_title = bool(b.title and b.title.strip() and b.title != "Sans titre")
+        has_author = bool(
+            b.author
+            and b.author.strip()
+            and b.author not in ("Auteur inconnu", "Inconnu", "None")
+        )
+        has_image = bool(
+            b.image_url and b.image_url.strip() and "default" not in b.image_url.lower()
+        )
+        if has_title and has_author and has_image:
+            scan_health_complete += 1
+    scan_health_incomplete = max(0, scan_health_total - scan_health_complete)
+    scan_health_rate = (
+        round((scan_health_complete / scan_health_total * 100), 1)
+        if scan_health_total > 0
+        else 0.0
+    )
+
+    # 5. SaaS Métrique : Radar à Paywalls (Conversion Freemium)
+    paywall_users_q = base_user_q.filter(User.plan.notin_(["founder", "premium"])).all()
+    paywall_prospects = []
+    scan_threshold = int(config_plans.MAX_FREE_SCANS * 0.8)  # 24
+    student_threshold = int(config_plans.MAX_FREE_STUDENTS * 0.8)  # 32
+    book_threshold = int(config_plans.MAX_FREE_BOOKS * 0.8)  # 400
+    nine_months_ago = today - timedelta(days=270)
+
+    for u in paywall_users_q:
+        alerts = []
+        scans = u.free_scans_used or 0
+        if scans >= scan_threshold:
+            pct = round(scans / config_plans.MAX_FREE_SCANS * 100)
+            alerts.append(
+                {
+                    "type": "scans",
+                    "label": "Scans hebdo",
+                    "detail": f"{scans}/{config_plans.MAX_FREE_SCANS} scans ({pct}%)",
+                    "pct": pct,
+                    "urgency": "danger"
+                    if scans >= config_plans.MAX_FREE_SCANS
+                    else "warning",
+                }
+            )
+        st_count = len(u.students)
+        if st_count >= student_threshold:
+            pct = round(st_count / config_plans.MAX_FREE_STUDENTS * 100)
+            alerts.append(
+                {
+                    "type": "students",
+                    "label": "Élèves",
+                    "detail": f"{st_count}/{config_plans.MAX_FREE_STUDENTS} élèves ({pct}%)",
+                    "pct": pct,
+                    "urgency": "danger"
+                    if st_count >= config_plans.MAX_FREE_STUDENTS
+                    else "warning",
+                }
+            )
+        bk_count = len(u.books)
+        if bk_count >= book_threshold:
+            pct = round(bk_count / config_plans.MAX_FREE_BOOKS * 100)
+            alerts.append(
+                {
+                    "type": "books",
+                    "label": "Livres",
+                    "detail": f"{bk_count}/{config_plans.MAX_FREE_BOOKS} livres ({pct}%)",
+                    "pct": pct,
+                    "urgency": "danger"
+                    if bk_count >= config_plans.MAX_FREE_BOOKS
+                    else "warning",
+                }
+            )
+        oldest_loan = (
+            db.session.query(func.min(Loan.date_loan))
+            .join(Student, Loan.student_id == Student.id)
+            .filter(Student.user_id == u.id)
+            .scalar()
+        )
+        if oldest_loan and oldest_loan <= nine_months_ago:
+            days_old = (today - oldest_loan).days
+            months_old = round(days_old / 30.4, 1)
+            alerts.append(
+                {
+                    "type": "history",
+                    "label": "Historique",
+                    "detail": f"Prêts de {months_old} mois (flou à {config_plans.FREE_HISTORY_MONTHS}m)",
+                    "pct": min(
+                        100, round(months_old / config_plans.FREE_HISTORY_MONTHS * 100)
+                    ),
+                    "urgency": "danger"
+                    if months_old >= config_plans.FREE_HISTORY_MONTHS
+                    else "warning",
+                }
+            )
+        if alerts:
+            paywall_prospects.append(
+                {
+                    "user": u,
+                    "alerts": alerts,
+                    "max_urgency": "danger"
+                    if any(a["urgency"] == "danger" for a in alerts)
+                    else "warning",
+                }
+            )
+
+    recent_users = base_user_q.order_by(User.id.desc()).limit(5).all()
     recent_feedbacks = Feedback.query.order_by(Feedback.id.desc()).limit(5).all()
 
-    # Évolution des inscriptions sur les 30 derniers jours
-    today = datetime.now(UTC).date()
-    days_labels = []
-    days_map = {}
-    for i in range(29, -1, -1):
-        day_date = today - timedelta(days=i)
-        days_labels.append(day_date.strftime("%d/%m"))
-        days_map[day_date] = 0
-
-    thirty_days_ago = datetime.now(UTC) - timedelta(days=30)
-    recent_users_30d = User.query.filter(User.created_at >= thirty_days_ago).all()
-    for u in recent_users_30d:
-        if u.created_at:
-            u_date = (
-                u.created_at.date() if hasattr(u.created_at, "date") else u.created_at
-            )
-            if u_date in days_map:
-                days_map[u_date] += 1
-
-    chart_signups_data = [
-        days_map[today - timedelta(days=i)] for i in range(29, -1, -1)
-    ]
-
-    # Métriques financières et répartition des abonnements payants
-    stripe_key = os.getenv("STRIPE_SECRET_KEY")
-    stripe_connected = False
-    currency = config_plans.DEFAULT_CURRENCY
-    monthly_subs_count = 0
-    yearly_subs_count = 0
-    monthly_mrr = 0.0
-    yearly_mrr = 0.0
-    total_revenue_collected = 0.0
-
-    # Période de 6 mois pour le graphique des encaissements
-    cur_year = today.year
-    cur_month = today.month
-    revenue_slots = []
-    for i in range(5, -1, -1):
-        m = cur_month - i
-        y = cur_year
-        while m <= 0:
-            m += 12
-            y -= 1
-        revenue_slots.append((y, m))
-
+    # 6. Période & Slots unifiés pour les graphiques
     month_names_fr = {
         1: "Janv",
         2: "Févr",
@@ -140,12 +345,142 @@ def index():
         11: "Nov",
         12: "Déc",
     }
-    revenue_chart_labels = [
-        f"{month_names_fr[m]} {str(y)[2:]}" for (y, m) in revenue_slots
-    ]
-    revenue_by_slot = {s: 0.0 for s in revenue_slots}
-    subs_by_slot = {s: 0 for s in revenue_slots}
-    cancels_by_slot = {s: 0 for s in revenue_slots}
+
+    if selected_range == "7d":
+        start_date = today - timedelta(days=6)
+        num_slots = 7
+        chart_labels = [
+            (start_date + timedelta(days=i)).strftime("%d/%m") for i in range(7)
+        ]
+        get_slot_idx = lambda d: (
+            (d - start_date).days if start_date <= d <= today else None
+        )
+    elif selected_range == "12w":
+        current_monday = (now - timedelta(days=now.weekday())).date()
+        start_monday = current_monday - timedelta(weeks=11)
+        num_slots = 12
+        chart_labels = [
+            (start_monday + timedelta(weeks=w)).strftime("%d/%m") for w in range(12)
+        ]
+
+        def get_slot_idx(d):
+            diff = (d - start_monday).days
+            idx = diff // 7
+            return idx if 0 <= idx < 12 else None
+    elif selected_range == "12m":
+        cur_year, cur_month = today.year, today.month
+        month_slots = []
+        for i in range(11, -1, -1):
+            m = cur_month - i
+            y = cur_year
+            while m <= 0:
+                m += 12
+                y -= 1
+            month_slots.append((y, m))
+        slot_map = {slot: i for i, slot in enumerate(month_slots)}
+        num_slots = 12
+        chart_labels = [f"{month_names_fr[m]} {str(y)[2:]}" for (y, m) in month_slots]
+        get_slot_idx = lambda d: slot_map.get((d.year, d.month))
+    else:  # '30d' par défaut
+        start_date = today - timedelta(days=29)
+        num_slots = 30
+        chart_labels = [
+            (start_date + timedelta(days=i)).strftime("%d/%m") for i in range(30)
+        ]
+        get_slot_idx = lambda d: (
+            (d - start_date).days if start_date <= d <= today else None
+        )
+
+    # Séries multi-métriques (Enseignants, Livres, Élèves, Prêts)
+    chart_series = {
+        "users": [0] * num_slots,
+        "books": [0] * num_slots,
+        "students": [0] * num_slots,
+        "loans": [0] * num_slots,
+    }
+
+    # Agrégation des utilisateurs
+    for u in base_user_q.all():
+        if u.created_at:
+            u_date = (
+                u.created_at.date() if hasattr(u.created_at, "date") else u.created_at
+            )
+            idx = get_slot_idx(u_date)
+            if idx is not None:
+                chart_series["users"][idx] += 1
+
+    # Agrégation des livres
+    books_q = Book.query
+    if exclude_tests:
+        books_q = books_q.join(User, Book.user_id == User.id).filter(
+            User.is_test.is_(False)
+        )
+    for b in books_q.all():
+        b_dt = b.created_at or (b.user.created_at if b.user else None)
+        if b_dt:
+            b_date = b_dt.date() if hasattr(b_dt, "date") else b_dt
+            idx = get_slot_idx(b_date)
+            if idx is not None:
+                chart_series["books"][idx] += 1
+
+    # Agrégation des élèves
+    students_q = Student.query
+    if exclude_tests:
+        students_q = students_q.join(User, Student.user_id == User.id).filter(
+            User.is_test.is_(False)
+        )
+    for s in students_q.all():
+        s_dt = s.created_at or (s.user.created_at if s.user else None)
+        if s_dt:
+            s_date = s_dt.date() if hasattr(s_dt, "date") else s_dt
+            idx = get_slot_idx(s_date)
+            if idx is not None:
+                chart_series["students"][idx] += 1
+
+    # Agrégation des prêts
+    loans_q = Loan.query
+    if exclude_tests:
+        loans_q = (
+            loans_q.join(Student, Loan.student_id == Student.id)
+            .join(User, Student.user_id == User.id)
+            .filter(User.is_test.is_(False))
+        )
+    for l in loans_q.all():
+        if l.date_loan:
+            idx = get_slot_idx(l.date_loan)
+            if idx is not None:
+                chart_series["loans"][idx] += 1
+
+    chart_totals = {
+        "users": sum(chart_series["users"]),
+        "books": sum(chart_series["books"]),
+        "students": sum(chart_series["students"]),
+        "loans": sum(chart_series["loans"]),
+    }
+
+    # Rétrocompatibilité weekly_signups pour les tests existants
+    total_signups_12w = sum(chart_series["users"])
+    avg_signups_per_week = round(total_signups_12w / max(1, num_slots), 1)
+    signups_weekly_trend = None
+    if len(chart_series["users"]) >= 2 and chart_series["users"][-2] > 0:
+        curr_val = chart_series["users"][-1]
+        prev_val = chart_series["users"][-2]
+        signups_weekly_trend = round(((curr_val - prev_val) / prev_val) * 100, 1)
+
+    # 7. Métriques financières
+    stripe_key = os.getenv("STRIPE_SECRET_KEY")
+    stripe_connected = False
+    currency = config_plans.DEFAULT_CURRENCY
+    monthly_subs_count = 0
+    yearly_subs_count = 0
+    monthly_mrr = 0.0
+    yearly_mrr = 0.0
+    total_revenue_collected = 0.0
+
+    revenue_chart_labels = chart_labels[:]
+    revenue_chart_data = [0.0] * num_slots
+    subs_chart_data = [0] * num_slots
+    cancels_chart_data = [0] * num_slots
 
     if stripe_key:
         try:
@@ -171,41 +506,41 @@ def index():
                     monthly_subs_count += 1
                     monthly_mrr += amount
 
-            # Flux complet des abonnements et résiliations via Stripe
+            # Flux complet via Stripe
             all_subs = stripe.Subscription.list(status="all", limit=100)
             for s in all_subs.data:
                 if getattr(s, "created", None):
-                    c_dt = datetime.fromtimestamp(s.created, tz=UTC)
-                    slot_c = (c_dt.year, c_dt.month)
-                    if slot_c in subs_by_slot:
-                        subs_by_slot[slot_c] += 1
+                    c_dt = datetime.fromtimestamp(s.created, tz=UTC).date()
+                    idx = get_slot_idx(c_dt)
+                    if idx is not None:
+                        subs_chart_data[idx] += 1
                 c_ts = getattr(s, "canceled_at", None) or getattr(s, "ended_at", None)
                 if c_ts:
-                    e_dt = datetime.fromtimestamp(c_ts, tz=UTC)
-                    slot_e = (e_dt.year, e_dt.month)
-                    if slot_e in cancels_by_slot:
-                        cancels_by_slot[slot_e] += 1
+                    e_dt = datetime.fromtimestamp(c_ts, tz=UTC).date()
+                    idx = get_slot_idx(e_dt)
+                    if idx is not None:
+                        cancels_chart_data[idx] += 1
 
-            # Invoices payées pour l'historique de revenus
+            # Invoices payées
             invoices = stripe.Invoice.list(status="paid", limit=100)
             for inv in invoices.data:
                 paid = round((inv.amount_paid or 0) / 100.0, 2)
                 total_revenue_collected += paid
-                inv_dt = datetime.fromtimestamp(inv.created, tz=UTC)
-                slot = (inv_dt.year, inv_dt.month)
-                if slot in revenue_by_slot:
-                    revenue_by_slot[slot] += paid
+                inv_dt = datetime.fromtimestamp(inv.created, tz=UTC).date()
+                idx = get_slot_idx(inv_dt)
+                if idx is not None:
+                    revenue_chart_data[idx] += paid
         except Exception as e:  # noqa: BLE001
             current_app.logger.warning(
                 "Erreur de récupération des métriques Stripe : %s", e
             )
             stripe_connected = False
 
-    # Fallback si Stripe non connecté ou hors-ligne (ex: tests automatisés)
+    # Fallback si Stripe non connecté
     if not stripe_connected or (
         monthly_subs_count == 0 and yearly_subs_count == 0 and premium_users > 0
     ):
-        premium_db_users = User.query.filter_by(plan="premium").all()
+        premium_db_users = base_user_q.filter_by(plan="premium").all()
         for u in premium_db_users:
             if u.subscription_type == "yearly":
                 yearly_subs_count += 1
@@ -218,45 +553,38 @@ def index():
             total_revenue_collected = (
                 monthly_subs_count * config_plans.PRICE_MONTHLY_AMOUNT
             ) + (yearly_subs_count * config_plans.PRICE_YEARLY_AMOUNT)
-            revenue_by_slot[revenue_slots[-1]] = round(
-                monthly_mrr + (yearly_mrr * 12.0), 2
-            )
+            revenue_chart_data[-1] = round(monthly_mrr + (yearly_mrr * 12.0), 2)
 
-    # Fallback pour le flux abonnements / résiliations depuis la base locale si Stripe non connecté
     if not stripe_connected or (
-        sum(subs_by_slot.values()) == 0 and sum(cancels_by_slot.values()) == 0
+        sum(subs_chart_data) == 0 and sum(cancels_chart_data) == 0
     ):
-        for u in User.query.all():
+        for u in base_user_q.all():
             if (u.plan in ("premium", "founder") or u.stripe_price_id) and u.created_at:
                 u_c = (
-                    u.created_at.replace(tzinfo=UTC)
-                    if u.created_at.tzinfo is None
+                    u.created_at.date()
+                    if hasattr(u.created_at, "date")
                     else u.created_at
                 )
-                slot_c = (u_c.year, u_c.month)
-                if slot_c in subs_by_slot:
-                    subs_by_slot[slot_c] += 1
+                idx = get_slot_idx(u_c)
+                if idx is not None:
+                    subs_chart_data[idx] += 1
             if u.subscription_end_at or u.stripe_subscription_status == "canceled":
                 end_dt = u.subscription_end_at or u.created_at
                 if end_dt:
-                    u_e = (
-                        end_dt.replace(tzinfo=UTC) if end_dt.tzinfo is None else end_dt
-                    )
-                    slot_e = (u_e.year, u_e.month)
-                    if slot_e in cancels_by_slot:
-                        cancels_by_slot[slot_e] += 1
+                    u_e = end_dt.date() if hasattr(end_dt, "date") else end_dt
+                    idx = get_slot_idx(u_e)
+                    if idx is not None:
+                        cancels_chart_data[idx] += 1
 
     total_mrr = round(monthly_mrr + yearly_mrr, 2)
     total_arr = round(total_mrr * 12.0, 2)
     total_revenue_collected = round(total_revenue_collected, 2)
-    revenue_chart_data = [round(revenue_by_slot[s], 2) for s in revenue_slots]
+    revenue_chart_data = [round(v, 2) for v in revenue_chart_data]
     active_subscriptions_count = monthly_subs_count + yearly_subs_count
 
-    # Calculs du flux d'abonnements et de résiliations
-    subs_chart_data = [subs_by_slot[s] for s in revenue_slots]
-    cancels_chart_data = [-cancels_by_slot[s] for s in revenue_slots]
-    total_new_subs = sum(subs_by_slot.values())
-    total_cancels = sum(cancels_by_slot.values())
+    total_new_subs = sum(subs_chart_data)
+    total_cancels = sum(cancels_chart_data)
+    cancels_neg_data = [-c for c in cancels_chart_data]
     net_subs_flow = total_new_subs - total_cancels
     churn_rate = (
         round((total_cancels / (active_subscriptions_count + total_cancels) * 100), 1)
@@ -314,15 +642,38 @@ def index():
         "total_scans": total_scans,
         "new_feedbacks": new_feedbacks,
         "total_feedbacks": total_feedbacks,
+        "activated_users": activated_users_count,
+        "activation_rate": activation_rate,
+        "total_signups_12w": total_signups_12w,
+        "avg_signups_per_week": avg_signups_per_week,
+        "signups_weekly_trend": signups_weekly_trend,
+        "wau_count": wau_count,
+        "wau_rate": wau_rate,
     }
 
     return render_template(
         "admin/index.html",
         stats=stats,
+        to_process=to_process,
+        selected_range=selected_range,
+        exclude_tests=exclude_tests,
+        test_users_count=test_users_count,
+        chart_labels=chart_labels,
+        chart_series=chart_series,
+        chart_totals=chart_totals,
+        wau_count=wau_count,
+        wau_rate=wau_rate,
+        scan_health_rate=scan_health_rate,
+        scan_health_total=scan_health_total,
+        scan_health_complete=scan_health_complete,
+        scan_health_incomplete=scan_health_incomplete,
+        paywall_prospects=paywall_prospects,
+        weekly_signups_labels=chart_labels,
+        weekly_signups_data=chart_series["users"],
         recent_users=recent_users,
         recent_feedbacks=recent_feedbacks,
-        chart_signups_labels=days_labels,
-        chart_signups_data=chart_signups_data,
+        chart_signups_labels=chart_labels,
+        chart_signups_data=chart_series["users"],
         plans_distribution=plans_distribution,
         financial_stats=financial_stats,
         subscriptions_type_distribution=subscriptions_type_distribution,
@@ -330,19 +681,310 @@ def index():
         revenue_chart_data=revenue_chart_data,
         sub_flow_stats=sub_flow_stats,
         subs_chart_data=subs_chart_data,
-        cancels_chart_data=cancels_chart_data,
+        cancels_chart_data=cancels_neg_data,
         active_page="dashboard",
     )
 
 
+@admin.route("/admin/utilisateurs/<int:user_id>/toggle-test", methods=["POST"])
+def toggle_user_test(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        abort(404)
+    user.is_test = not bool(user.is_test)
+    db.session.commit()
+    msg = (
+        f"Le compte {user.email} est désormais marqué comme compte de test."
+        if user.is_test
+        else f"Le compte {user.email} est désormais un compte standard."
+    )
+    flash(msg, "success")
+    return redirect(url_for("admin.user_detail", user_id=user.id))
+
+
+def _get_filtered_users_query(args):
+    now = datetime.now(UTC)
+    q = args.get("q", "").strip()
+    plan_filter = args.get("plan", "").strip().lower()
+    status_filter = (args.get("status") or args.get("statut") or "").strip().lower()
+    scans_filter = (args.get("scans") or args.get("scans_min") or "").strip().lower()
+    trial_filter = args.get("trial", "").strip().lower()
+    activated_filter = args.get("activated", "").strip().lower()
+    newsletter_filter = args.get("newsletter", "").strip().lower()
+    inactif_30j = args.get("inactif_30j", "").strip().lower()
+
+    query = User.query
+    filter_descriptions = []
+
+    # 0. Recherche texte (nom ou email)
+    if q:
+        search_pattern = f"%{q}%"
+        query = query.filter(
+            or_(User.name.ilike(search_pattern), User.email.ilike(search_pattern))
+        )
+        filter_descriptions.append(f"Recherche : « {q} »")
+
+    # 1. Filtre par formule
+    if plan_filter:
+        if plan_filter in ("premium", "payant"):
+            query = query.filter(User.plan == "premium")
+            filter_descriptions.append("Formule : Premium")
+        elif plan_filter == "founder":
+            query = query.filter(User.plan == "founder")
+            filter_descriptions.append("Formule : Membres Fondateurs")
+        elif plan_filter == "paying":
+            query = query.filter(User.plan.in_(["premium", "founder"]))
+            filter_descriptions.append("Formule : Payants & Fondateurs")
+        elif plan_filter == "trial":
+            query = query.filter(
+                User.plan.notin_(["premium", "founder"]),
+                User.trial_ends_at.isnot(None),
+                User.trial_ends_at > now,
+            )
+            filter_descriptions.append("Formule : En période d'essai")
+        elif plan_filter in ("free", "gratuit"):
+            query = query.filter(
+                User.plan.notin_(["premium", "founder"]),
+                (User.trial_ends_at.is_(None) | (User.trial_ends_at <= now)),
+            )
+            filter_descriptions.append("Formule : Gratuit")
+
+    # 2. Filtre par statut de vérification email
+    if status_filter:
+        if status_filter in ("verified", "verifie", "actif"):
+            query = query.filter(User.is_verified.is_(True))
+            filter_descriptions.append("Statut : Vérifié")
+        elif status_filter in ("unverified", "non_verifie", "en_attente"):
+            query = query.filter(User.is_verified.is_(False))
+            filter_descriptions.append("Statut : En attente")
+        elif status_filter in ("test", "is_test"):
+            query = query.filter(User.is_test.is_(True))
+            filter_descriptions.append("Statut : Comptes de test")
+
+    # 3. Filtre par quota de scans
+    if scans_filter:
+        if scans_filter == "max":
+            query = query.filter(
+                User.free_scans_used >= config_plans.MAX_FREE_SCANS,
+                User.plan.notin_(["founder", "premium"]),
+            )
+            filter_descriptions.append(
+                f"Scans au maximum (≥ {config_plans.MAX_FREE_SCANS} scans / semaine)"
+            )
+        elif scans_filter.isdigit():
+            min_scans = int(scans_filter)
+            query = query.filter(User.free_scans_used >= min_scans)
+            filter_descriptions.append(f"Scans ≥ {min_scans}")
+
+    # 4. Filtre par période d'essai expirant bientôt
+    if trial_filter in ("expiring", "bientot"):
+        seven_days = now + timedelta(days=7)
+        query = query.filter(
+            User.plan.notin_(["founder", "premium"]),
+            User.trial_ends_at.isnot(None),
+            User.trial_ends_at > now,
+            User.trial_ends_at <= seven_days,
+        )
+        filter_descriptions.append("Essais expirant dans les 7 prochains jours")
+
+    # 5. Filtre par activation
+    if activated_filter:
+        user_ids_with_books = (
+            db.session.query(Book.user_id).filter(Book.user_id.isnot(None)).distinct()
+        )
+        if activated_filter in ("1", "true", "yes"):
+            query = query.filter(
+                (User.id.in_(user_ids_with_books)) | (User.free_scans_used > 0)
+            )
+            filter_descriptions.append("Comptes activés (≥ 1 livre ou scans)")
+        elif activated_filter in ("0", "false", "no"):
+            query = query.filter(
+                ~User.id.in_(user_ids_with_books),
+                User.free_scans_used == 0,
+            )
+            filter_descriptions.append("Comptes non activés (0 livre et 0 scan)")
+
+    # 6. Filtre Newsletter
+    if newsletter_filter:
+        if newsletter_filter in ("1", "true", "yes", "oui", "sub"):
+            query = query.filter(User.newsletter_subscribed.is_(True))
+            filter_descriptions.append("Newsletter : Abonnés")
+        elif newsletter_filter in ("0", "false", "no", "non", "unsub"):
+            query = query.filter(User.newsletter_subscribed.is_(False))
+            filter_descriptions.append("Newsletter : Non abonnés")
+
+    # 7. Exclusion des comptes de test
+    if args.get("exclude_tests") in ("1", "true", "True"):
+        query = query.filter(User.is_test.is_(False))
+        filter_descriptions.append("Exclure les comptes de test")
+
+    # 7. Filtre inactifs depuis > 30 jours
+    if inactif_30j in ("1", "true", "yes", "oui"):
+        thirty_days_ago = now - timedelta(days=30)
+        query = query.filter(
+            User.created_at <= thirty_days_ago,
+            User.free_scans_used == 0,
+        )
+        filter_descriptions.append("Inactifs (> 30 jours)")
+
+    # Tri optionnel
+    sort_col = args.get("sort", "id")
+    sort_dir = args.get("dir", "desc")
+    if sort_col == "name":
+        order_expr = User.name.asc() if sort_dir == "asc" else User.name.desc()
+    elif sort_col == "scans":
+        order_expr = (
+            User.free_scans_used.asc()
+            if sort_dir == "asc"
+            else User.free_scans_used.desc()
+        )
+    elif sort_col == "created_at":
+        order_expr = (
+            User.created_at.asc() if sort_dir == "asc" else User.created_at.desc()
+        )
+    else:
+        order_expr = User.id.asc() if sort_dir == "asc" else User.id.desc()
+
+    query = query.order_by(order_expr)
+    return query, filter_descriptions
+
+
 @admin.route("/admin/utilisateurs")
 def users():
-    users_list = User.query.order_by(User.id.desc()).all()
+    query, filter_descriptions = _get_filtered_users_query(request.args)
+    users_list = query.all()
+    total_users_count = User.query.count()
+    active_filter_label = (
+        " • ".join(filter_descriptions) if filter_descriptions else None
+    )
+
     return render_template(
         "admin/users.html",
         users=users_list,
+        total_count=total_users_count,
+        filtered_count=len(users_list),
+        active_filter_label=active_filter_label,
         active_page="users",
     )
+
+
+@admin.route("/admin/utilisateurs/export")
+@admin.route("/admin/users/export")
+def export_users():
+    import csv
+    import io
+
+    query, _ = _get_filtered_users_query(request.args)
+    users_list = query.all()
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=";", quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(
+        [
+            "Nom",
+            "Email",
+            "Date d'inscription",
+            "Formule",
+            "Statut",
+            "Livres",
+            "Élèves",
+            "Scans cette semaine",
+            "Newsletter",
+            "Client Stripe",
+        ]
+    )
+
+    for u in users_list:
+        writer.writerow(
+            [
+                u.name or "Sans nom",
+                u.email,
+                u.created_at.strftime("%d/%m/%Y %H:%M") if u.created_at else "",
+                u.effective_plan if hasattr(u, "effective_plan") else u.plan,
+                "Vérifié" if u.is_verified else "En attente",
+                len(u.books) if hasattr(u, "books") else 0,
+                len(u.students) if hasattr(u, "students") else 0,
+                u.free_scans_used or 0,
+                "Oui" if u.newsletter_subscribed else "Non",
+                u.stripe_customer_id or "",
+            ]
+        )
+
+    csv_data = output.getvalue().encode("utf-8-sig")
+    now_str = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+    return Response(
+        csv_data,
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": f"attachment; filename=utilisateurs_{now_str}.csv"
+        },
+    )
+
+
+@admin.route("/admin/utilisateurs/<int:user_id>")
+@admin.route("/admin/users/<int:user_id>")
+def user_detail(user_id):
+    user = db.get_or_404(User, user_id)
+    user_books = Book.query.filter_by(user_id=user.id).order_by(Book.id.desc()).all()
+    user_students = (
+        Student.query.filter_by(user_id=user.id).order_by(Student.name.asc()).all()
+    )
+    loans_count = Loan.query.join(Book).filter(Book.user_id == user.id).count()
+    active_loans_count = (
+        Loan.query.join(Book)
+        .filter(Book.user_id == user.id, Loan.date_return.is_(None))
+        .count()
+    )
+
+    return render_template(
+        "admin/user_detail.html",
+        user=user,
+        books=user_books,
+        students=user_students,
+        loans_count=loans_count,
+        active_loans_count=active_loans_count,
+        active_page="users",
+    )
+
+
+@admin.route("/admin/users/<int:user_id>/resend-confirmation", methods=["POST"])
+def admin_resend_confirmation(user_id):
+    user = db.get_or_404(User, user_id)
+    if user.is_verified:
+        flash("Ce compte est déjà vérifié.", "info")
+    else:
+        try:
+            send_email_verification(user)
+            flash(
+                f"E-mail de confirmation renvoyé avec succès à {user.email}.", "success"
+            )
+        except Exception as e:  # noqa: BLE001
+            logger.error("Erreur renvoi email confirmation : %s", e)
+            flash("Erreur lors de l'envoi de l'e-mail de confirmation.", "danger")
+    return redirect(url_for("admin.user_detail", user_id=user.id))
+
+
+@admin.route("/admin/users/<int:user_id>/change-plan", methods=["POST"])
+def admin_change_plan(user_id):
+    user = db.get_or_404(User, user_id)
+    new_plan = request.form.get("plan", "").strip().lower()
+    scans_str = request.form.get("scans", "").strip()
+
+    if new_plan in ("free", "trial", "premium", "founder"):
+        if new_plan == "trial":
+            user.trial_ends_at = datetime.now(UTC) + timedelta(days=14)
+            user.plan = "free"
+        else:
+            user.plan = new_plan
+            if new_plan != "trial":
+                user.trial_ends_at = None
+
+    if scans_str.isdigit():
+        user.free_scans_used = max(0, int(scans_str))
+
+    db.session.commit()
+    flash(f"Formule et quotas mis à jour pour {user.email}.", "success")
+    return redirect(url_for("admin.user_detail", user_id=user.id))
 
 
 @admin.route("/admin/reset_password/<int:user_id>", methods=["POST"])
@@ -505,14 +1147,22 @@ def coupons():
         except stripe.error.StripeError:
             promos_list = stripe.PromotionCode.list(limit=50).data
 
-        # Rétrocompatibilité d'accès au coupon pour l'affichage dans le template
+        # Rétrocompatibilité et liaison complète du coupon pour l'affichage dans le template
+        coupons_map = {c.id: c for c in coupons_list}
         for p in promos_list:
-            if (
-                not getattr(p, "coupon", None)
-                and hasattr(p, "promotion")
-                and hasattr(p.promotion, "coupon")
-            ):
-                p.coupon = p.promotion.coupon
+            c = getattr(p, "coupon", None)
+            if not c and hasattr(p, "promotion") and hasattr(p.promotion, "coupon"):
+                c = p.promotion.coupon
+            if isinstance(c, str):
+                c = coupons_map.get(c)
+            p.coupon = c
+            if c:
+                p.linked_coupon_id = getattr(c, "id", None)
+                p.coupon_percent_off = getattr(c, "percent_off", None)
+                p.coupon_amount_off = getattr(c, "amount_off", None)
+                p.coupon_currency = getattr(c, "currency", "chf")
+                p.coupon_duration = getattr(c, "duration", None)
+                p.coupon_duration_in_months = getattr(c, "duration_in_months", None)
     except Exception as e:  # noqa: BLE001
         flash(f"Impossible de charger les données Stripe : {e}", "warning")
 
@@ -582,11 +1232,48 @@ def parametres():
     except importlib.metadata.PackageNotFoundError:
         flask_version = "Non installé"
 
+    db_url_str = str(db.engine.url)
+    if "sqlite" in db_url_str.lower():
+        clean = db_url_str.replace("sqlite:///", "")
+        db_file = os.path.basename(clean) or "app.db"
+        if db_file == ":memory:":
+            db_display = "SQLite (En mémoire)"
+        else:
+            db_display = f"SQLite ({db_file})"
+    else:
+        db_display = db.engine.name.capitalize()
+
+    # Détection de la date de dernière sauvegarde
+    import tempfile
+
+    last_backup_date = None
+    backup_meta_path = os.path.join(current_app.instance_path, "last_backup.json")
+    if os.path.exists(backup_meta_path):
+        try:
+            with open(backup_meta_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                iso_val = data.get("timestamp")
+                if iso_val:
+                    last_backup_date = datetime.fromisoformat(iso_val).strftime(
+                        "%d/%m/%Y à %H:%M"
+                    )
+        except (json.JSONDecodeError, OSError, ValueError):
+            pass
+
+    if not last_backup_date:
+        temp_dir = tempfile.gettempdir()
+        backups = glob.glob(os.path.join(temp_dir, "bibliotheque_backup_*.db"))
+        if backups:
+            newest = max(backups, key=os.path.getmtime)
+            mtime = datetime.fromtimestamp(os.path.getmtime(newest), UTC)
+            last_backup_date = mtime.strftime("%d/%m/%Y à %H:%M")
+
     system_info = {
         "python_version": sys.version.split(" ")[0],
         "flask_version": flask_version,
         "stripe_sdk_version": stripe_version,
-        "database": str(db.engine.url),
+        "database": db_display,
+        "last_backup_date": last_backup_date,
         "stripe_configured": stripe_configured,
         "mail_configured": mail_configured,
         "max_free_students": config_plans.MAX_FREE_STUDENTS,
@@ -601,6 +1288,75 @@ def parametres():
         "admin/parametres.html",
         system_info=system_info,
         active_page="parametres",
+    )
+
+
+@admin.route("/admin/backup-db")
+def backup_db():
+    import sqlite3
+    import tempfile
+
+    db_uri = str(current_app.config.get("SQLALCHEMY_DATABASE_URI", ""))
+    if not db_uri.startswith("sqlite"):
+        flash(
+            "La sauvegarde directe n'est disponible que pour les bases de données SQLite.",
+            "warning",
+        )
+        return redirect(url_for("admin.parametres"))
+
+    clean_path = db_uri.replace("sqlite:///", "")
+    if clean_path.startswith("/") or (len(clean_path) > 2 and clean_path[1] == ":"):
+        db_path = clean_path
+    else:
+        db_path = os.path.join(current_app.instance_path, clean_path)
+        if not os.path.exists(db_path):
+            db_path = os.path.join(current_app.root_path, "..", clean_path)
+        if not os.path.exists(db_path):
+            db_path = os.path.abspath(clean_path)
+
+    if not os.path.exists(db_path):
+        flash(f"Fichier de base de données introuvable ({clean_path}).", "danger")
+        return redirect(url_for("admin.parametres"))
+
+    temp_dir = tempfile.gettempdir()
+    now_utc = datetime.now(UTC)
+    timestamp = now_utc.strftime("%Y%m%d_%H%M%S")
+    backup_filename = f"bibliotheque_backup_{timestamp}.db"
+    backup_path = os.path.join(temp_dir, backup_filename)
+
+    try:
+        src_conn = sqlite3.connect(db_path)
+        dst_conn = sqlite3.connect(backup_path)
+        try:
+            src_conn.backup(dst_conn)
+        finally:
+            dst_conn.close()
+            src_conn.close()
+    except (sqlite3.Error, OSError) as e:
+        logger.error("Erreur de sauvegarde base de données : %s", e)
+        flash(f"Erreur lors de la création de la sauvegarde : {e}", "danger")
+        return redirect(url_for("admin.parametres"))
+
+    # Enregistrer la date de dernière sauvegarde
+    try:
+        os.makedirs(current_app.instance_path, exist_ok=True)
+        backup_meta_path = os.path.join(current_app.instance_path, "last_backup.json")
+        with open(backup_meta_path, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "timestamp": now_utc.isoformat(),
+                    "filename": backup_filename,
+                },
+                f,
+            )
+    except OSError:
+        pass
+
+    return send_file(
+        backup_path,
+        as_attachment=True,
+        download_name=backup_filename,
+        mimetype="application/x-sqlite3",
     )
 
 
@@ -874,6 +1630,14 @@ def emails():
             flash("Veuillez remplir le sujet et le message.", "error")
             return redirect(url_for("admin.emails"))
 
+        # Si le texte saisi est en markdown / texte brut sans balises HTML de structure, conversion automatique
+        if message_content and not re.search(
+            r"<\s*(?:p|div|table|h[1-6]|ul|ol)\b", message_content, re.IGNORECASE
+        ):
+            import markdown
+
+            message_content = markdown.markdown(message_content, extensions=["nl2br"])
+
         # Build recipient query based on target, plan, and language selection
         query = User.query
         if target in ("verified_subscribed", "verified"):
@@ -944,6 +1708,55 @@ def emails():
                     user_name=demo_pseudo,
                 )
             return html_body
+
+        if action == "send_test":
+            test_email = (
+                getattr(current_user, "email", None)
+                or os.getenv("MAIL_USERNAME")
+                or "contact@livresenclasse.com"
+            )
+            demo_pseudo = getattr(current_user, "name", None) or "Admin"
+            test_sub = f"[TEST] {replace_pseudo(subject, demo_pseudo, is_html=False)}"
+            test_msg = replace_pseudo(message_content, demo_pseudo, is_html=True)
+            preview_unsub = url_for(
+                "auth.unsubscribe",
+                token="demo-test-token",
+                user_id=getattr(current_user, "id", 0) or 0,
+                _external=True,
+            )
+            prev_lang = target_lang if target_lang in ("fr", "en", "de") else "fr"
+            with force_locale(prev_lang):
+                html_body = render_template(
+                    template_path,
+                    content=test_msg,
+                    subject=test_sub,
+                    unsubscribe_url=preview_unsub,
+                    feedback_idea_url=feedback_idea_url,
+                    feedback_bug_url=feedback_bug_url,
+                    reglage_url=reglage_url,
+                    tracking_pixel_url=None,
+                    user_name=demo_pseudo,
+                )
+            sender = os.getenv("MAIL_USERNAME") or "contact@livresenclasse.com"
+            try:
+                msg = Message(
+                    test_sub,
+                    sender=sender,
+                    recipients=[test_email],
+                    reply_to=sender,
+                )
+                msg.html = html_body
+                text_body = re.sub(r"<[^>]+>", " ", test_msg)
+                text_body = re.sub(r"\s+", " ", text_body).strip()
+                msg.body = f"{test_sub}\n\n{text_body}"
+                mail.send(msg)
+                flash(
+                    f"E-mail de test envoyé avec succès à {test_email} !",
+                    "success",
+                )
+            except Exception as e:  # noqa: BLE001
+                flash(f"Erreur lors de l'envoi du test : {e}", "danger")
+            return redirect(url_for("admin.emails"))
 
         valid_users = [u for u in users if u.email]
         if not valid_users:
@@ -1234,6 +2047,15 @@ def update_feedback_status(feedback_id):
         fb.status = new_status
         db.session.commit()
         flash("Statut du retour mis à jour avec succès.", "success")
+    return redirect(url_for("admin.feedbacks"))
+
+
+@admin.route("/admin/feedback/<int:feedback_id>/note", methods=["POST"])
+def update_feedback_note(feedback_id):
+    fb = db.get_or_404(Feedback, feedback_id)
+    fb.admin_note = request.form.get("admin_note", "").strip() or None
+    db.session.commit()
+    flash("Note interne enregistrée.", "success")
     return redirect(url_for("admin.feedbacks"))
 
 

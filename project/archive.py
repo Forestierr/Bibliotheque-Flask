@@ -20,6 +20,7 @@ from sqlalchemy import desc, func
 
 from . import db
 from .config_plans import MAX_FREE_STUDENTS
+from .export import sanitize_excel_cell
 from .models import AcademicYearArchive, Book, Loan, Student
 from .query import (
     get_students,
@@ -502,7 +503,9 @@ def export_excel(archive_id: int):
                 "Valeur": f"{archive_item.top_reader_name or ''} ({archive_item.top_reader_count} prêts)",
             },
         ]
-        pd.DataFrame(summary_data).to_excel(writer, index=False, sheet_name="Synthèse")
+        pd.DataFrame(summary_data).map(sanitize_excel_cell).to_excel(
+            writer, index=False, sheet_name="Synthèse"
+        )
 
         # Feuille 2 : Top Livres
         top_books = archive_item.top_books
@@ -516,7 +519,7 @@ def export_excel(archive_id: int):
                 }
                 for i, b in enumerate(top_books)
             ]
-            pd.DataFrame(books_data).to_excel(
+            pd.DataFrame(books_data).map(sanitize_excel_cell).to_excel(
                 writer, index=False, sheet_name="Top Livres"
             )
 
@@ -531,7 +534,7 @@ def export_excel(archive_id: int):
                 }
                 for i, r in enumerate(top_readers)
             ]
-            pd.DataFrame(readers_data).to_excel(
+            pd.DataFrame(readers_data).map(sanitize_excel_cell).to_excel(
                 writer, index=False, sheet_name="Palmarès Élèves"
             )
 
@@ -562,7 +565,7 @@ def export_excel(archive_id: int):
                 }
                 for s in archived_students
             ]
-            pd.DataFrame(students_data).to_excel(
+            pd.DataFrame(students_data).map(sanitize_excel_cell).to_excel(
                 writer, index=False, sheet_name="Élèves"
             )
 

@@ -164,6 +164,18 @@ def test_admin_feedbacks_management(app, client, sample_user):
         fb1_updated = db.session.get(Feedback, fb1_id)
         assert fb1_updated.status == "en_cours"
 
+    # Mise à jour de la note interne
+    res_note = client.post(
+        f"/admin/feedback/{fb1_id}/note",
+        data={"admin_note": "A traiter en priorité v2"},
+        follow_redirects=True,
+    )
+    assert res_note.status_code == 200
+
+    with app.app_context():
+        fb1_noted = db.session.get(Feedback, fb1_id)
+        assert fb1_noted.admin_note == "A traiter en priorité v2"
+
     # Suppression d'un feedback
     res_del = client.post(f"/admin/feedback/{fb2_id}/delete", follow_redirects=True)
     assert res_del.status_code == 200

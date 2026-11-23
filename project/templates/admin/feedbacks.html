@@ -6,180 +6,235 @@
 {% block admin_header_subtitle %}Suivi des suggestions d'amélioration et signalements de bugs émis par les enseignants connectés.{% endblock %}
 
 {% block admin_actions %}
-<a href="{{ url_for('admin.emails') }}" class="button is-small is-light" style="border: 1px solid #cbd5e1; border-radius: 8px;">
-    <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
-    <span>Diffusion Newsletter</span>
-</a>
+<span class="stat-card-badge is-neutral" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+    {{ counts.all }} retour{% if counts.all > 1 %}s{% endif %}
+</span>
 {% endblock %}
 
 {% block admin_content %}
+<style>
+  .feedback-table th {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 0.75rem 1rem !important;
+  }
+  .feedback-table td {
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid #f8fafc !important;
+    vertical-align: middle;
+  }
+  /* Onglets de filtrage monochromes */
+  .feedback-tab-btn {
+    border-radius: 9999px !important;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.35rem 0.85rem;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.15s ease;
+  }
+  .feedback-tab-btn:hover {
+    color: #0f172a;
+    background: #f8fafc;
+  }
+  .feedback-tab-btn.is-active {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border-color: #0f172a !important;
+    font-weight: 600;
+  }
+
+  /* Statut dropdown stylisé façon pill */
+  .status-pill-select select {
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
+    height: 1.85rem !important;
+    border-radius: 9999px !important;
+    padding-left: 0.75rem !important;
+    padding-right: 1.5rem !important;
+    cursor: pointer;
+  }
+</style>
+
+<!-- CARTE D'ANALYSE DES DÉPARTS & CHURN (Style Skymetrics épuré) -->
 {% if total_departures > 0 %}
-<div class="admin-card mb-5" style="border-left: 4px solid #ef4444;">
+<div class="admin-card mb-4" style="border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04); padding: 1.25rem;">
     <div class="columns is-vcentered">
         <div class="column is-7">
-            <h3 class="title is-6 mb-2" style="color: #0f172a; font-weight: 700;">
-                <i class="fas fa-chart-pie mr-2 has-text-danger"></i>Analyse des Départs & Churn
+            <h3 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin: 0 0 2px 0;">
+                Analyse des Départs & Churn
             </h3>
-            <p class="is-size-7 has-text-grey mb-3">
-                Répartition des motifs déclarés par les enseignants lors de la suppression de leur compte.
+            <p style="font-size: 0.72rem; color: #94a3b8; margin: 0 0 1rem 0;">
+                Répartition des motifs déclarés par les enseignants lors de la suppression de leur compte
             </p>
             <div class="level is-mobile mb-0">
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading is-size-7 mb-1 has-text-grey">Départs enregistrés</p>
-                        <p class="title is-4 has-text-weight-bold" style="color: #0f172a;">{{ total_departures }}</p>
+                        <p class="is-size-7 mb-1" style="color: #94a3b8; font-weight: 600; text-transform: uppercase;">Départs enregistrés</p>
+                        <p class="title is-4 has-text-weight-bold mb-0" style="color: #0f172a;">{{ total_departures }}</p>
                     </div>
                 </div>
                 {% if top_reason_label %}
-                <div class="level-item has-text-centered" style="border-left: 1px solid #e2e8f0; padding-left: 1.5rem;">
+                <div class="level-item has-text-centered" style="border-left: 1px solid #f1f5f9; padding-left: 1.5rem;">
                     <div>
-                        <p class="heading is-size-7 mb-1 has-text-grey">Principal déclencheur de départ</p>
-                        <p class="title is-6 has-text-danger has-text-weight-bold mb-0">
+                        <p class="is-size-7 mb-1" style="color: #94a3b8; font-weight: 600; text-transform: uppercase;">Principal déclencheur de départ</p>
+                        <p class="has-text-weight-semibold mb-0" style="color: #0f172a; font-size: 0.88rem;">
                             {{ top_reason_label }}
                         </p>
-                        <p class="is-size-7 has-text-grey">{{ top_reason_count }} enseignant{{ 's' if top_reason_count > 1 else '' }} ({{ top_reason_pct }}%)</p>
+                        <p class="is-size-7" style="color: #64748b; margin-top: 1px;">{{ top_reason_count }} enseignant{{ 's' if top_reason_count > 1 else '' }} ({{ top_reason_pct }}%)</p>
                     </div>
                 </div>
                 {% endif %}
             </div>
         </div>
         <div class="column is-5">
-            <div style="height: 180px; position: relative;">
+            <div style="height: 150px; position: relative; display: flex; align-items: center; justify-content: center;">
                 <canvas id="departureReasonsChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 {% endif %}
-<!-- Filtres par statut & catégorie -->
-<div class="level mb-4">
-    <div class="level-left">
-        <div class="tabs is-toggle is-small mb-0">
-            <ul>
-                <li class="{% if current_status == 'all' %}is-active{% endif %}">
-                    <a href="{{ url_for('admin.feedbacks', status='all', category=current_category) }}">
-                        <span>Tous ({{ counts.all }})</span>
-                    </a>
-                </li>
-                <li class="{% if current_status == 'nouveau' %}is-active{% endif %}">
-                    <a href="{{ url_for('admin.feedbacks', status='nouveau', category=current_category) }}">
-                        <span>Nouveaux ({{ counts.nouveau }})</span>
-                    </a>
-                </li>
-                <li class="{% if current_status == 'en_cours' %}is-active{% endif %}">
-                    <a href="{{ url_for('admin.feedbacks', status='en_cours', category=current_category) }}">
-                        <span>En cours ({{ counts.en_cours }})</span>
-                    </a>
-                </li>
-                <li class="{% if current_status == 'traite' %}is-active{% endif %}">
-                    <a href="{{ url_for('admin.feedbacks', status='traite', category=current_category) }}">
-                        <span>Traités ({{ counts.traite }})</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+
+<!-- FILTRES PAR STATUT ET CATÉGORIE -->
+<div class="is-flex is-align-items-center is-justify-content-space-between mb-4 is-flex-wrap-wrap" style="gap: 0.75rem;">
+    <!-- Onglets par statut -->
+    <div class="is-flex is-align-items-center is-flex-wrap-wrap" style="gap: 0.4rem;">
+        <a href="{{ url_for('admin.feedbacks', status='all', category=current_category) }}" class="feedback-tab-btn {% if current_status == 'all' %}is-active{% endif %}">
+            <span>Tous ({{ counts.all }})</span>
+        </a>
+        <a href="{{ url_for('admin.feedbacks', status='nouveau', category=current_category) }}" class="feedback-tab-btn {% if current_status == 'nouveau' %}is-active{% endif %}">
+            <span>Nouveaux ({{ counts.nouveau }})</span>
+        </a>
+        <a href="{{ url_for('admin.feedbacks', status='en_cours', category=current_category) }}" class="feedback-tab-btn {% if current_status == 'en_cours' %}is-active{% endif %}">
+            <span>En cours ({{ counts.en_cours }})</span>
+        </a>
+        <a href="{{ url_for('admin.feedbacks', status='traite', category=current_category) }}" class="feedback-tab-btn {% if current_status == 'traite' %}is-active{% endif %}">
+            <span>Traités ({{ counts.traite }})</span>
+        </a>
     </div>
 
-    <div class="level-right">
-        <div class="field is-horizontal is-align-items-center">
-            <label class="label is-size-7 mr-2 mb-0 has-text-grey">Catégorie :</label>
-            <div class="control">
-                <div class="select is-small">
-                    <select onchange="window.location.href=this.value">
-                        <option value="{{ url_for('admin.feedbacks', status=current_status, category='all') }}" {% if current_category == 'all' %}selected{% endif %}>
-                            Toutes les catégories
-                        </option>
-                        <option value="{{ url_for('admin.feedbacks', status=current_status, category='bug') }}" {% if current_category == 'bug' %}selected{% endif %}>
-                            Anomalies & Bugs
-                        </option>
-                        <option value="{{ url_for('admin.feedbacks', status=current_status, category='suggestion') }}" {% if current_category == 'suggestion' %}selected{% endif %}>
-                            Suggestions d'amélioration
-                        </option>
-                        <option value="{{ url_for('admin.feedbacks', status=current_status, category='general') }}" {% if current_category == 'general' %}selected{% endif %}>
-                            Avis généraux
-                        </option>
-                        <option value="{{ url_for('admin.feedbacks', status=current_status, category='depart') }}" {% if current_category == 'depart' %}selected{% endif %}>
-                            Questionnaires de départ ({{ counts.depart }})
-                        </option>
-                    </select>
-                </div>
-            </div>
+    <!-- Sélecteur de catégorie -->
+    <div class="is-flex is-align-items-center">
+        <span class="is-size-7 mr-2 has-text-grey">Catégorie :</span>
+        <div class="select is-small is-rounded">
+            <select onchange="window.location.href=this.value" style="border-color: #e2e8f0; font-size: 0.78rem;">
+                <option value="{{ url_for('admin.feedbacks', status=current_status, category='all') }}" {% if current_category == 'all' %}selected{% endif %}>
+                    Toutes les catégories
+                </option>
+                <option value="{{ url_for('admin.feedbacks', status=current_status, category='bug') }}" {% if current_category == 'bug' %}selected{% endif %}>
+                    Anomalies & Bugs
+                </option>
+                <option value="{{ url_for('admin.feedbacks', status=current_status, category='suggestion') }}" {% if current_category == 'suggestion' %}selected{% endif %}>
+                    Suggestions d'amélioration
+                </option>
+                <option value="{{ url_for('admin.feedbacks', status=current_status, category='general') }}" {% if current_category == 'general' %}selected{% endif %}>
+                    Avis généraux
+                </option>
+                <option value="{{ url_for('admin.feedbacks', status=current_status, category='depart') }}" {% if current_category == 'depart' %}selected{% endif %}>
+                    Questionnaires de départ ({{ counts.depart }})
+                </option>
+            </select>
         </div>
     </div>
 </div>
 
-<!-- Tableau des retours -->
-<div class="admin-card p-0" style="overflow: hidden;">
-    <div class="table-container mb-0">
-        <table class="table is-fullwidth is-hoverable is-striped mb-0" style="font-size: 0.88rem;">
+<!-- TABLEAU DES RETOURS (Boîte unique, Statut fusionné avec le select) -->
+<div class="admin-card" style="padding: 0 !important; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04); overflow: hidden;">
+    <div class="table-container mb-0" style="overflow-x: auto;">
+        <table class="table is-fullwidth feedback-table mb-0" style="border-collapse: collapse; min-width: 760px; vertical-align: middle;">
             <thead>
-                <tr style="background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                    <th style="width: 120px;">Date</th>
-                    <th style="width: 140px;">Type</th>
-                    <th>Auteur</th>
-                    <th>Objet & Message</th>
-                    <th style="width: 120px;">Statut</th>
-                    <th style="width: 170px; text-align: right;">Actions</th>
+                <tr style="background: #fafbfd;">
+                    <th style="width: 110px;">Date</th>
+                    <th style="width: 100px;">Type</th>
+                    <th style="width: 200px;">Auteur</th>
+                    <th>Objet &amp; Message</th>
+                    <th style="width: 130px;">Statut</th>
+                    <th style="width: 70px; text-align: right;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% if feedbacks %}
                     {% for fb in feedbacks %}
                         <tr>
-                            <td class="has-text-grey is-size-7" style="vertical-align: middle;">
-                                {{ fb.created_at.strftime('%d/%m/%Y %H:%M') }}
+                            <!-- Date -->
+                            <td style="font-size: 0.75rem; color: #64748b; font-variant-numeric: tabular-nums; white-space: nowrap;">
+                                {{ fb.created_at.strftime('%d/%m/%Y') }}
                             </td>
-                            <td style="vertical-align: middle;">
+
+                            <!-- Type -->
+                            <td>
                                 {% if fb.category == 'bug' %}
-                                    <span class="tag is-danger is-light is-rounded">
-                                        <i class="fas fa-bug mr-1"></i> Bug
+                                    <span class="tag is-rounded is-small" style="background: #fef2f2; color: #dc2626; font-size: 0.7rem; font-weight: 500;">
+                                        Bug
                                     </span>
                                 {% elif fb.category == 'suggestion' %}
-                                    <span class="tag is-info is-light is-rounded">
-                                        <i class="fas fa-lightbulb mr-1"></i> Idée
+                                    <span class="tag is-rounded is-small" style="background: #f0f9ff; color: #0284c7; font-size: 0.7rem; font-weight: 500;">
+                                        Idée
                                     </span>
                                 {% elif fb.category == 'depart' %}
-                                    <span class="tag is-danger is-light is-rounded has-text-weight-bold">
-                                        <i class="fas fa-user-slash mr-1"></i> Départ
+                                    <span class="tag is-rounded is-small" style="background: #f1f5f9; color: #0f172a; font-size: 0.7rem; font-weight: 600;">
+                                        Départ
                                     </span>
                                 {% else %}
-                                    <span class="tag is-light is-rounded">
-                                        <i class="fas fa-comment mr-1"></i> Général
+                                    <span class="tag is-rounded is-small is-light" style="font-size: 0.7rem; color: #64748b;">
+                                        Général
                                     </span>
                                 {% endif %}
                             </td>
-                            <td style="vertical-align: middle;">
+
+                            <!-- Auteur -->
+                            <td>
                                 {% if fb.user %}
-                                    <div class="has-text-weight-bold" style="color: #0f172a;">{{ fb.user.name or 'Enseignant' }}</div>
-                                    <div class="is-size-7 has-text-grey">{{ fb.user.email }}</div>
+                                    <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.8rem; line-height: 1.2;">{{ fb.user.name or 'Enseignant' }}</div>
+                                    <div class="is-size-7 has-text-grey" style="font-size: 0.72rem; margin-top: 1px;">{{ fb.user.email }}</div>
                                 {% elif fb.author_name or fb.author_email %}
-                                    <div class="has-text-weight-bold" style="color: #0f172a;">{{ fb.author_name or 'Enseignant' }}</div>
-                                    <div class="is-size-7 has-text-grey">{{ fb.author_email or '' }}</div>
+                                    <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.8rem; line-height: 1.2;">{{ fb.author_name or 'Enseignant' }}</div>
+                                    <div class="is-size-7 has-text-grey" style="font-size: 0.72rem; margin-top: 1px;">{{ fb.author_email or '' }}</div>
                                 {% else %}
-                                    <span class="has-text-grey-dark">Anonyme</span>
+                                    <span class="is-size-7 has-text-grey">Anonyme</span>
                                 {% endif %}
                             </td>
-                            <td style="vertical-align: middle; max-width: 380px;">
-                                <div class="has-text-weight-bold mb-1" style="color: #1e293b;">
-                                    {{ fb.subject }}
+
+                            <!-- Objet & Message -->
+                            <td style="max-width: 320px;">
+                                <div class="is-flex is-align-items-center" style="gap: 0.35rem;">
+                                    <div class="has-text-weight-semibold" style="color: #0f172a; font-size: 0.82rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ fb.subject }}">
+                                        {{ fb.subject }}
+                                    </div>
+                                    {% if fb.admin_note %}
+                                        <span class="icon is-small has-text-grey" title="Note interne : {{ fb.admin_note }}" style="font-size: 0.68rem; flex-shrink: 0;"><i class="fas fa-sticky-note" style="color: #64748b;"></i></span>
+                                    {% endif %}
                                 </div>
-                                <div class="has-text-grey is-size-7" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <div class="is-size-7 has-text-grey" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">
                                     {{ fb.message }}
                                 </div>
                             </td>
-                            <td style="vertical-align: middle;">
-                                {% if fb.status == 'nouveau' %}
-                                    <span class="tag is-warning is-light is-rounded has-text-weight-bold">Nouveau</span>
-                                {% elif fb.status == 'en_cours' %}
-                                    <span class="tag is-info is-light is-rounded has-text-weight-bold">En cours</span>
-                                {% elif fb.status == 'traite' %}
-                                    <span class="tag is-success is-light is-rounded has-text-weight-bold">Traité</span>
-                                {% else %}
-                                    <span class="tag is-light is-rounded">{{ fb.status }}</span>
-                                {% endif %}
+
+                            <!-- Statut (Menu direct sans doublon) -->
+                            <td>
+                                <form action="{{ url_for('admin.update_feedback_status', feedback_id=fb.id) }}" method="POST" style="margin: 0;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <div class="select is-small status-pill-select">
+                                        <select name="status" onchange="this.form.submit()" style="{% if fb.status == 'nouveau' %}background: #fffbeb; color: #b45309; border-color: #fde68a;{% elif fb.status == 'en_cours' %}background: #f0f9ff; color: #0369a1; border-color: #bae6fd;{% elif fb.status == 'traite' %}background: #ecfdf5; color: #059669; border-color: #a7f3d0;{% else %}background: #f8fafc; color: #64748b; border-color: #e2e8f0;{% endif %}">
+                                            <option value="nouveau" {% if fb.status == 'nouveau' %}selected{% endif %}>Nouveau</option>
+                                            <option value="en_cours" {% if fb.status == 'en_cours' %}selected{% endif %}>En cours</option>
+                                            <option value="traite" {% if fb.status == 'traite' %}selected{% endif %}>Traité</option>
+                                        </select>
+                                    </div>
+                                </form>
                             </td>
-                            <td style="vertical-align: middle; text-align: right;">
-                                <div class="buttons is-right are-small mb-0" style="flex-wrap: nowrap;">
+
+                            <!-- Action : Voir détail & Corbeille -->
+                            <td style="text-align: right;">
+                                <div class="is-flex is-align-items-center is-justify-content-flex-end" style="gap: 0.35rem;">
                                     <!-- Données JSON sécurisées pour la modale -->
                                     <script id="feedback-data-{{ fb.id }}" type="application/json">
                                         {{ {
@@ -188,6 +243,7 @@
                                             "message": fb.message,
                                             "category": fb.category,
                                             "status": fb.status,
+                                            "adminNote": fb.admin_note or '',
                                             "date": fb.created_at.strftime('%d/%m/%Y à %H:%M'),
                                             "pageUrl": fb.page_url or '',
                                             "userAgent": fb.user_agent or '',
@@ -198,29 +254,18 @@
 
                                     <!-- Bouton Voir Détails -->
                                     <button type="button" 
-                                            class="button is-light js-open-feedback" 
+                                            class="button is-small is-white is-rounded js-open-feedback" 
                                             data-target="feedback-data-{{ fb.id }}"
-                                            title="Consulter l'intégralité du retour">
-                                        <i class="fas fa-eye"></i>
+                                            title="Consulter"
+                                            style="border: 1px solid #e2e8f0; width: 28px; height: 28px; padding: 0; color: #475569;">
+                                        <span class="icon is-small" style="font-size: 0.72rem;"><i class="fas fa-eye"></i></span>
                                     </button>
 
-                                    <!-- Menu déroulant pour statut -->
-                                    <form action="{{ url_for('admin.update_feedback_status', feedback_id=fb.id) }}" method="POST" style="display: inline;">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                        <div class="select is-small">
-                                            <select name="status" onchange="this.form.submit()" style="font-size: 0.75rem;">
-                                                <option value="nouveau" {% if fb.status == 'nouveau' %}selected{% endif %}>Nouveau</option>
-                                                <option value="en_cours" {% if fb.status == 'en_cours' %}selected{% endif %}>En cours</option>
-                                                <option value="traite" {% if fb.status == 'traite' %}selected{% endif %}>Traité</option>
-                                            </select>
-                                        </div>
-                                    </form>
-
                                     <!-- Suppression -->
-                                    <form action="{{ url_for('admin.delete_feedback', feedback_id=fb.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Confirmer la suppression de ce retour ?');">
+                                    <form action="{{ url_for('admin.delete_feedback', feedback_id=fb.id) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Confirmer la suppression de ce retour ?');">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                        <button type="submit" class="button is-white has-text-danger" style="border: 1px solid #e2e8f0;" title="Supprimer">
-                                            <i class="fas fa-trash-alt"></i>
+                                        <button type="submit" class="button is-small is-white is-rounded has-text-danger" style="border: 1px solid #e2e8f0; width: 28px; height: 28px; padding: 0;" title="Supprimer">
+                                            <span class="icon is-small" style="font-size: 0.72rem;"><i class="fas fa-trash-alt"></i></span>
                                         </button>
                                     </form>
                                 </div>
@@ -229,7 +274,7 @@
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="6" class="p-5 text-center has-text-centered has-text-grey">
+                        <td colspan="6" class="has-text-centered py-6 has-text-grey is-size-7">
                             Aucun retour utilisateur ne correspond à ces critères.
                         </td>
                     </tr>
@@ -242,15 +287,15 @@
 <!-- MODALE DE LECTURE COMPLÈTE DU RETOUR -->
 <div id="feedbackDetailModal" class="modal">
     <div class="modal-background" onclick="closeFeedbackModal()"></div>
-    <div class="modal-card" style="border-radius: 12px; overflow: hidden; max-width: 640px;">
-        <header class="modal-card-head" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-            <p class="modal-card-title is-size-6" style="font-weight: 800; color: #0f172a;">
+    <div class="modal-card" style="border-radius: 12px; overflow: hidden; max-width: 600px;">
+        <header class="modal-card-head" style="background: #ffffff; border-bottom: 1px solid #f1f5f9; padding: 1rem 1.25rem;">
+            <p class="modal-card-title has-text-weight-bold mb-0" style="font-size: 0.95rem; color: #0f172a;">
                 Détail du retour utilisateur
             </p>
             <button class="delete" aria-label="close" onclick="closeFeedbackModal()"></button>
         </header>
-        <section class="modal-card-body">
-            <div class="p-3 mb-4" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <section class="modal-card-body" style="padding: 1.25rem;">
+            <div class="p-3 mb-3" style="background: #fafbfd; border: 1px solid #f1f5f9; border-radius: 8px;">
                 <div class="level is-mobile mb-2">
                     <div class="level-left">
                         <span id="modalCategoryBadge" class="tag is-rounded is-small"></span>
@@ -262,91 +307,139 @@
                 </div>
 
                 <div class="is-size-7 has-text-grey mb-1">Auteur :</div>
-                <div class="has-text-weight-bold mb-2" id="modalAuthor"></div>
+                <div class="has-text-weight-semibold mb-2" id="modalAuthor" style="color: #0f172a; font-size: 0.85rem;"></div>
 
                 <div class="is-size-7 has-text-grey mb-1">Sujet :</div>
-                <div class="has-text-weight-bold" id="modalSubject" style="color: #0f172a;"></div>
+                <div class="has-text-weight-semibold" id="modalSubject" style="color: #0f172a; font-size: 0.85rem;"></div>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-3">
                 <label class="label is-size-7 has-text-grey mb-1">Message :</label>
-                <div id="modalMessage" class="p-3" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; color: #1e293b;"></div>
+                <div id="modalMessage" class="p-3" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; white-space: pre-wrap; font-size: 0.85rem; line-height: 1.55; color: #0f172a;"></div>
             </div>
 
-            <div class="p-3" style="background: #f1f5f9; border-radius: 8px; font-size: 0.78rem; color: #475569;">
-                <div class="mb-1"><strong>Page signalée :</strong> <span id="modalPageUrl">-</span></div>
-                <div><strong>Navigateur :</strong> <span id="modalUserAgent">-</span></div>
+            <div class="p-3 mb-3" style="background: #f8fafc; border-radius: 8px; font-size: 0.75rem; color: #64748b;">
+                <div class="mb-1"><strong>Page :</strong> <span id="modalPageUrl">—</span></div>
+                <div><strong>Navigateur :</strong> <span id="modalUserAgent">—</span></div>
             </div>
+
+            <!-- Note interne (visible uniquement par l'admin) -->
+            <form id="modalNoteForm" method="POST" action="" class="mb-0">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <label class="label is-size-7 has-text-grey mb-1">
+                    <span class="icon is-small mr-1"><i class="fas fa-sticky-note"></i></span>
+                    Note interne (visible uniquement par l'admin) :
+                </label>
+                <div class="field has-addons mb-0">
+                    <div class="control is-expanded">
+                        <textarea name="admin_note" id="modalAdminNote" class="textarea is-small" rows="2" placeholder="Ajouter une note de suivi interne..." style="border-color: #cbd5e1; font-size: 0.8rem;"></textarea>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-small" style="height: 100%; background: #0f172a; color: #ffffff; font-weight: 500;">Enregistrer</button>
+                    </div>
+                </div>
+            </form>
         </section>
-        <footer class="modal-card-foot is-justify-content-space-between" style="border-top: 1px solid #e2e8f0;">
-            <a id="modalReplyBtn" href="#" class="button is-small is-link">
-                <span class="icon is-small"><i class="fas fa-reply"></i></span>
-                <span>Répondre par e-mail</span>
-            </a>
-            <button class="button is-small is-light" onclick="closeFeedbackModal()">Fermer</button>
+        <footer class="modal-card-foot" style="background: #fafbfd; border-top: 1px solid #f1f5f9; justify-content: space-between; padding: 0.75rem 1.25rem;">
+            <div>
+                <a id="modalMailtoBtn" href="#" class="button is-small is-rounded" style="background: #0f172a; color: #ffffff; font-size: 0.75rem; font-weight: 500; text-decoration: none;">
+                    <span class="icon is-small"><i class="fas fa-reply"></i></span>
+                    <span>Répondre par email</span>
+                </a>
+            </div>
+            <button type="button" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="closeFeedbackModal()">Fermer</button>
         </footer>
     </div>
 </div>
 
 <script>
+    function closeFeedbackModal() {
+        const modal = document.getElementById('feedbackDetailModal');
+        if (modal) modal.classList.remove('is-active');
+    }
+
     function openFeedbackModalFromData(data) {
-        document.getElementById('modalSubject').textContent = data.subject || "";
-        document.getElementById('modalMessage').textContent = data.message || "";
-        document.getElementById('modalAuthor').textContent = `${data.authorName} (${data.authorEmail || 'Non renseigné'})`;
-        document.getElementById('modalDate').textContent = data.date || "";
-        document.getElementById('modalPageUrl').textContent = data.pageUrl || "Non spécifiée";
-        document.getElementById('modalUserAgent').textContent = data.userAgent || "Non spécifié";
+        document.getElementById('modalSubject').textContent = data.subject || 'Sans objet';
+        document.getElementById('modalMessage').textContent = data.message || '';
+        document.getElementById('modalDate').textContent = data.date || '';
+
+        const authorText = (data.authorName || 'Enseignant') + (data.authorEmail ? ' (' + data.authorEmail + ')' : '');
+        document.getElementById('modalAuthor').textContent = authorText;
 
         const catBadge = document.getElementById('modalCategoryBadge');
         if (data.category === 'bug') {
-            catBadge.className = 'tag is-danger is-light is-rounded';
-            catBadge.textContent = 'Anomalie / Bug';
+            catBadge.className = 'tag is-rounded is-small';
+            catBadge.style.background = '#fef2f2';
+            catBadge.style.color = '#dc2626';
+            catBadge.textContent = 'Bug';
         } else if (data.category === 'suggestion') {
-            catBadge.className = 'tag is-info is-light is-rounded';
-            catBadge.textContent = 'Suggestion / Idée';
+            catBadge.className = 'tag is-rounded is-small';
+            catBadge.style.background = '#f0f9ff';
+            catBadge.style.color = '#0284c7';
+            catBadge.textContent = 'Idée';
         } else if (data.category === 'depart') {
-            catBadge.className = 'tag is-danger is-light is-rounded has-text-weight-bold';
-            catBadge.textContent = 'Questionnaire de départ';
+            catBadge.className = 'tag is-rounded is-small';
+            catBadge.style.background = '#f1f5f9';
+            catBadge.style.color = '#0f172a';
+            catBadge.textContent = 'Départ';
         } else {
-            catBadge.className = 'tag is-light is-rounded';
-            catBadge.textContent = 'Avis Général';
+            catBadge.className = 'tag is-rounded is-small is-light';
+            catBadge.textContent = 'Général';
         }
 
-        const statusBadge = document.getElementById('modalStatusBadge');
+        const statBadge = document.getElementById('modalStatusBadge');
         if (data.status === 'nouveau') {
-            statusBadge.className = 'tag is-warning is-light is-rounded';
-            statusBadge.textContent = 'Nouveau';
+            statBadge.className = 'tag is-rounded is-small';
+            statBadge.style.background = '#fffbeb';
+            statBadge.style.color = '#b45309';
+            statBadge.textContent = 'Nouveau';
         } else if (data.status === 'en_cours') {
-            statusBadge.className = 'tag is-info is-light is-rounded';
-            statusBadge.textContent = 'En cours';
+            statBadge.className = 'tag is-rounded is-small';
+            statBadge.style.background = '#f0f9ff';
+            statBadge.style.color = '#0369a1';
+            statBadge.textContent = 'En cours';
         } else if (data.status === 'traite') {
-            statusBadge.className = 'tag is-success is-light is-rounded';
-            statusBadge.textContent = 'Traité';
+            statBadge.className = 'tag is-rounded is-small';
+            statBadge.style.background = '#ecfdf5';
+            statBadge.style.color = '#059669';
+            statBadge.textContent = 'Traité';
         } else {
-            statusBadge.className = 'tag is-light is-rounded';
-            statusBadge.textContent = data.status;
+            statBadge.className = 'tag is-rounded is-small is-light';
+            statBadge.textContent = data.status;
         }
 
-        const replyBtn = document.getElementById('modalReplyBtn');
-        if (data.authorEmail) {
-            replyBtn.href = `mailto:${data.authorEmail}?subject=Re: ${encodeURIComponent(data.subject)}`;
-            replyBtn.style.display = 'inline-flex';
-        } else {
-            replyBtn.style.display = 'none';
+        document.getElementById('modalPageUrl').textContent = data.pageUrl || 'Non renseignée';
+        document.getElementById('modalUserAgent').textContent = data.userAgent || 'Non renseigné';
+
+        // Note interne
+        const noteForm = document.getElementById('modalNoteForm');
+        if (noteForm) {
+            noteForm.action = `/admin/feedback/${data.id}/note`;
+        }
+        const noteTextarea = document.getElementById('modalAdminNote');
+        if (noteTextarea) {
+            noteTextarea.value = data.adminNote || '';
+        }
+
+        // Bouton Répondre par email
+        const mailBtn = document.getElementById('modalMailtoBtn');
+        if (mailBtn) {
+            if (data.authorEmail) {
+                mailBtn.style.display = 'inline-flex';
+                const subject = encodeURIComponent('Re: ' + (data.subject || 'Votre message sur Livres en classe'));
+                mailBtn.href = `mailto:${encodeURIComponent(data.authorEmail)}?subject=${subject}`;
+            } else {
+                mailBtn.style.display = 'none';
+            }
         }
 
         document.getElementById('feedbackDetailModal').classList.add('is-active');
     }
 
-    function closeFeedbackModal() {
-        document.getElementById('feedbackDetailModal').classList.remove('is-active');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // Gestionnaire d'ouverture de modale sans bug d'échappement
+    document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.js-open-feedback').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.getAttribute('data-target');
+            btn.addEventListener('click', function() {
+                const targetId = this.dataset.target;
                 const scriptEl = document.getElementById(targetId);
                 if (scriptEl) {
                     try {
@@ -372,25 +465,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: {{ chart_departure_labels | tojson | safe }},
                 datasets: [{
                     data: {{ chart_departure_data | tojson | safe }},
-                    backgroundColor: {{ chart_departure_colors | tojson | safe }},
-                    borderWidth: 2,
-                    borderColor: '#ffffff',
-                    hoverOffset: 6
+                    backgroundColor: [
+                        '#0f172a',
+                        '#334155',
+                        '#475569',
+                        '#64748b',
+                        '#94a3b8',
+                        '#cbd5e1'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '74%',
                 plugins: {
                     legend: {
                         position: 'right',
                         labels: {
-                            boxWidth: 12,
-                            padding: 12,
-                            font: { size: 11 }
+                            boxWidth: 8,
+                            padding: 8,
+                            color: '#64748b',
+                            font: { size: 10 }
                         }
                     },
                     tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 8,
+                        cornerRadius: 6,
                         callbacks: {
                             label: function(context) {
                                 const total = {{ total_departures }};
@@ -400,8 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }
                     }
-                },
-                cutout: '62%'
+                }
             }
         });
     }

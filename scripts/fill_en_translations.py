@@ -1549,6 +1549,9 @@ translations = {
     "Annuler et rester": "Cancel and stay",
     "Supprimer définitivement mon compte": "Permanently delete my account",
     "Votre compte et vos données personnelles ont été supprimés avec succès.": "Your account and personal data have been successfully deleted.",
+    "Une erreur est survenue lors du prêt du livre.": "An error occurred while lending the book.",
+    "Une erreur est survenue lors de la duplication du livre.": "An error occurred while duplicating the book.",
+    "Une erreur est survenue lors de la suppression du livre.": "An error occurred while deleting the book.",
 }
 
 with open(po_path, "rb") as f:

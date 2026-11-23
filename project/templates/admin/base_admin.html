@@ -4,146 +4,314 @@
 
 {% block content %}
 <style>
+  :root {
+    --admin-bg: #f8fafc;
+    --admin-sidebar-bg: #ffffff;
+    --admin-card-bg: #ffffff;
+    --admin-border: #e2e8f0;
+    --admin-border-hover: #cbd5e1;
+    --admin-text-main: #0f172a;
+    --admin-text-muted: #64748b;
+    --admin-text-subtle: #94a3b8;
+    --admin-radius: 12px;
+    --admin-radius-sm: 8px;
+  }
+
+  /* Déverrouiller le layout pleine largeur et pleine hauteur */
+  html, body {
+    background-color: var(--admin-bg) !important;
+    color: var(--admin-text-main);
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .hero.is-fullheight,
+  #wrapper,
+  main.hero-body {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  main.hero-body > .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .hero-head,
+  footer.footer,
+  nav.footer-mobile {
+    display: none !important;
+  }
+
+  /* Layout principal : Sidebar ancrée pleine hauteur (Skymetrics) */
   .admin-layout {
     display: flex;
-    gap: 1.75rem;
-    align-items: flex-start;
-    margin-top: 1rem;
-    margin-bottom: 3rem;
+    min-height: 100vh;
+    background: var(--admin-bg);
   }
+
+  /* Sidebar ancrée à gauche pleine hauteur */
   .admin-sidebar {
-    width: 260px;
+    width: 240px;
+    min-width: 240px;
     flex-shrink: 0;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    padding: 1.25rem;
+    background: var(--admin-sidebar-bg);
+    border-right: 1px solid var(--admin-border);
+    padding: 1.25rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     position: sticky;
-    top: 1.5rem;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
   }
+
   .admin-sidebar-header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    gap: 0.65rem;
+    padding: 0.25rem 0.5rem 1.15rem;
     border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 0.85rem;
+  }
+  .admin-sidebar-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #0f172a;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
   }
   .admin-sidebar-brand {
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: #1e293b;
-    letter-spacing: -0.02em;
-  }
-  .admin-menu-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     font-weight: 700;
-    color: #94a3b8;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-    padding-left: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--admin-text-main);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
+  .admin-sidebar-sub {
+    font-size: 0.68rem;
+    color: var(--admin-text-subtle);
+  }
+
   .admin-nav-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.6rem 0.85rem;
-    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--admin-radius-sm);
     color: #475569;
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     font-weight: 500;
-    transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease;
     margin-bottom: 0.2rem;
     text-decoration: none;
   }
   .admin-nav-item:hover {
-    background: #f0fdf9;
-    color: #008774;
-  }
-  .admin-nav-item:hover .icon {
-    color: #008774;
+    background: #f1f5f9;
+    color: var(--admin-text-main);
   }
   .admin-nav-item.is-active {
-    background: #00b89c;
+    background: #0f172a;
     color: #ffffff !important;
     font-weight: 600;
-    box-shadow: 0 4px 14px rgba(0, 184, 156, 0.32);
   }
   .admin-nav-item.is-active .icon {
     color: #ffffff !important;
   }
   .admin-nav-item.is-active .tag {
-    background: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
     color: #ffffff !important;
   }
   .admin-nav-item .nav-left {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.65rem;
   }
+  .admin-nav-item .nav-left .icon {
+    color: #64748b;
+    font-size: 0.82rem;
+    width: 1.25rem;
+    text-align: center;
+  }
+
+  /* Bas de la Sidebar (Stripe status + Paramètres + Retour) */
+  .admin-sidebar-footer {
+    padding-top: 0.75rem;
+    border-top: 1px solid #f1f5f9;
+  }
+  .sidebar-stripe-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+  .stripe-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  /* Zone de contenu principale */
   .admin-main-content {
     flex: 1;
     min-width: 0;
+    padding: 1.75rem 2.25rem 3.5rem;
   }
-  .admin-header-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 1.75rem;
+
+  /* En-tête sans boîte blanche : posé directement sur le fond */
+  .admin-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
+  .admin-page-title {
+    font-weight: 700;
+    color: var(--admin-text-main);
+    letter-spacing: -0.02em;
+    font-size: 1.45rem;
+    line-height: 1.2;
+    margin: 0;
+  }
+  .admin-page-subtitle {
+    font-size: 0.78rem;
+    color: var(--admin-text-muted);
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+  }
+
+  /* Cartes Skymetrics */
+  .admin-card {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Stat Card (Strict Skymetrics : 4 éléments, 0 encombrement, titres 1 ligne) */
   .stat-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
-    padding: 1.25rem 1.5rem;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    padding: 1.05rem 1.15rem;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     height: 100%;
+    min-height: 108px;
+    text-decoration: none !important;
+    color: inherit;
   }
   .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 18px -3px rgba(0, 0, 0, 0.06);
+    border-color: var(--admin-border-hover);
   }
-  .admin-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+  .stat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 18px;
+    margin-bottom: 0.35rem;
   }
+  .stat-card-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--admin-text-muted);
+    white-space: nowrap;
+  }
+  .stat-card-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    line-height: 1.3;
+  }
+  .stat-card-badge.is-pos {
+    background: #ecfdf5;
+    color: #059669;
+  }
+  .stat-card-badge.is-neg {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+  .stat-card-badge.is-neutral {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+  .stat-card-value {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--admin-text-main);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card-sub {
+    font-size: 0.72rem;
+    color: var(--admin-text-subtle);
+    white-space: nowrap;
+  }
+
+  /* Responsive */
   @media (max-width: 1023px) {
     .admin-layout {
       flex-direction: column;
     }
     .admin-sidebar {
       width: 100%;
+      height: auto;
       position: static;
+      border-right: none;
+      border-bottom: 1px solid var(--admin-border);
+    }
+    .admin-main-content {
+      padding: 1.25rem 1rem;
     }
   }
 </style>
 
-<div class="container is-fluid" style="max-width: 1400px;">
-  <div class="admin-layout" hx-boost="false">
-    <!-- Barre Latérale (Sidebar) -->
-    <aside class="admin-sidebar">
+<div class="admin-layout" hx-boost="false">
+  <!-- Barre Latérale Pleine Hauteur (Skymetrics) -->
+  <aside class="admin-sidebar">
+    <div>
       <div class="admin-sidebar-header">
-        <span class="icon is-medium has-text-primary">
-          <i class="fas fa-shield-alt fa-lg"></i>
-        </span>
+        <div class="admin-sidebar-logo">
+          <i class="fas fa-shield-alt"></i>
+        </div>
         <div>
           <div class="admin-sidebar-brand">Administration</div>
-          <div class="is-size-7 has-text-grey">Livres en Classe</div>
+          <div class="admin-sidebar-sub">Livres en Classe</div>
         </div>
       </div>
 
       <nav>
-        <div class="admin-menu-label">Vue d'ensemble</div>
         <a href="{{ url_for('admin.index') }}" class="admin-nav-item {% if active_page == 'dashboard' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-chart-pie"></i></span>
@@ -151,22 +319,23 @@
           </div>
         </a>
 
-        <div class="admin-menu-label">Gestion des données</div>
         <a href="{{ url_for('admin.users') }}" class="admin-nav-item {% if active_page == 'users' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-users"></i></span>
             <span>Utilisateurs</span>
           </div>
           {% if total_users_count is defined and total_users_count %}
-            <span class="tag is-rounded is-small is-light">{{ total_users_count }}</span>
+            <span class="tag is-rounded is-small is-light" style="font-size: 0.65rem; padding: 2px 6px;">{{ total_users_count }}</span>
           {% endif %}
         </a>
+
         <a href="{{ url_for('admin.livres') }}" class="admin-nav-item {% if active_page == 'livres' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-book"></i></span>
             <span>Livres</span>
           </div>
         </a>
+
         <a href="{{ url_for('admin.eleves') }}" class="admin-nav-item {% if active_page == 'eleves' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-user-graduate"></i></span>
@@ -174,13 +343,13 @@
           </div>
         </a>
 
-        <div class="admin-menu-label">Marketing & Ventes</div>
         <a href="{{ url_for('admin.coupons') }}" class="admin-nav-item {% if active_page == 'coupons' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-ticket-alt"></i></span>
             <span>Codes Promo</span>
           </div>
         </a>
+
         <a href="{{ url_for('admin.emails') }}" class="admin-nav-item {% if active_page == 'emails' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
@@ -188,67 +357,78 @@
           </div>
         </a>
 
-        <div class="admin-menu-label">Support & Système</div>
         <a href="{{ url_for('admin.feedbacks') }}" class="admin-nav-item {% if active_page == 'feedbacks' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-comment-dots"></i></span>
             <span>Retours & Bugs</span>
           </div>
           {% if new_feedbacks_count is defined and new_feedbacks_count > 0 %}
-            <span class="tag is-warning is-rounded is-small has-text-weight-bold">{{ new_feedbacks_count }}</span>
+            <span class="tag is-danger is-rounded is-small has-text-weight-bold" style="font-size: 0.65rem; padding: 2px 6px;">{{ new_feedbacks_count }}</span>
           {% endif %}
         </a>
-        <a href="{{ url_for('admin.parametres') }}" class="admin-nav-item {% if active_page == 'parametres' %}is-active{% endif %}">
-          <div class="nav-left">
-            <span class="icon is-small"><i class="fas fa-sliders-h"></i></span>
-            <span>Paramètres</span>
-          </div>
-        </a>
       </nav>
+    </div>
 
-      <hr style="margin: 1.25rem 0; background-color: #f1f5f9; height: 1px;">
-
-      <a href="{{ url_for('main.dashboard') }}" class="button is-light is-fullwidth is-small is-rounded" style="border: 1px solid #e2e8f0;">
-        <span class="icon is-small"><i class="fas fa-arrow-left"></i></span>
-        <span>Retour au site</span>
-      </a>
-    </aside>
-
-    <!-- Zone de Contenu Principale -->
-    <main class="admin-main-content">
-      <!-- En-tête de page -->
-      <div class="admin-header-card">
-        <div class="is-flex is-align-items-center is-justify-content-space-between" style="flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <h1 class="title is-4 mb-1" style="color: #0f172a; font-weight: 800;">
-              {% block admin_header_title %}Panneau d'Administration{% endblock %}
-            </h1>
-            <p class="subtitle is-6 has-text-grey mb-0">
-              {% block admin_header_subtitle %}Vue d'ensemble et gestion globale de la plateforme Livres en Classe.{% endblock %}
-            </p>
-          </div>
-          <div class="admin-actions">
-            {% block admin_actions %}{% endblock %}
-          </div>
-        </div>
+    <!-- Pied de Sidebar : Statut Stripe discret + Paramètres + Retour -->
+    <div class="admin-sidebar-footer">
+      <div class="sidebar-stripe-pill">
+        {% if financial_stats is defined and financial_stats.stripe_connected %}
+          <span class="stripe-dot" style="background: #10b981;"></span>
+          <span>Stripe Actif &bull; {{ financial_stats.currency }}</span>
+        {% else %}
+          <span class="stripe-dot" style="background: #94a3b8;"></span>
+          <span>Base locale &bull; {{ financial_stats.currency if financial_stats is defined else 'CHF' }}</span>
+        {% endif %}
       </div>
 
-      <!-- Messages Flash -->
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="notification is-{{ category }} is-light mb-4" style="border-radius: 12px;">
-              <button class="delete"></button>
-              {{ message }}
-            </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+      <a href="{{ url_for('admin.parametres') }}" class="admin-nav-item {% if active_page == 'parametres' %}is-active{% endif %}">
+        <div class="nav-left">
+          <span class="icon is-small"><i class="fas fa-sliders-h"></i></span>
+          <span>Paramètres</span>
+        </div>
+      </a>
 
-      <!-- Contenu spécifique de la page -->
-      {% block admin_content %}{% endblock %}
-    </main>
-  </div>
+      <a href="{{ url_for('main.dashboard') }}" class="admin-nav-item" style="color: #94a3b8;">
+        <div class="nav-left">
+          <span class="icon is-small"><i class="fas fa-arrow-left"></i></span>
+          <span>Retour au site</span>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Zone de Contenu Principale -->
+  <main class="admin-main-content">
+    <!-- En-tête posé sur le fond (pas de boîte blanche) -->
+    <header class="admin-page-header">
+      <div>
+        <h1 class="admin-page-title">
+          {% block admin_header_title %}Panneau d'Administration{% endblock %}
+        </h1>
+        <p class="admin-page-subtitle">
+          {% block admin_header_subtitle %}Vue d'ensemble et gestion globale de la plateforme Livres en Classe.{% endblock %}
+        </p>
+      </div>
+      <div class="admin-actions">
+        {% block admin_actions %}{% endblock %}
+      </div>
+    </header>
+
+    <!-- Messages Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="notification is-{{ category }} is-light mb-4" style="border-radius: 10px; border: 1px solid rgba(0,0,0,0.06); font-size: 0.85rem;">
+            <button class="delete"></button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Contenu spécifique de la page -->
+    {% block admin_content %}{% endblock %}
+  </main>
 </div>
 {% endblock %}
 

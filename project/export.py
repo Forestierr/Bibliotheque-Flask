@@ -12,6 +12,17 @@ from .subscription import premium_required
 export = Blueprint("export", __name__)
 
 
+def sanitize_excel_cell(val):
+    """
+    Désamorce l'injection de formules (CSV / Formula Injection - OWASP).
+    Préfixe d'une apostrophe toute chaîne de caractères commençant par
+    l'un des caractères de déclenchement de formule (=, +, -, @, \\t, \\r).
+    """
+    if isinstance(val, str) and val.startswith(("=", "+", "-", "@", "\t", "\r")):
+        return "'" + val
+    return val
+
+
 @export.route("/export/books")
 @login_required
 @premium_required
@@ -31,7 +42,7 @@ def export_books():
             }
         )
 
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data).map(sanitize_excel_cell)
 
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -76,7 +87,7 @@ def export_students_reads():
             }
         )
 
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data).map(sanitize_excel_cell)
 
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -116,7 +127,7 @@ def export_active_loans():
             }
         )
 
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data).map(sanitize_excel_cell)
 
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -160,7 +171,7 @@ def export_all_loans():
             }
         )
 
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(data).map(sanitize_excel_cell)
 
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:

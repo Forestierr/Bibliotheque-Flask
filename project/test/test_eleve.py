@@ -160,3 +160,69 @@ def test_search(client):
         mock_user.id = 1
         response = client.post("/eleve/search", data={"search": "Jean"})
         assert response.status_code == 200
+
+
+def test_eleve_infos_and_delete_not_found(client, app):
+    """Vérifie que la consultation et suppression d'un élève inexistant redirigent avec un message d'erreur au lieu de crasher."""
+    with (
+        app.app_context(),
+        patch("project.eleve.current_user") as mock_user,
+        patch("project.eleve.get_student_infos", return_value=(None, [], [])),
+        patch("project.eleve.Student.query") as mock_query,
+    ):
+        mock_user.id = 1
+        mock_query.filter_by().first.return_value = None
+
+        with client:
+            resp_info = client.get("/eleve/99999", follow_redirects=True)
+            assert resp_info.status_code == 200
+            flashed = get_flashed_messages()
+            assert any("Élève introuvable." in msg for msg in flashed)
+
+        with client:
+            resp_del = client.post("/eleve/99999/delete", follow_redirects=True)
+            assert resp_del.status_code == 200
+            flashed = get_flashed_messages()
+            assert any("Élève introuvable." in msg for msg in flashed)
+
+
+def test_eleve_multi_tenant_isolation():
+    """Test d'intégration réel : un enseignant ne peut ni consulter ni supprimer l'élève d'un autre enseignant."""
+    from project import db
+    from project.models import Student, User
+
+    app = create_app(
+        {
+            "TESTING": True,
+            "WTF_CSRF_ENABLED": False,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "secret-eleve-isolation",
+        }
+    )
+    with app.app_context():
+        db.create_all()
+
+        user1 = User(id=1, email="prof1@ecole.ch", password="hash")
+        user2 = User(id=2, email="prof2@ecole.ch", password="hash")
+        student_prof1 = Student(id=10, name="Dupond", firstname="Alice", user_id=1)
+        db.session.add_all([user1, user2, student_prof1])
+        db.session.commit()
+
+        client = app.test_client()
+
+        # Connecté en tant que Prof 2
+        with client.session_transaction() as sess:
+            sess["_user_id"] = "2"
+
+        # Prof 2 tente de consulter l'élève de Prof 1
+        resp_view = client.get("/eleve/10", follow_redirects=False)
+        assert resp_view.status_code == 302
+        assert "/eleve" in resp_view.headers.get("Location", "")
+
+        # Prof 2 tente de supprimer l'élève de Prof 1
+        resp_del = client.post("/eleve/10/delete", follow_redirects=False)
+        assert resp_del.status_code == 302
+
+        # L'élève de Prof 1 est TOUJOURS en base de données intact
+        assert db.session.get(Student, 10) is not None
+        assert db.session.get(Student, 10).user_id == 1

@@ -1,4 +1,6 @@
+import logging
 import math
+import time
 from datetime import UTC, datetime, timedelta
 
 from flask import (
@@ -25,6 +27,7 @@ from .query import (
 )
 
 emprunt = Blueprint("emprunt", __name__)
+logger = logging.getLogger(__name__)
 
 
 def get_loan_history_cutoff():
@@ -76,7 +79,7 @@ def return_loan(id):
     ):
         next_url = (
             url_for("livre.livre_infos", id=book.id)
-            if book
+            if book and book.user_id == current_user.id
             else url_for("emprunt.emprunt_db")
         )
 
@@ -84,23 +87,38 @@ def return_loan(id):
     if f"/emprunt/{id}" in next_url:
         next_url = (
             url_for("livre.livre_infos", id=book.id)
-            if book
+            if book and book.user_id == current_user.id
             else url_for("emprunt.emprunt_db")
         )
 
     if loan:
         if book and book.user_id == current_user.id:
-            loan.date_return = datetime.now(tz=UTC).date()
-            db.session.commit()
-            flash(
-                _(
-                    "Le livre '%(title)s' a bien été marqué comme retourné.",
-                    title=book.title,
-                ),
-                "success",
-            )
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    loan.date_return = datetime.now(tz=UTC).date()
+                    db.session.commit()
+                    flash(
+                        _(
+                            "Le livre '%(title)s' a bien été marqué comme retourné.",
+                            title=book.title,
+                        ),
+                        "success",
+                    )
+                    break
+                except Exception as e:  # noqa: BLE001
+                    db.session.rollback()
+                    if attempt < max_retries - 1 and "locked" in str(e).lower():
+                        time.sleep(0.1 * (attempt + 1))
+                        loan = db.session.query(Loan).filter(Loan.id == id).first()
+                        continue
+                    logger.error("Erreur lors du retour de l'emprunt %s : %s", id, e)
+                    flash(
+                        _("Une erreur est survenue lors du retour du livre."), "error"
+                    )
+                    break
         else:
-            flash(_("Accès non autorisé."), "error")
+            flash(_("Emprunt introuvable."), "error")
 
     # Si HTMX a boosté le formulaire sans cible spécifique, ordonner la redirection navigateur vers next_url
     if request.headers.get("HX-Request") and not request.headers.get("HX-Target"):
@@ -119,8 +137,11 @@ def return_loan_quick(id):
         from_url = url_for("emprunt.emprunt_db")
 
     loan = db.session.query(Loan).filter(Loan.id == id).first()
+    book = (
+        db.session.query(Book).filter(Book.id == loan.book_id).first() if loan else None
+    )
 
-    if not loan:
+    if not loan or not book or book.user_id != current_user.id:
         if request.headers.get("HX-Request"):
             return make_response(
                 f"<div class='notification is-danger is-light p-2'>{_('Emprunt introuvable.')}</div>",
@@ -131,20 +152,30 @@ def return_loan_quick(id):
         flash(_("Emprunt introuvable."), "error")
         return redirect(from_url)
 
-    book = db.session.query(Book).filter(Book.id == loan.book_id).first()
-    if not book or book.user_id != current_user.id:
-        if request.headers.get("HX-Request"):
-            return make_response(
-                f"<div class='notification is-danger is-light p-2'>{_('Accès non autorisé.')}</div>",
-                403,
-            )
-        if request.is_json or request.headers.get("Accept") == "application/json":
-            return jsonify({"error": _("Accès non autorisé.")}), 403
-        flash(_("Accès non autorisé."), "error")
-        return redirect(from_url)
-
-    loan.date_return = datetime.now(tz=UTC).date()
-    db.session.commit()
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            loan.date_return = datetime.now(tz=UTC).date()
+            db.session.commit()
+            break
+        except Exception as e:  # noqa: BLE001
+            db.session.rollback()
+            if attempt < max_retries - 1 and "locked" in str(e).lower():
+                time.sleep(0.1 * (attempt + 1))
+                loan = db.session.query(Loan).filter(Loan.id == id).first()
+                continue
+            logger.error("Erreur lors du retour rapide de l'emprunt %s : %s", id, e)
+            if request.headers.get("HX-Request"):
+                return make_response(
+                    f"<div class='notification is-danger is-light p-2'>{_('Une erreur est survenue lors du retour du livre.')}</div>",
+                    500,
+                )
+            if request.is_json or request.headers.get("Accept") == "application/json":
+                return jsonify(
+                    {"error": _("Une erreur est survenue lors du retour du livre.")}
+                ), 500
+            flash(_("Une erreur est survenue lors du retour du livre."), "error")
+            return redirect(from_url)
 
     if request.headers.get("HX-Request"):
         student = (
@@ -185,20 +216,16 @@ def delete_loan(id):
         from_url = url_for("emprunt.emprunt_db")
 
     loan = db.session.query(Loan).filter(Loan.id == id).first()
+    book = (
+        db.session.query(Book).filter(Book.id == loan.book_id).first() if loan else None
+    )
 
-    if not loan:
+    if not loan or not book or book.user_id != current_user.id:
         flash(_("Emprunt introuvable."), "error")
         return redirect(from_url)
 
-    book = db.session.query(Book).filter(Book.id == loan.book_id).first()
-
-    if book.user_id != current_user.id:
-        flash(_("Accès non autorisé."), "error")
-        return redirect(from_url)
-
-    if loan:
-        db.session.delete(loan)
-        db.session.commit()
+    db.session.delete(loan)
+    db.session.commit()
 
     return redirect(from_url)
 
@@ -229,13 +256,23 @@ def search_preview():
     if search == "":
         return make_response("No Content", 204)
 
+    active_loan_filter = request.form.get("active_loan") or "0"
+
     # Si la recherche est typée (par exemple : titre:Harry Potter)
     search_type = ["titre", "isbn", "eleve", "tags"]
-    split = search.split(":")
+    split = search.split(":", 1)
     if len(split) == 2 and split[0] in search_type:
-        search = split[1]
+        search_category = split[0]
+        search_value = split[1]
         books, _ = search_loans_by_types(
-            current_user.id, split[0], search, "Book.title", "asc", 5, 1
+            current_user.id,
+            active_loan_filter,
+            search_category,
+            search_value,
+            "Book.title",
+            "asc",
+            5,
+            1,
         )
     else:
         # Rechercher 5 livres
@@ -298,7 +335,7 @@ def search(page=1):
         )
 
     # Si la recherche est typée (par exemple : titre:Harry Potter)
-    split = search.split(":")
+    split = search.split(":", 1)
 
     if len(split) == 2:
         if split[0] in search_type:

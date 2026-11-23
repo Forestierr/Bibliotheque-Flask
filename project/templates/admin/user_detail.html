@@ -1,0 +1,388 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}{{ user.name or user.email }} - Détail utilisateur{% endblock %}
+
+{% block admin_header_title %}{{ user.name or 'Enseignant' }}{% endblock %}
+{% block admin_header_subtitle %}{{ user.email }} &bull; Inscrit le {{ user.created_at.strftime('%d/%m/%Y à %H:%M') if user.created_at else '-' }}{% endblock %}
+
+{% block admin_actions %}
+<div class="is-flex is-align-items-center" style="gap: 0.5rem;">
+  <a href="{{ url_for('admin.users') }}" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 500; color: #475569;">
+    <span class="icon is-small mr-1"><i class="fas fa-arrow-left"></i></span>
+    <span>Retour aux utilisateurs</span>
+  </a>
+</div>
+{% endblock %}
+
+{% block admin_content %}
+<style>
+  .detail-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    height: 100%;
+  }
+  .detail-card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .detail-field-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+  .detail-field-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f172a;
+  }
+</style>
+
+<!-- RANGÉE 1 : VUE D'ENSEMBLE DU COMPTE -->
+<div class="columns is-multiline mb-4">
+  <!-- Profil & Identité -->
+  <div class="column is-12-tablet is-4-desktop">
+    <div class="detail-card">
+      <div class="detail-card-title">
+        <span class="icon is-small has-text-grey"><i class="fas fa-user"></i></span>
+        <span>Identité & Accès</span>
+      </div>
+
+      <div class="is-flex is-align-items-center mb-3" style="gap: 0.75rem;">
+        <div style="width: 42px; height: 42px; border-radius: 50%; background: #0f172a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0;">
+          {{ (user.name or user.email)[:2]|upper }}
+        </div>
+        <div style="min-width: 0;">
+          <div class="has-text-weight-bold" style="color: #0f172a; font-size: 0.95rem;">{{ user.name or 'Sans nom' }}</div>
+          <div class="is-size-7 has-text-grey" style="word-break: break-all;">{{ user.email }}</div>
+        </div>
+      </div>
+
+      <div class="columns is-mobile is-multiline pt-2" style="border-top: 1px solid #f1f5f9;">
+        <div class="column is-6 py-2">
+          <div class="detail-field-label">Statut email</div>
+          <div class="detail-field-value">
+            {% if user.is_verified %}
+              <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-weight: 600;">Vérifié</span>
+            {% else %}
+              <span class="tag is-rounded is-small" style="background: #fffbeb; color: #b45309; font-weight: 600;">En attente</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="column is-6 py-2">
+          <div class="detail-field-label">Newsletter</div>
+          <div class="detail-field-value">
+            {% if user.newsletter_subscribed %}
+              <span class="tag is-rounded is-small" style="background: #f0fdf4; color: #16a34a; font-weight: 600;">Abonné</span>
+            {% else %}
+              <span class="tag is-rounded is-small is-light" style="color: #64748b;">Non abonné</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="column is-6 py-2">
+          <div class="detail-field-label">Langue préférée</div>
+          <div class="detail-field-value" style="text-transform: uppercase;">
+            {{ user.preferred_language or 'fr' }}
+          </div>
+        </div>
+
+        <div class="column is-6 py-2">
+          <div class="detail-field-label">Type de compte</div>
+          <div class="detail-field-value">
+            {% if user.is_test %}
+              <span class="tag is-rounded is-small" style="background: #fee2e2; color: #991b1b; font-weight: 600;">Test</span>
+            {% else %}
+              <span class="tag is-rounded is-small is-light" style="color: #64748b;">Standard</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="column is-12 pt-2">
+          <form method="POST" action="{{ url_for('admin.toggle_user_test', user_id=user.id) }}">
+            <button type="submit" class="button is-small is-rounded is-fullwidth is-white" style="border: 1px solid #e2e8f0; font-size: 0.72rem; color: #475569;">
+              <span class="icon is-small mr-1" style="color: {% if user.is_test %}#ef4444{% else %}#94a3b8{% endif %};"><i class="fas fa-vial"></i></span>
+              <span>{% if user.is_test %}Retirer le statut Test (rendre standard){% else %}Marquer comme compte de test{% endif %}</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formule & Quotas -->
+  <div class="column is-12-tablet is-4-desktop">
+    <div class="detail-card">
+      <div class="detail-card-title">
+        <span class="icon is-small has-text-grey"><i class="fas fa-credit-card"></i></span>
+        <span>Abonnement & Quotas</span>
+      </div>
+
+      <div class="p-3 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <div class="is-flex is-align-items-center is-justify-content-space-between">
+          <div>
+            <div class="detail-field-label">Formule actuelle</div>
+            <div style="font-size: 1rem; font-weight: 700; color: #0f172a;">
+              {% if user.plan == 'founder' %}
+                Membre Fondateur (À vie)
+              {% elif user.is_in_trial %}
+                Essai Gratuit
+              {% elif user.is_premium %}
+                Premium Actif
+              {% else %}
+                Gratuit (Freemium)
+              {% endif %}
+            </div>
+          </div>
+          <div>
+            {% if user.plan == 'founder' %}
+              <span class="tag is-rounded" style="background: #0f172a; color: #ffffff; font-weight: 600;">Fondateur</span>
+            {% elif user.is_in_trial %}
+              <span class="tag is-rounded" style="background: #f0f9ff; color: #0284c7; font-weight: 600;">{{ user.trial_days_left }}j restants</span>
+            {% elif user.is_premium %}
+              <span class="tag is-rounded" style="background: #ecfdf5; color: #059669; font-weight: 600;">Premium</span>
+            {% else %}
+              <span class="tag is-rounded is-light">Gratuit</span>
+            {% endif %}
+          </div>
+        </div>
+        {% if user.is_in_trial and user.trial_ends_at %}
+          <div class="is-size-7 has-text-grey mt-2">
+            Expire le : {{ user.trial_ends_at.strftime('%d/%m/%Y à %H:%M') }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="columns is-mobile is-multiline">
+        <div class="column is-6 py-2">
+          <div class="detail-field-label">Scans cette semaine</div>
+          <div class="detail-field-value">
+            {{ user.free_scans_used or 0 }} / 30
+          </div>
+        </div>
+        <div class="column is-6 py-2">
+          <div class="detail-field-label">Identifiant Stripe</div>
+          <div class="detail-field-value" style="font-size: 0.75rem; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            {{ user.stripe_customer_id or '-' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activité & Usage -->
+  <div class="column is-12-tablet is-4-desktop">
+    <div class="detail-card">
+      <div class="detail-card-title">
+        <span class="icon is-small has-text-grey"><i class="fas fa-chart-bar"></i></span>
+        <span>Activité & Usage</span>
+      </div>
+
+      <div class="columns is-mobile is-multiline">
+        <div class="column is-6 has-text-centered py-3" style="border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+          <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">{{ books|length }}</div>
+          <div class="detail-field-label">Livres ajoutés</div>
+        </div>
+        <div class="column is-6 has-text-centered py-3" style="border-bottom: 1px solid #f1f5f9;">
+          <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">{{ students|length }}</div>
+          <div class="detail-field-label">Élèves enregistrés</div>
+        </div>
+        <div class="column is-6 has-text-centered py-3" style="border-right: 1px solid #f1f5f9;">
+          <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">{{ loans_count }}</div>
+          <div class="detail-field-label">Emprunts cumulés</div>
+        </div>
+        <div class="column is-6 has-text-centered py-3">
+          <div style="font-size: 1.4rem; font-weight: 700; color: #10b981;">{{ active_loans_count }}</div>
+          <div class="detail-field-label">En cours de lecture</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RANGÉE 2 : ACTIONS D'ADMINISTRATION -->
+<div class="admin-card mb-4">
+  <div class="is-flex is-align-items-center is-justify-content-space-between mb-3 is-flex-wrap-wrap" style="gap: 0.5rem;">
+    <h2 class="detail-card-title mb-0">
+      <span class="icon is-small has-text-grey"><i class="fas fa-tools"></i></span>
+      <span>Actions Rapides</span>
+    </h2>
+  </div>
+
+  <div class="columns is-multiline">
+    <!-- Modification de la formule -->
+    <div class="column is-12-tablet is-6-desktop">
+      <form action="{{ url_for('admin.admin_change_plan', user_id=user.id) }}" method="POST" class="p-3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <label class="label is-size-7 has-text-grey mb-2">Modifier la formule ou les scans :</label>
+        <div class="field is-grouped mb-0">
+          <div class="control is-expanded">
+            <div class="select is-small is-fullwidth">
+              <select name="plan">
+                <option value="free" {% if user.plan == 'free' and not user.is_in_trial %}selected{% endif %}>Gratuit (Free)</option>
+                <option value="trial" {% if user.is_in_trial %}selected{% endif %}>Essai Gratuit (+14 jours)</option>
+                <option value="premium" {% if user.plan == 'premium' %}selected{% endif %}>Premium</option>
+                <option value="founder" {% if user.plan == 'founder' %}selected{% endif %}>Fondateur (À vie)</option>
+              </select>
+            </div>
+          </div>
+          <div class="control" style="width: 100px;">
+            <input type="number" name="scans" class="input is-small" value="{{ user.free_scans_used or 0 }}" min="0" max="1000" placeholder="Scans">
+          </div>
+          <div class="control">
+            <button type="submit" class="button is-small is-dark">Appliquer</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Actions directes (email, mdp, suppression) -->
+    <div class="column is-12-tablet is-6-desktop">
+      <div class="is-flex is-align-items-center is-flex-wrap-wrap" style="gap: 0.5rem; height: 100%; align-content: center;">
+        {% if not user.is_verified %}
+          <form action="{{ url_for('admin.admin_resend_confirmation', user_id=user.id) }}" method="POST" style="margin: 0;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 500;">
+              <span class="icon is-small mr-1" style="color: #0284c7;"><i class="fas fa-paper-plane"></i></span>
+              <span>Renvoyer e-mail de confirmation</span>
+            </button>
+          </form>
+
+          <form action="{{ url_for('admin.verify_user', user_id=user.id) }}" method="POST" style="margin: 0;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 500;">
+              <span class="icon is-small mr-1" style="color: #059669;"><i class="fas fa-check"></i></span>
+              <span>Forcer la validation</span>
+            </button>
+          </form>
+        {% endif %}
+
+        <form action="{{ url_for('admin.reset_password', user_id=user.id) }}" method="POST" onsubmit="return confirm('Générer un nouveau mot de passe temporaire pour {{ user.email }} ?');" style="margin: 0;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button type="submit" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.78rem; font-weight: 500;">
+            <span class="icon is-small mr-1" style="color: #64748b;"><i class="fas fa-key"></i></span>
+            <span>Réinitialiser mot de passe</span>
+          </button>
+        </form>
+
+        <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('ATTENTION : supprimer définitivement le compte {{ user.email }} ?');" style="margin: 0;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button type="submit" class="button is-small is-white is-rounded has-text-danger" style="border: 1px solid #fee2e2; font-size: 0.78rem; font-weight: 500;">
+            <span class="icon is-small mr-1"><i class="fas fa-trash-alt"></i></span>
+            <span>Supprimer le compte</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RANGÉE 3 : LIVRES & ÉLÈVES DE CET ENSEIGNANT -->
+<div class="columns is-multiline">
+  <!-- Livres -->
+  <div class="column is-12-tablet is-6-desktop">
+    <div class="admin-card h-100">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-3">
+        <h3 class="detail-card-title mb-0">
+          <span class="icon is-small has-text-grey"><i class="fas fa-book"></i></span>
+          <span>Livres de la classe ({{ books|length }})</span>
+        </h3>
+      </div>
+
+      <div class="table-container" style="overflow-x: auto; max-height: 400px;">
+        <table class="table is-fullwidth is-narrow is-hoverable" style="font-size: 0.8rem; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #fafbfd; border-bottom: 1px solid #f1f5f9;">
+              <th style="color: #94a3b8; font-weight: 600;">Titre & Auteur</th>
+              <th style="color: #94a3b8; font-weight: 600; width: 90px; text-align: right;">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for book in books %}
+              <tr style="border-bottom: 1px solid #f8fafc;">
+                <td>
+                  <div class="has-text-weight-semibold" style="color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px;">
+                    {{ book.title or 'Sans titre' }}
+                  </div>
+                  <div class="is-size-7 has-text-grey">
+                    {{ book.author or 'Auteur non renseigné' }}
+                  </div>
+                </td>
+                <td style="text-align: right; color: #64748b; font-size: 0.75rem; white-space: nowrap; vertical-align: middle;">
+                  {{ book.created_at.strftime('%d/%m/%Y') if book.created_at else '-' }}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="2" class="has-text-centered has-text-grey py-4 is-size-7">
+                  Aucun livre dans le catalogue de cet enseignant.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Élèves -->
+  <div class="column is-12-tablet is-6-desktop">
+    <div class="admin-card h-100">
+      <div class="is-flex is-align-items-center is-justify-content-space-between mb-3">
+        <h3 class="detail-card-title mb-0">
+          <span class="icon is-small has-text-grey"><i class="fas fa-user-graduate"></i></span>
+          <span>Élèves de la classe ({{ students|length }})</span>
+        </h3>
+      </div>
+
+      <div class="table-container" style="overflow-x: auto; max-height: 400px;">
+        <table class="table is-fullwidth is-narrow is-hoverable" style="font-size: 0.8rem; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #fafbfd; border-bottom: 1px solid #f1f5f9;">
+              <th style="color: #94a3b8; font-weight: 600;">Nom de l'élève</th>
+              <th style="color: #94a3b8; font-weight: 600; text-align: center; width: 90px;">Prêts</th>
+              <th style="color: #94a3b8; font-weight: 600; width: 90px; text-align: right;">Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for st in students %}
+              <tr style="border-bottom: 1px solid #f8fafc;">
+                <td style="vertical-align: middle;">
+                  <div class="has-text-weight-semibold" style="color: #0f172a;">{{ st.name }}</div>
+                </td>
+                <td style="text-align: center; font-variant-numeric: tabular-nums; vertical-align: middle;">
+                  {{ st.loans|length }}
+                </td>
+                <td style="text-align: right; vertical-align: middle;">
+                  {% if st.is_archived %}
+                    <span class="tag is-rounded is-small is-light" style="font-size: 0.68rem; color: #94a3b8;">Archivé</span>
+                  {% else %}
+                    <span class="tag is-rounded is-small" style="background: #ecfdf5; color: #059669; font-size: 0.68rem; font-weight: 500;">Actif</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="3" class="has-text-centered has-text-grey py-4 is-size-7">
+                  Aucun élève enregistré pour cet enseignant.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

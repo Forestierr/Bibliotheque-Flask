@@ -3,6 +3,7 @@
 import locale
 import logging
 import os
+import sqlite3
 from datetime import UTC, datetime, timedelta
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -25,11 +26,34 @@ from flask_mail import Mail, Message  # noqa: F401
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
 
 from .email_error import MailCriticalHandler
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
+
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    """
+    Optimise SQLite pour la haute concurrence (multi-workers Gunicorn) :
+    - Mode WAL (Write-Ahead Logging) : lecteurs et scripteurs ne se bloquent plus mutuellement.
+    - synchronous=NORMAL : synchronisation disque ultra-rapide et sûre en mode WAL.
+    - busy_timeout=30000 : attente jusqu'à 30 secondes en cas de verrou temporaire avant erreur.
+    - foreign_keys=ON : intégrité référentielle active.
+    """
+    if isinstance(dbapi_connection, sqlite3.Connection):
+        cursor = dbapi_connection.cursor()
+        try:
+            cursor.execute("PRAGMA journal_mode=WAL;")
+            cursor.execute("PRAGMA synchronous=NORMAL;")
+            cursor.execute("PRAGMA busy_timeout=30000;")
+            cursor.execute("PRAGMA foreign_keys=ON;")
+        finally:
+            cursor.close()
+
 
 mail = Mail()
 csrf = CSRFProtect()
@@ -60,10 +84,13 @@ logging.getLogger().addHandler(handler)
 def create_app(test_config=None):
     app = Flask(__name__)
 
+    is_prod = os.getenv("FLASK_ENV") == "production"
+
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
         "SQLALCHEMY_DATABASE_URI", "sqlite:///db.sqlite"
     )
+    app.config["CATALOG_DB_PATH"] = os.getenv("CATALOG_DB_PATH")
 
     app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
     app.config["MAIL_PORT"] = 465
@@ -73,7 +100,6 @@ def create_app(test_config=None):
     app.config["MAIL_USE_SSL"] = True
 
     # Configuration de la durée et sécurité des sessions / cookies
-    is_prod = os.getenv("FLASK_ENV") == "production"
     app.config["SESSION_COOKIE_SECURE"] = is_prod
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
@@ -86,6 +112,32 @@ def create_app(test_config=None):
 
     if test_config:
         app.config.update(test_config)
+
+    # Sécurité en production (FND-07) : refuser la clé par défaut ou absente
+    if is_prod and not app.config.get("TESTING"):
+        effective_secret = app.config.get("SECRET_KEY")
+        if not effective_secret or effective_secret == "dev-secret-key":
+            raise RuntimeError(
+                "SECRET_KEY doit obligatoirement être configuré avec une valeur robuste et secrète en production (FLASK_ENV=production)."
+            )
+
+    # Avertissement anti-bot hCaptcha en production (FND-04)
+    if (
+        is_prod
+        and not app.config.get("TESTING")
+        and not os.getenv("HCAPTCHA_SECRET_KEY")
+    ):
+        logging.getLogger(__name__).warning(
+            "HCAPTCHA_SECRET_KEY non configuré en production (FLASK_ENV=production) : la vérification anti-bot est inactive."
+        )
+
+    # Configuration optimisée du moteur de base de données pour la concurrence
+    engine_options = dict(app.config.get("SQLALCHEMY_ENGINE_OPTIONS") or {})
+    if "sqlite" in app.config.get("SQLALCHEMY_DATABASE_URI", ""):
+        connect_args = dict(engine_options.get("connect_args", {}))
+        connect_args.setdefault("timeout", 30)
+        engine_options["connect_args"] = connect_args
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_options
 
     os.makedirs(app.instance_path, exist_ok=True)
     db.init_app(app)
@@ -199,10 +251,11 @@ def create_app(test_config=None):
         }
 
     app.logger.addHandler(handler)
-    mail_handler = MailCriticalHandler(
-        mail_instance=mail, app=app, recipients=os.getenv("MAIL_USERNAME")
-    )
-    app.logger.addHandler(mail_handler)
+    if not app.config.get("TESTING") and os.getenv("MAIL_USERNAME"):
+        mail_handler = MailCriticalHandler(
+            mail_instance=mail, app=app, recipients=os.getenv("MAIL_USERNAME")
+        )
+        app.logger.addHandler(mail_handler)
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
@@ -253,11 +306,16 @@ def create_app(test_config=None):
             _last_cleanup["ts"] = now
             from .query import delete_unverified_users
 
-            count = delete_unverified_users()
-            if count:
-                app.logger.info(
-                    "Nettoyage automatique : %d compte(s) non vérifié(s) supprimé(s).",
-                    count,
+            try:
+                count = delete_unverified_users()
+                if count:
+                    app.logger.info(
+                        "Nettoyage automatique : %d compte(s) non vérifié(s) supprimé(s).",
+                        count,
+                    )
+            except Exception as e:  # noqa: BLE001
+                app.logger.warning(
+                    "Nettoyage automatique : reporté suite à une erreur : %s", e
                 )
 
     @login_manager.user_loader
@@ -310,6 +368,8 @@ def create_app(test_config=None):
         "/manifest.json",
         "/offline",
         "/sw.js",
+        "/healthy",
+        "/healthz",
         "/1452be41003e41c59435f150f75f55d8.txt",
         "/744d589148a54a93bfd6c066fce258a6.txt",
         f"/{INDEXNOW_KEY}.txt",

@@ -126,10 +126,16 @@ Lorsque vous ajoutez ou modifiez des chaînes de caractères traduites dans les 
 
 * **Symptôme** : Erreur 500 avec message `sqlite3.OperationalError: database is locked`.
 * **Cause** : Concurrence d'accès entre plusieurs workers Gunicorn tentant d'écrire simultanément dans SQLite en mode journal standard.
-* **Résolution** :
-  1. Activer le mode **WAL (Write-Ahead Logging)** qui autorise les lectures concurrentes pendant une écriture :
+* **Résolution automatique** :
+  L'application active automatiquement à chaque connexion SQLite (`Engine.connect` dans `project/__init__.py`) :
+  - Le mode **WAL (Write-Ahead Logging)** (`PRAGMA journal_mode=WAL;`) garantissant que les lecteurs ne bloquent jamais les scripteurs.
+  - La synchronisation optimisée (`PRAGMA synchronous=NORMAL;`).
+  - Un délai de temporisation étendu à 30 secondes (`PRAGMA busy_timeout=30000;` et `connect_args={"timeout": 30}`).
+  - Un mécanisme de retry automatique avec backoff sur les opérations d'écriture critiques (retours d'emprunts).
+* **Vérifications manuelles en cas d'incident persistant** :
+  1. Vérifier le mode journal du fichier SQLite :
      ```bash
-     sqlite3 instance/db.sqlite "PRAGMA journal_mode=WAL;"
+     sqlite3 instance/db.sqlite "PRAGMA journal_mode;"
      ```
   2. Vérifier les permissions du répertoire `instance/` (le processus Flask doit avoir le droit d'écrire et de créer des fichiers temporaires `.sqlite-wal` et `.sqlite-shm`) :
      ```bash
@@ -187,4 +193,4 @@ Lorsque vous ajoutez ou modifiez des chaînes de caractères traduites dans les 
 
 ## 6. Questions ouvertes
 
-* [ ] **Mode WAL activé par défaut** : Envisager d'exécuter automatiquement `PRAGMA journal_mode=WAL;` lors de l'initialisation de la base SQLite dans `create_app()` pour optimiser les performances de concurrence par défaut.
+* [x] **Mode WAL activé par défaut** : Activé et configuré automatiquement avec `PRAGMA journal_mode=WAL;`, `PRAGMA synchronous=NORMAL;`, `PRAGMA busy_timeout=30000;` et `connect_args={"timeout": 30}` lors de l'initialisation SQLAlchemy dans `create_app()`.

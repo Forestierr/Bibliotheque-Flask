@@ -6,8 +6,8 @@
 {% block admin_header_subtitle %}Gestion des listes de diffusion, conformité légale (RFC 8058) et expédition de courriels d'information.{% endblock %}
 
 {% block admin_actions %}
-<span class="tag is-white" style="border: 1px solid var(--color-slate-200); font-weight: 600; color: var(--color-slate-700); border-radius: 8px;">
-    <i class="fas fa-server mr-2 has-text-grey"></i> Service d'e-mailing actif
+<span class="stat-card-badge is-neutral" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+    Service actif
 </span>
 {% endblock %}
 
@@ -72,6 +72,37 @@
         justify-content: center;
         font-size: 1.25rem;
         flex-shrink: 0;
+    }
+
+    /* Campaign Navigation Tabs Monochromes */
+    .campaign-tabs {
+        border-bottom: 1px solid #e2e8f0 !important;
+        margin-bottom: 1.5rem !important;
+    }
+    .campaign-tabs ul {
+        border-bottom: none !important;
+        gap: 0.5rem;
+    }
+    .campaign-tabs li a {
+        border: 1px solid transparent !important;
+        border-radius: 8px 8px 0 0 !important;
+        color: #64748b !important;
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+        padding: 0.6rem 1rem !important;
+        background: transparent !important;
+        transition: all 0.15s ease;
+    }
+    .campaign-tabs li a:hover {
+        color: #0f172a !important;
+        background: #f8fafc !important;
+    }
+    .campaign-tabs li.is-active a {
+        color: #0f172a !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-bottom: 2px solid #0f172a !important;
+        font-weight: 600 !important;
     }
 
     /* Template Cards */
@@ -224,7 +255,7 @@
         border-bottom: 1px solid var(--color-slate-100);
         font-size: 0.82rem;
     }
-    /* Filter Button Groups */
+    /* Filter Button Groups Monochromes */
     .btn-filter-group {
         display: flex;
         flex-wrap: wrap;
@@ -232,26 +263,27 @@
     }
     .btn-filter-group .button {
         background: #ffffff;
-        border: 1px solid var(--color-slate-200);
-        color: var(--color-slate-700);
-        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        border-radius: 9999px;
+        font-size: 0.78rem;
         font-weight: 500;
-        padding: 0.4rem 0.8rem;
+        padding: 0.35rem 0.85rem;
         height: auto;
         line-height: 1.4;
         transition: all 0.15s ease;
     }
     .btn-filter-group .button:hover {
-        border-color: #00b89c;
-        color: #008f79;
-        background: #f0fdf4;
+        border-color: #cbd5e1;
+        color: #0f172a;
+        background: #f8fafc;
     }
     .btn-filter-group .button.is-active {
-        background: #00b89c !important;
-        border-color: #00b89c !important;
+        background: #0f172a !important;
+        border-color: #0f172a !important;
         color: #ffffff !important;
-        font-weight: 700 !important;
-        box-shadow: 0 2px 6px rgba(0, 184, 156, 0.25) !important;
+        font-weight: 600 !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
     }
     .btn-filter-group .button.is-active i {
         color: #ffffff !important;
@@ -259,79 +291,79 @@
 </style>
 
 
-        <!-- TOP METRICS CARDS (Inspired by Lethe Mailing System) -->
-        <div class="columns is-multiline mb-5">
-            <!-- 1. Cible vérifiée / Prêts -->
-            <div class="column is-3">
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <span class="metric-card-label">Cible Recommandée</span>
-                        <span class="metric-card-val" style="color: #0f172a;">{{ stats.verified_subscribed }}</span>
-                        <span class="metric-card-sub">Comptes vérifiés & consentants</span>
+        <!-- TOP METRICS CARDS (Skymetrics v3 style) -->
+        <div class="columns is-multiline mb-4">
+            <!-- 1. Cible -->
+            <div class="column is-6-tablet is-3-desktop">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Cible</span>
+                            <span class="stat-card-badge is-neutral">Recommandée</span>
+                        </div>
+                        <div class="stat-card-value">{{ stats.verified_subscribed }}</div>
                     </div>
-                    <div class="metric-card-icon" style="background: #e0f2fe; color: #0284c7;">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
+                    <div class="stat-card-sub">Comptes vérifiés &amp; abonnés</div>
                 </div>
             </div>
 
             <!-- 2. Abonnés actifs -->
-            <div class="column is-3">
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <span class="metric-card-label">Abonnés Actifs</span>
-                        <span class="metric-card-val" style="color: #166534;">{{ stats.subscribed }}</span>
-                        <span class="metric-card-sub">{{ stats.active_rate }}% de l'audience totale</span>
+            <div class="column is-6-tablet is-3-desktop">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Abonnés actifs</span>
+                            <span class="stat-card-badge is-pos">{{ stats.active_rate }}%</span>
+                        </div>
+                        <div class="stat-card-value">{{ stats.subscribed }}</div>
                     </div>
-                    <div class="metric-card-icon" style="background: #dcfce7; color: #16a34a;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
+                    <div class="stat-card-sub">Consentement actif</div>
                 </div>
             </div>
 
-            <!-- 3. Désabonnés / Opt-out -->
-            <div class="column is-3">
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <span class="metric-card-label">Désabonnés</span>
-                        <span class="metric-card-val" style="color: #475569;">{{ stats.unsubscribed }}</span>
-                        <span class="metric-card-sub">Opt-out respecté</span>
+            <!-- 3. Désabonnés -->
+            <div class="column is-6-tablet is-3-desktop">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Désabonnés</span>
+                            <span class="stat-card-badge is-neutral">Opt-out</span>
+                        </div>
+                        <div class="stat-card-value">{{ stats.unsubscribed }}</div>
                     </div>
-                    <div class="metric-card-icon" style="background: #f1f5f9; color: #64748b;">
-                        <i class="fas fa-user-slash"></i>
-                    </div>
+                    <div class="stat-card-sub">Désinscriptions respectées</div>
                 </div>
             </div>
 
             <!-- 4. Total Inscrits -->
-            <div class="column is-3">
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <span class="metric-card-label">Inscrits Totaux</span>
-                        <span class="metric-card-val" style="color: #0f172a;">{{ stats.total }}</span>
-                        <span class="metric-card-sub">{{ stats.verified }} comptes vérifiés</span>
+            <div class="column is-6-tablet is-3-desktop">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Total inscrits</span>
+                            <span class="stat-card-badge is-neutral">{{ stats.quality_rate }}% vérif.</span>
+                        </div>
+                        <div class="stat-card-value">{{ stats.total }}</div>
                     </div>
-                    <div class="metric-card-icon" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0;">
-                        <i class="fas fa-users"></i>
-                    </div>
+                    <div class="stat-card-sub">{{ stats.verified }} comptes vérifiés</div>
                 </div>
             </div>
         </div>
 
-        <!-- TABS NAVIGATION -->
-        <div class="tabs is-boxed mb-5" style="border-bottom: 2px solid var(--color-slate-200);">
+        <!-- TABS NAVIGATION (Monochrome Skymetrics) -->
+        <div class="tabs is-boxed mb-5 campaign-tabs">
             <ul style="margin: 0;">
                 <li id="tabBtnCompose" class="{% if active_tab != 'history' %}is-active{% endif %}">
-                    <a href="javascript:void(0)" onclick="switchTab('compose')" style="font-weight: 600; font-size: 0.95rem;">
+                    <a href="{{ url_for('admin.emails', tab='compose') }}" onclick="switchTab('compose'); return false;">
                         <span class="icon is-small mr-2"><i class="fas fa-edit"></i></span>
                         <span>Rédiger une lettre d'information</span>
                     </a>
                 </li>
                 <li id="tabBtnHistory" class="{% if active_tab == 'history' %}is-active{% endif %}">
-                    <a href="javascript:void(0)" onclick="switchTab('history')" style="font-weight: 600; font-size: 0.95rem;">
+                    <a href="{{ url_for('admin.emails', tab='history') }}" onclick="switchTab('history'); return false;">
                         <span class="icon is-small mr-2"><i class="fas fa-history"></i></span>
-                        <span>Historique & Statistiques d'ouverture</span>
-                        <span class="tag is-rounded is-small ml-2" style="background: var(--color-slate-200); font-weight: 700;">{{ campaigns|length }}</span>
+                        <span>Historique &amp; Statistiques d'ouverture</span>
+                        <span class="tag is-rounded is-small ml-2" style="background: #f1f5f9; color: #0f172a; font-weight: 600;">{{ campaigns|length }}</span>
                     </a>
                 </li>
             </ul>
@@ -339,10 +371,10 @@
 
         <!-- TAB 1: REDACTION & INSIGHTS -->
         <div id="tabContentCompose" style="display: {% if active_tab == 'history' %}none{% else %}block{% endif %};">
-            <div class="columns is-variable is-5">
+            <div class="columns is-desktop is-variable is-4">
             
             <!-- LEFT COLUMN: Campaign Composer -->
-            <div class="column is-8">
+            <div class="column is-8" style="min-width: 0;">
                 <div class="box p-5" style="border: 1px solid var(--color-slate-200); border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
                     <form id="newsletterForm" action="{{ url_for('admin.emails') }}" method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
@@ -361,26 +393,26 @@
                             <!-- Critère 1 : Formule d'abonnement -->
                             <div class="mb-4">
                                 <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
-                                    <label class="label is-size-7 mb-0" style="color: var(--color-slate-700); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        <i class="fas fa-crown mr-1" style="color: #f59e0b;"></i> Formule d'abonnement
+                                    <label class="label is-size-7 mb-0" style="color: #0f172a; font-weight: 600; text-transform: uppercase;">
+                                        Formule d'abonnement
                                     </label>
-                                    <span class="is-size-7 has-text-grey">Cibler selon la formule active</span>
+                                    <span class="is-size-7 has-text-grey">Cibler selon la formule</span>
                                 </div>
                                 <div class="buttons are-small mb-0 btn-filter-group" id="planButtonGroup">
                                     <button type="button" class="button plan-btn" data-plan="all" onclick="setTargetPlan('all')">
                                         Tous les forfaits
                                     </button>
                                     <button type="button" class="button plan-btn" data-plan="founder" onclick="setTargetPlan('founder')">
-                                        <span class="mr-1">👑</span> Fondateurs
+                                        Fondateurs
                                     </button>
                                     <button type="button" class="button plan-btn" data-plan="premium" onclick="setTargetPlan('premium')">
-                                        <span class="mr-1">⭐</span> Premium
+                                        Premium
                                     </button>
                                     <button type="button" class="button plan-btn" data-plan="trial" onclick="setTargetPlan('trial')">
-                                        <span class="mr-1">🎁</span> En Essai
+                                        En essai
                                     </button>
                                     <button type="button" class="button plan-btn" data-plan="free" onclick="setTargetPlan('free')">
-                                        <span class="mr-1">🌱</span> Gratuit
+                                        Gratuit
                                     </button>
                                 </div>
                             </div>
@@ -388,23 +420,23 @@
                             <!-- Critère 2 : Langue des destinataires -->
                             <div class="mb-4">
                                 <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
-                                    <label class="label is-size-7 mb-0" style="color: var(--color-slate-700); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        <i class="fas fa-globe mr-1" style="color: #3b82f6;"></i> Langue des destinataires
+                                    <label class="label is-size-7 mb-0" style="color: #0f172a; font-weight: 600; text-transform: uppercase;">
+                                        Langue des destinataires
                                     </label>
-                                    <span class="is-size-7 has-text-grey">Langue de l'interface du compte</span>
+                                    <span class="is-size-7 has-text-grey">Langue de l'interface</span>
                                 </div>
                                 <div class="buttons are-small mb-0 btn-filter-group" id="langButtonGroup">
                                     <button type="button" class="button lang-btn" data-lang="all" onclick="setTargetLanguage('all')">
-                                        🌐 Toutes les langues
+                                        Toutes les langues
                                     </button>
                                     <button type="button" class="button lang-btn" data-lang="fr" onclick="setTargetLanguage('fr')">
-                                        🇫🇷 Français (fr)
+                                        Français (fr)
                                     </button>
                                     <button type="button" class="button lang-btn" data-lang="en" onclick="setTargetLanguage('en')">
-                                        🇬🇧 English (en)
+                                        English (en)
                                     </button>
                                     <button type="button" class="button lang-btn" data-lang="de" onclick="setTargetLanguage('de')">
-                                        🇩🇪 Deutsch (de)
+                                        Deutsch (de)
                                     </button>
                                 </div>
                             </div>
@@ -412,30 +444,30 @@
                             <!-- Critère 3 : Audience & Consentement -->
                             <div class="mb-4">
                                 <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
-                                    <label class="label is-size-7 mb-0" style="color: var(--color-slate-700); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        <i class="fas fa-shield-alt mr-1" style="color: #10b981;"></i> Consentement & Délivrabilité
+                                    <label class="label is-size-7 mb-0" style="color: #0f172a; font-weight: 600; text-transform: uppercase;">
+                                        Consentement &amp; Délivrabilité
                                     </label>
-                                    <span class="is-size-7 has-text-grey">Statut de souscription & conformité</span>
+                                    <span class="is-size-7 has-text-grey">Statut de souscription</span>
                                 </div>
                                 <div class="buttons are-small mb-0 btn-filter-group" id="targetButtonGroup">
                                     <button type="button" class="button target-btn" data-target="verified_subscribed" onclick="setTargetAudience('verified_subscribed')">
-                                        <i class="fas fa-check-circle mr-1" style="color: inherit;"></i> Vérifiés & Abonnés (Recommandé)
+                                        Vérifiés &amp; abonnés (Recommandé)
                                     </button>
                                     <button type="button" class="button target-btn" data-target="all_subscribed" onclick="setTargetAudience('all_subscribed')">
-                                        <i class="fas fa-envelope mr-1" style="color: inherit;"></i> Tous les abonnés
+                                        Tous les abonnés
                                     </button>
                                     <button type="button" class="button target-btn" data-target="system_all" onclick="setTargetAudience('system_all')">
-                                        <i class="fas fa-bullhorn mr-1" style="color: inherit;"></i> Tous les inscrits (Légal / Technique)
+                                        Tous les inscrits (Légal / Système)
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Live volume counter & selected tags -->
-                            <div class="p-3 is-flex is-align-items-center is-justify-content-space-between" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 8px;">
+                            <div class="p-3 is-flex is-align-items-center is-justify-content-space-between" style="background: #fafbfd; border: 1px solid #f1f5f9; border-radius: 8px;">
                                 <div class="is-flex is-align-items-center">
-                                    <span class="icon mr-2" style="color: #00b89c;"><i class="fas fa-paper-plane"></i></span>
-                                    <span class="is-size-7" style="color: var(--color-slate-800);">
-                                        Volume estimé : <strong id="recipientCountDisplay" style="color: var(--color-slate-900); font-size: 0.95rem;">Calcul...</strong>
+                                    <span class="icon mr-2 has-text-grey" style="font-size: 0.8rem;"><i class="fas fa-paper-plane"></i></span>
+                                    <span class="is-size-7" style="color: #64748b;">
+                                        Volume estimé : <strong id="recipientCountDisplay" style="color: #0f172a; font-size: 0.88rem;">Calcul...</strong>
                                     </span>
                                 </div>
                                 <div id="targetSummaryBadges" class="tags are-small mb-0">
@@ -558,38 +590,41 @@
                                 </div>
                             </div>
 
-                            <!-- Barre d'outils pro -->
-                            <div id="formattingToolbar" class="p-2 mb-2" style="background: var(--color-slate-50); border: 1px solid var(--color-slate-200); border-radius: 6px;">
-                                <div class="buttons are-small mb-0">
-                                    <button type="button" class="button is-small" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 700;" onclick="insertPseudoTag()" title="Insérer [pseudo] à l'emplacement du curseur (remplacé par le pseudo ou prénom de l'enseignant)">
-                                        <i class="fas fa-user-tag mr-1"></i> [pseudo]
+                            <!-- Barre d'outils épurée -->
+                            <div id="formattingToolbar" class="p-2 mb-2" style="background: #fafbfd; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                <div class="buttons are-small mb-0" style="gap: 4px;">
+                                    <button type="button" class="button is-small is-rounded" style="background: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; font-weight: 600; font-size: 0.75rem;" onclick="insertPseudoTag()" title="Insérer [pseudo] à l'emplacement du curseur (remplacé par le pseudo ou prénom de l'enseignant)">
+                                        <span class="icon is-small mr-1" style="font-size: 0.7rem;"><i class="fas fa-user-tag"></i></span>
+                                        <span>[pseudo]</span>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<strong>', '</strong>')" title="Gras">
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertTag('**', '**')" title="Gras (**texte**)">
                                         <i class="fas fa-bold"></i>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<em>', '</em>')" title="Italique">
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertTag('*', '*')" title="Italique (*texte*)">
                                         <i class="fas fa-italic"></i>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<h3 style=\'color: #0f172a; margin: 24px 0 10px 0; font-size: 18px; font-weight: 700;\'>', '</h3>')" title="Sous-titre">
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertTag('\n### ', '\n')" title="Sous-titre">
                                         <i class="fas fa-heading"></i>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertLink()" title="Lien hypertexte">
-                                        <i class="fas fa-link mr-1"></i> Lien
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertLink()" title="Lien hypertexte">
+                                        <span class="icon is-small mr-1"><i class="fas fa-link"></i></span>
+                                        <span>Lien</span>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertButton()" title="Bouton d'action">
-                                        <i class="fas fa-external-link-alt mr-1"></i> Bouton
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertButton()" title="Bouton d'action">
+                                        <span class="icon is-small mr-1"><i class="fas fa-external-link-alt"></i></span>
+                                        <span>Bouton</span>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertCallout()" title="Encadré sobre">
-                                        <i class="fas fa-quote-left mr-1"></i> Encadré
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertList()" title="Liste à puces">
+                                        <span class="icon is-small mr-1"><i class="fas fa-list-ul"></i></span>
+                                        <span>Liste</span>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertList()" title="Liste à puces">
-                                        <i class="fas fa-list-ul mr-1"></i> Liste
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertCallout()" title="Encadré sobre">
+                                        <span class="icon is-small mr-1"><i class="fas fa-quote-left"></i></span>
+                                        <span>Encadré</span>
                                     </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertFeedbackCallout()" title="Insérer le bloc d'avis et de signalement de bug">
-                                        <i class="fas fa-comment-dots mr-1"></i> Bloc Avis / Bug
-                                    </button>
-                                    <button type="button" class="button is-white is-small" style="border: 1px solid var(--color-slate-200);" onclick="insertTag('<hr style=\'border:0; border-top:1px solid #e2e8f0; margin:24px 0;\'>\n', '')" title="Filet séparateur">
-                                        <i class="fas fa-minus mr-1"></i> Filet
+                                    <button type="button" class="button is-white is-small is-rounded" style="border: 1px solid #e2e8f0; font-size: 0.75rem;" onclick="insertFeedbackCallout()" title="Insérer le bloc d'avis et de signalement de bug">
+                                        <span class="icon is-small mr-1"><i class="fas fa-comment-dots"></i></span>
+                                        <span>Bloc Avis</span>
                                     </button>
                                 </div>
                             </div>
@@ -597,11 +632,11 @@
                             <!-- Zone Textarea -->
                             <div id="editorContainer">
                                 <div class="control">
-                                    <textarea class="textarea" name="message" id="messageInput" rows="13" style="font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 13.5px; line-height: 1.55; color: var(--color-slate-800);" placeholder="<p>Bonjour [pseudo],</p>&#10;<p>Nous vous informons de la mise à disposition de nouvelles options de gestion pour votre classe...</p>" required oninput="updateLivePreview()">{% if duplicate_campaign %}{{ duplicate_campaign.content }}{% endif %}</textarea>
+                                    <textarea class="textarea" name="message" id="messageInput" rows="13" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13.5px; line-height: 1.6; color: #0f172a; border-color: #e2e8f0; border-radius: 8px;" placeholder="Rédigez votre message ici (texte simple ou Markdown)..." required oninput="updateLivePreview()">{% if duplicate_campaign %}{{ duplicate_campaign.content }}{% endif %}</textarea>
                                 </div>
                                 <p class="help has-text-grey mt-2">
-                                    <i class="fas fa-info-circle mr-1"></i>
-                                    Insérez <code>[pseudo]</code> n'importe où dans votre texte pour personnaliser automatiquement chaque courriel. Le pied de page avec <strong>lien de désabonnement et préférences</strong> est joint automatiquement.
+                                    <span class="icon is-small mr-1"><i class="fas fa-info-circle"></i></span>
+                                    Insérez <code>[pseudo]</code> pour personnaliser le prénom de l'enseignant. Rédigez librement en texte naturel ou Markdown. Le pied de page légal et le lien de désinscription sont inclus automatiquement.
                                 </p>
                             </div>
 
@@ -617,17 +652,23 @@
 
                         <!-- Actions d'envoi -->
                         <div class="field mt-5">
-                            <div class="columns">
-                                <div class="column is-6">
-                                    <button type="submit" name="action" value="preview" formtarget="_blank" class="button is-light is-fullwidth" style="border: 1px solid var(--color-slate-200); font-weight: 600;">
-                                        <span class="icon is-small"><i class="fas fa-external-link-alt"></i></span>
-                                        <span>Aperçu plein écran (HTML)</span>
+                            <div class="columns is-variable is-2">
+                                <div class="column is-4">
+                                    <button type="submit" name="action" value="preview" formtarget="_blank" class="button is-small is-white is-rounded is-fullwidth" style="border: 1px solid #e2e8f0; font-weight: 500; height: 2.2rem; font-size: 0.78rem; color: #475569;">
+                                        <span class="icon is-small mr-1" style="font-size: 0.7rem;"><i class="fas fa-external-link-alt"></i></span>
+                                        <span>Aperçu HTML</span>
                                     </button>
                                 </div>
-                                <div class="column is-6">
-                                    <button type="button" class="button is-fullwidth" style="background-color: var(--color-slate-900); color: #ffffff; font-weight: 700;" onclick="openConfirmModal()">
-                                        <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>
-                                        <span>Procéder à l'expédition</span>
+                                <div class="column is-4">
+                                    <button type="submit" name="action" value="send_test" class="button is-small is-white is-rounded is-fullwidth" style="border: 1px solid #e2e8f0; font-weight: 500; height: 2.2rem; font-size: 0.78rem; color: #0f172a;" title="Envoyer une copie de test à mon adresse e-mail">
+                                        <span class="icon is-small mr-1" style="font-size: 0.7rem;"><i class="fas fa-paper-plane"></i></span>
+                                        <span>Envoyer un test</span>
+                                    </button>
+                                </div>
+                                <div class="column is-4">
+                                    <button type="button" class="button is-small is-rounded is-fullwidth" style="background: #0f172a; color: #ffffff; font-weight: 600; height: 2.2rem; font-size: 0.78rem;" onclick="openConfirmModal()">
+                                        <span class="icon is-small mr-1" style="font-size: 0.7rem;"><i class="fas fa-paper-plane"></i></span>
+                                        <span>Expédier</span>
                                     </button>
                                 </div>
                             </div>
@@ -636,57 +677,32 @@
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: Dashboard & Audience Insights (Lethe Mailing System style) -->
-            <div class="column is-4">
+            <!-- RIGHT COLUMN: Audience Insights -->
+            <div class="column is-4" style="min-width: 0;">
                 
-                <!-- Panneau 1 : Santé de l'Audience & Délivrabilité -->
-                <div class="dashboard-panel-box">
-                    <div class="dashboard-panel-title">
-                        <span>Santé de l'Audience</span>
-                        <span class="tag is-small is-light" style="background: #e2e8f0; color: #334155; font-weight: 700;">Métriques</span>
-                    </div>
-
-                    <div class="metric-row">
-                        <span class="has-text-grey">Taux de consentement</span>
-                        <span class="has-text-weight-bold" style="color: #166534;">{{ stats.active_rate }}%</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="has-text-grey">Qualité de la liste (vérifiés)</span>
-                        <span class="has-text-weight-bold" style="color: #0f172a;">{{ stats.quality_rate }}%</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="has-text-grey">Désinscriptions (opt-out)</span>
-                        <span class="has-text-weight-bold" style="color: #475569;">{{ stats.unsubscribed }}</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="has-text-grey">Conformité RFC 8058</span>
-                        <span class="has-text-weight-bold" style="color: #0f172a;">Actif (1-Click)</span>
-                    </div>
-                </div>
-
-                <!-- Panneau 1 bis : Répartition Linguistique -->
+                <!-- Panneau 1 : Répartition Linguistique -->
                 <div class="dashboard-panel-box">
                     <div class="dashboard-panel-title">
                         <span>Répartition Linguistique</span>
-                        <span class="tag is-small is-light" style="background: #e2e8f0; color: #334155; font-weight: 700;">Audience</span>
+                        <span class="tag is-small is-light" style="background: #f1f5f9; color: #0f172a; font-weight: 600;">Audience</span>
                     </div>
 
                     <div class="metric-row">
-                        <span><span class="mr-1">🇫🇷</span> Français</span>
+                        <span style="color: #475569;">Français (fr)</span>
                         <span class="has-text-weight-bold" style="color: #0f172a;">
                             {{ stats.lang_distribution.fr.count }}
                             <span class="is-size-7 has-text-grey font-weight-normal">({{ stats.lang_distribution.fr.pct }}%)</span>
                         </span>
                     </div>
                     <div class="metric-row">
-                        <span><span class="mr-1">🇬🇧</span> English</span>
+                        <span style="color: #475569;">English (en)</span>
                         <span class="has-text-weight-bold" style="color: #0f172a;">
                             {{ stats.lang_distribution.en.count }}
                             <span class="is-size-7 has-text-grey font-weight-normal">({{ stats.lang_distribution.en.pct }}%)</span>
                         </span>
                     </div>
                     <div class="metric-row">
-                        <span><span class="mr-1">🇩🇪</span> Deutsch</span>
+                        <span style="color: #475569;">Deutsch (de)</span>
                         <span class="has-text-weight-bold" style="color: #0f172a;">
                             {{ stats.lang_distribution.de.count }}
                             <span class="is-size-7 has-text-grey font-weight-normal">({{ stats.lang_distribution.de.pct }}%)</span>
@@ -694,11 +710,11 @@
                     </div>
                 </div>
 
-                <!-- Panneau 2 : Dernières Inscriptions (Precious Subscribers) -->
+                <!-- Panneau 2 : Dernières Inscriptions -->
                 <div class="dashboard-panel-box">
                     <div class="dashboard-panel-title">
                         <span>Derniers Abonnés</span>
-                        <span class="tag is-small is-light">{{ recent_users|length }} récents</span>
+                        <span class="tag is-small is-light" style="background: #f1f5f9; color: #0f172a; font-weight: 600;">{{ recent_users|length }} récents</span>
                     </div>
 
                     {% if recent_users %}
@@ -706,7 +722,7 @@
                             {% for u in recent_users %}
                                 <div class="recent-user-item">
                                     <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;">
-                                        <span class="has-text-weight-semibold" style="color: var(--color-slate-900);">
+                                        <span class="has-text-weight-semibold" style="color: #0f172a;">
                                             {{ u.name or u.email.split('@')[0] }}
                                         </span>
                                         <div class="is-size-7 has-text-grey" style="font-size: 0.72rem;">
@@ -715,11 +731,11 @@
                                     </div>
                                     <div class="is-flex is-align-items-center" style="gap: 4px;">
                                         {% if u.newsletter_subscribed %}
-                                            <span class="tag is-success is-light is-rounded is-small" style="font-size: 0.65rem; height: 1.4em;">
+                                            <span class="tag is-rounded is-small" style="font-size: 0.65rem; height: 1.4em; background: #ecfdf5; color: #059669; font-weight: 500;">
                                                 Abonné
                                             </span>
                                         {% else %}
-                                            <span class="tag is-light is-rounded is-small" style="font-size: 0.65rem; height: 1.4em; color: #94a3b8;">
+                                            <span class="tag is-rounded is-small is-light" style="font-size: 0.65rem; height: 1.4em; color: #94a3b8;">
                                                 Désinscrit
                                             </span>
                                         {% endif %}
@@ -731,67 +747,43 @@
                         <p class="is-size-7 has-text-grey mb-0">Aucun utilisateur enregistré pour le moment.</p>
                     {% endif %}
                 </div>
-
-                <!-- Panneau 3 : Paramètres d'Acheminement SMTP -->
-                <div class="dashboard-panel-box" style="background: var(--color-slate-50);">
-                    <div class="dashboard-panel-title">
-                        <span>Spécifications SMTP</span>
-                        <i class="fas fa-shield-alt has-text-grey"></i>
-                    </div>
-                    <ul class="is-size-7 has-text-grey" style="line-height: 1.6;">
-                        <li class="mb-2">
-                            <strong>Cadence :</strong> 1 courriel par seconde (asynchrone en arrière-plan).
-                        </li>
-                        <li class="mb-2">
-                            <strong>Plafond :</strong> 500 courriels / 24 heures (recommandation fournisseur).
-                        </li>
-                        <li>
-                            <strong>En-têtes :</strong> <code>List-Unsubscribe</code> et <code>List-Unsubscribe-Post</code> intégrés systématiquement.
-                        </li>
-                    </ul>
-                </div>
-
             </div>
         </div>
     </div>
     <!-- Fin TAB 1 -->
 
     <!-- TAB 2: HISTORIQUE DES CAMPAGNES & STATISTIQUES -->
-        <div id="tabContentHistory" style="display: {% if active_tab == 'history' %}block{% else %}none{% endif %};">
-            <div class="box p-5" style="border: 1px solid var(--color-slate-200); border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);">
-                <div class="level mb-4 pb-3" style="border-bottom: 1px solid var(--color-slate-100);">
-                    <div class="level-left">
-                        <div>
-                            <h2 class="title is-5 mb-1" style="color: var(--color-slate-900); font-weight: 700;">
-                                Historique des campagnes & Taux d'ouverture
-                            </h2>
-                            <p class="subtitle is-7 has-text-grey mb-0">
-                                Archives complètes des envois, suivi des ouvertures en direct par pixel invisible et délivrabilité.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="level-right">
-                        <button class="button is-small" style="background: var(--color-slate-900); color: white; font-weight: 600;" onclick="switchTab('compose')">
-                            <span class="icon is-small"><i class="fas fa-plus"></i></span>
-                            <span>Nouvelle campagne</span>
-                        </button>
-                    </div>
+    <div id="tabContentHistory" style="display: {% if active_tab == 'history' %}block{% else %}none{% endif %};">
+        <div class="admin-card" style="padding: 0 !important; border-radius: 12px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04); overflow: hidden;">
+            <div style="padding: 1rem 1.25rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    <h2 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin: 0;">
+                        Historique des campagnes ({{ campaigns|length }})
+                    </h2>
+                    <p style="font-size: 0.72rem; color: #94a3b8; margin: 2px 0 0 0;">
+                        Archives complètes des envois, suivi des ouvertures et délivrabilité
+                    </p>
                 </div>
+                <button class="button is-small is-rounded" style="background: #0f172a; color: white; font-weight: 500; font-size: 0.75rem;" onclick="switchTab('compose')">
+                    <span class="icon is-small mr-1" style="font-size: 0.65rem;"><i class="fas fa-plus"></i></span>
+                    <span>Nouvelle campagne</span>
+                </button>
+            </div>
 
-                {% if campaigns %}
-                    <div class="table-container">
-                        <table class="table is-fullwidth is-hoverable is-striped" style="font-size: 0.88rem; vertical-align: middle;">
-                            <thead>
-                                <tr style="background: #f8fafc; color: #475569; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    <th style="padding: 10px 14px;">Date d'envoi</th>
-                                    <th style="padding: 10px 14px;">Objet & Gabarit</th>
-                                    <th style="padding: 10px 14px;">Cible & Langue</th>
-                                    <th style="padding: 10px 14px; text-align: center;">Délivrés</th>
-                                    <th style="padding: 10px 14px; text-align: center;">Ouvertures uniques</th>
-                                    <th style="padding: 10px 14px; text-align: center;">Taux d'ouverture</th>
-                                    <th style="padding: 10px 14px; text-align: right;">Actions</th>
-                                </tr>
-                            </thead>
+            {% if campaigns %}
+                <div class="table-container mb-0" style="overflow-x: auto;">
+                    <table class="table is-fullwidth feedback-table mb-0" style="border-collapse: collapse; min-width: 800px; vertical-align: middle;">
+                        <thead>
+                            <tr style="background: #fafbfd;">
+                                <th style="padding: 0.75rem 1.25rem;">Date d'envoi</th>
+                                <th>Objet &amp; Gabarit</th>
+                                <th>Cible &amp; Langue</th>
+                                <th style="text-align: center;">Délivrés</th>
+                                <th style="text-align: center;">Ouvertures</th>
+                                <th style="text-align: center;">Taux</th>
+                                <th style="text-align: right; padding-right: 1.25rem;">Actions</th>
+                            </tr>
+                        </thead>
                             <tbody>
                                 {% for c in campaigns %}
                                     <tr>
@@ -868,47 +860,52 @@
                                                 <span class="tag is-light" style="color: #64748b; font-weight: 600;">0%</span>
                                             {% endif %}
                                         </td>
-                                        <td style="padding: 12px 14px; text-align: right; white-space: nowrap;">
-                                            <button class="button is-small is-light mr-1" onclick="openCampaignModal({{ c.id }}, 'message')" title="Visualiser le courriel envoyé" style="border: 1px solid #cbd5e1;">
-                                                <span class="icon is-small"><i class="fas fa-envelope-open-text"></i></span>
-                                                <span>Aperçu</span>
-                                            </button>
-                                            <button class="button is-small is-light mr-1" onclick="openCampaignModal({{ c.id }}, 'recipients')" title="Consulter le rapport détaillé et les destinataires" style="border: 1px solid #cbd5e1;">
-                                                <span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
-                                                <span>Rapport</span>
-                                            </button>
-                                            <div class="dropdown is-hoverable is-right mr-1" style="display: inline-block;">
-                                                <div class="dropdown-trigger">
-                                                    <button type="button" class="button is-small is-light" style="border: 1px solid #cbd5e1;" title="Dupliquer ou préparer une copie par langue">
-                                                        <span class="icon is-small"><i class="fas fa-copy"></i></span>
-                                                        <span>Dupliquer</span>
-                                                        <span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>
-                                                    </button>
-                                                </div>
-                                                <div class="dropdown-menu" role="menu" style="min-width: 175px;">
-                                                    <div class="dropdown-content has-text-left" style="padding: 4px 0;">
-                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, tab='compose') }}" class="dropdown-item is-size-7">
-                                                            <i class="fas fa-clone mr-2 has-text-grey"></i> Dupliquer à l'identique
-                                                        </a>
-                                                        <hr class="dropdown-divider" style="margin: 4px 0;">
-                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='fr', tab='compose') }}" class="dropdown-item is-size-7">
-                                                            <span class="mr-2">🇫🇷</span> Copie pour Français
-                                                        </a>
-                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='en', tab='compose') }}" class="dropdown-item is-size-7">
-                                                            <span class="mr-2">🇬🇧</span> Copie pour Anglais
-                                                        </a>
-                                                        <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='de', tab='compose') }}" class="dropdown-item is-size-7">
-                                                            <span class="mr-2">🇩🇪</span> Copie pour Allemand
-                                                        </a>
+                                        <td style="padding: 10px 14px; text-align: right; white-space: nowrap; width: 130px;">
+                                            <div class="is-flex is-align-items-center is-justify-content-flex-end" style="gap: 4px;">
+                                                <!-- Aperçu du message -->
+                                                <button type="button" class="button is-small is-white is-rounded" onclick="openCampaignModal({{ c.id }}, 'message')" title="Visualiser le courriel envoyé" style="border: 1px solid #e2e8f0; width: 28px; height: 28px; padding: 0; color: #475569;">
+                                                    <span class="icon is-small" style="font-size: 0.72rem;"><i class="fas fa-eye"></i></span>
+                                                </button>
+
+                                                <!-- Rapport détaillé & destinataires -->
+                                                <button type="button" class="button is-small is-white is-rounded" onclick="openCampaignModal({{ c.id }}, 'recipients')" title="Consulter le rapport détaillé et les ouvertures" style="border: 1px solid #e2e8f0; width: 28px; height: 28px; padding: 0; color: #475569;">
+                                                    <span class="icon is-small" style="font-size: 0.72rem;"><i class="fas fa-chart-bar"></i></span>
+                                                </button>
+
+                                                <!-- Dupliquer -->
+                                                <div class="dropdown is-hoverable is-right" style="display: inline-block;">
+                                                    <div class="dropdown-trigger">
+                                                        <button type="button" class="button is-small is-white is-rounded" style="border: 1px solid #e2e8f0; width: 28px; height: 28px; padding: 0; color: #475569;" title="Dupliquer la campagne">
+                                                            <span class="icon is-small" style="font-size: 0.72rem;"><i class="fas fa-clone"></i></span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="dropdown-menu" role="menu" style="min-width: 175px;">
+                                                        <div class="dropdown-content has-text-left" style="padding: 4px 0; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+                                                            <a href="{{ url_for('admin.emails', duplicate_id=c.id, tab='compose') }}" class="dropdown-item is-size-7">
+                                                                <i class="fas fa-clone mr-2 has-text-grey"></i> Dupliquer à l'identique
+                                                            </a>
+                                                            <hr class="dropdown-divider" style="margin: 4px 0;">
+                                                            <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='fr', tab='compose') }}" class="dropdown-item is-size-7">
+                                                                <span class="mr-2">🇫🇷</span> Copie pour Français
+                                                            </a>
+                                                            <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='en', tab='compose') }}" class="dropdown-item is-size-7">
+                                                                <span class="mr-2">🇬🇧</span> Copie pour Anglais
+                                                            </a>
+                                                            <a href="{{ url_for('admin.emails', duplicate_id=c.id, target_lang='de', tab='compose') }}" class="dropdown-item is-size-7">
+                                                                <span class="mr-2">🇩🇪</span> Copie pour Allemand
+                                                            </a>
+                                                        </div>
                                                     </div>
                                                 </div>
+
+                                                <!-- Supprimer -->
+                                                <form action="{{ url_for('admin.delete_campaign', campaign_id=c.id) }}" method="POST" style="margin: 0; display: inline;" onsubmit="return confirm('Supprimer définitivement cette campagne et ses statistiques ?');">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                    <button type="submit" class="button is-small is-white is-rounded has-text-danger" style="border: 1px solid #fee2e2; width: 28px; height: 28px; padding: 0;" title="Supprimer l'archive">
+                                                        <span class="icon is-small" style="font-size: 0.72rem;"><i class="fas fa-trash-alt"></i></span>
+                                                    </button>
+                                                </form>
                                             </div>
-                                            <form action="{{ url_for('admin.delete_campaign', campaign_id=c.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Supprimer définitivement cette campagne et ses statistiques ?');">
-                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                                <button type="submit" class="button is-small is-light is-danger" title="Supprimer l'archive">
-                                                    <span class="icon is-small"><i class="fas fa-trash-alt"></i></span>
-                                                </button>
-                                            </form>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -1308,12 +1305,32 @@
 
     function updateLivePreview() {
         let subject = document.getElementById('subjectInput').value || "Objet de la communication";
-        let message = document.getElementById('messageInput').value || "<p>Rédigez le contenu de votre message pour observer le rendu en direct ici...</p>";
+        let rawMessage = document.getElementById('messageInput').value || "Rédigez le contenu de votre message pour observer le rendu en direct ici...";
         const templateChoice = document.getElementById('templateChoiceInput').value;
         const iframe = document.getElementById('livePreviewIframe');
 
+        // Conversion markdown / plain text vers HTML si pas de balises blocs HTML
+        let message = rawMessage;
+        if (!/<\s*(?:p|div|table|h[1-6]|ul|ol)\b/i.test(rawMessage)) {
+            let escaped = rawMessage
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/^###\s*(.+)$/gm, '<h3 style="color: #0f172a; margin: 20px 0 8px 0; font-size: 17px; font-weight: 700;">$1</h3>')
+                .replace(/^[-\*]\s+(.+)$/gm, '<li>$1</li>');
+
+            escaped = escaped.replace(/(<li>[\s\S]+?<\/li>)/g, '<ul style="margin: 12px 0; padding-left: 20px;">$1</ul>');
+            const pars = escaped.split(/\n{2,}/);
+            message = pars.map(p => {
+                p = p.trim();
+                if (!p) return '';
+                if (p.startsWith('<h3') || p.startsWith('<ul') || p.startsWith('<table') || p.startsWith('<div')) return p;
+                return `<p style="margin: 0 0 14px 0; line-height: 1.65;">${p.replace(/\n/g, '<br>')}</p>`;
+            }).join('\n');
+        }
+
         // Dynamic pseudo simulation for live preview
-        const pseudoBadge = '<span style="background-color: #e0f2fe; color: #0284c7; padding: 1px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #bae6fd;">Alexandre</span>';
+        const pseudoBadge = '<span style="background-color: #f1f5f9; color: #0f172a; padding: 1px 6px; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0;">Alexandre</span>';
         const regexPseudo = /\[pseudo\]|\{pseudo\}|\[nom\]|\{nom\}|\[name\]|\{name\}/gi;
 
         subject = subject.replace(regexPseudo, "Alexandre");

@@ -23,6 +23,7 @@ from flask_babel import get_locale
 from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from flask_mail import Message
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
 
@@ -249,6 +250,42 @@ def llms():
         200,
         {"Content-Type": "text/plain; charset=utf-8"},
     )
+
+
+@core.route("/healthy")
+@core.route("/healthz")
+@main.route("/healthy")
+@main.route("/healthz")
+def healthy():
+    """Health check technique pour sentinelle de surveillance et load balancer."""
+    try:
+        db.session.execute(text("SELECT 1")).scalar()
+        return (
+            jsonify(
+                {
+                    "status": "ok",
+                    "server": os.getenv("SERVER_NODE", "local"),
+                    "database": "healthy",
+                    "timestamp": datetime.now(UTC).isoformat(),
+                }
+            ),
+            200,
+            {"Content-Type": "application/json; charset=utf-8"},
+        )
+    except Exception as e:  # noqa: BLE001
+        current_app.logger.error(f"Health check failed: {e}")
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "database": "unhealthy",
+                    "error": str(e),
+                    "timestamp": datetime.now(UTC).isoformat(),
+                }
+            ),
+            503,
+            {"Content-Type": "application/json; charset=utf-8"},
+        )
 
 
 INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "744d589148a54a93bfd6c066fce258a6")
@@ -516,6 +553,21 @@ def install():
 # Error handling
 @main.app_errorhandler(HTTPException)
 def page_not_found(e):
+    if e.code and e.code >= 500:
+        try:
+            from flask_login import current_user
+
+            from .discord_notifications import notify_app_exception
+
+            user_mail = current_user.email if current_user.is_authenticated else None
+            notify_app_exception(
+                error_name=str(e),
+                route=request.path,
+                method=request.method,
+                user_email=user_mail,
+            )
+        except Exception:  # noqa: BLE001, S110
+            pass
     return render_template("error.html", error=e), e.code
 
 
