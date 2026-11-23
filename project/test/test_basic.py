@@ -293,4 +293,5 @@ def test_healthy_and_healthz_endpoint(client):
         data = res.get_json()
         assert data["status"] == "ok"
         assert data["database"] == "healthy"
+        assert "server" in data
         assert "timestamp" in data

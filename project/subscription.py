@@ -387,6 +387,23 @@ def _handle_checkout_completed(session):
             user.id,
         )
 
+        # Notification Discord (#app-events)
+        try:
+            from .discord_notifications import notify_stripe_subscription_activated
+
+            amount_total = session.get("amount_total", 0)
+            currency = (session.get("currency") or "chf").upper()
+            amount_str = (
+                f"{amount_total / 100:.2f} {currency}" if amount_total else "Payé"
+            )
+            notify_stripe_subscription_activated(
+                customer_email=user.email,
+                plan_name=plan_type or "Premium",
+                amount_str=amount_str,
+            )
+        except Exception:  # noqa: BLE001, S110
+            pass
+
 
 def _handle_subscription_updated(sub):
     if hasattr(sub, "to_dict"):

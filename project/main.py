@@ -264,6 +264,7 @@ def healthy():
             jsonify(
                 {
                     "status": "ok",
+                    "server": os.getenv("SERVER_NODE", "local"),
                     "database": "healthy",
                     "timestamp": datetime.now(UTC).isoformat(),
                 }
@@ -552,6 +553,21 @@ def install():
 # Error handling
 @main.app_errorhandler(HTTPException)
 def page_not_found(e):
+    if e.code and e.code >= 500:
+        try:
+            from flask_login import current_user
+
+            from .discord_notifications import notify_app_exception
+
+            user_mail = current_user.email if current_user.is_authenticated else None
+            notify_app_exception(
+                error_name=str(e),
+                route=request.path,
+                method=request.method,
+                user_email=user_mail,
+            )
+        except Exception:  # noqa: BLE001, S110
+            pass
     return render_template("error.html", error=e), e.code
 
 

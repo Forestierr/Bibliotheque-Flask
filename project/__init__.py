@@ -90,6 +90,7 @@ def create_app(test_config=None):
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
         "SQLALCHEMY_DATABASE_URI", "sqlite:///db.sqlite"
     )
+    app.config["CATALOG_DB_PATH"] = os.getenv("CATALOG_DB_PATH")
 
     app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
     app.config["MAIL_PORT"] = 465

@@ -194,6 +194,18 @@ def signup_post():
     db.session.add(new_user)
     db.session.commit()
 
+    # Notification Discord (#app-events)
+    try:
+        from .discord_notifications import notify_new_user_signup
+
+        notify_new_user_signup(
+            name=new_user.name,
+            email=new_user.email,
+            preferred_language=new_user.preferred_language,
+        )
+    except Exception:  # noqa: BLE001, S110
+        pass
+
     # envoi d'un email de bienvenue à l'utilisateur
     # sans bloquer l'application
     send_email_verification(new_user)

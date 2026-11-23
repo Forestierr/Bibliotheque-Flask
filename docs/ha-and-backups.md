@@ -87,33 +87,25 @@ Ce document détaille l'architecture de haute disponibilité, le failover automa
 
 ---
 
-## 4. Réplication Continue Inter-Serveurs
+## 4. Réplication Continue Inter-Serveurs (En Production : Litestream Streaming - RPO < 1 s)
 
-### Option A-1 : Synchronisation Périodique (Rsync SSH - RPO ≤ 5 min)
-* **Script** : `/home/rob1/scripts/sync_to_oracle.sh`
-* **Planification Cron** : Toutes les 5 minutes (`*/5 * * * *`).
-* **Mécanique** :
-  1. Vérification de l'absence du verrou `FAILOVER_ACTIVE`.
-  2. Snapshot à chaud SQLite `sqlite3 .backup`.
-  3. Transfert différentiel rsync chiffré vers Oracle.
-  4. Remplacement atomique système (`mv`) et signal `docker exec biblio kill -HUP 1` pour que Gunicorn recharge son descripteur de fichier sans coupure.
+Le système utilise **Litestream** en production pour répliquer en temps réel au fil de l'eau chaque écriture de la base SQLite sans latence de batch :
 
-### Option A-2 : Réplication Continue Streaming (Litestream SFTP Direct - RPO < 1 s)
-Pour une synchronisation en temps réel au fil de l'eau (sans attendre 5 minutes) et sans service cloud tiers additionnel :
 * **Principe** : Litestream surveille en continu le journal WAL SQLite (`db.sqlite-wal`) sur le serveur local et diffuse chaque transaction commitée vers la VM Oracle via SFTP/SSH.
-* **Fichiers de configuration & Scripts prêts à l'emploi** :
-  * `scripts/ops/litestream.yml` : Configuration de la réplication de `instance/db.sqlite` vers `152.67.70.90` (répertoire distant `/home/ubuntu/livresenclasse/litestream_replica`).
-  * `scripts/ops/litestream.service` : Unité systemd pour faire tourner Litestream en arrière-plan avec redémarrage automatique.
-  * `scripts/ops/install_litestream.sh` : Script d'installation automatique du binaire Litestream (amd64 / arm64).
-  * `scripts/ops/restore_litestream_on_oracle.sh` : Script de restauration instantanée sur Oracle (`litestream restore -if-replica-exists`).
-* **Installation rapide** :
-  ```bash
-  # Sur le serveur local (192.168.1.144) :
-  ./scripts/ops/install_litestream.sh
-  sudo cp scripts/ops/litestream.service /etc/systemd/system/
-  sudo systemctl daemon-reload
-  sudo systemctl enable --now litestream
-  ```
+* **Service actif** : `systemctl --user status litestream` sur le serveur local (`192.168.1.144`).
+* **Configuration** : `/home/rob1/scripts/litestream.yml` (clé SSH `~/.ssh/id_oracle_sync`, cible `152.67.70.90:/home/ubuntu/livresenclasse/litestream_replica`).
+* **RPO (Perte max en cas de crash brutal)** : **< 1 seconde** (chaque écriture est expédiée en ~85 ms).
+* **Consommation** : Binaire Go léger (~16 Mo RAM, < 0.1% CPU).
+* **Sécurité Anti-Corruption lors d'un switch (Failover)** :
+  1. Lors d'une bascule, `watchdog_failover.sh` applique les derniers segments WAL via `litestream restore -if-replica-exists`.
+  2. Il vérifie immédiatement l'intégrité SQLite (`PRAGMA integrity_check;`) avant de recharger Gunicorn (`kill -HUP 1`).
+  3. Si la base est corrompue ou incomplète, la restauration est rejetée et l'ancienne base valide est conservée.
+* **Sécurité Anti-Corruption lors du retour (Failback)** :
+  1. Lors du rapatriement, `failback_from_cloud.sh` stoppe Litestream temporairement.
+  2. Il remplace la base locale par le snapshot cohérent d'Oracle, purge les anciens fichiers WAL locaux et réinitialise la réplique sur Oracle.
+  3. Litestream est redémarré proprement pour initier une nouvelle génération sans conflit d'historique.
+
+*(Note : L'ancien script rsync `sync_to_oracle.sh` reste disponible dans `scripts/ops/` à titre de secours manuel si besoin).*
 
 ---
 
@@ -202,3 +194,46 @@ dig +short CNAME livresenclasse.com
 ```
 * Si pointe vers `8086dee7...` : Trafic sur le serveur local.
 * Si pointe vers `d6f9880e...` : Trafic sur le serveur Oracle Cloud.
+
+---
+
+---
+
+## 9. Performances et Capacités de Charge (Benchmark k6)
+
+Un test de charge complet a été réalisé sur la VM Oracle de secours (`VM.Standard.E2.1.Micro`).
+Le rapport détaillé est consultable dans [`docs/benchmark-oracle.md`](benchmark-oracle.md) :
+* **Débit maximal mesuré** : ~25 à 35 requêtes dynamiques / seconde.
+* **Taux d'échec sous charge (jusqu'à 150 VUs)** : **0.00 %** (0 erreur HTTP sur 4'700+ requêtes).
+* **Capacité estimée** : Supporte sereinement jusqu'à 1'000 utilisateurs réels simultanés (p99.9 ≤ 2.05 s).
+
+---
+
+## 10. Surveillance, Alertes Multi-Canaux & Contrôle d'État
+
+### A. Contrôle d'État en 1 seconde (`ha_status.sh`)
+Un script de diagnostic unifié est disponible sur le serveur local :
+```bash
+/home/rob1/scripts/ha_status.sh
+```
+Il vérifie et affiche en couleurs :
+1. **La cible DNS Cloudflare** : indique si le trafic pointe vers le `Tunnel Local` ou le `Tunnel Oracle (Mode Secours)`.
+2. **La sonde `/healthy`** : statut HTTP 200 et identification du serveur actif (`server: "local"` ou `"oracle-cloud"`).
+3. **Le standby Oracle** : statut opérationnel de `backup.livresenclasse.com`.
+4. **La sentinelle Oracle** : présence ou absence du verrou `FAILOVER_ACTIVE`.
+5. **Litestream** : état du service de réplication WAL continue.
+
+### B. Système d'Alertes Multi-Canaux lors d'un Failover
+Lorsqu'une panne est confirmée sur le serveur local et que la sentinelle bascule vers Oracle Cloud, le script [`watchdog_failover.sh`](file:///c:/Users/Robin/Desktop/GitHub/Bibliotheque-Flask/scripts/ops/watchdog_failover.sh) émet automatiquement des alertes sur plusieurs canaux complémentaires :
+
+1. **Bark (Push iOS)** :
+   - Notification push critique envoyée vers l'iPhone (`https://bark.rob1forest.com/...`).
+2. **Healthchecks.io (Fail Signal Cloud)** :
+   - Ping immédiat de l'endpoint d'échec (`https://hc-ping.com/77e657b8-03fc-4576-bcbe-c0259dfa5657/fail`).
+   - Même si le serveur local est totalement éteint, Healthchecks.io relaie instantanément l'alerte vers tous les canaux configurés (Discord, Telegram, Email, SMS).
+3. **Discord Webhook** *(Optionnel)* :
+   - Variable `DISCORD_WEBHOOK_URL` dans `/home/ubuntu/livresenclasse/.env` pour poster une alerte enrichie avec embed rouge dans un salon Discord privé.
+4. **Telegram Bot** *(Optionnel)* :
+   - Variables `TELEGRAM_BOT_TOKEN` et `TELEGRAM_CHAT_ID` pour envoi d'un message direct Telegram.
+
+Lors du rapatriement ([`failback_from_cloud.sh`](file:///c:/Users/Robin/Desktop/GitHub/Bibliotheque-Flask/scripts/ops/failback_from_cloud.sh)), une notification de rétablissement `✅ RETOUR À LA NORMALE` est automatiquement envoyée sur tous ces canaux et le statut Healthchecks.io repasse au vert.

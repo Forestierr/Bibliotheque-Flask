@@ -24,6 +24,74 @@ CF_RECORD_ID_AUTH="0c0c5669254ded18c9bfee6fad244fe3"  # auth.livresenclasse.com
 # Cibles Tunnels
 TUNNEL_LOCAL_TARGET="8086dee7-aee1-48c4-9166-be6f361172e5.cfargotunnel.com"
 
+# Configuration des Alertes & Notifications
+BARK_KEY="${BARK_KEY:-79dXLJGwoScfZckHKNMuKY}"
+BARK_HOST="${BARK_HOST:-https://bark.rob1forest.com}"
+HEALTHCHECKS_UUID="${HEALTHCHECKS_UUID:-}"
+DISCORD_WEBHOOK_URL="${DISCORD_WEBHOOK_URL:-}"
+DISCORD_ROLE_CRITICAL="${DISCORD_ROLE_CRITICAL:-}"
+DISCORD_ROLE_INFO="${DISCORD_ROLE_INFO:-}"
+TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
+TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
+
+# Charger les variables optionnelles depuis .env si présent
+ENV_FILE="${ENV_FILE:-/home/rob1/server/rob1forest/apps/Bibliotheque-Flask/.env}"
+if [ -f "$ENV_FILE" ]; then
+    eval "$(grep -E '^(DISCORD_WEBHOOK_URL|DISCORD_ROLE_CRITICAL|DISCORD_ROLE_INFO|TELEGRAM_BOT_TOKEN|TELEGRAM_CHAT_ID|BARK_KEY|BARK_HOST|HEALTHCHECKS_UUID)=' "$ENV_FILE" | sed -e 's/^/export /')" 2>/dev/null || true
+fi
+
+send_alert() {
+    local title="$1"
+    local message="$2"
+    local status="${3:-ok}"
+
+    log "Envoi des alertes : $title..."
+
+    # 1. Healthchecks.io (OK signal de rétablissement)
+    if [ -n "$HEALTHCHECKS_UUID" ]; then
+        curl -fsS -m 5 --retry 2 --data-raw "$title : $message" "https://hc-ping.com/${HEALTHCHECKS_UUID}" >/dev/null 2>&1 || true
+        log "Notification Healthchecks.io (OK) envoyée."
+    fi
+
+    # 2. Bark (Push iOS)
+    if [ -n "$BARK_KEY" ]; then
+        local enc_title enc_msg
+        enc_title=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$title'''))" 2>/dev/null || echo "Info")
+        enc_msg=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$message'''))" 2>/dev/null || echo "Failback")
+        curl -s -m 5 "${BARK_HOST}/${BARK_KEY}/${enc_title}/${enc_msg}?group=BiblioHA&level=active&icon=https://livresenclasse.com/static/img/logo.png" >/dev/null 2>&1 || true
+        log "Notification Bark envoyée."
+    fi
+
+    # 3. Discord Webhook (si configuré)
+    if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+        local color="3066993" # Vert
+        local mention=""
+        if [ "$status" = "error" ] && [ -n "$DISCORD_ROLE_CRITICAL" ]; then
+            color="15158332"
+            mention="<@&${DISCORD_ROLE_CRITICAL}>"
+        elif [ "$status" != "error" ] && [ -n "$DISCORD_ROLE_INFO" ]; then
+            mention="<@&${DISCORD_ROLE_INFO}>"
+        fi
+        local payload
+        payload=$(python3 -c "import json; print(json.dumps({'username': 'Sentinelle Livres en Classe', 'avatar_url': 'https://livresenclasse.com/static/img/logo.png', 'content': '''$mention''', 'embeds': [{'title': '''$title''', 'description': '''$message''', 'color': $color, 'footer': {'text': 'Serveur Local Rétabli'}}]}))" 2>/dev/null || echo "")
+        if [ -n "$payload" ]; then
+            curl -s -m 5 -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_WEBHOOK_URL" >/dev/null 2>&1 || true
+            log "Notification Discord envoyée."
+        fi
+    fi
+
+    # 4. Telegram Bot (si configuré)
+    if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+        local tele_text
+        tele_text=$(python3 -c "import urllib.parse; print(urllib.parse.quote('✅ *' + '''$title''' + '*\n' + '''$message'''))" 2>/dev/null || echo "$title")
+        curl -s -m 5 -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "text=${tele_text}" \
+            -d "parse_mode=Markdown" >/dev/null 2>&1 || true
+        log "Notification Telegram envoyée."
+    fi
+}
+
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
@@ -72,7 +140,7 @@ sleep 5
 
 # 4. Prendre le snapshot final à chaud sur Oracle
 log "4. Création de l'instantané SQLite final cohérent sur Oracle Cloud..."
-ssh -o BatchMode=yes "$REMOTE_HOST" "sqlite3 '$REMOTE_DB' \".backup '$TMP_REMOTE_SNAP'\""
+echo ".backup $TMP_REMOTE_SNAP" | ssh -o BatchMode=yes "$REMOTE_HOST" "sqlite3 '$REMOTE_DB'"
 
 # 5. Sauvegarder la base locale actuelle par précaution
 if [ -f "$DB_LOCAL" ]; then
@@ -95,10 +163,19 @@ if [ "$INTEGRITY" != "ok" ]; then
 fi
 log "Intégrité validée avec succès (ok)."
 
-# 8. Remplacement atomique de la base locale
+# 8. Remplacement atomique de la base locale & Réinitialisation Litestream
 log "8. Application de la base de données à jour sur le serveur local..."
+systemctl --user stop litestream 2>/dev/null || true
 mv "$TMP_LOCAL_SNAP" "$DB_LOCAL"
+rm -f "${DB_LOCAL}-wal" "${DB_LOCAL}-shm"
+sqlite3 "$DB_LOCAL" "PRAGMA journal_mode = WAL;"
 chmod 644 "$DB_LOCAL"
+
+# Nettoyage de l'ancienne réplique sur Oracle pour initialiser une génération propre
+ssh -o BatchMode=yes "$REMOTE_HOST" "rm -rf /home/ubuntu/livresenclasse/litestream_replica/generations/*" 2>/dev/null || true
+
+# Redémarrage de Litestream
+systemctl --user start litestream 2>/dev/null || true
 
 # 9. Redémarrer le conteneur biblio local pour recharger la connexion
 log "9. Redémarrage du conteneur biblio local..."
@@ -107,6 +184,9 @@ docker restart biblio >/dev/null 2>&1 || true
 # 10. Lever le verrou FAILOVER_ACTIVE sur Oracle
 log "10. Levée du verrou FAILOVER_ACTIVE sur Oracle Cloud..."
 ssh -o BatchMode=yes "$REMOTE_HOST" "rm -f '$REMOTE_LOCK'"
+
+# Envoi immédiat de l'alerte de rétablissement
+send_alert "✅ RETOUR À LA NORMALE (FAILBACK)" "Le serveur local a repris la production. Le trafic de livresenclasse.com est de retour sur le serveur physique local." "ok"
 
 log "================================================================="
 log "=== RAPATRIEMENT TERMINÉ AVEC SUCCÈS (0 PERTE DE DONNÉE) ==="

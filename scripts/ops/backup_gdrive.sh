@@ -33,6 +33,60 @@ GDRIVE_DAILY="${GDRIVE_BASE}/daily"
 GDRIVE_WEEKLY="${GDRIVE_BASE}/weekly"
 GDRIVE_MONTHLY="${GDRIVE_BASE}/monthly"
 
+# Notifications Discord (chargées depuis l'environnement ou .env)
+DISCORD_BACKUP_WEBHOOK="${DISCORD_BACKUP_WEBHOOK:-}"
+DISCORD_ROLE_CRITICAL="${DISCORD_ROLE_CRITICAL:-}"
+DISCORD_ROLE_INFO="${DISCORD_ROLE_INFO:-}"
+
+# Charger les variables optionnelles depuis .env si présent
+ENV_FILE="${ENV_FILE:-/home/rob1/server/rob1forest/apps/Bibliotheque-Flask/.env}"
+if [ -f "$ENV_FILE" ]; then
+    eval "$(grep -E '^(DISCORD_BACKUP_WEBHOOK|DISCORD_ROLE_CRITICAL|DISCORD_ROLE_INFO)=' "$ENV_FILE" | sed -e 's/^/export /')" 2>/dev/null || true
+fi
+
+notify_discord() {
+    local status="$1"
+    local message="$2"
+    local color="3066993" # Vert
+    local title="📦 Sauvegarde Réussie : livresenclasse.com"
+    local mention=""
+
+    if [ "$status" != "ok" ]; then
+        color="15158332" # Rouge
+        title="🚨 Échec Sauvegarde : livresenclasse.com"
+        if [ -n "$DISCORD_ROLE_CRITICAL" ]; then
+            mention="<@&${DISCORD_ROLE_CRITICAL}>"
+        fi
+    elif [ -n "$DISCORD_ROLE_INFO" ]; then
+        mention="<@&${DISCORD_ROLE_INFO}>"
+    fi
+
+    if [ -n "$DISCORD_BACKUP_WEBHOOK" ]; then
+        local payload
+        payload=$(python3 -c "import json; print(json.dumps({
+            'username': 'Sauvegardes GDrive',
+            'avatar_url': 'https://livresenclasse.com/static/img/logo.png',
+            'content': '''$mention''',
+            'embeds': [{
+                'title': '''$title''',
+                'description': '''$message''',
+                'color': $color,
+                'fields': [
+                    {'name': 'Fichier', 'value': '''${FILENAME:-inconnu}''', 'inline': True},
+                    {'name': 'Taille', 'value': '''${FILE_SIZE:-N/A}''', 'inline': True},
+                    {'name': 'Destination', 'value': 'Google Drive (Chiffrement AES-256 GPG)', 'inline': False},
+                    {'name': 'Rétention GFS', 'value': 'Daily (3j), Weekly (8j), Monthly (32j)', 'inline': False}
+                ],
+                'footer': {'text': 'Serveur Local (192.168.1.144)'}
+            }]
+        }))" 2>/dev/null || echo "")
+
+        if [ -n "$payload" ]; then
+            curl -s -m 5 -H "Content-Type: application/json" -X POST -d "$payload" "$DISCORD_BACKUP_WEBHOOK" >/dev/null 2>&1 || true
+        fi
+    fi
+}
+
 # Horodatage
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 DAY_OF_WEEK=$(date +"%u")   # 1 (lundi) à 7 (dimanche)
@@ -102,3 +156,4 @@ log "Nettoyage des sauvegardes monthly de plus de 32 jours..."
 "$RCLONE_BIN" delete --min-age 32d --retries 1 "$GDRIVE_MONTHLY" 2>/dev/null || true
 
 log "=== Sauvegarde et rotation terminées avec succès ! ==="
+notify_discord "ok" "Sauvegarde chiffrée AES-256 et rotation GFS terminées avec succès."

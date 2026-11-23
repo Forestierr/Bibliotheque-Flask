@@ -5,7 +5,11 @@ import requests
 
 # On suppose que tu as une factory create_app dans project/__init__.py
 from project import create_app, db
-from project.livre import get_book_from_api
+from project.livre import (
+    get_book_from_api,
+    get_book_from_local_catalog,
+    get_catalog_db_path,
+)
 from project.models import Book, Loan, Student, User
 
 
@@ -28,8 +32,9 @@ def client(app):
 
 
 # Test de la fonction utilitaire get_book_from_api
+@patch("project.livre.get_book_from_local_catalog", return_value=None)
 @patch("project.livre.requests.get")
-def test_get_book_from_api_found(mock_get):
+def test_get_book_from_api_found(mock_get, mock_local_cat):
     mock_response = MagicMock()
     mock_response.json.return_value = {
         "totalItems": 1,
@@ -115,9 +120,10 @@ def test_get_book_from_api_without_api_key(mock_get):
     assert "&key=" not in google_url
 
 
+@patch("project.livre.get_book_from_local_catalog", return_value=None)
 @patch.dict("os.environ", {"CONTACT_EMAIL": "contact@example.org"})
 @patch("project.livre.requests.get")
-def test_get_book_from_api_open_library_fallback(mock_get):
+def test_get_book_from_api_open_library_fallback(mock_get, mock_local_cat):
     google_response = MagicMock()
     google_response.json.return_value = {"totalItems": 0}
 
@@ -144,6 +150,84 @@ def test_get_book_from_api_open_library_fallback(mock_get):
     assert (
         ol_call_headers["User-Agent"] == "Bibliotheque-Flask/1.0 (contact@example.org)"
     )
+
+
+def test_get_catalog_db_path_not_configured():
+    with patch.dict("os.environ", {}, clear=True):
+        assert get_catalog_db_path() is None
+
+
+def test_get_catalog_db_path_non_existent():
+    with patch.dict("os.environ", {"CATALOG_DB_PATH": "non_existent_file_xyz.db"}):
+        assert get_catalog_db_path() is None
+
+
+def test_get_book_from_local_catalog_missing_db(caplog):
+    with patch.dict("os.environ", {"CATALOG_DB_PATH": "fake_path_123.db"}):
+        res = get_book_from_local_catalog("9782070612695")
+        assert res is None
+        assert "Catalogue local (catalog.db) introuvable" in caplog.text
+
+
+def test_get_book_from_local_catalog_found(tmp_path):
+    import sqlite3
+
+    db_file = tmp_path / "test_catalog.db"
+    con = sqlite3.connect(str(db_file))
+    con.execute(
+        """
+        CREATE TABLE catalog (
+            isbn TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            author TEXT,
+            editor TEXT,
+            year TEXT,
+            cover_url TEXT
+        ) WITHOUT ROWID
+    """
+    )
+    con.execute(
+        "INSERT INTO catalog VALUES (?, ?, ?, ?, ?, ?)",
+        (
+            "9782070612695",
+            "Harry Potter à l'école des sorciers",
+            "J.K. Rowling",
+            "Gallimard Jeunesse",
+            "2000",
+            "https://example.com/hp1.jpg",
+        ),
+    )
+    con.commit()
+    con.close()
+
+    with patch.dict("os.environ", {"CATALOG_DB_PATH": str(db_file)}):
+        book = get_book_from_local_catalog("9782070612695")
+        assert book is not None
+        assert book["title"] == "Harry Potter à l'école des sorciers"
+        assert book["author"] == "J.K. Rowling"
+        assert book["editor"] == "Gallimard Jeunesse"
+        assert book["year"] == "2000"
+        assert book["image_url"] == "https://example.com/hp1.jpg"
+
+
+def test_get_book_from_api_uses_local_catalog_first():
+    local_data = {
+        "title": "Local Book",
+        "authors": "Local Author",
+        "author": "Local Author",
+        "editor": "Local Editor",
+        "year": "2021",
+        "type": None,
+        "isbn": "9781111111111",
+        "image_url": "https://example.com/local.jpg",
+    }
+    with (
+        patch("project.livre.get_book_from_local_catalog", return_value=local_data),
+        patch("project.livre.requests.get") as mock_http,
+    ):
+        res = get_book_from_api("9781111111111")
+        assert res["title"] == "Local Book"
+        assert mock_http.call_count == 0
 
 
 # Test d'accès à la page principale des livres
