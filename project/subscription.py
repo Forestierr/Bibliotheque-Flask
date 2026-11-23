@@ -28,10 +28,12 @@ from .config_plans import (
     MAX_FREE_STUDENTS,
     PRICE_MONTHLY_AMOUNT,
     PRICE_YEARLY_AMOUNT,
+    PRICE_YEARLY_EUR_AMOUNT,
+    STRIPE_TAX_EXEMPTION_NOTICE,
     TRIAL_PERIOD_DAYS,
 )
 from .email import send_html_email
-from .models import User
+from .models import SchoolInvoice, User
 
 logger = logging.getLogger(__name__)
 
@@ -130,11 +132,16 @@ def create_checkout_session():
         else (os.getenv("STRIPE_PRICE_ID_MONTHLY") or os.getenv("STRIPE_PRICE_MONTHLY"))
     )
 
+    is_school_reimbursement = request.form.get("is_school_reimbursement") in ("1", "true", "on")
+    school_name = (request.form.get("school_name") or "").strip()
+    school_address = (request.form.get("school_address") or "").strip()
+
     # Paramètres de base de la session (Managed Payments géré par le Dashboard Stripe)
     checkout_params = {
         "mode": "subscription",
         "allow_promotion_codes": True,
         "client_reference_id": str(current_user.id),
+        "tax_id_collection": {"enabled": True},
         "metadata": {
             "user_id": str(current_user.id),
             "plan_type": plan_type,
@@ -144,9 +151,32 @@ def create_checkout_session():
         "cancel_url": url_for("subscription.cancel", _external=True),
     }
 
+    if is_school_reimbursement or school_name:
+        checkout_params["metadata"]["is_school_reimbursement"] = "true"
+        if school_name:
+            checkout_params["metadata"]["school_name"] = school_name
+        if school_address:
+            checkout_params["metadata"]["school_address"] = school_address
+
+    # S'assurer d'avoir un client Stripe existant pour autoriser customer_update
+    if not current_user.stripe_customer_id:
+        try:
+            cust_params = {
+                "email": current_user.email,
+                "metadata": {"user_id": str(current_user.id)},
+            }
+            if current_user.name:
+                cust_params["name"] = current_user.name
+            cust = stripe.Customer.create(**cust_params)
+            current_user.stripe_customer_id = cust.id
+            db.session.commit()
+        except Exception as e:
+            logger.warning("Erreur pré-création stripe.Customer: %s", e)
+
     # Réutiliser le client Stripe s'il existe déjà
     if current_user.stripe_customer_id:
         checkout_params["customer"] = current_user.stripe_customer_id
+        checkout_params["customer_update"] = {"name": "auto", "address": "auto"}
     else:
         checkout_params["customer_email"] = current_user.email
 
@@ -237,8 +267,12 @@ def success():
     if session_id and os.getenv("STRIPE_SECRET_KEY"):
         try:
             stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-            session = stripe.checkout.Session.retrieve(session_id)
-            session_data = session.to_dict() if hasattr(session, "to_dict") else session
+            session = stripe.checkout.Session.retrieve(
+                session_id, expand=["invoice"]
+            )
+            session_data = (
+                session.to_dict() if hasattr(session, "to_dict") else session
+            )
             if (
                 session_data.get("payment_status") == "paid"
                 or session_data.get("status") == "complete"
@@ -256,6 +290,32 @@ def success():
                 plan_type = (session_data.get("metadata") or {}).get("plan_type")
                 if plan_type and not current_user.stripe_price_id:
                     current_user.stripe_price_id = plan_type
+
+                # Récupérer l'ID et l'URL du PDF de facture acquittée
+                inv_obj = session_data.get("invoice")
+                if inv_obj:
+                    if isinstance(inv_obj, str):
+                        try:
+                            retrieved_inv = stripe.Invoice.retrieve(inv_obj)
+                            current_user.stripe_latest_invoice_id = str(
+                                retrieved_inv.id
+                            )
+                            if getattr(retrieved_inv, "invoice_pdf", None):
+                                current_user.stripe_latest_invoice_pdf = (
+                                    retrieved_inv.invoice_pdf
+                                )
+                        except Exception as inv_err:
+                            logger.warning(
+                                "Erreur récupération facture acquittée Stripe : %s",
+                                inv_err,
+                            )
+                    elif isinstance(inv_obj, dict):
+                        current_user.stripe_latest_invoice_id = str(
+                            inv_obj.get("id")
+                        )
+                        current_user.stripe_latest_invoice_pdf = inv_obj.get(
+                            "invoice_pdf"
+                        )
                 db.session.commit()
         except Exception as e:  # noqa: BLE001
             logger.warning("Erreur vérification session_id success : %s", e)
@@ -263,10 +323,322 @@ def success():
     return render_template("subscription/success.html")
 
 
+@subscription.route("/subscription/facture-acquittee")
+@login_required
+def facture_acquittee():
+    """Redirige l'enseignant vers le PDF officiel Stripe de sa dernière facture acquittée."""
+    stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+    pdf_url = current_user.stripe_latest_invoice_pdf
+
+    # Si l'URL n'est pas connue ou pour actualiser depuis Stripe
+    if stripe_secret and (
+        current_user.stripe_customer_id
+        or current_user.stripe_latest_invoice_id
+    ):
+        try:
+            stripe.api_key = stripe_secret
+            if current_user.stripe_latest_invoice_id:
+                inv = stripe.Invoice.retrieve(current_user.stripe_latest_invoice_id)
+                inv_pdf = getattr(inv, "invoice_pdf", None) or (
+                    inv.get("invoice_pdf") if isinstance(inv, dict) else None
+                )
+                inv_hosted = getattr(inv, "hosted_invoice_url", None) or (
+                    inv.get("hosted_invoice_url") if isinstance(inv, dict) else None
+                )
+                if inv_pdf:
+                    current_user.stripe_latest_invoice_pdf = inv_pdf
+                    db.session.commit()
+                    return redirect(inv_pdf, code=302)
+                elif inv_hosted:
+                    return redirect(inv_hosted, code=302)
+
+            if current_user.stripe_customer_id:
+                invoices = stripe.Invoice.list(
+                    customer=current_user.stripe_customer_id,
+                    status="paid",
+                    limit=1,
+                )
+                invoices_data = getattr(invoices, "data", [])
+                if invoices_data:
+                    latest = invoices_data[0]
+                    latest_id = getattr(latest, "id", None) or (
+                        latest.get("id") if isinstance(latest, dict) else None
+                    )
+                    latest_pdf = getattr(latest, "invoice_pdf", None) or (
+                        latest.get("invoice_pdf") if isinstance(latest, dict) else None
+                    )
+                    latest_hosted = getattr(latest, "hosted_invoice_url", None) or (
+                        latest.get("hosted_invoice_url") if isinstance(latest, dict) else None
+                    )
+                    if latest_id:
+                        current_user.stripe_latest_invoice_id = str(latest_id)
+                    if latest_pdf:
+                        current_user.stripe_latest_invoice_pdf = latest_pdf
+                    db.session.commit()
+                    if latest_pdf:
+                        return redirect(latest_pdf, code=302)
+                    if latest_hosted:
+                        return redirect(latest_hosted, code=302)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("Erreur récupération facture acquittée Stripe : %s", e)
+
+
+    if pdf_url:
+        return redirect(pdf_url, code=302)
+
+    flash(
+        _(
+            "Aucune facture acquittée n'est disponible pour votre compte actuellement."
+        ),
+        "info",
+    )
+    return redirect(url_for("auth.reglage"))
+
+
+@subscription.route("/subscription/facture-ecole", methods=["GET", "POST"])
+@login_required
+def facture_ecole():
+    """Permet à un enseignant de demander une facture officielle Stripe au nom de son école/coopérative."""
+    if current_user.plan == "founder":
+        flash(
+            _(
+                "Votre statut Fondateur vous donne déjà un accès complet et illimité à vie."
+            ),
+            "info",
+        )
+        return redirect(url_for("main.dashboard"))
+
+    # Vérifier si l'utilisateur a déjà une facture école en attente de paiement
+    pending_invoice = current_user.active_pending_school_invoice
+
+    if request.method == "POST":
+        if pending_invoice:
+            flash(
+                _(
+                    "Une facture école est déjà en cours de règlement pour votre compte."
+                ),
+                "warning",
+            )
+            return redirect(
+                url_for(
+                    "subscription.facture_ecole_confirmation",
+                    invoice_id=pending_invoice.id,
+                )
+            )
+
+        school_name = (request.form.get("school_name") or "").strip()
+        school_address = (request.form.get("school_address") or "").strip()
+        school_billing_email = (
+            request.form.get("school_billing_email") or ""
+        ).strip()
+        country_currency = (
+            request.form.get("country_currency") or "EUR"
+        ).upper()
+        siret_or_tax_id = (request.form.get("siret_or_tax_id") or "").strip()
+        order_reference = (request.form.get("order_reference") or "").strip()
+
+        if not school_name or not school_address or not school_billing_email:
+            flash(
+                _(
+                    "Veuillez renseigner le nom de l'organisme, son adresse complète et l'e-mail de facturation."
+                ),
+                "error",
+            )
+            return render_template(
+                "subscription/facture_ecole.html",
+                pending_invoice=pending_invoice,
+                user_school_name=school_name,
+            )
+
+        stripe_secret = os.getenv("STRIPE_SECRET_KEY")
+        if not stripe_secret:
+            logger.warning(
+                "STRIPE_SECRET_KEY non configurée pour facture école."
+            )
+            flash(
+                _(
+                    "Le service de facturation Stripe est en cours de configuration. Contactez l'administrateur."
+                ),
+                "info",
+            )
+            return redirect(url_for("subscription.tarifs"))
+
+        stripe.api_key = stripe_secret
+        currency = "eur" if country_currency == "EUR" else "chf"
+        unit_amount = 3000  # 30.00 EUR ou 30.00 CHF
+
+        try:
+            # 1. Créer le client Stripe dédié à l'école / organisme payeur
+            cust_params = {
+                "name": school_name,
+                "email": school_billing_email,
+                "address": {"line1": school_address},
+                "metadata": {
+                    "user_id": str(current_user.id),
+                    "teacher_email": current_user.email,
+                    "teacher_name": current_user.name or "",
+                    "flow": "flux_b_school_invoice",
+                },
+            }
+            customer = stripe.Customer.create(**cust_params)
+
+            # 2. Créer la ligne de facture (InvoiceItem)
+            item_description = (
+                f"Abonnement annuel Livres en Classe (Année scolaire) — "
+                f"Enseignant(e) : {current_user.name or current_user.email}"
+            )
+            if order_reference:
+                item_description += f" (Réf: {order_reference})"
+
+            stripe.InvoiceItem.create(
+                customer=customer.id,
+                amount=unit_amount,
+                currency=currency,
+                description=item_description,
+                metadata={
+                    "user_id": str(current_user.id),
+                    "school_name": school_name,
+                },
+            )
+
+            # 3. Créer la facture Stripe Invoicing avec échéance à 30 jours
+            invoice_params = {
+                "customer": customer.id,
+                "collection_method": "send_invoice",
+                "days_until_due": 30,
+                "auto_advance": True,
+                "footer": STRIPE_TAX_EXEMPTION_NOTICE,
+                "metadata": {
+                    "user_id": str(current_user.id),
+                    "school_name": school_name,
+                    "school_billing_email": school_billing_email,
+                    "flow": "flux_b_school_invoice",
+                },
+            }
+
+            try:
+                invoice_params["payment_settings"] = {
+                    "payment_method_types": ["card", "customer_balance"],
+                    "payment_method_options": {
+                        "customer_balance": {
+                            "funding_type": "bank_transfer",
+                            "bank_transfer": {
+                                "type": "eu_bank_transfer"
+                                if currency == "eur"
+                                else "ch_bank_transfer",
+                            },
+                        },
+                    },
+                }
+                created_inv = stripe.Invoice.create(**invoice_params)
+            except Exception as pay_err:
+                logger.warning(
+                    "Fallback création facture sans payment_settings custom : %s",
+                    pay_err,
+                )
+                invoice_params.pop("payment_settings", None)
+                created_inv = stripe.Invoice.create(**invoice_params)
+
+            # 4. Finaliser la facture pour générer hosted_invoice_url et PDF
+            try:
+                finalized_inv = stripe.Invoice.finalize_invoice(created_inv.id)
+            except Exception:
+                finalized_inv = stripe.Invoice.retrieve(created_inv.id)
+
+            # 5. Envoyer l'e-mail officiel Stripe au secrétariat
+            try:
+                stripe.Invoice.send_invoice(finalized_inv.id)
+            except Exception as send_err:
+                logger.warning(
+                    "Notification Stripe send_invoice échouée : %s", send_err
+                )
+
+            # 6. Enregistrer la facture école en base de données
+            due_date = datetime.now(UTC) + timedelta(days=30)
+            hosted_url = getattr(finalized_inv, "hosted_invoice_url", None)
+            pdf_url = getattr(finalized_inv, "invoice_pdf", None)
+
+            school_inv = SchoolInvoice(
+                user_id=current_user.id,
+                stripe_invoice_id=finalized_inv.id,
+                stripe_customer_id=customer.id,
+                school_name=school_name,
+                school_address=school_address,
+                school_billing_email=school_billing_email,
+                siret_or_tax_id=siret_or_tax_id,
+                order_reference=order_reference,
+                amount=float(unit_amount) / 100.0,
+                currency=currency.upper(),
+                status="pending",
+                hosted_invoice_url=hosted_url,
+                invoice_pdf_url=pdf_url,
+                due_at=due_date,
+                created_at=datetime.now(UTC),
+            )
+            db.session.add(school_inv)
+
+            # 7. Activer l'accès Premium immédiat de 30 jours (Grace Period)
+            db_user = db.session.get(User, current_user.id)
+            if db_user and db_user.plan != "founder":
+                db_user.trial_ends_at = due_date
+            if hasattr(current_user, "trial_ends_at") and current_user.plan != "founder":
+                current_user.trial_ends_at = due_date
+            db.session.commit()
+
+            # 8. Envoyer un email de confirmation à l'enseignant (en arrière-plan)
+            _send_school_invoice_created_email(current_user, school_inv)
+
+            flash(
+                _(
+                    "Votre facture école a été générée avec succès. Votre accès Premium est débloqué pour 30 jours !"
+                ),
+                "success",
+            )
+            return redirect(
+                url_for(
+                    "subscription.facture_ecole_confirmation",
+                    invoice_id=school_inv.id,
+                )
+            )
+
+        except Exception:
+            logger.exception("Erreur lors de la création de la facture école Stripe")
+            db.session.rollback()
+            flash(
+                _(
+                    "Une erreur est survenue lors de la création de la facture Stripe. Veuillez vérifier les informations ou réessayer ultérieurement."
+                ),
+                "error",
+            )
+            return redirect(url_for("subscription.facture_ecole"))
+
+    return render_template(
+        "subscription/facture_ecole.html",
+        pending_invoice=pending_invoice,
+        user_school_name="",
+    )
+
+
+@subscription.route("/subscription/facture-ecole/confirmation/<int:invoice_id>")
+@login_required
+def facture_ecole_confirmation(invoice_id):
+    """Affiche la page de confirmation et les détails d'une facture école émise."""
+    school_inv = db.session.get(SchoolInvoice, invoice_id)
+    if not school_inv or school_inv.user_id != current_user.id:
+        flash(_("Facture école introuvable."), "error")
+        return redirect(url_for("auth.reglage"))
+
+    return render_template(
+        "subscription/facture_ecole_confirmation.html",
+        invoice=school_inv,
+    )
+
+
 @subscription.route("/subscription/cancel")
 def cancel():
     """Page d'annulation (aucun débit effectué)."""
     return render_template("subscription/cancel.html")
+
 
 
 @webhook_bp.route("/webhook/stripe", methods=["POST"])
@@ -311,8 +683,13 @@ def stripe_webhook():
         _handle_subscription_deleted(data_object)
     elif event_type == "invoice.payment_failed":
         _handle_invoice_payment_failed(data_object)
+    elif event_type == "invoice.paid":
+        _handle_invoice_paid(data_object)
+    elif event_type in ("invoice.voided", "invoice.marked_uncollectible"):
+        _handle_invoice_voided(data_object)
 
     return jsonify({"status": "success"}), 200
+
 
 
 def _handle_checkout_completed(session):
@@ -554,3 +931,190 @@ def _handle_invoice_payment_failed(invoice):
                     )
 
         threading.Thread(target=_send_payment_failed_email, daemon=True).start()
+
+
+def _handle_invoice_paid(invoice_data):
+    if hasattr(invoice_data, "to_dict"):
+        invoice_data = invoice_data.to_dict()
+    invoice_id = invoice_data.get("id")
+    if not invoice_id:
+        return
+
+    # 1. Vérifier si c'est une facture école (Flux B)
+    school_inv = SchoolInvoice.query.filter_by(
+        stripe_invoice_id=invoice_id
+    ).first()
+    if school_inv:
+        if school_inv.status == "paid":
+            logger.info(
+                "Facture école %s déjà traitée comme payée (idempotent)",
+                invoice_id,
+            )
+            return
+
+        school_inv.status = "paid"
+        school_inv.paid_at = datetime.now(UTC)
+        if invoice_data.get("invoice_pdf"):
+            school_inv.invoice_pdf_url = invoice_data.get("invoice_pdf")
+        if invoice_data.get("hosted_invoice_url"):
+            school_inv.hosted_invoice_url = invoice_data.get("hosted_invoice_url")
+
+        user = school_inv.user
+        if user and user.plan != "founder":
+            user.plan = "premium"
+            user.stripe_subscription_status = "active"
+            user.stripe_latest_invoice_id = invoice_id
+            if invoice_data.get("invoice_pdf"):
+                user.stripe_latest_invoice_pdf = invoice_data.get("invoice_pdf")
+
+            # Prolongation de 365 jours complets
+            now = datetime.now(UTC)
+            base_date = now
+            if user.subscription_end_at:
+                end_aware = (
+                    user.subscription_end_at.replace(tzinfo=UTC)
+                    if user.subscription_end_at.tzinfo is None
+                    else user.subscription_end_at
+                )
+                if end_aware > now:
+                    base_date = end_aware
+            user.subscription_end_at = base_date + timedelta(days=365)
+            db.session.commit()
+            logger.info(
+                "Facture école %s payée. Compte de l'utilisateur %s prolongé pour 365 jours jusqu'au %s",
+                invoice_id,
+                user.id,
+                user.subscription_end_at,
+            )
+            _send_school_invoice_paid_email(user, school_inv)
+        else:
+            db.session.commit()
+        return
+
+    # 2. Facture de souscription classique (Flux A)
+    customer_id = invoice_data.get("customer")
+    user = None
+    if customer_id:
+        user = User.query.filter_by(stripe_customer_id=customer_id).first()
+    if not user:
+        user_id = (invoice_data.get("metadata") or {}).get("user_id")
+        if user_id:
+            try:
+                user = db.session.get(User, int(user_id))
+            except (ValueError, TypeError):
+                user = None
+
+    if user:
+        user.stripe_latest_invoice_id = invoice_id
+        if invoice_data.get("invoice_pdf"):
+            user.stripe_latest_invoice_pdf = invoice_data.get("invoice_pdf")
+        db.session.commit()
+        logger.info(
+            "Facture acquittée %s associée à l'utilisateur %s via invoice.paid",
+            invoice_id,
+            user.id,
+        )
+
+
+def _handle_invoice_voided(invoice_data):
+    if hasattr(invoice_data, "to_dict"):
+        invoice_data = invoice_data.to_dict()
+    invoice_id = invoice_data.get("id")
+    if not invoice_id:
+        return
+    school_inv = SchoolInvoice.query.filter_by(
+        stripe_invoice_id=invoice_id
+    ).first()
+    if school_inv:
+        school_inv.status = "void"
+        db.session.commit()
+        logger.info("Facture école %s marquée comme annulée (void)", invoice_id)
+
+
+def _send_school_invoice_created_email(user, school_inv):
+    app = current_app._get_current_object()
+    user_email = user.email
+    user_copy = {"email": user_email, "name": getattr(user, "name", "")}
+    inv_copy = {
+        "id": school_inv.id,
+        "school_name": school_inv.school_name,
+        "school_billing_email": school_inv.school_billing_email,
+        "amount": school_inv.amount,
+        "currency": school_inv.currency,
+        "hosted_invoice_url": school_inv.hosted_invoice_url,
+        "invoice_pdf_url": school_inv.invoice_pdf_url,
+        "due_at": school_inv.due_at,
+    }
+
+    def _send():
+        with app.app_context():
+            try:
+                confirmation_url = url_for(
+                    "subscription.facture_ecole_confirmation",
+                    invoice_id=inv_copy["id"],
+                    _external=True,
+                )
+                html_body = render_template(
+                    "email/email_school_invoice_created.html",
+                    user=user_copy,
+                    invoice=inv_copy,
+                    confirmation_url=confirmation_url,
+                )
+                send_html_email(
+                    subject="Facture école générée & Accès Premium 30 jours actif - Livres en Classe",
+                    sender=os.getenv("MAIL_USERNAME"),
+                    recipients=[user_email],
+                    html_body=html_body,
+                )
+                logger.info("Email facture école créée envoyé à %s", user_email)
+            except Exception as e:  # noqa: BLE001
+                logger.warning(
+                    "Impossible d'envoyer l'email facture école créée : %s", e
+                )
+
+    threading.Thread(target=_send, daemon=True).start()
+
+
+def _send_school_invoice_paid_email(user, school_inv):
+    app = current_app._get_current_object()
+    user_email = user.email
+    user_copy = {
+        "email": user_email,
+        "name": getattr(user, "name", ""),
+        "subscription_end_at": getattr(user, "subscription_end_at", None),
+    }
+    inv_copy = {
+        "id": school_inv.id,
+        "school_name": school_inv.school_name,
+        "amount": school_inv.amount,
+        "currency": school_inv.currency,
+        "invoice_pdf_url": school_inv.invoice_pdf_url,
+    }
+
+    def _send():
+        with app.app_context():
+            try:
+                reglage_url = url_for("auth.reglage", _external=True)
+                html_body = render_template(
+                    "email/email_school_invoice_paid.html",
+                    user=user_copy,
+                    invoice=inv_copy,
+                    reglage_url=reglage_url,
+                )
+                send_html_email(
+                    subject="Règlement validé : Votre abonnement annuel Livres en Classe est actif !",
+                    sender=os.getenv("MAIL_USERNAME"),
+                    recipients=[user_email],
+                    html_body=html_body,
+                )
+                logger.info(
+                    "Email confirmation règlement facture école envoyé à %s",
+                    user_email,
+                )
+            except Exception as e:  # noqa: BLE001
+                logger.warning(
+                    "Impossible d'envoyer l'email de confirmation de paiement école : %s",
+                    e,
+                )
+
+    threading.Thread(target=_send, daemon=True).start()

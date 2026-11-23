@@ -63,6 +63,8 @@ class User(UserMixin, db.Model):
     stripe_subscription_id = db.Column(db.String(120), nullable=True, index=True)
     stripe_subscription_status = db.Column(db.String(30), nullable=True)
     stripe_price_id = db.Column(db.String(120), nullable=True)
+    stripe_latest_invoice_id = db.Column(db.String(120), nullable=True)
+    stripe_latest_invoice_pdf = db.Column(db.String(500), nullable=True)
     subscription_end_at = db.Column(db.DateTime, nullable=True)
     last_scan_reset_at = db.Column(db.DateTime, nullable=True)
     show_book_covers = db.Column(
@@ -281,6 +283,32 @@ class User(UserMixin, db.Model):
         cascade="all, delete-orphan",
         order_by="desc(AcademicYearArchive.end_date)",
     )
+    # One-to-Many relationship with school invoices (Flux B)
+    school_invoices = relationship(
+        "SchoolInvoice",
+        backref="user",
+        lazy=True,
+        cascade="all, delete-orphan",
+        order_by="desc(SchoolInvoice.created_at)",
+    )
+
+    @property
+    def active_pending_school_invoice(self):
+        """Retourne la facture école en attente de paiement (statut pending) si elle existe."""
+        for inv in self.school_invoices:
+            if inv.status == "pending":
+                return inv
+        return None
+
+    @property
+    def has_pending_school_invoice(self) -> bool:
+        """Indique si l'utilisateur dispose d'une facture école en cours de traitement."""
+        return self.active_pending_school_invoice is not None
+
+    @property
+    def latest_school_invoice(self):
+        """Dernière facture école émise pour l'utilisateur."""
+        return self.school_invoices[0] if self.school_invoices else None
 
     def get_verification_token(self):
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
@@ -580,3 +608,54 @@ class NewsletterDelivery(db.Model):
     open_count = db.Column(db.Integer, default=0, nullable=False)
 
     user = relationship("User", backref="newsletter_deliveries", lazy=True)
+
+
+class SchoolInvoice(db.Model):
+    __tablename__ = "school_invoice"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer,
+        ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    stripe_invoice_id = db.Column(
+        db.String(120), unique=True, nullable=False, index=True
+    )
+    stripe_customer_id = db.Column(db.String(120), nullable=False)
+    school_name = db.Column(db.String(255), nullable=False)
+    school_address = db.Column(db.Text, nullable=False)
+    school_billing_email = db.Column(db.String(120), nullable=False)
+    siret_or_tax_id = db.Column(db.String(50), nullable=True)
+    order_reference = db.Column(db.String(100), nullable=True)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), nullable=False, default="eur")
+    status = db.Column(
+        db.String(30), default="pending", nullable=False
+    )  # "pending", "paid", "void", "expired"
+    hosted_invoice_url = db.Column(db.String(500), nullable=True)
+    invoice_pdf_url = db.Column(db.String(500), nullable=True)
+    due_at = db.Column(db.DateTime, nullable=False)
+    paid_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(UTC), nullable=False
+    )
+
+    @property
+    def is_paid(self) -> bool:
+        return self.status == "paid"
+
+    @property
+    def is_pending(self) -> bool:
+        return self.status == "pending"
+
+    @property
+    def is_overdue(self) -> bool:
+        if self.status != "pending" or not self.due_at:
+            return False
+        due = (
+            self.due_at.replace(tzinfo=UTC)
+            if self.due_at.tzinfo is None
+            else self.due_at
+        )
+        return datetime.now(UTC) > due

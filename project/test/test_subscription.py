@@ -12,7 +12,13 @@ from project.config_plans import (
     MAX_FREE_SCANS,
     MAX_FREE_STUDENTS,
 )
-from project.models import Book, Student, User, get_current_scan_period_start
+from project.models import (
+    Book,
+    SchoolInvoice,
+    Student,
+    User,
+    get_current_scan_period_start,
+)
 
 
 @pytest.fixture
@@ -1451,3 +1457,422 @@ def test_stripe_webhook_with_real_stripe_event_object(client, app):
             assert u.plan == "premium"
             assert u.stripe_subscription_status == "active"
             assert u.subscription_end_at is not None
+
+
+def test_flux_a_checkout_session_b2b_metadata(client, app):
+    """Vérifie que la session Stripe Checkout transmet les données B2B pour le remboursement école (Flux A)."""
+    with app.app_context():
+        user = User(
+            id=201,
+            email="teacher_a@test.com",
+            name="Mme Martin",
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=201,
+        email="teacher_a@test.com",
+        name="Mme Martin",
+        stripe_customer_id=None,
+        is_authenticated=True,
+    )
+    mock_session = MagicMock(url="https://checkout.stripe.com/pay/cs_test_b2b_123")
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_123"}),
+        patch(
+            "stripe.Customer.create",
+            return_value=MagicMock(id="cus_auto_created_201"),
+        ) as mock_cust_create,
+        patch(
+            "stripe.checkout.Session.create", return_value=mock_session
+        ) as mock_sess_create,
+    ):
+        resp = client.post(
+            "/subscription/create-checkout-session",
+            data={
+                "plan_type": "yearly",
+                "is_school_reimbursement": "1",
+                "school_name": "Coopérative OCCE École Victor Hugo",
+                "school_address": "12 rue des Écoles, 75000 Paris",
+            },
+        )
+        assert resp.status_code == 303
+        assert resp.headers["Location"] == "https://checkout.stripe.com/pay/cs_test_b2b_123"
+
+        # Vérifier les paramètres transmis à Stripe
+        mock_sess_create.assert_called_once()
+        call_kwargs = mock_sess_create.call_args[1]
+        assert call_kwargs["tax_id_collection"] == {"enabled": True}
+        assert call_kwargs["customer"] == "cus_auto_created_201"
+        assert call_kwargs["customer_update"] == {"name": "auto", "address": "auto"}
+        assert (
+            call_kwargs["metadata"]["school_name"]
+            == "Coopérative OCCE École Victor Hugo"
+        )
+        assert (
+            call_kwargs["metadata"]["school_address"]
+            == "12 rue des Écoles, 75000 Paris"
+        )
+        assert call_kwargs["metadata"]["is_school_reimbursement"] == "true"
+
+
+def test_facture_acquittee_redirect(client, app):
+    """Vérifie la redirection vers le PDF officiel Stripe de facture acquittée."""
+    with app.app_context():
+        user = User(
+            id=202,
+            email="teacher_facture@test.com",
+            plan="premium",
+            stripe_customer_id="cus_facture_202",
+            stripe_latest_invoice_pdf="https://stripe.com/invoice/inv_paid_cached.pdf",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=202,
+        email="teacher_facture@test.com",
+        stripe_customer_id="cus_facture_202",
+        stripe_latest_invoice_id=None,
+        stripe_latest_invoice_pdf="https://stripe.com/invoice/inv_paid_cached.pdf",
+        is_authenticated=True,
+    )
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+    ):
+        resp = client.get("/subscription/facture-acquittee")
+        assert resp.status_code == 302
+        assert resp.headers["Location"] == "https://stripe.com/invoice/inv_paid_cached.pdf"
+
+
+def test_facture_acquittee_fetch_from_stripe(client, app):
+    """Vérifie la récupération dynamique de la facture acquittée via l'API Stripe si non cachée."""
+    with app.app_context():
+        user = User(
+            id=203,
+            email="teacher_api_inv@test.com",
+            plan="premium",
+            stripe_customer_id="cus_api_203",
+            stripe_latest_invoice_pdf=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=203,
+        email="teacher_api_inv@test.com",
+        stripe_customer_id="cus_api_203",
+        stripe_latest_invoice_id=None,
+        stripe_latest_invoice_pdf=None,
+        is_authenticated=True,
+    )
+
+    mock_invoice = MagicMock(
+        id="in_dynamic_999",
+        invoice_pdf="https://pay.stripe.com/invoice/in_dynamic_999/pdf",
+        hosted_invoice_url="https://invoice.stripe.com/i/in_dynamic_999",
+    )
+    mock_invoices_list = MagicMock(data=[mock_invoice])
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_secret"}),
+        patch("stripe.Invoice.list", return_value=mock_invoices_list),
+    ):
+        resp = client.get("/subscription/facture-acquittee")
+        assert resp.status_code == 302
+        assert (
+            resp.headers["Location"]
+            == "https://pay.stripe.com/invoice/in_dynamic_999/pdf"
+        )
+
+
+def test_flux_b_facture_ecole_creation_and_grace_period(client, app):
+    """Vérifie la création d'une facture école (Flux B) avec accès Premium immédiat 30 jours."""
+    with app.app_context():
+        user = User(
+            id=204,
+            email="ecole_teacher@test.com",
+            name="Professeur Tournesol",
+            plan="free",
+            trial_ends_at=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=204,
+        email="ecole_teacher@test.com",
+        name="Professeur Tournesol",
+        plan="free",
+        active_pending_school_invoice=None,
+        is_authenticated=True,
+    )
+
+    mock_cust = MagicMock(id="cus_school_204")
+    mock_inv_created = MagicMock(id="in_school_draft_204")
+    mock_inv_finalized = MagicMock(
+        id="in_school_final_204",
+        hosted_invoice_url="https://invoice.stripe.com/i/school_204",
+        invoice_pdf="https://pay.stripe.com/invoice/school_204/pdf",
+    )
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_school"}),
+        patch("stripe.Customer.create", return_value=mock_cust),
+        patch("stripe.InvoiceItem.create") as mock_item_create,
+        patch(
+            "stripe.Invoice.create", return_value=mock_inv_created
+        ) as mock_invoice_create,
+        patch(
+            "stripe.Invoice.finalize_invoice",
+            return_value=mock_inv_finalized,
+        ),
+        patch("stripe.Invoice.send_invoice") as mock_send_inv,
+        patch("project.subscription._send_school_invoice_created_email"),
+    ):
+        # 1. GET page du formulaire
+        resp_get = client.get("/subscription/facture-ecole")
+        assert resp_get.status_code == 200
+        assert "Facture officielle pour votre école".encode("utf-8") in resp_get.data
+
+        # 2. POST soumission du formulaire
+        resp_post = client.post(
+            "/subscription/facture-ecole",
+            data={
+                "school_name": "Coopérative OCCE Moulinsart",
+                "school_address": "Château de Moulinsart, 1000 Bruxelles",
+                "school_billing_email": "compta@moulinsart.be",
+                "country_currency": "EUR",
+                "siret_or_tax_id": "12345678900014",
+                "order_reference": "BC-2026-001",
+            },
+        )
+        assert resp_post.status_code == 302
+        assert "/subscription/facture-ecole/confirmation/" in resp_post.headers["Location"]
+
+        # Vérifier les appels Stripe
+        mock_item_create.assert_called_once()
+        item_kwargs = mock_item_create.call_args[1]
+        assert item_kwargs["amount"] == 3000
+        assert item_kwargs["currency"] == "eur"
+
+        mock_invoice_create.assert_called_once()
+        inv_kwargs = mock_invoice_create.call_args[1]
+        assert inv_kwargs["collection_method"] == "send_invoice"
+        assert inv_kwargs["days_until_due"] == 30
+        assert "Exonéré de TVA selon l'art. 10 de la Loi fédérale suisse" in inv_kwargs["footer"]
+
+        mock_send_inv.assert_called_once_with("in_school_final_204")
+
+        # Vérifier en base de données
+        with app.app_context():
+            u = db.session.get(User, 204)
+            assert len(u.school_invoices) == 1
+            si = u.school_invoices[0]
+            assert si.school_name == "Coopérative OCCE Moulinsart"
+            assert si.stripe_invoice_id == "in_school_final_204"
+            assert si.amount == 30.0
+            assert si.currency == "EUR"
+            assert si.status == "pending"
+            assert si.hosted_invoice_url == "https://invoice.stripe.com/i/school_204"
+            assert si.invoice_pdf_url == "https://pay.stripe.com/invoice/school_204/pdf"
+
+            # Vérifier l'accès anticipé immédiat de 30 jours (Grace Period)
+            assert u.is_in_trial is True
+            assert u.is_premium is True
+            assert u.trial_days_left in (29, 30)
+            assert u.has_pending_school_invoice is True
+            assert u.active_pending_school_invoice.id == si.id
+
+
+def test_flux_b_anti_abuse_blocks_duplicate_pending(client, app):
+    """Vérifie le blocage d'une deuxième demande si une facture école est déjà en cours."""
+    with app.app_context():
+        user = User(
+            id=205,
+            email="abuse_check@test.com",
+            plan="free",
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=205,
+            stripe_invoice_id="in_existing_pending",
+            stripe_customer_id="cus_existing",
+            school_name="École Test",
+            school_address="Rue Test",
+            school_billing_email="test@ecole.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=datetime.now(UTC) + timedelta(days=20),
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+        inv_id = school_inv.id
+
+    mock_user = MagicMock(
+        id=205,
+        email="abuse_check@test.com",
+        plan="free",
+        active_pending_school_invoice=school_inv,
+        is_authenticated=True,
+    )
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch("stripe.Invoice.create") as mock_inv_create,
+    ):
+        resp = client.post(
+            "/subscription/facture-ecole",
+            data={
+                "school_name": "Tentative 2",
+                "school_address": "Adresse 2",
+                "school_billing_email": "autre@ecole.fr",
+            },
+        )
+        assert resp.status_code == 302
+        assert f"/subscription/facture-ecole/confirmation/{inv_id}" in resp.headers["Location"]
+        # Aucune nouvelle facture Stripe n'a été créée
+        mock_inv_create.assert_not_called()
+
+
+def test_webhook_invoice_paid_flux_b_extends_365_days(client, app):
+    """Vérifie que la réception du webhook invoice.paid pour une facture école prolonge pour 365 jours."""
+    with app.app_context():
+        user = User(
+            id=206,
+            email="reconcile_school@test.com",
+            plan="free",
+            trial_ends_at=datetime.now(UTC) + timedelta(days=25),
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=206,
+            stripe_invoice_id="in_school_to_pay_206",
+            stripe_customer_id="cus_school_206",
+            school_name="École La Fontaine",
+            school_address="1 av La Fontaine",
+            school_billing_email="mairie@ville.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=datetime.now(UTC) + timedelta(days=25),
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+    webhook_payload = {
+        "id": "evt_invoice_paid_school",
+        "type": "invoice.paid",
+        "data": {
+            "object": {
+                "id": "in_school_to_pay_206",
+                "customer": "cus_school_206",
+                "status": "paid",
+                "invoice_pdf": "https://pay.stripe.com/invoice/paid_school_206.pdf",
+                "hosted_invoice_url": "https://invoice.stripe.com/i/paid_school_206",
+            }
+        },
+    }
+
+    stripe_event = stripe.Event.construct_from(webhook_payload, key=None)
+    with (
+        patch("stripe.Webhook.construct_event", return_value=stripe_event),
+        patch.dict("os.environ", {"STRIPE_WEBHOOK_SECRET": "whsec_test"}),
+        patch("project.subscription._send_school_invoice_paid_email"),
+    ):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(webhook_payload),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            si = SchoolInvoice.query.filter_by(
+                stripe_invoice_id="in_school_to_pay_206"
+            ).first()
+            assert si.status == "paid"
+            assert si.paid_at is not None
+            assert si.invoice_pdf_url == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+
+            u = db.session.get(User, 206)
+            assert u.plan == "premium"
+            assert u.stripe_subscription_status == "active"
+            assert u.subscription_end_at is not None
+            # Doit être prolongé d'au moins 364 jours
+            delta = u.subscription_end_at.replace(tzinfo=UTC) - datetime.now(UTC)
+            assert delta.days in (364, 365, 366)
+            assert u.stripe_latest_invoice_id == "in_school_to_pay_206"
+            assert u.stripe_latest_invoice_pdf == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+
+
+def test_webhook_invoice_voided_flux_b(client, app):
+    """Vérifie que la réception du webhook invoice.voided met à jour le statut en void."""
+    with app.app_context():
+        user = User(
+            id=207,
+            email="void_school@test.com",
+            plan="free",
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=207,
+            stripe_invoice_id="in_school_to_void_207",
+            stripe_customer_id="cus_school_207",
+            school_name="École Annulée",
+            school_address="1 av Annulée",
+            school_billing_email="annulee@ville.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=datetime.now(UTC) + timedelta(days=25),
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+    webhook_payload = {
+        "id": "evt_invoice_voided_school",
+        "type": "invoice.voided",
+        "data": {
+            "object": {
+                "id": "in_school_to_void_207",
+            }
+        },
+    }
+
+    stripe_event = stripe.Event.construct_from(webhook_payload, key=None)
+    with (
+        patch("stripe.Webhook.construct_event", return_value=stripe_event),
+        patch.dict("os.environ", {"STRIPE_WEBHOOK_SECRET": "whsec_test"}),
+    ):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(webhook_payload),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            si = SchoolInvoice.query.filter_by(
+                stripe_invoice_id="in_school_to_void_207"
+            ).first()
+            assert si.status == "void"
+
