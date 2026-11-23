@@ -155,14 +155,19 @@ DB_TARGET="/home/ubuntu/livresenclasse/instance/db.sqlite"
 if [ -d "$REPLICA_DIR/generations" ]; then
     log "Restauration en cours de la base SQLite depuis la réplique Litestream..."
     rm -f /tmp/restore_temp.sqlite
-    if /usr/local/bin/litestream restore -if-replica-exists -o /tmp/restore_temp.sqlite "file://$REPLICA_DIR" && mv /tmp/restore_temp.sqlite "$DB_TARGET"; then
-        log "Restauration Litestream réussie."
-        INTEGRITY=$(sqlite3 "$DB_TARGET" "PRAGMA integrity_check;" 2>/dev/null || echo "error")
+    if /usr/local/bin/litestream restore -if-replica-exists -o /tmp/restore_temp.sqlite "file://$REPLICA_DIR"; then
+        # Reconstruire les index secondaires pour garantir la cohérence des compteurs SQLite post-WAL
+        sqlite3 /tmp/restore_temp.sqlite "REINDEX;" 2>/dev/null || true
+        INTEGRITY=$(sqlite3 /tmp/restore_temp.sqlite "PRAGMA integrity_check;" 2>/dev/null || echo "error")
         if [ "$INTEGRITY" = "ok" ]; then
-            log "Intégrité SQLite validée (PRAGMA integrity_check: ok)."
+            mv /tmp/restore_temp.sqlite "$DB_TARGET"
+            chmod 644 "$DB_TARGET"
+            log "Restauration Litestream réussie et intégrité validée (PRAGMA integrity_check: ok)."
             docker exec biblio kill -HUP 1 2>/dev/null || true
+            log "Gunicorn rechargé (SIGHUP) avec succès sur biblio."
         else
             log "ATTENTION : Erreur d'intégrité SQLite ($INTEGRITY), conservation de la base précédente."
+            rm -f /tmp/restore_temp.sqlite
         fi
     else
         log "Avertissement : La restauration Litestream a échoué, conservation de la base actuelle."
