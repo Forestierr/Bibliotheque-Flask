@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bravo ! Votre bibliothèque de classe compte déjà plus de {{ book_count }} livres</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.65; color: #1e293b;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 36px 12px;">
+        <tr>
+            <td align="center">
+                <!-- Main Container -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 4px; overflow: hidden;">
+                    
+                    <!-- Masthead Header -->
+                    <tr>
+                        <td style="padding: 36px 40px 20px 40px; text-align: center; border-bottom: 1px solid #0f172a;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <p style="margin: 0 0 6px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 2px;">
+                                            Plateforme de gestion de bibliothèque scolaire
+                                        </p>
+                                        <h1 style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: 1.5px; text-transform: uppercase;">
+                                            LIVRES EN CLASSE
+                                        </h1>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Subject / Headline -->
+                    <tr>
+                        <td style="padding: 32px 40px 12px 40px;">
+                            <h2 style="margin: 0; font-family: 'Charter', 'Georgia', 'Times New Roman', serif; font-size: 24px; font-weight: 700; color: #0f172a; line-height: 1.35;">
+                                📚 Félicitations ! Votre bibliothèque compte déjà {{ book_count }} livres
+                            </h2>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 12px 40px 36px 40px; font-size: 15px; color: #334155; line-height: 1.7;">
+                            <p style="margin: 0 0 16px 0;">
+                                Bonjour {{ firstname|default('Enseignant(e)') }},
+                            </p>
+
+                            <p style="margin: 0 0 16px 0;">
+                                Quel magnifique travail pour votre classe ! Voir votre bibliothèque s'enrichir d'autant d'ouvrages au fil des semaines est formidable pour vos élèves et leur plaisir de lire.
+                            </p>
+
+                            <p style="margin: 0 0 20px 0;">
+                                Avec <strong style="color: #0f172a;">{{ book_count }} livres enregistrés</strong>, vous vous approchez doucement du palier des 100 livres de la formule gratuite.
+                            </p>
+
+                            <!-- Encadré Rassurance -->
+                            <div style="background-color: #f1f5f9; border-radius: 6px; padding: 16px 20px; margin: 0 0 24px 0;">
+                                <p style="margin: 0; font-size: 14px; color: #334155;">
+                                    🛡️ <strong>Règle d'or de confiance :</strong> même en cas d'atteinte du quota, <strong>aucun livre n'est supprimé ni bloqué</strong>. Vos élèves continuent d'emprunter et de rendre leurs livres normalement.
+                                </p>
+                            </div>
+
+                            <p style="margin: 0 0 20px 0;">
+                                Pour continuer à faire grandir votre fonds sans aucune limite toute l'année, profiter des scans illimités et télécharger vos bilans de lecture en Excel, vous pouvez passer à la version <strong style="color: #0f172a;">Premium</strong>.
+                            </p>
+
+                            <!-- Encadré Offre Promo -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0f172a; border-radius: 4px; margin: 0 0 28px 0;">
+                                <tr>
+                                    <td style="padding: 20px 24px;">
+                                        <p style="margin: 0 0 8px 0; font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px;">
+                                            Offre d'encouragement &bull; Premier paiement
+                                        </p>
+                                        <p style="margin: 0 0 14px 0; font-size: 15px; color: #0f172a; line-height: 1.5;">
+                                            Bénéficiez de <strong>30 % de réduction</strong> sur votre premier mois ou votre première année avec le code :
+                                            <span style="display: inline-block; background-color: #ffffff; border: 1px dashed #0f172a; padding: 2px 8px; font-family: monospace; font-size: 14px; font-weight: 700; color: #0f172a; border-radius: 3px; letter-spacing: 1px;">PROMO30</span>
+                                        </p>
+                                        
+                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="font-size: 14px; color: #334155;">
+                                            <tr>
+                                                <td style="padding: 4px 0;">
+                                                    &bull; <strong style="color: #0f172a;">Formule mensuelle :</strong> 2.10 CHF le premier mois <span style="color: #64748b; font-size: 13px;">(puis 3.– CHF / mois)</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 4px 0;">
+                                                    &bull; <strong style="color: #0f172a;">Formule annuelle :</strong> 21.– CHF la première année <span style="color: #64748b; font-size: 13px;">(puis 30.– CHF / an)</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <p style="margin: 12px 0 0 0; font-size: 12px; color: #64748b;">
+                                            💡 <em>Éligible au remboursement par votre coopérative scolaire (OCCE, Sou des écoles) ou crédits mairie. Facture acquittée officielle délivrée immédiatement.</em>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Bouton CTA -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 0 0 28px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{{ tarifs_url|default('https://livresenclasse.com/tarifs') }}" style="display: inline-block; background-color: #0f172a; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; padding: 14px 28px; border-radius: 4px; letter-spacing: 0.3px;">
+                                            Passer à la formule complète (-30 %)
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 0;">
+                                Belle continuation et d'excellentes lectures avec votre classe !
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Sign-off -->
+                    <tr>
+                        <td style="padding: 0 40px 32px 40px; font-size: 14px; color: #64748b;">
+                            <p style="margin: 0; font-style: italic;">
+                                Robin - Créateur de Livres en Classe
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer Divider -->
+                    <tr>
+                        <td style="padding: 0 40px;">
+                            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 0;">
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 24px 40px; background-color: #f8fafc; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;">
+                            <p style="margin: 0;">
+                                <a href="https://livresenclasse.com" style="color: #0f172a; font-weight: 600; text-decoration: none;">LivresEnClasse.com</a>
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

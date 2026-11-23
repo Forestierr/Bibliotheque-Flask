@@ -163,6 +163,8 @@ def test_export_with_data_and_unicode(client, app):
     wb_books = openpyxl.load_workbook(BytesIO(resp_books.data))
     ws_books = wb_books["Livres"]
     assert ws_books.max_row == 3  # Entête + 2 livres
+    headers = [cell.value for cell in ws_books[1]]
+    assert "Code-barres / Réf" in headers
     assert ws_books.cell(row=2, column=1).value in [
         "L'Odyssée d'Homère & Chants",
         "Le Petit Prince",

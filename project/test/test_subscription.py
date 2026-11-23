@@ -1654,3 +1654,156 @@ def test_subscription_success_page_session_sync(client, app):
             assert u.stripe_customer_id == "cus_synced_124"
             assert u.stripe_subscription_id == "sub_synced_124"
             assert u.stripe_price_id == "yearly"
+
+
+def test_scan_limit_email_triggered_once_at_30_scans(app):
+    """Vérifie que l'email d'offre promo est déclenché une seule et unique fois à 30 scans."""
+    from project.config_plans import MAX_FREE_SCANS
+
+    with app.app_context():
+        user = User(
+            id=125,
+            email="scan_limit_promo@test.com",
+            name="Camille Dupont",
+            plan="free",
+            free_scans_used=29,
+            scan_limit_email_sent=False,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # À 29 scans : pas d'envoi
+        assert user.check_and_trigger_scan_limit_email() is False
+        assert user.scan_limit_email_sent is False
+
+        # À 30 scans (MAX_FREE_SCANS) : envoi de l'email
+        user.free_scans_used = MAX_FREE_SCANS
+        with patch("project.email.send_email_scan_limit_reached") as mock_send:
+            assert user.check_and_trigger_scan_limit_email() is True
+            assert user.scan_limit_email_sent is True
+            mock_send.assert_called_once_with(user)
+
+        # Deuxième vérification (scan suivant) : ne doit PAS renvoyer d'email
+        with patch("project.email.send_email_scan_limit_reached") as mock_send_again:
+            assert user.check_and_trigger_scan_limit_email() is False
+            mock_send_again.assert_not_called()
+
+
+def test_scan_limit_email_template_rendering(app):
+    """Vérifie le rendu complet du template email de conversion aux 30 scans."""
+    from flask import render_template
+
+    with app.app_context():
+        user = User(
+            id=126,
+            email="template_test@test.com",
+            name="Julien Martin",
+            plan="free",
+        )
+        html = render_template(
+            "email/email_scan_limit_reached.html",
+            user=user,
+            firstname="Julien",
+            tarifs_url="https://livresenclasse.com/tarifs",
+        )
+        assert "Bonjour Julien," in html
+        assert "30 scans gratuits" in html
+        assert "PROMO30" in html
+        assert "30 % de réduction" in html
+        assert "https://livresenclasse.com/tarifs" in html
+        assert "Robin - Créateur de Livres en Classe" in html
+
+
+def test_livre_exist_triggers_scan_limit_email_via_endpoint(client, app):
+    """Vérifie que la route /livre/<isbn>/exist déclenche l'email de limite de scan pour un compte gratuit."""
+    now = datetime.now(UTC)
+    with app.app_context():
+        user = User(
+            id=127,
+            email="api_scan_limit@test.com",
+            name="Sophie",
+            plan="free",
+            free_scans_used=30,
+            last_scan_reset_at=now,
+            scan_limit_email_sent=False,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "127"
+
+    with patch("project.email.send_email_scan_limit_reached") as mock_send:
+        resp = client.get("/livre/9782070612758/exist")
+        assert resp.status_code == 403
+        data = resp.get_json()
+        assert data["error"] == "scan_limit_reached"
+        mock_send.assert_called_once()
+
+    with app.app_context():
+        u = db.session.get(User, 127)
+        assert u.scan_limit_email_sent is True
+
+
+def test_book_limit_email_triggered_at_80_books(app):
+    """Vérifie que l'email de félicitations et offre promo est déclenché une seule fois à 80 livres."""
+    with app.app_context():
+        user = User(
+            id=128,
+            email="book_milestone@test.com",
+            name="Alexandre Dumas",
+            plan="free",
+            book_limit_email_sent=False,
+        )
+        db.session.add(user)
+        db.session.commit()
+        # 79 livres : pas d'envoi
+        books = [Book(id=2000 + i, title=f"Livre {i}", user_id=128) for i in range(79)]
+        db.session.bulk_save_objects(books)
+        db.session.commit()
+
+        assert user.check_and_trigger_book_limit_email() is False
+        assert user.book_limit_email_sent is False
+
+        # Ajout du 80ème livre : envoi de l'e-mail
+        book_80 = Book(id=2080, title="Livre 80", user_id=128)
+        db.session.add(book_80)
+        db.session.commit()
+
+        with patch("project.email.send_email_book_milestone") as mock_send:
+            assert user.check_and_trigger_book_limit_email() is True
+            assert user.book_limit_email_sent is True
+            mock_send.assert_called_once_with(user, 80)
+
+        # Ajout d'un 81ème livre : ne doit pas renvoyer
+        with patch("project.email.send_email_book_milestone") as mock_send_again:
+            assert user.check_and_trigger_book_limit_email() is False
+            mock_send_again.assert_not_called()
+
+
+def test_book_milestone_email_template_rendering(app):
+    """Vérifie le rendu du template d'email de félicitations pour 80 livres."""
+    from flask import render_template
+
+    with app.app_context():
+        user = User(
+            id=129,
+            email="book_template@test.com",
+            name="Marie Curie",
+            plan="free",
+        )
+        html = render_template(
+            "email/email_book_milestone.html",
+            user=user,
+            firstname="Marie",
+            book_count=80,
+            tarifs_url="https://livresenclasse.com/tarifs",
+        )
+        assert "Bonjour Marie," in html
+        assert "80 livres enregistrés" in html
+        assert "PROMO30" in html
+        assert "30 % de réduction" in html
+        assert "coopérative scolaire" in html
+        assert "Robin - Créateur de Livres en Classe" in html
+
+

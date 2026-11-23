@@ -48,8 +48,8 @@ def test_homepage_freemium_section(client):
 
     # Offre gratuite et quotas
     assert "Version Gratuite" in html
-    assert "40" in html
-    assert "500" in html
+    assert "30" in html
+    assert "100" in html
     assert "30" in html
     assert "10" in html
 

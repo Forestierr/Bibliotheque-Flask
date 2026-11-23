@@ -27,6 +27,30 @@
         </div>
     </div>
 
+    {% if not current_user.is_premium and nb_books and nb_books >= 80 %}
+    <div class="notification is-warning is-light py-3 px-4 mb-4" style="border-radius: 12px; border: 1px solid #fde68a;">
+        <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap" style="gap: 0.75rem;">
+            <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
+                <span class="icon is-medium has-text-warning-dark" style="font-size: 1.4rem;">
+                    <i class="fas fa-book-reader"></i>
+                </span>
+                <div>
+                    <p class="has-text-weight-bold mb-0" style="color: #92400e; font-size: 0.95rem;">
+                        {{ _("Bravo ! Votre bibliothèque compte déjà %(count)s livres (sur %(max)s gratuits)", count=nb_books, max=max_books|default(100)) }}
+                    </p>
+                    <p class="is-size-7 mb-0" style="color: #b45309;">
+                        {{ _("Pour continuer à enrichir votre fonds sans aucune limite toute l'année, découvrez la formule complète.") }}
+                    </p>
+                </div>
+            </div>
+            <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-small is-rounded has-text-weight-bold ml-auto" style="color: #78350f; border-color: #f59e0b;">
+                <span>{{ _("Passer en illimité") }}</span>
+                <span class="icon is-small ml-1"><i class="fas fa-arrow-right"></i></span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
     {% if not books %}
         <section class="section">
             <div class="box">

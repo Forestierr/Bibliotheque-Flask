@@ -4,8 +4,8 @@ Modifier ces constantes permet d'ajuster l'ensemble des règles de l'application
 """
 
 # Quotas et limites du plan gratuit (Free)
-MAX_FREE_STUDENTS = 40
-MAX_FREE_BOOKS = 500
+MAX_FREE_STUDENTS = 30
+MAX_FREE_BOOKS = 100
 MAX_FREE_SCANS = (
     30  # 30 scans de codes-barres par semaine (remis à zéro chaque dimanche à 00:00:00)
 )

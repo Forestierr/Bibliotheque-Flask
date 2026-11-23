@@ -257,9 +257,9 @@ def test_signup_page_displays_free_plan_and_quotas(client):
     assert "Simplifiez la gestion de vos livres" in html
 
     # Vérification des quotas du plan gratuit (config_plans.py)
-    assert "40" in html
+    assert "30" in html
     assert "élèves gérés" in html
-    assert "500" in html
+    assert "100" in html
     assert "livres au catalogue" in html
     assert "10" in html
     assert "mois d'historique des prêts" in html

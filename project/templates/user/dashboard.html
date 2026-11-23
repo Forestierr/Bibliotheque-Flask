@@ -175,10 +175,23 @@
         </div>
       </div>
     {% else %}
-      {% set max_books = max_books|default(500) %}
-      {% set max_students = max_students|default(40) %}
+      {% set max_books = max_books|default(100) %}
+      {% set max_students = max_students|default(30) %}
       {% set max_scans = max_scans|default(30) %}
       {% set warning_percent = warning_percent|default(80) %}
+
+      {% if (n_books / max_books) >= (warning_percent / 100) and n_books < max_books %}
+      <div class="notification is-warning is-light py-2 px-3 mb-3" style="border-radius: 8px; font-size: 0.85rem; border: 1px solid #fde68a;">
+        <span class="icon is-small mr-1 has-text-warning-dark"><i class="fas fa-book-reader"></i></span>
+        <span style="color: #92400e;">
+          {{ _("Bravo ! Votre classe compte déjà %(count)s livres. Vous approchez de la limite des %(max)s livres gratuits.", count=n_books, max=max_books) }}
+        </span>
+        <a href="{{ url_for('subscription.tarifs') }}" class="has-text-weight-bold ml-2" style="color: #78350f; text-decoration: underline;">
+          {{ _("Passer en illimité") }} &rarr;
+        </a>
+      </div>
+      {% endif %}
+
       <!-- Jauges discrètes pour la version gratuite -->
       <div class="columns is-multiline">
         <!-- Jauge Livres -->

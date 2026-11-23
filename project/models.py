@@ -1,6 +1,7 @@
 # models.py
 # look at the file docs/model.png
 
+import logging
 import os
 from datetime import UTC, datetime, timedelta
 
@@ -10,6 +11,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from . import db
+
+logger = logging.getLogger(__name__)
 
 # Table d'association pour la relation Many-to-Many entre Book et Tags
 
@@ -54,6 +57,12 @@ class User(UserMixin, db.Model):
     )
     trial_ends_at = db.Column(db.DateTime, nullable=True)
     trial_reminder_sent = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False
+    )
+    scan_limit_email_sent = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False
+    )
+    book_limit_email_sent = db.Column(
         db.Boolean, default=False, server_default="0", nullable=False
     )
     free_scans_used = db.Column(
@@ -115,6 +124,65 @@ class User(UserMixin, db.Model):
             except Exception:  # noqa: BLE001
                 db.session.rollback()
             return True
+        return False
+
+    def check_and_trigger_scan_limit_email(self) -> bool:
+        """
+        Vérifie si l'utilisateur gratuit a atteint le quota hebdomadaire de scans
+        et n'a jamais reçu l'e-mail d'offre promotionnelle (-30%).
+        Si oui, envoie l'e-mail une seule fois et bascule scan_limit_email_sent à True.
+        """
+        from .config_plans import MAX_FREE_SCANS
+
+        if self.is_premium or self.scan_limit_email_sent:
+            return False
+        if (self.free_scans_used or 0) >= MAX_FREE_SCANS:
+            self.scan_limit_email_sent = True
+            try:
+                db.session.commit()
+                from .email import send_email_scan_limit_reached
+
+                send_email_scan_limit_reached(self)
+                return True
+            except Exception:
+                logger.exception(
+                    "Erreur lors de l'envoi de l'email de premier palier de scans"
+                )
+        return False
+
+    def check_and_trigger_book_limit_email(self) -> bool:
+        """
+        Vérifie si l'utilisateur gratuit a atteint 80 livres (80% du quota)
+        et n'a jamais reçu l'e-mail d'encouragement et offre promo.
+        Si oui, envoie l'e-mail une seule fois et bascule book_limit_email_sent à True.
+        """
+        from sqlalchemy import func
+
+        from .config_plans import GAUGE_WARNING_PERCENT, MAX_FREE_BOOKS
+
+        if self.is_premium or self.book_limit_email_sent:
+            return False
+
+        threshold = int(MAX_FREE_BOOKS * (GAUGE_WARNING_PERCENT / 100.0))
+        books_count = (
+            db.session.query(func.count(Book.id))
+            .filter(Book.user_id == self.id)
+            .scalar()
+            or 0
+        )
+
+        if books_count >= threshold:
+            self.book_limit_email_sent = True
+            try:
+                db.session.commit()
+                from .email import send_email_book_milestone
+
+                send_email_book_milestone(self, books_count)
+                return True
+            except Exception:
+                logger.exception(
+                    "Erreur lors de l'envoi de l'email de palier de livres (80 livres)"
+                )
         return False
 
     @property

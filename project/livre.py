@@ -116,6 +116,7 @@ def livre_db():
         books=books,
         students=all_students,
         nb_page=nb_page,
+        nb_books=nb_books,
         page=int(page),
         tags=tags,
         search=search_query,
@@ -826,6 +827,7 @@ def livre_ajout():
                 db.session.add(book_tag)
 
         db.session.commit()
+        current_user.check_and_trigger_book_limit_email()
 
         flash(
             _("Le livre : ") + title + _(" a été ajouté à votre bibliothèque."),
@@ -857,6 +859,7 @@ def livre_ajout():
                 current_user.check_and_reset_weekly_scans()
                 current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
                 db.session.commit()
+                current_user.check_and_trigger_scan_limit_email()
         else:
             # If the book is not found, we create a book with the ISBN
             # The user can complete the book information (compteur non incrémenté)
@@ -1086,6 +1089,7 @@ def livre_duplique(id):
                 db.session.add(book_tag)
 
             db.session.commit()
+            current_user.check_and_trigger_book_limit_email()
             break
         except Exception as e:  # noqa: BLE001
             db.session.rollback()
@@ -1218,6 +1222,7 @@ def livre_exist(isbn):
     if not current_user.is_premium:
         current_user.check_and_reset_weekly_scans()
         if (current_user.free_scans_used or 0) >= MAX_FREE_SCANS:
+            current_user.check_and_trigger_scan_limit_email()
             return make_response(
                 jsonify(
                     {
@@ -1244,6 +1249,7 @@ def livre_exist(isbn):
         if not current_user.is_premium:
             current_user.free_scans_used = (current_user.free_scans_used or 0) + 1
             db.session.commit()
+            current_user.check_and_trigger_scan_limit_email()
 
         if len(books) == 1:
             book = books[0]
