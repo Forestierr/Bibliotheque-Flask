@@ -28,8 +28,8 @@ from .config_plans import (
     MAX_FREE_STUDENTS,
     PRICE_MONTHLY_AMOUNT,
     PRICE_YEARLY_AMOUNT,
-    STRIPE_TAX_EXEMPTION_NOTICE,
     TRIAL_PERIOD_DAYS,
+    get_stripe_tax_notice,
 )
 from .email import send_html_email
 from .models import SchoolInvoice, User
@@ -494,18 +494,32 @@ def facture_ecole():
                     "teacher_email": current_user.email,
                     "teacher_name": current_user.name or "",
                     "flow": "flux_b_school_invoice",
+                    "siret_or_tax_id": siret_or_tax_id,
                 },
             }
             customer = stripe.Customer.create(**cust_params)
 
-            # 2. Créer le brouillon de facture Stripe Invoicing avec devise explicite
+            # Enregistrer le numéro de TVA intracommunautaire officiel sur le client Stripe si fourni
+            if siret_or_tax_id:
+                clean_tax = siret_or_tax_id.strip().replace(" ", "").upper()
+                try:
+                    stripe.Customer.create_tax_id(customer.id, value=clean_tax)
+                    logger.info("Tax ID Stripe créé pour %s : %s", customer.id, clean_tax)
+                except Exception as tax_err:  # noqa: BLE001
+                    logger.info(
+                        "Tax ID informel ou SIRET non normalisé Stripe Tax ID : %s",
+                        tax_err,
+                    )
+
+            # 2. Créer le brouillon de facture Stripe Invoicing avec devise explicite et mention fiscale
+            tax_footer = get_stripe_tax_notice(currency)
             invoice_params = {
                 "customer": customer.id,
                 "currency": currency,
                 "collection_method": "send_invoice",
                 "days_until_due": 30,
                 "auto_advance": True,
-                "footer": STRIPE_TAX_EXEMPTION_NOTICE,
+                "footer": tax_footer,
                 "metadata": {
                     "user_id": str(current_user.id),
                     "school_name": school_name,
@@ -516,6 +530,22 @@ def facture_ecole():
                     "payment_method_types": ["card", "customer_balance"],
                 },
             }
+
+            custom_fields = []
+            if siret_or_tax_id:
+                field_label = (
+                    "N° TVA"
+                    if any(
+                        siret_or_tax_id.upper().startswith(p)
+                        for p in ("FR", "BE", "CHE", "DE", "ES", "IT")
+                    )
+                    else "SIRET / IDE"
+                )
+                custom_fields.append({"name": field_label, "value": siret_or_tax_id[:30]})
+            if order_reference:
+                custom_fields.append({"name": "Bon de commande", "value": order_reference[:30]})
+            if custom_fields:
+                invoice_params["custom_fields"] = custom_fields
 
             try:
                 created_inv = stripe.Invoice.create(**invoice_params)
@@ -530,10 +560,10 @@ def facture_ecole():
             # 3. Créer la ligne de facture attachée directement à cette facture
             item_description = (
                 f"Abonnement annuel Livres en Classe (Année scolaire) — "
-                f"Enseignant(e) : {current_user.name or current_user.email}"
+                f"Enseignant(e) : {current_user.name or current_user.email} (Prix net HT)"
             )
             if order_reference:
-                item_description += f" (Réf: {order_reference})"
+                item_description += f" [Réf: {order_reference}]"
 
             stripe.InvoiceItem.create(
                 customer=customer.id,

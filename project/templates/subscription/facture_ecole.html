@@ -195,16 +195,17 @@
                 </div>
 
                 <div class="columns is-variable is-3 mb-4">
-                    <!-- Numéro SIRET / IDE -->
+                    <!-- Numéro TVA / SIRET / IDE -->
                     <div class="column is-6">
                         <div class="field">
                             <label class="label" for="siret_or_tax_id">
-                                {{ _("Numéro SIRET ou IDE") }} <span class="has-text-grey has-text-weight-normal">({{ _("Facultatif") }})</span>
+                                {{ _("N° de TVA intracommunautaire ou SIRET / IDE") }} <span class="has-text-grey has-text-weight-normal">({{ _("Recommandé pour l'UE") }})</span>
                             </label>
                             <div class="control has-icons-left">
-                                <input class="input" type="text" id="siret_or_tax_id" name="siret_or_tax_id" placeholder="{{ _('14 chiffres (France) ou CHE-... (Suisse)') }}">
+                                <input class="input" type="text" id="siret_or_tax_id" name="siret_or_tax_id" placeholder="{{ _('Ex : FR12345678901, BE0123456789, SIRET ou CHE-...') }}">
                                 <span class="icon is-small is-left"><i class="fas fa-id-card"></i></span>
                             </div>
+                            <p class="help has-text-grey">{{ _("Mairies & écoles de l'UE : le n° de TVA permet d'établir la facture B2B en autoliquidation de TVA.") }}</p>
                         </div>
                     </div>
 
@@ -215,9 +216,10 @@
                                 {{ _("Réf. de commande / Engagement") }} <span class="has-text-grey has-text-weight-normal">({{ _("Facultatif") }})</span>
                             </label>
                             <div class="control has-icons-left">
-                                <input class="input" type="text" id="order_reference" name="order_reference" placeholder="{{ _('Ex : BC-2026-042') }}">
+                                <input class="input" type="text" id="order_reference" name="order_reference" placeholder="{{ _('Ex : BC-2026-042 ou Chorus') }}">
                                 <span class="icon is-small is-left"><i class="fas fa-hashtag"></i></span>
                             </div>
+                            <p class="help has-text-grey">{{ _("Cette référence apparaîtra sur la facture officielle Stripe transmise au payeur.") }}</p>
                         </div>
                     </div>
                 </div>
@@ -226,15 +228,15 @@
                 <div class="box has-background-white-ter mb-5" style="border-radius: 12px; border: 1px solid hsl(0, 0%, 90%);">
                     <div class="level is-mobile mb-2">
                         <div class="level-left">
-                            <span class="has-text-weight-bold" style="color: hsl(0, 0%, 25%);">{{ _("Total facture annuelle (net à payer) :") }}</span>
+                            <span class="has-text-weight-bold" style="color: hsl(0, 0%, 25%);">{{ _("Total facture annuelle (net Hors Taxes) :") }}</span>
                         </div>
                         <div class="level-right">
-                            <span class="title is-4 has-text-link mb-0" id="displayAmount">30.00 €</span>
+                            <span class="title is-4 has-text-link mb-0" id="displayAmount">30.00 € HT</span>
                         </div>
                     </div>
-                    <p class="is-size-7 has-text-grey" style="line-height: 1.4; margin-bottom: 0;">
+                    <p class="is-size-7 has-text-grey" id="taxNoticeText" style="line-height: 1.4; margin-bottom: 0;">
                         <i class="fas fa-info-circle mr-1"></i>
-                        {{ _("Prestation de services de logiciel éducatif. Exonéré de TVA selon l'art. 10 de la Loi fédérale suisse régissant la taxe sur la valeur ajoutée (LTVA). Montant net à payer sans taxe additionnelle.") }}
+                        <span id="taxNoticeInner">{{ _("Exonération de TVA – Autoliquidation par le preneur (art. 196 de la directive 2006/112/CE). Prix Hors Taxes (HT) égal au montant TTC.") }}</span>
                     </p>
                 </div>
 
@@ -294,14 +296,21 @@
         var optEUR = document.getElementById('optEUR');
         var optCHF = document.getElementById('optCHF');
         var displayAmount = document.getElementById('displayAmount');
+        var taxNoticeInner = document.getElementById('taxNoticeInner');
         if (curr === 'EUR') {
             optEUR.classList.add('is-selected');
             optCHF.classList.remove('is-selected');
-            displayAmount.textContent = '30.00 €';
+            displayAmount.textContent = '30.00 € HT';
+            if (taxNoticeInner) {
+                taxNoticeInner.textContent = "{{ _('Exonération de TVA – Autoliquidation par le preneur (art. 196 de la directive 2006/112/CE). Prix Hors Taxes (HT) égal au montant TTC.') }}";
+            }
         } else {
             optCHF.classList.add('is-selected');
             optEUR.classList.remove('is-selected');
-            displayAmount.textContent = '30.00 CHF';
+            displayAmount.textContent = '30.00 CHF HT';
+            if (taxNoticeInner) {
+                taxNoticeInner.textContent = "{{ _('Non assujetti à la TVA (art. 10 LTVA). Montant net Hors Taxes (HT) à payer.') }}";
+            }
         }
     }
 </script>

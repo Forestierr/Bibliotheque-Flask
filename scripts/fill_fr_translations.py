@@ -64,8 +64,8 @@ def fill_msgstr(m: re.Match) -> str:
 
 result = BLOCK_RE.sub(fill_msgstr, content)
 
-# Write as plain UTF-8 with LF line endings
-fr_po_path.write_text(result, encoding="utf-8", newline="\n")
+# Write as plain UTF-8
+fr_po_path.write_text(result, encoding="utf-8")
 
 lines = result.count("\n")
 msgs = result.count("msgstr ")

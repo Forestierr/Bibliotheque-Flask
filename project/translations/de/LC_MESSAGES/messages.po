@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: My Bibliotheque 1.0\n"
 "Report-Msgid-Bugs-To: livresenclasse@gmail.com\n"
-"POT-Creation-Date: 2026-11-23 22:27+0100\n"
+"POT-Creation-Date: 2026-11-23 23:03+0100\n"
 "PO-Revision-Date: 2026-09-05 08:39+0200\n"
 "Last-Translator: Forestier Robin livresenclasse@gmail.com\n"
 "Language: de\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: project/admin.py:1244 project/admin.py:1285 project/subscription.py:627
+#: project/admin.py:1244 project/admin.py:1285 project/subscription.py:675
 #, fuzzy
 msgid "Facture école introuvable."
 msgstr "Ausleihe nicht gefunden."
@@ -417,15 +417,15 @@ msgstr "Leitfaden nicht gefunden"
 msgid "Ressource non trouvée"
 msgstr "Ressource nicht gefunden"
 
-#: project/subscription.py:60
+#: project/subscription.py:63
 msgid "Cette fonctionnalité nécessite un abonnement Premium."
 msgstr "Diese Funktion erfordert ein Premium-Abonnement."
 
-#: project/subscription.py:67
+#: project/subscription.py:70
 msgid "Cette fonctionnalité est réservée aux membres Premium."
 msgstr "Diese Funktion ist Premium-Mitgliedern vorbehalten."
 
-#: project/subscription.py:120
+#: project/subscription.py:123
 msgid ""
 "Le service de paiement Stripe est en cours de configuration. Contactez "
 "l'administrateur."
@@ -433,7 +433,7 @@ msgstr ""
 "Der Stripe-Zahlungsdienst wird derzeit eingerichtet. Bitte kontaktieren "
 "Sie den Administrator."
 
-#: project/subscription.py:214
+#: project/subscription.py:223
 msgid ""
 "Une erreur est survenue lors de l'accès au paiement. Veuillez réessayer "
 "ultérieurement ou contacter le support."
@@ -441,11 +441,11 @@ msgstr ""
 "Beim Zugriff auf die Zahlung ist ein Fehler aufgetreten. Bitte versuchen "
 "Sie es später erneut oder kontaktieren Sie den Support."
 
-#: project/subscription.py:232
+#: project/subscription.py:241
 msgid "Aucun abonnement Stripe actif n'est associé à votre compte pour le moment."
 msgstr "Ihrem Konto ist derzeit kein aktives Stripe-Abonnement zugeordnet."
 
-#: project/subscription.py:249
+#: project/subscription.py:261
 msgid ""
 "Impossible d'accéder au portail de gestion pour le moment. Veuillez "
 "réessayer ultérieurement."
@@ -453,31 +453,31 @@ msgstr ""
 "Zugriff auf das Kundenportal derzeit nicht möglich. Bitte versuchen Sie "
 "es später erneut."
 
-#: project/subscription.py:281
+#: project/subscription.py:293
 #, fuzzy
 msgid "Session de paiement invalide ou expirée."
 msgstr "Ungültiger oder abgelaufener Link"
 
-#: project/subscription.py:398
+#: project/subscription.py:410
 #, fuzzy
 msgid "Aucune facture acquittée n'est disponible pour votre compte actuellement."
 msgstr "Ihrem Konto ist derzeit kein aktives Stripe-Abonnement zugeordnet."
 
-#: project/subscription.py:412
+#: project/subscription.py:424
 msgid "Votre statut Fondateur vous donne déjà un accès complet et illimité à vie."
 msgstr ""
 
-#: project/subscription.py:425
+#: project/subscription.py:437
 msgid "Une facture école est déjà en cours de règlement pour votre compte."
 msgstr ""
 
-#: project/subscription.py:450
+#: project/subscription.py:462
 msgid ""
 "Veuillez renseigner le nom de l'organisme, son adresse complète et "
 "l'e-mail de facturation."
 msgstr ""
 
-#: project/subscription.py:467
+#: project/subscription.py:479
 #, fuzzy
 msgid ""
 "Le service de facturation Stripe est en cours de configuration. Contactez"
@@ -486,13 +486,13 @@ msgstr ""
 "Der Stripe-Zahlungsdienst wird derzeit eingerichtet. Bitte kontaktieren "
 "Sie den Administrator."
 
-#: project/subscription.py:592
+#: project/subscription.py:634
 msgid ""
 "Votre facture école a été générée avec succès. Votre accès Premium est "
 "débloqué pour 30 jours !"
 msgstr ""
 
-#: project/subscription.py:608
+#: project/subscription.py:656
 #, fuzzy
 msgid ""
 "Une erreur est survenue lors de la création de la facture Stripe. "
@@ -7989,76 +7989,98 @@ msgid ""
 msgstr ""
 
 #: project/templates/subscription/facture_ecole.html:202
-msgid "Numéro SIRET ou IDE"
+msgid "N° de TVA intracommunautaire ou SIRET / IDE"
 msgstr ""
 
 #: project/templates/subscription/facture_ecole.html:202
-#: project/templates/subscription/facture_ecole.html:215
+#, fuzzy
+msgid "Recommandé pour l'UE"
+msgstr "Empfohlen für:"
+
+#: project/templates/subscription/facture_ecole.html:205
+msgid "Ex : FR12345678901, BE0123456789, SIRET ou CHE-..."
+msgstr ""
+
+#: project/templates/subscription/facture_ecole.html:208
+msgid ""
+"Mairies & écoles de l'UE : le n° de TVA permet d'établir la facture B2B "
+"en autoliquidation de TVA."
+msgstr ""
+
+#: project/templates/subscription/facture_ecole.html:216
+msgid "Réf. de commande / Engagement"
+msgstr ""
+
+#: project/templates/subscription/facture_ecole.html:216
 #, fuzzy
 msgid "Facultatif"
 msgstr "optional"
 
-#: project/templates/subscription/facture_ecole.html:205
-msgid "14 chiffres (France) ou CHE-... (Suisse)"
-msgstr ""
-
-#: project/templates/subscription/facture_ecole.html:215
-msgid "Réf. de commande / Engagement"
-msgstr ""
-
-#: project/templates/subscription/facture_ecole.html:218
+#: project/templates/subscription/facture_ecole.html:219
 #, fuzzy
-msgid "Ex : BC-2026-042"
+msgid "Ex : BC-2026-042 ou Chorus"
 msgstr "z.B.: KISTE-A-001 oder BUCH-042"
 
-#: project/templates/subscription/facture_ecole.html:229
-msgid "Total facture annuelle (net à payer) :"
-msgstr ""
-
-#: project/templates/subscription/facture_ecole.html:237
+#: project/templates/subscription/facture_ecole.html:222
 msgid ""
-"Prestation de services de logiciel éducatif. Exonéré de TVA selon l'art. "
-"10 de la Loi fédérale suisse régissant la taxe sur la valeur ajoutée "
-"(LTVA). Montant net à payer sans taxe additionnelle."
+"Cette référence apparaîtra sur la facture officielle Stripe transmise au "
+"payeur."
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:244
+#: project/templates/subscription/facture_ecole.html:231
+msgid "Total facture annuelle (net Hors Taxes) :"
+msgstr ""
+
+#: project/templates/subscription/facture_ecole.html:239
+#: project/templates/subscription/facture_ecole.html:305
+msgid ""
+"Exonération de TVA – Autoliquidation par le preneur (art. 196 de la "
+"directive 2006/112/CE). Prix Hors Taxes (HT) égal au montant TTC."
+msgstr ""
+
+#: project/templates/subscription/facture_ecole.html:246
 msgid "Générer la facture officielle & Activer mes 30 jours Premium"
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:250
+#: project/templates/subscription/facture_ecole.html:252
 msgid "← Revenir aux tarifs"
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:260
+#: project/templates/subscription/facture_ecole.html:262
 #, python-format
 msgid "100%% Conforme OCCE"
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:263
+#: project/templates/subscription/facture_ecole.html:265
 msgid ""
 "Libellé exact de votre coopérative et mentions légales requises pour un "
 "remboursement ou un règlement comptable sans blocage."
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:270
+#: project/templates/subscription/facture_ecole.html:272
 msgid "Virement SEPA ou CB"
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:273
+#: project/templates/subscription/facture_ecole.html:275
 msgid ""
 "Le secrétariat ou la mairie peut payer en ligne par carte bancaire ou par"
 " virement bancaire sur un IBAN virtuel dédié fourni par Stripe."
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:280
+#: project/templates/subscription/facture_ecole.html:282
 msgid "Zéro reconduction tacite"
 msgstr ""
 
-#: project/templates/subscription/facture_ecole.html:283
+#: project/templates/subscription/facture_ecole.html:285
 msgid ""
 "Facture annuelle ponctuelle respectant l'exercice budgétaire public. "
 "Aucun abonnement tacite ni prélèvement surprise l'année suivante."
+msgstr ""
+
+#: project/templates/subscription/facture_ecole.html:312
+msgid ""
+"Non assujetti à la TVA (art. 10 LTVA). Montant net Hors Taxes (HT) à "
+"payer."
 msgstr ""
 
 #: project/templates/subscription/facture_ecole_confirmation.html:5
@@ -11776,4 +11798,22 @@ msgstr "Ausgeliehen von:"
 
 #~ msgid "Communications & Newsletter"
 #~ msgstr "Mitteilungen & Newsletter"
+
+#~ msgid "Numéro SIRET ou IDE"
+#~ msgstr ""
+
+#~ msgid "14 chiffres (France) ou CHE-... (Suisse)"
+#~ msgstr ""
+
+#~ msgid "Total facture annuelle (net à payer) :"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Prestation de services de logiciel "
+#~ "éducatif. Exonéré de TVA selon l'art."
+#~ " 10 de la Loi fédérale suisse "
+#~ "régissant la taxe sur la valeur "
+#~ "ajoutée (LTVA). Montant net à payer "
+#~ "sans taxe additionnelle."
+#~ msgstr ""
 

@@ -18,12 +18,28 @@ PRICE_MONTHLY_AMOUNT = 3.0
 PRICE_YEARLY_AMOUNT = 30.0
 PRICE_YEARLY_EUR_AMOUNT = 30.0
 
-# Mention fiscale légale suisse (Art. 10 LTVA) pour factures et reçus Stripe
-STRIPE_TAX_EXEMPTION_NOTICE = (
+# Mentions fiscales légales obligatoires (B2B Écoles & Mairies)
+STRIPE_TAX_NOTICE_EU = (
     "Prestation de services de logiciel éducatif. "
-    "Exonéré de TVA selon l'art. 10 de la Loi fédérale suisse régissant la taxe sur la valeur ajoutée (LTVA). "
-    "Montant net à payer."
+    "Exonération de TVA – Autoliquidation par le preneur (art. 196 de la directive 2006/112/CE). "
+    "Prix Hors Taxes (HT) : montant net identique au TTC."
 )
+
+STRIPE_TAX_NOTICE_CH = (
+    "Prestation de services de logiciel éducatif. "
+    "Non assujetti à la TVA (art. 10 LTVA). "
+    "Montant net Hors Taxes (HT) à payer."
+)
+
+# Rétro-compatibilité
+STRIPE_TAX_EXEMPTION_NOTICE = STRIPE_TAX_NOTICE_CH
+
+
+def get_stripe_tax_notice(currency="CHF"):
+    """Retourne la mention fiscale légale adaptée à la devise / juridiction."""
+    if str(currency).upper() == "EUR":
+        return STRIPE_TAX_NOTICE_EU
+    return STRIPE_TAX_NOTICE_CH
 
 # Seuil d'alerte pour les jauges visuelles (en pourcentage)
 GAUGE_WARNING_PERCENT = 80
