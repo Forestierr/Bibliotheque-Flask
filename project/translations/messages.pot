@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-23 22:11+0100\n"
+"POT-Creation-Date: 2026-11-23 22:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1372,7 +1372,7 @@ msgid "Pour une utilisation sans aucune limite et tous les outils pédagogiques.
 msgstr ""
 
 #: project/templates/index.html:368
-#: project/templates/subscription/paiement.html:235
+#: project/templates/subscription/paiement.html:252
 #: project/templates/subscription/tarifs.html:269
 msgid "mois"
 msgstr ""
@@ -2352,7 +2352,7 @@ msgstr ""
 #: project/templates/archive/detail.html:174
 #: project/templates/archive/print_summary.html:214
 #: project/templates/archive/wizard.html:417
-#: project/templates/user/reglage.html:1092
+#: project/templates/user/reglage.html:1088
 msgid "prêts"
 msgstr ""
 
@@ -2438,7 +2438,7 @@ msgstr ""
 #: project/templates/archive/detail.html:286
 #: project/templates/ressources/index.html:580
 #: project/templates/ressources/livret_pdf.html:508
-#: project/templates/user/reglage.html:1572
+#: project/templates/user/reglage.html:1568
 msgid "Fermer"
 msgstr ""
 
@@ -2471,10 +2471,10 @@ msgstr ""
 #: project/templates/livre/livre_edit.html:185
 #: project/templates/livre/livre_info.html:145
 #: project/templates/livre/livre_info.html:297
-#: project/templates/user/reglage.html:1347
-#: project/templates/user/reglage.html:1374
-#: project/templates/user/reglage.html:1395
-#: project/templates/user/reglage.html:1423
+#: project/templates/user/reglage.html:1343
+#: project/templates/user/reglage.html:1370
+#: project/templates/user/reglage.html:1391
+#: project/templates/user/reglage.html:1419
 msgid "Annuler"
 msgstr ""
 
@@ -2545,7 +2545,7 @@ msgid "Signature de l'enseignant(e) :"
 msgstr ""
 
 #: project/templates/archive/wizard.html:4
-#: project/templates/user/reglage.html:1042
+#: project/templates/user/reglage.html:1038
 msgid "Clôturer l'année scolaire"
 msgstr ""
 
@@ -3898,7 +3898,7 @@ msgid "Emprunts actifs"
 msgstr ""
 
 #: project/templates/emprunt/emprunt.html:58
-#: project/templates/user/reglage.html:757
+#: project/templates/user/reglage.html:754
 msgid "Archives"
 msgstr ""
 
@@ -4278,7 +4278,7 @@ msgstr ""
 
 #: project/templates/livre/livre_ajout.html:151
 #: project/templates/livre/livre_edit.html:154
-#: project/templates/user/reglage.html:1351
+#: project/templates/user/reglage.html:1347
 msgid "Enregistrer"
 msgstr ""
 
@@ -4414,7 +4414,7 @@ msgid "1 mois"
 msgstr ""
 
 #: project/templates/livre/livre_info.html:190
-#: project/templates/user/reglage.html:986
+#: project/templates/user/reglage.html:941
 msgid "jours"
 msgstr ""
 
@@ -5430,8 +5430,8 @@ msgid "Diplômes générés pour chacun des"
 msgstr ""
 
 #: project/templates/ressources/diplome.html:111
-#: project/templates/user/reglage.html:1055
-#: project/templates/user/reglage.html:1091
+#: project/templates/user/reglage.html:1051
+#: project/templates/user/reglage.html:1087
 msgid "élèves"
 msgstr ""
 
@@ -7354,298 +7354,314 @@ msgstr ""
 msgid "Paiement"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:144
+#: project/templates/subscription/paiement.html:148
 msgid "Votre abonnement Premium"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:147
+#: project/templates/subscription/paiement.html:151
 msgid ""
 "Activez l'accès complet et illimité à toutes les fonctionnalités pour "
 "votre classe."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:159
+#: project/templates/subscription/paiement.html:164
 #: project/templates/subscription/tarifs.html:205
 msgid "Vous êtes Membre Fondateur à vie"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:161
+#: project/templates/subscription/paiement.html:166
+#: project/templates/subscription/tarifs.html:230
+msgid "Votre abonnement Premium est actif"
+msgstr ""
+
+#: project/templates/subscription/paiement.html:171
 msgid ""
 "Votre compte bénéficie d'un accès illimité et permanent sans aucun frais."
-" Vous n'avez pas besoin de souscrire un abonnement."
+" Toutes les fonctionnalités actuelles et futures sont incluses."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:164
-msgid "Accéder à mon tableau de bord"
-msgstr ""
-
-#: project/templates/subscription/paiement.html:174
-msgid "Votre abonnement Premium est déjà actif"
+#: project/templates/subscription/paiement.html:173
+#, python-format
+msgid ""
+"Votre formule est active et validée jusqu'au %(date)s. Vous profitez de "
+"l'ensemble des fonctionnalités sans aucune limite."
 msgstr ""
 
 #: project/templates/subscription/paiement.html:175
 msgid ""
-"Vous disposez déjà de l'accès illimité. Vous pouvez gérer vos moyens de "
-"paiement ou factures à tout moment."
+"Vous disposez déjà de l'accès illimité à toutes les fonctionnalités pour "
+"votre classe."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:183
-#: project/templates/subscription/tarifs.html:238
-#: project/templates/subscription/tarifs.html:313
-#: project/templates/subscription/tarifs.html:389
-msgid "Gérer mon abonnement"
+#: project/templates/subscription/paiement.html:185
+msgid "Gérer mon abonnement & facturation"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:194
+#: project/templates/subscription/paiement.html:190
+#: project/templates/user/reglage.html:850
+msgid "Télécharger ma facture (PDF)"
+msgstr ""
+
+#: project/templates/subscription/paiement.html:195
+msgid "Retourner au tableau de bord"
+msgstr ""
+
+#: project/templates/subscription/paiement.html:204
+msgid ""
+"Besoin d'émettre une facture école (Chorus Pro / mandat) ou de souscrire "
+"une licence supplémentaire ? Cliquez ici"
+msgstr ""
+
+#: project/templates/subscription/paiement.html:211
 msgid "1. Choisissez votre fréquence de paiement"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:206
+#: project/templates/subscription/paiement.html:223
 #: project/templates/subscription/tarifs.html:331
 msgid "2 mois gratuits"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:209
+#: project/templates/subscription/paiement.html:226
 #: project/templates/subscription/tarifs.html:334
 msgid "Annuel"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:210
+#: project/templates/subscription/paiement.html:227
 msgid "Le choix recommandé pour l'école, résiliable à tout moment"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:214
-#: project/templates/subscription/paiement.html:235
-#: project/templates/subscription/paiement.html:293
-#: project/templates/subscription/paiement.html:491
-#: project/templates/subscription/paiement.html:499
+#: project/templates/subscription/paiement.html:231
+#: project/templates/subscription/paiement.html:252
+#: project/templates/subscription/paiement.html:310
+#: project/templates/subscription/paiement.html:512
+#: project/templates/subscription/paiement.html:520
 #: project/templates/subscription/tarifs.html:269
 #: project/templates/subscription/tarifs.html:339
 msgid "TTC"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:214
+#: project/templates/subscription/paiement.html:231
 #: project/templates/subscription/tarifs.html:339
 msgid "an"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:218
+#: project/templates/subscription/paiement.html:235
 msgid "soit 2.50 CHF (~2.50 €) par mois"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:230
+#: project/templates/subscription/paiement.html:247
 #: project/templates/subscription/tarifs.html:264
 msgid "Mensuel"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:231
+#: project/templates/subscription/paiement.html:248
 msgid "Sans engagement, résiliation en 1 clic à tout moment"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:239
+#: project/templates/subscription/paiement.html:256
 msgid "sans frais cachés ni pénalités"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:249
+#: project/templates/subscription/paiement.html:266
 msgid "Ce qui est inclus dans votre abonnement :"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:254
+#: project/templates/subscription/paiement.html:271
 msgid "Nombre d'élèves illimité"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:254
+#: project/templates/subscription/paiement.html:271
 msgid "(fini la limite de 40)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:258
+#: project/templates/subscription/paiement.html:275
 msgid "Nombre de livres illimité"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:258
+#: project/templates/subscription/paiement.html:275
 msgid "(fini le seuil de 500)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:262
+#: project/templates/subscription/paiement.html:279
 msgid "Scanner de codes-barres illimité"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:262
+#: project/templates/subscription/paiement.html:279
 msgid "(caméra smartphone / tablette)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:266
+#: project/templates/subscription/paiement.html:283
 msgid "Exports Excel complets"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:266
+#: project/templates/subscription/paiement.html:283
 msgid "(livres, élèves, emprunts en cours)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:270
+#: project/templates/subscription/paiement.html:287
 msgid "Planches d'étiquettes"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:270
+#: project/templates/subscription/paiement.html:287
 msgid "(codes-barres pour livres et étiquettes pour bacs)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:274
+#: project/templates/subscription/paiement.html:291
 msgid "Historique complet et pérenne"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:274
+#: project/templates/subscription/paiement.html:291
 msgid "(archives de tous les prêts sans flou)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:282
+#: project/templates/subscription/paiement.html:299
 msgid "Total à régler aujourd'hui (TTC) :"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:285
-#: project/templates/subscription/paiement.html:492
+#: project/templates/subscription/paiement.html:302
+#: project/templates/subscription/paiement.html:513
 msgid "Abonnement annuel renouvelé à 30.- CHF TTC / an"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:287
-#: project/templates/subscription/paiement.html:500
+#: project/templates/subscription/paiement.html:304
+#: project/templates/subscription/paiement.html:521
 msgid "Abonnement mensuel renouvelé à 3.- CHF TTC / mois"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:300
+#: project/templates/subscription/paiement.html:317
 msgid "Code de réduction ou bon d'école ?"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:301
+#: project/templates/subscription/paiement.html:318
 msgid ""
 "Vous pourrez saisir votre code promo directement sur l'écran sécurisé de "
 "paiement Stripe."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:309
+#: project/templates/subscription/paiement.html:326
 msgid ""
 "Établir la facture au nom de ma coopérative scolaire / école (pour "
 "remboursement)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:312
+#: project/templates/subscription/paiement.html:329
 msgid ""
 "Cochez cette case si vous avancez la somme et vous faites rembourser par "
 "votre coopérative (OCCE, Sou des écoles) ou mairie."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:318
+#: project/templates/subscription/paiement.html:335
 msgid "Nom exact de l'organisme payeur"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:320
+#: project/templates/subscription/paiement.html:337
 msgid "Ex : Coopérative scolaire OCCE École Victor Hugo"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:325
+#: project/templates/subscription/paiement.html:342
 msgid "Adresse postale de l'établissement"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:327
+#: project/templates/subscription/paiement.html:344
 msgid "Numéro, rue, code postal et ville"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:333
+#: project/templates/subscription/paiement.html:350
 msgid ""
 "Le reçu officiel sera libellé au nom de votre école avec votre "
 "identifiant fiscal (SIRET/IDE) pour un remboursement comptable sans "
 "blocage."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:341
+#: project/templates/subscription/paiement.html:358
 msgid "Votre école exige de régler directement (Mairie, Secrétariat) ?"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:343
+#: project/templates/subscription/paiement.html:360
 msgid "Vous ne souhaitez pas avancer les frais ?"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:345
+#: project/templates/subscription/paiement.html:362
 msgid ""
 "Générer une facture école à 30 jours (virement SEPA ou carte) avec accès "
 "Premium immédiat →"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:354
+#: project/templates/subscription/paiement.html:371
 msgid "Inclus dans votre statut Fondateur"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:361
-#: project/templates/subscription/paiement.html:494
+#: project/templates/subscription/paiement.html:378
+#: project/templates/subscription/paiement.html:515
 msgid "Procéder au paiement sécurisé (30.- CHF TTC / an)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:363
-#: project/templates/subscription/paiement.html:502
+#: project/templates/subscription/paiement.html:380
+#: project/templates/subscription/paiement.html:523
 msgid "Procéder au paiement sécurisé (3.- CHF TTC / mois)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:370
+#: project/templates/subscription/paiement.html:387
 msgid "Connectez-vous pour finaliser votre abonnement"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:372
+#: project/templates/subscription/paiement.html:389
 msgid ""
 "Pour associer votre abonnement à votre classe, veuillez vous connecter ou"
 " créer votre compte en 1 minute."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:377
+#: project/templates/subscription/paiement.html:394
 msgid "Créer un compte enseignant"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:380
+#: project/templates/subscription/paiement.html:397
 msgid "J'ai déjà un compte (Connexion)"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:393
+#: project/templates/subscription/paiement.html:410
 #, python-format
 msgid "Paiement 100%% sécurisé"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:393
+#: project/templates/subscription/paiement.html:410
 msgid "Transactions chiffrées de bout en bout par Stripe."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:399
+#: project/templates/subscription/paiement.html:416
 msgid "Activation immédiate"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:399
+#: project/templates/subscription/paiement.html:416
 msgid "Toutes vos fonctionnalités sont débloquées instantanément."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:405
-#: project/templates/subscription/paiement.html:429
+#: project/templates/subscription/paiement.html:422
+#: project/templates/subscription/paiement.html:450
 #: project/templates/subscription/tarifs.html:486
 msgid "Résiliation libre et sans frais"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:405
+#: project/templates/subscription/paiement.html:422
 msgid ""
 "Résiliez à tout moment en 1 clic depuis vos réglages, sans frais cachés "
 "ni pénalités."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:411
+#: project/templates/subscription/paiement.html:428
 #, python-format
 msgid "Données 100%% préservées"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:411
+#: project/templates/subscription/paiement.html:428
 msgid "Aucun livre ni élève n'est supprimé si vous arrêtez."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:418
+#: project/templates/subscription/paiement.html:435
 msgid "← Revenir au comparatif complet des offres"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:432
+#: project/templates/subscription/paiement.html:453
 #: project/templates/subscription/tarifs.html:489
 msgid ""
 "Résiliez à tout moment en 1 clic depuis vos réglages. Aucun frais caché "
@@ -7653,12 +7669,12 @@ msgid ""
 "échéance."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:440
+#: project/templates/subscription/paiement.html:461
 #: project/templates/subscription/tarifs.html:497
 msgid "Que se passe-t-il si je résilie ?"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:443
+#: project/templates/subscription/paiement.html:464
 #: project/templates/subscription/tarifs.html:500
 msgid ""
 "Toutes vos données (élèves, livres, historique) restent intégralement "
@@ -7666,31 +7682,31 @@ msgid ""
 " de nouveaux éléments au-delà du seuil gratuit est mis en pause."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:451
+#: project/templates/subscription/paiement.html:472
 #: project/templates/subscription/tarifs.html:508
 msgid "Puis-je utiliser un code de réduction ?"
 msgstr ""
 
-#: project/templates/subscription/paiement.html:454
+#: project/templates/subscription/paiement.html:475
 #: project/templates/subscription/tarifs.html:511
 msgid ""
 "Oui ! Si votre école, votre canton ou une promotion vous a fourni un code"
 " avantage, saisissez-le simplement lors du paiement sécurisé sur Stripe."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:464
+#: project/templates/subscription/paiement.html:485
 #: project/templates/subscription/tarifs.html:543
 #, python-format
 msgid "Paiement 100%% sécurisé par carte bancaire via Stripe en CHF ou Euros."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:465
+#: project/templates/subscription/paiement.html:486
 msgid ""
 "Cartes bancaires françaises, suisses et internationales (CB, Visa, "
 "Mastercard) acceptées sans frais bancaires supplémentaires."
 msgstr ""
 
-#: project/templates/subscription/paiement.html:469
+#: project/templates/subscription/paiement.html:490
 #: project/templates/subscription/tarifs.html:548
 msgid "Consulter nos Conditions Générales de Vente (CGV) & Mentions Légales"
 msgstr ""
@@ -7813,7 +7829,7 @@ msgid ""
 msgstr ""
 
 #: project/templates/subscription/tarifs.html:216
-#: project/templates/user/reglage.html:782
+#: project/templates/user/reglage.html:779
 msgid "Résiliation programmée : accès Premium maintenu"
 msgstr ""
 
@@ -7835,14 +7851,16 @@ msgid ""
 "élèves ou prêts."
 msgstr ""
 
-#: project/templates/subscription/tarifs.html:230
-msgid "Votre abonnement Premium est actif"
-msgstr ""
-
 #: project/templates/subscription/tarifs.html:231
 msgid ""
 "Vous bénéficiez d'un accès illimité à toutes les fonctionnalités de "
 "Livres en Classe."
+msgstr ""
+
+#: project/templates/subscription/tarifs.html:238
+#: project/templates/subscription/tarifs.html:313
+#: project/templates/subscription/tarifs.html:389
+msgid "Gérer mon abonnement"
 msgstr ""
 
 #: project/templates/subscription/tarifs.html:248
@@ -7928,10 +7946,10 @@ msgid "Comparatif des fonctionnalités"
 msgstr ""
 
 #: project/templates/subscription/tarifs.html:420
-#: project/templates/user/reglage.html:1154
-#: project/templates/user/reglage.html:1184
-#: project/templates/user/reglage.html:1214
-#: project/templates/user/reglage.html:1244
+#: project/templates/user/reglage.html:1150
+#: project/templates/user/reglage.html:1180
+#: project/templates/user/reglage.html:1210
+#: project/templates/user/reglage.html:1240
 #: project/templates/utils/navbar.html:363
 #: project/templates/utils/navbar.html:447
 msgid "Premium"
@@ -7964,7 +7982,7 @@ msgid "scans / semaine"
 msgstr ""
 
 #: project/templates/subscription/tarifs.html:440
-#: project/templates/user/reglage.html:1241
+#: project/templates/user/reglage.html:1237
 msgid "Historique des prêts"
 msgstr ""
 
@@ -8102,7 +8120,7 @@ msgid "Résiliation programmée"
 msgstr ""
 
 #: project/templates/user/dashboard.html:142
-#: project/templates/user/reglage.html:728
+#: project/templates/user/reglage.html:704
 #, python-format
 msgid "Premium jusqu'au %(date)s"
 msgstr ""
@@ -8283,96 +8301,106 @@ msgstr ""
 msgid "Réglages de votre compte"
 msgstr ""
 
-#: project/templates/user/reglage.html:724
+#: project/templates/user/reglage.html:699
 msgid "Membre Fondateur"
 msgstr ""
 
-#: project/templates/user/reglage.html:732
+#: project/templates/user/reglage.html:709
 msgid "Essai Premium"
 msgstr ""
 
-#: project/templates/user/reglage.html:732
+#: project/templates/user/reglage.html:709
 msgid "jours restants"
 msgstr ""
 
-#: project/templates/user/reglage.html:736
+#: project/templates/user/reglage.html:714
 msgid "Abonné Premium"
 msgstr ""
 
-#: project/templates/user/reglage.html:740
-#: project/templates/user/reglage.html:808
+#: project/templates/user/reglage.html:718
+#: project/templates/user/reglage.html:805
 msgid "Formule Gratuite"
 msgstr ""
 
-#: project/templates/user/reglage.html:749
-#: project/templates/user/reglage.html:751
+#: project/templates/user/reglage.html:729
+#: project/templates/user/reglage.html:830
+msgid "Consulter la facture école"
+msgstr ""
+
+#: project/templates/user/reglage.html:736
+#: project/templates/user/reglage.html:856
+msgid "Gérer ma facturation"
+msgstr ""
+
+#: project/templates/user/reglage.html:746
+#: project/templates/user/reglage.html:748
 msgid "Mon Compte"
 msgstr ""
 
-#: project/templates/user/reglage.html:752
+#: project/templates/user/reglage.html:749
 #: project/templates/utils/footer.html:84
 msgid "Compte"
 msgstr ""
 
-#: project/templates/user/reglage.html:754
-#: project/templates/user/reglage.html:756
+#: project/templates/user/reglage.html:751
+#: project/templates/user/reglage.html:753
 msgid "Année scolaire & Archives"
 msgstr ""
 
-#: project/templates/user/reglage.html:759
-#: project/templates/user/reglage.html:761
+#: project/templates/user/reglage.html:756
+#: project/templates/user/reglage.html:758
 msgid "Exporter mes données"
 msgstr ""
 
-#: project/templates/user/reglage.html:762
+#: project/templates/user/reglage.html:759
 msgid "Exports"
 msgstr ""
 
-#: project/templates/user/reglage.html:764
-#: project/templates/user/reglage.html:766
-#: project/templates/user/reglage.html:1274
+#: project/templates/user/reglage.html:761
+#: project/templates/user/reglage.html:763
+#: project/templates/user/reglage.html:1270
 msgid "Zone de danger"
 msgstr ""
 
-#: project/templates/user/reglage.html:767
+#: project/templates/user/reglage.html:764
 msgid "Danger"
 msgstr ""
 
-#: project/templates/user/reglage.html:785
+#: project/templates/user/reglage.html:782
 #, python-format
 msgid ""
 "Votre abonnement ne sera pas renouvelé, mais vous conservez tous vos "
 "accès illimités (scans, exports, étiquettes) jusqu'au %(date)s."
 msgstr ""
 
-#: project/templates/user/reglage.html:798
+#: project/templates/user/reglage.html:795
 msgid "Formule Fondateur"
 msgstr ""
 
-#: project/templates/user/reglage.html:800
+#: project/templates/user/reglage.html:797
 #, python-format
 msgid "Abonnement résilié (actif jusqu'au %(date)s)"
 msgstr ""
 
-#: project/templates/user/reglage.html:802
+#: project/templates/user/reglage.html:799
 msgid "Facture École en cours (Accès 30j actif)"
 msgstr ""
 
-#: project/templates/user/reglage.html:804
+#: project/templates/user/reglage.html:801
 msgid "Période d'essai Premium"
 msgstr ""
 
-#: project/templates/user/reglage.html:806
+#: project/templates/user/reglage.html:803
 msgid "Abonnement Premium Actif"
 msgstr ""
 
-#: project/templates/user/reglage.html:813
+#: project/templates/user/reglage.html:810
 msgid ""
 "Vous bénéficiez d'un accès complet et illimité à vie pour vous remercier "
 "de votre soutien initial."
 msgstr ""
 
-#: project/templates/user/reglage.html:815
+#: project/templates/user/reglage.html:812
 #, python-format
 msgid ""
 "Votre demande de résiliation a bien été prise en compte. Vous continuez à"
@@ -8381,7 +8409,7 @@ msgid ""
 " en formule gratuite sans suppression de vos livres, élèves ou prêts."
 msgstr ""
 
-#: project/templates/user/reglage.html:817
+#: project/templates/user/reglage.html:814
 #, python-format
 msgid ""
 "Une facture officielle de %(amount).2f %(curr)s a été émise pour "
@@ -8390,518 +8418,485 @@ msgid ""
 "le règlement."
 msgstr ""
 
-#: project/templates/user/reglage.html:819
+#: project/templates/user/reglage.html:816
 #, python-format
 msgid ""
 "Vous bénéficiez de l'accès Premium complet pendant 30 jours (encore "
 "%(days)d jours)."
 msgstr ""
 
-#: project/templates/user/reglage.html:821
+#: project/templates/user/reglage.html:818
 msgid ""
 "Votre abonnement Premium est actif. Vous disposez de toutes les "
 "fonctionnalités sans aucune limite."
 msgstr ""
 
-#: project/templates/user/reglage.html:823
+#: project/templates/user/reglage.html:820
 #, python-format
 msgid ""
 "Vous utilisez la version gratuite (jusqu'à %(students)s élèves, %(books)s"
 " livres et %(scans)s scans codes-barres par semaine)."
 msgstr ""
 
-#: project/templates/user/reglage.html:833
-msgid "Consulter la facture école"
-msgstr ""
-
-#: project/templates/user/reglage.html:841
+#: project/templates/user/reglage.html:838
 msgid "Réactiver ou modifier mon abonnement"
 msgstr ""
 
-#: project/templates/user/reglage.html:846
+#: project/templates/user/reglage.html:843
 msgid "Se réabonner à Premium"
 msgstr ""
 
-#: project/templates/user/reglage.html:853
-msgid "Télécharger ma facture (PDF)"
-msgstr ""
-
-#: project/templates/user/reglage.html:859
-msgid "Gérer ma facturation"
-msgstr ""
-
-#: project/templates/user/reglage.html:866
+#: project/templates/user/reglage.html:863
 msgid "Passer à Premium (dès 3.- CHF/mois)"
 msgstr ""
 
-#: project/templates/user/reglage.html:870
+#: project/templates/user/reglage.html:867
 msgid "Facture école / mairie"
 msgstr ""
 
-#: project/templates/user/reglage.html:879
-msgid "Informations personnelles & Sécurité"
+#: project/templates/user/reglage.html:884
+msgid "Coordonnées du compte"
 msgstr ""
 
-#: project/templates/user/reglage.html:886
+#: project/templates/user/reglage.html:890
 msgid "Nom d'affichage"
 msgstr ""
 
-#: project/templates/user/reglage.html:894
+#: project/templates/user/reglage.html:899
 msgid "Adresse e-mail"
 msgstr ""
 
-#: project/templates/user/reglage.html:899
+#: project/templates/user/reglage.html:904
 msgid "Changer votre e-mail nécessitera une nouvelle vérification."
 msgstr ""
 
-#: project/templates/user/reglage.html:903
+#: project/templates/user/reglage.html:910
 msgid "Langue de l'interface"
 msgstr ""
 
-#: project/templates/user/reglage.html:918
-msgid "Changer de mot de passe"
+#: project/templates/user/reglage.html:928
+msgid "Préférences de la bibliothèque"
 msgstr ""
 
-#: project/templates/user/reglage.html:919
-msgid ""
-"Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot"
-" de passe."
-msgstr ""
-
-#: project/templates/user/reglage.html:922
-#: project/templates/user/reglage.html:924
-msgid "Mot de passe actuel"
-msgstr ""
-
-#: project/templates/user/reglage.html:930
-#: project/templates/user/reglage.html:932
-msgid "Nouveau mot de passe"
-msgstr ""
-
-#: project/templates/user/reglage.html:940
-msgid "Conseils pour un mot de passe sécurisé :"
-msgstr ""
-
-#: project/templates/user/reglage.html:943
-msgid "Au moins 8 caractères"
-msgstr ""
-
-#: project/templates/user/reglage.html:944
-msgid "Mélange de majuscules et minuscules (ex. : A, a)"
-msgstr ""
-
-#: project/templates/user/reglage.html:945
-#, python-format
-msgid ""
-"Au moins un chiffre (ex. : 1, 9) et un caractère spécial (ex. : @, #, $, "
-"%%)"
-msgstr ""
-
-#: project/templates/user/reglage.html:951
-msgid "Affichage & Préférences"
-msgstr ""
-
-#: project/templates/user/reglage.html:957
-msgid "Afficher les images de couverture des livres"
-msgstr ""
-
-#: project/templates/user/reglage.html:960
-msgid "Activé"
-msgstr ""
-
-#: project/templates/user/reglage.html:962
-msgid "Mode compact"
-msgstr ""
-
-#: project/templates/user/reglage.html:966
-msgid ""
-"Affiche l'illustration de la couverture des livres sur la liste de tous "
-"vos livres, la gestion des emprunts et les fiches détaillées d'un livre "
-"ou d'un élève. Décochez pour conserver l'affichage textuel classique."
-msgstr ""
-
-#: project/templates/user/reglage.html:971
-msgid "Gestion des Prêts & Retards"
-msgstr ""
-
-#: project/templates/user/reglage.html:976
+#: project/templates/user/reglage.html:934
 msgid "Durée habituelle d'un prêt"
 msgstr ""
 
-#: project/templates/user/reglage.html:987
-msgid "ex. : 7 jours = 1 semaine, 14 jours = 2 semaines"
+#: project/templates/user/reglage.html:942
+msgid "ex. : 14 jours = 2 semaines"
 msgstr ""
 
-#: project/templates/user/reglage.html:991
+#: project/templates/user/reglage.html:945
 msgid ""
 "Cette durée pré-remplira automatiquement la date de retour prévue lors de"
 " chaque nouvel emprunt. Les retards seront signalés sur le tableau de "
 "bord."
 msgstr ""
 
-#: project/templates/user/reglage.html:996
-msgid "Communications & Newsletter"
+#: project/templates/user/reglage.html:953
+msgid "Afficher les images de couverture des livres"
 msgstr ""
 
-#: project/templates/user/reglage.html:1002
+#: project/templates/user/reglage.html:955
+msgid "Activé"
+msgstr ""
+
+#: project/templates/user/reglage.html:955
+msgid "Mode compact"
+msgstr ""
+
+#: project/templates/user/reglage.html:960
+msgid ""
+"Affiche l'illustration de la couverture des livres sur la liste de tous "
+"vos livres, la gestion des emprunts et les fiches détaillées d'un livre "
+"ou d'un élève. Décochez pour conserver l'affichage textuel classique."
+msgstr ""
+
+#: project/templates/user/reglage.html:968
 msgid "Recevoir la newsletter et les actualités par e-mail"
 msgstr ""
 
-#: project/templates/user/reglage.html:1005
+#: project/templates/user/reglage.html:970
 msgid "Abonné"
 msgstr ""
 
-#: project/templates/user/reglage.html:1007
+#: project/templates/user/reglage.html:970
 msgid "Désabonné"
 msgstr ""
 
-#: project/templates/user/reglage.html:1011
+#: project/templates/user/reglage.html:975
 msgid ""
 "Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils "
 "pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous "
 "désabonner à tout moment."
 msgstr ""
 
-#: project/templates/user/reglage.html:1020
+#: project/templates/user/reglage.html:984
+msgid "Changer de mot de passe"
+msgstr ""
+
+#: project/templates/user/reglage.html:986
+msgid ""
+"Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot"
+" de passe."
+msgstr ""
+
+#: project/templates/user/reglage.html:991
+#: project/templates/user/reglage.html:993
+msgid "Mot de passe actuel"
+msgstr ""
+
+#: project/templates/user/reglage.html:1000
+#: project/templates/user/reglage.html:1002
+msgid "Nouveau mot de passe"
+msgstr ""
+
+#: project/templates/user/reglage.html:1010
+msgid ""
+"Pour un mot de passe sécurisé : au moins 8 caractères avec majuscules, "
+"minuscules, chiffres et caractères spéciaux."
+msgstr ""
+
+#: project/templates/user/reglage.html:1018
 msgid "Enregistrer les modifications"
 msgstr ""
 
-#: project/templates/user/reglage.html:1034
+#: project/templates/user/reglage.html:1030
 msgid "Année scolaire & Archivage"
 msgstr ""
 
-#: project/templates/user/reglage.html:1037
+#: project/templates/user/reglage.html:1033
 msgid ""
 "Gérez la transition entre les années scolaires, conservez vos cours "
 "doubles et libérez votre quota d'élèves."
 msgstr ""
 
-#: project/templates/user/reglage.html:1052
+#: project/templates/user/reglage.html:1048
 msgid "Année scolaire en cours"
 msgstr ""
 
-#: project/templates/user/reglage.html:1055
+#: project/templates/user/reglage.html:1051
 msgid "Classe active :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1056
+#: project/templates/user/reglage.html:1052
 msgid "Prêts en cours :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1062
+#: project/templates/user/reglage.html:1058
 msgid "Lancer l'assistant"
 msgstr ""
 
-#: project/templates/user/reglage.html:1072
+#: project/templates/user/reglage.html:1068
 msgid "Promotions archivées"
 msgstr ""
 
-#: project/templates/user/reglage.html:1083
+#: project/templates/user/reglage.html:1079
 msgid "Promotion"
 msgstr ""
 
-#: project/templates/user/reglage.html:1093
+#: project/templates/user/reglage.html:1089
 msgid "prêts/élève"
 msgstr ""
 
-#: project/templates/user/reglage.html:1098
+#: project/templates/user/reglage.html:1094
 msgid "Top livre :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1104
+#: project/templates/user/reglage.html:1100
 msgid "Top lecteur :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1111
+#: project/templates/user/reglage.html:1107
 msgid "Consulter le bilan"
 msgstr ""
 
-#: project/templates/user/reglage.html:1114
+#: project/templates/user/reglage.html:1110
 msgid "Imprimer le bilan officiel"
 msgstr ""
 
-#: project/templates/user/reglage.html:1128
+#: project/templates/user/reglage.html:1124
 msgid "Aucune année scolaire n'est encore archivée"
 msgstr ""
 
-#: project/templates/user/reglage.html:1130
+#: project/templates/user/reglage.html:1126
 msgid ""
 "Lorsque vous clôturez votre classe à la fin de l'année scolaire, vos "
 "statistiques, vos bilans de lecture et vos élèves sortants sont archivés "
 "ici sans encombrer votre nouvelle rentrée."
 msgstr ""
 
-#: project/templates/user/reglage.html:1140
+#: project/templates/user/reglage.html:1136
 msgid "Télécharger vos données"
 msgstr ""
 
-#: project/templates/user/reglage.html:1141
+#: project/templates/user/reglage.html:1137
 msgid ""
 "Générez et téléchargez facilement vos fichiers au format Excel pour les "
 "sauvegarder ou les analyser."
 msgstr ""
 
-#: project/templates/user/reglage.html:1151
+#: project/templates/user/reglage.html:1147
 msgid "Tous les livres"
 msgstr ""
 
-#: project/templates/user/reglage.html:1159
+#: project/templates/user/reglage.html:1155
 msgid "La liste complète de tous les livres enregistrés dans votre bibliothèque."
 msgstr ""
 
-#: project/templates/user/reglage.html:1163
-#: project/templates/user/reglage.html:1168
-#: project/templates/user/reglage.html:1193
-#: project/templates/user/reglage.html:1198
-#: project/templates/user/reglage.html:1223
-#: project/templates/user/reglage.html:1228
-#: project/templates/user/reglage.html:1253
-#: project/templates/user/reglage.html:1258
+#: project/templates/user/reglage.html:1159
+#: project/templates/user/reglage.html:1164
+#: project/templates/user/reglage.html:1189
+#: project/templates/user/reglage.html:1194
+#: project/templates/user/reglage.html:1219
+#: project/templates/user/reglage.html:1224
+#: project/templates/user/reglage.html:1249
+#: project/templates/user/reglage.html:1254
 msgid "Télécharger (Excel)"
 msgstr ""
 
-#: project/templates/user/reglage.html:1181
+#: project/templates/user/reglage.html:1177
 msgid "Lectures par élève"
 msgstr ""
 
-#: project/templates/user/reglage.html:1189
+#: project/templates/user/reglage.html:1185
 msgid "Historique des livres lus et empruntés classé par élève."
 msgstr ""
 
-#: project/templates/user/reglage.html:1211
+#: project/templates/user/reglage.html:1207
 msgid "Prêts en cours"
 msgstr ""
 
-#: project/templates/user/reglage.html:1219
+#: project/templates/user/reglage.html:1215
 msgid "La liste des emprunts actifs non encore retournés."
 msgstr ""
 
-#: project/templates/user/reglage.html:1249
+#: project/templates/user/reglage.html:1245
 msgid ""
 "L'ensemble de tous les prêts réalisés depuis la création de la "
 "bibliothèque."
 msgstr ""
 
-#: project/templates/user/reglage.html:1280
+#: project/templates/user/reglage.html:1276
 msgid "Attention :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1280
+#: project/templates/user/reglage.html:1276
 msgid ""
 "Les actions ci-dessous sont irréversibles et entraînent la suppression "
 "définitive de vos données."
 msgstr ""
 
-#: project/templates/user/reglage.html:1287
-#: project/templates/user/reglage.html:1292
+#: project/templates/user/reglage.html:1283
+#: project/templates/user/reglage.html:1288
 msgid "Supprimer tous les élèves"
 msgstr ""
 
-#: project/templates/user/reglage.html:1288
+#: project/templates/user/reglage.html:1284
 msgid "Efface l'ensemble de vos élèves ainsi que l'historique de leurs prêts."
 msgstr ""
 
-#: project/templates/user/reglage.html:1299
-#: project/templates/user/reglage.html:1304
+#: project/templates/user/reglage.html:1295
+#: project/templates/user/reglage.html:1300
 msgid "Supprimer tous les prêts"
 msgstr ""
 
-#: project/templates/user/reglage.html:1300
+#: project/templates/user/reglage.html:1296
 msgid "Efface tous les enregistrements de prêts (en cours et retournés)."
 msgstr ""
 
-#: project/templates/user/reglage.html:1311
-#: project/templates/user/reglage.html:1316
+#: project/templates/user/reglage.html:1307
+#: project/templates/user/reglage.html:1312
 msgid "Supprimer tous les livres"
 msgstr ""
 
-#: project/templates/user/reglage.html:1312
+#: project/templates/user/reglage.html:1308
 msgid "Vide totalement votre catalogue de livres."
 msgstr ""
 
-#: project/templates/user/reglage.html:1326
-#: project/templates/user/reglage.html:1331
+#: project/templates/user/reglage.html:1322
+#: project/templates/user/reglage.html:1327
 msgid "Supprimer mon compte"
 msgstr ""
 
-#: project/templates/user/reglage.html:1327
+#: project/templates/user/reglage.html:1323
 msgid "Supprime définitivement votre compte et l'intégralité de vos données."
 msgstr ""
 
-#: project/templates/user/reglage.html:1343
-#: project/templates/user/reglage.html:1588
+#: project/templates/user/reglage.html:1339
+#: project/templates/user/reglage.html:1584
 msgid "Modifications non enregistrées"
 msgstr ""
 
-#: project/templates/user/reglage.html:1367
+#: project/templates/user/reglage.html:1363
 msgid "Supprimer tous les élèves ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:1371
+#: project/templates/user/reglage.html:1367
 msgid "Êtes-vous sûr de vouloir supprimer tous les élèves ? Cette action est"
 msgstr ""
 
-#: project/templates/user/reglage.html:1371
-#: project/templates/user/reglage.html:1392
-#: project/templates/user/reglage.html:1413
-#: project/templates/user/reglage.html:1451
+#: project/templates/user/reglage.html:1367
+#: project/templates/user/reglage.html:1388
+#: project/templates/user/reglage.html:1409
+#: project/templates/user/reglage.html:1447
 msgid "irréversible"
 msgstr ""
 
-#: project/templates/user/reglage.html:1377
-#: project/templates/user/reglage.html:1398
-#: project/templates/user/reglage.html:1426
+#: project/templates/user/reglage.html:1373
+#: project/templates/user/reglage.html:1394
+#: project/templates/user/reglage.html:1422
 msgid "Oui, supprimer"
 msgstr ""
 
-#: project/templates/user/reglage.html:1388
+#: project/templates/user/reglage.html:1384
 msgid "Supprimer tous les prêts ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:1392
+#: project/templates/user/reglage.html:1388
 msgid ""
 "Êtes-vous sûr de vouloir réinitialiser l'historique des prêts ? Cette "
 "action est"
 msgstr ""
 
-#: project/templates/user/reglage.html:1409
+#: project/templates/user/reglage.html:1405
 msgid "Supprimer tous les livres ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:1413
+#: project/templates/user/reglage.html:1409
 msgid ""
 "Êtes-vous sûr de vouloir vider l'ensemble de votre catalogue de livres ? "
 "Cette action est"
 msgstr ""
 
-#: project/templates/user/reglage.html:1418
-#: project/templates/user/reglage.html:1459
+#: project/templates/user/reglage.html:1414
+#: project/templates/user/reglage.html:1455
 msgid "Catalogue collaboratif :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1418
-#: project/templates/user/reglage.html:1459
+#: project/templates/user/reglage.html:1414
+#: project/templates/user/reglage.html:1455
 msgid ""
 "Afin de préserver le catalogue partagé pour tous les enseignants, les "
 "fiches bibliographiques des livres munis d'un code ISBN seront conservées"
 " de manière anonyme dans la base collaborative."
 msgstr ""
 
-#: project/templates/user/reglage.html:1442
+#: project/templates/user/reglage.html:1438
 msgid "Supprimer définitivement mon compte ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:1451
+#: project/templates/user/reglage.html:1447
 msgid "Attention : Cette action est"
 msgstr ""
 
-#: project/templates/user/reglage.html:1451
+#: project/templates/user/reglage.html:1447
 msgid "Vos élèves, prêts et données personnelles seront définitivement supprimés."
 msgstr ""
 
-#: project/templates/user/reglage.html:1466
+#: project/templates/user/reglage.html:1462
 msgid "Pourquoi souhaitez-vous supprimer votre compte ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:1472
+#: project/templates/user/reglage.html:1468
 msgid "Le tarif est trop élevé / trop cher"
 msgstr ""
 
-#: project/templates/user/reglage.html:1478
+#: project/templates/user/reglage.html:1474
 msgid "Les quotas de la version gratuite sont trop limités"
 msgstr ""
 
-#: project/templates/user/reglage.html:1484
+#: project/templates/user/reglage.html:1480
 msgid "Je n'en ai plus l'utilité (changement de niveau, départ...)"
 msgstr ""
 
-#: project/templates/user/reglage.html:1489
+#: project/templates/user/reglage.html:1485
 msgid "Il manque des fonctionnalités importantes"
 msgstr ""
 
-#: project/templates/user/reglage.html:1494
+#: project/templates/user/reglage.html:1490
 msgid "Trop difficile ou complexe à utiliser"
 msgstr ""
 
-#: project/templates/user/reglage.html:1499
+#: project/templates/user/reglage.html:1495
 msgid "Autre raison"
 msgstr ""
 
-#: project/templates/user/reglage.html:1507
+#: project/templates/user/reglage.html:1503
 msgid "Précisez votre retour (facultatif) :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1510
+#: project/templates/user/reglage.html:1506
 msgid "Vos remarques nous aident à améliorer Livres en Classe..."
 msgstr ""
 
-#: project/templates/user/reglage.html:1518
+#: project/templates/user/reglage.html:1514
 msgid "Attendez ! Une offre spéciale pour votre classe"
 msgstr ""
 
-#: project/templates/user/reglage.html:1521
+#: project/templates/user/reglage.html:1517
 #, python-format
 msgid ""
 "Avant de supprimer votre compte, profitez de -30%% de réduction sur "
 "l'abonnement Premium avec le code promo :"
 msgstr ""
 
-#: project/templates/user/reglage.html:1530
+#: project/templates/user/reglage.html:1526
 #, python-format
 msgid "Profiter du code promo (-30%%)"
 msgstr ""
 
-#: project/templates/user/reglage.html:1538
+#: project/templates/user/reglage.html:1534
 msgid "Supprimer définitivement mon compte"
 msgstr ""
 
-#: project/templates/user/reglage.html:1542
-#: project/templates/user/reglage.html:1602
+#: project/templates/user/reglage.html:1538
+#: project/templates/user/reglage.html:1598
 msgid "Annuler et rester"
 msgstr ""
 
-#: project/templates/user/reglage.html:1555
+#: project/templates/user/reglage.html:1551
 msgid "Fonctionnalité Premium : Export Excel"
 msgstr ""
 
-#: project/templates/user/reglage.html:1561
+#: project/templates/user/reglage.html:1557
 msgid ""
 "L'exportation de vos données au format Excel (catalogue des livres, "
 "lectures par élève, emprunts actifs et historique complet) est réservée "
 "aux abonnés Premium et membres Fondateurs."
 msgstr ""
 
-#: project/templates/user/reglage.html:1564
+#: project/templates/user/reglage.html:1560
 msgid ""
 "Sauvegardez vos listes, partagez-les avec vos collègues ou intégrez-les "
 "dans vos bilans scolaires en un clic."
 msgstr ""
 
-#: project/templates/user/reglage.html:1568
+#: project/templates/user/reglage.html:1564
 msgid ""
 "Éligible au financement par votre coopérative scolaire (OCCE), les "
 "crédits mairie ou votre budget de classe."
 msgstr ""
 
-#: project/templates/user/reglage.html:1575
+#: project/templates/user/reglage.html:1571
 msgid "Découvrir la formule complète (30.- CHF/an)"
 msgstr ""
 
-#: project/templates/user/reglage.html:1594
+#: project/templates/user/reglage.html:1590
 msgid "Vous avez modifié des réglages sur votre compte sans les enregistrer."
 msgstr ""
 
-#: project/templates/user/reglage.html:1597
+#: project/templates/user/reglage.html:1593
 msgid ""
 "Si vous quittez cette page maintenant, vos modifications seront perdues. "
 "Souhaitez-vous enregistrer vos modifications avant de partir ?"
 msgstr ""
 
-#: project/templates/user/reglage.html:1605
+#: project/templates/user/reglage.html:1601
 msgid "Quitter sans enregistrer"
 msgstr ""
 
-#: project/templates/user/reglage.html:1609
+#: project/templates/user/reglage.html:1605
 msgid "Enregistrer et continuer"
 msgstr ""
 

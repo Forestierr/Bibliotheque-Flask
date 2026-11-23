@@ -18,32 +18,8 @@
         border-radius: 14px;
         border: 1px solid hsl(0, 0%, 93%);
         box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        padding: 2rem;
-        margin-bottom: 2rem;
-    }
-    .profile-header-card {
-        background: linear-gradient(135deg, hsl(210, 60%, 97%) 0%, hsl(250, 50%, 96%) 100%);
-        border: 1px solid hsl(210, 50%, 88%);
-        border-radius: 16px;
-        padding: 1.75rem 2rem;
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    .profile-avatar-big {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, hsl(191, 70%, 55%), hsl(199, 91%, 31%));
-        color: white;
-        font-weight: 800;
-        font-size: 1.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 14px rgba(66, 133, 244, 0.3);
+        padding: 1.75rem;
+        margin-bottom: 1.5rem;
     }
     .settings-tabs {
         border-bottom: 2px solid hsl(0, 0%, 93%);
@@ -707,38 +683,59 @@
 <section class="section">
     <div class="container" style="max-width: 920px; margin: 0 auto;">
 
-        <!-- Carte Profil En-tête -->
-        <div class="profile-header-card">
-            <div class="profile-avatar-big">
-                {{ user.name[0]|upper if user.name else '?' }}
-            </div>
-            <div style="flex: 1;">
-                <h1 class="title is-3 mb-1" style="color: hsl(210, 40%, 20%); font-weight: 800;">{{ user.name }}</h1>
-                <p class="subtitle is-6 mb-2" style="color: hsl(210, 20%, 45%);">
-                    <span class="icon is-small mr-1"><i class="fas fa-envelope"></i></span>
-                    {{ user.email }}
-                </p>
+        <!-- Carte Profil En-tête (Bloc Bulma épuré) -->
+        <div class="box mb-5">
+            <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap" style="gap: 1rem;">
+                <div>
+                    <h1 class="title is-4 mb-1" style="color: #0f172a; font-weight: 700;">{{ user.name }}</h1>
+                    <p class="subtitle is-6 mb-2 has-text-grey">
+                        <span class="icon is-small mr-1"><i class="fas fa-envelope"></i></span>
+                        {{ user.email }}
+                    </p>
+                    <div class="tags mb-0">
+                        {% if user.plan == 'founder' %}
+                            <span class="tag is-primary is-light is-rounded has-text-weight-bold">
+                                <span class="icon is-small mr-1"><i class="fas fa-award"></i></span>
+                                {{ _("Membre Fondateur") }}
+                            </span>
+                        {% elif user.is_canceling %}
+                            <span class="tag is-warning is-light is-rounded has-text-weight-bold">
+                                <span class="icon is-small mr-1"><i class="fas fa-exclamation-triangle"></i></span>
+                                {{ _("Premium jusqu'au %(date)s", date=user.effective_cancellation_date|format_date) }}
+                            </span>
+                        {% elif user.is_in_trial %}
+                            <span class="tag is-info is-light is-rounded has-text-weight-bold">
+                                <span class="icon is-small mr-1"><i class="fas fa-clock"></i></span>
+                                {{ _("Essai Premium") }} ({{ user.trial_days_left }} {{ _("jours restants") }})
+                            </span>
+                        {% elif user.is_premium %}
+                            <span class="tag is-success is-light is-rounded has-text-weight-bold">
+                                <span class="icon is-small mr-1"><i class="fas fa-check"></i></span>
+                                {{ _("Abonné Premium") }}
+                            </span>
+                        {% else %}
+                            <span class="tag is-light is-rounded has-text-weight-semibold">
+                                {{ _("Formule Gratuite") }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
                 <div>
                     {% if user.plan == 'founder' %}
-                        <span class="tag is-light is-rounded has-text-weight-bold">
-                            {{ _("Membre Fondateur") }}
-                        </span>
-                    {% elif user.is_canceling %}
-                        <span class="tag is-warning is-light is-rounded has-text-weight-bold">
-                            ⚠️ {{ _("Premium jusqu'au %(date)s", date=user.effective_cancellation_date|format_date) }}
-                        </span>
-                    {% elif user.is_in_trial %}
-                        <span class="tag is-light is-rounded has-text-weight-bold">
-                            {{ _("Essai Premium") }} ({{ user.trial_days_left }} {{ _("jours restants") }})
-                        </span>
-                    {% elif user.is_premium %}
-                        <span class="tag is-light is-rounded has-text-weight-bold">
-                            {{ _("Abonné Premium") }}
-                        </span>
-                    {% else %}
-                        <span class="tag is-light is-rounded has-text-weight-semibold">
-                            {{ _("Formule Gratuite") }}
-                        </span>
+                        {# Membre fondateur #}
+                    {% elif user.has_pending_school_invoice %}
+                        <a href="{{ url_for('subscription.facture_ecole_confirmation', invoice_id=user.active_pending_school_invoice.id) }}" class="button is-info is-outlined is-rounded is-small">
+                            <span class="icon"><i class="fas fa-file-invoice"></i></span>
+                            <span>{{ _("Consulter la facture école") }}</span>
+                        </a>
+                    {% elif user.plan == 'premium' and user.stripe_subscription_status == 'active' %}
+                        <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
+                            {% include 'utils/csrf.html' %}
+                            <button type="submit" class="button is-link is-outlined is-rounded is-small">
+                                <span class="icon"><i class="fas fa-credit-card"></i></span>
+                                <span>{{ _("Gérer ma facturation") }}</span>
+                            </button>
+                        </form>
                     {% endif %}
                 </div>
             </div>
@@ -789,17 +786,17 @@
             </div>
             {% endif %}
 
-            <!-- Carte Formule & Abonnement -->
-            <div class="settings-card mb-5">
-                <div class="is-flex is-align-items-center is-justify-content-space-between" style="flex-wrap: wrap; gap: 1rem;">
+            <!-- Carte Formule & Abonnement (Bloc Bulma épuré) -->
+            <div class="box mb-5">
+                <div class="is-flex is-align-items-center is-justify-content-space-between is-flex-wrap-wrap" style="gap: 1rem;">
                     <div>
-                        <h2 class="title is-5 mb-1">
+                        <h2 class="title is-5 mb-1" style="color: #0f172a; font-weight: 700;">
                             {% if user.plan == 'founder' %}
                                 {{ _("Formule Fondateur") }}
                             {% elif user.is_canceling %}
-                                ⚠️ {{ _("Abonnement résilié (actif jusqu'au %(date)s)", date=user.effective_cancellation_date|format_date) }}
+                                <span class="icon has-text-warning mr-1"><i class="fas fa-exclamation-triangle"></i></span>{{ _("Abonnement résilié (actif jusqu'au %(date)s)", date=user.effective_cancellation_date|format_date) }}
                             {% elif user.has_pending_school_invoice %}
-                                🏫 {{ _("Facture École en cours (Accès 30j actif)") }}
+                                <span class="icon has-text-info mr-1"><i class="fas fa-school"></i></span>{{ _("Facture École en cours (Accès 30j actif)") }}
                             {% elif user.is_in_trial %}
                                 {{ _("Période d'essai Premium") }}
                             {% elif user.is_premium %}
@@ -808,7 +805,7 @@
                                 {{ _("Formule Gratuite") }}
                             {% endif %}
                         </h2>
-                        <p class="has-text-grey is-size-7">
+                        <p class="has-text-grey is-size-7" style="line-height: 1.5; max-width: 650px;">
                             {% if user.plan == 'founder' %}
                                 {{ _("Vous bénéficiez d'un accès complet et illimité à vie pour vous remercier de votre soutien initial.") }}
                             {% elif user.is_canceling %}
@@ -875,154 +872,153 @@
                 </div>
             </div>
 
-            <div class="settings-card">
-                <h2 class="title is-4 mb-4">{{ _("Informations personnelles & Sécurité") }}</h2>
+            <!-- Formulaire des Réglages découpé en blocs logiques clairs -->
+            <form id="settings-form" method="POST" action="{{ url_for('auth.reglage') }}">
+                {% include 'utils/csrf.html' %}
+                <input type="hidden" name="next" id="settings-next-input" value="">
 
-                <form id="settings-form" method="POST" action="{{ url_for('auth.reglage') }}">
-                    {% include 'utils/csrf.html' %}
-                    <input type="hidden" name="next" id="settings-next-input" value="">
+                <!-- Bloc 1 : Coordonnées du compte -->
+                <div class="box mb-5">
+                    <h3 class="title is-5 mb-4" style="color: #0f172a; font-weight: 700;">
+                        <span class="icon is-small has-text-link mr-2"><i class="fas fa-user-circle"></i></span>
+                        {{ _("Coordonnées du compte") }}
+                    </h3>
 
-                    <div class="field">
-                        <label class="label">{{ _("Nom d'affichage") }}</label>
-                        <div class="control has-icons-left">
-                            <input class="input" type="text" name="name" value="{{ user.name }}" required>
-                            <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                    <div class="columns is-variable is-3">
+                        <div class="column is-6">
+                            <div class="field">
+                                <label class="label is-small">{{ _("Nom d'affichage") }}</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" name="name" value="{{ user.name }}" required>
+                                    <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column is-6">
+                            <div class="field">
+                                <label class="label is-small">{{ _("Adresse e-mail") }}</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="email" name="email" value="{{ user.email }}" required>
+                                    <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+                                </div>
+                                <p class="help has-text-grey">{{ _("Changer votre e-mail nécessitera une nouvelle vérification.") }}</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="field">
-                        <label class="label">{{ _("Adresse e-mail") }}</label>
-                        <div class="control has-icons-left">
-                            <input class="input" type="email" name="email" value="{{ user.email }}" required>
-                            <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
-                        </div>
-                        <p class="help has-text-grey">{{ _("Changer votre e-mail nécessitera une nouvelle vérification.") }}</p>
-                    </div>
-
-                    <div class="field">
-                        <label class="label">{{ _("Langue de l'interface") }}</label>
+                        <label class="label is-small">{{ _("Langue de l'interface") }}</label>
                         <div class="control has-icons-left">
                             <div class="select is-fullwidth">
                                 <select name="preferred_language">
-                                    <option value="fr" {% if (user.preferred_language or get_locale()) == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
-                                    <option value="en" {% if (user.preferred_language or get_locale()) == 'en' %}selected{% endif %}>🇬🇧 English</option>
-                                    <option value="de" {% if (user.preferred_language or get_locale()) == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                                    <option value="fr" {% if (user.preferred_language or get_locale()) == 'fr' %}selected{% endif %}>Français</option>
+                                    <option value="en" {% if (user.preferred_language or get_locale()) == 'en' %}selected{% endif %}>English</option>
+                                    <option value="de" {% if (user.preferred_language or get_locale()) == 'de' %}selected{% endif %}>Deutsch</option>
                                 </select>
                             </div>
                             <span class="icon is-small is-left"><i class="fas fa-globe"></i></span>
                         </div>
                     </div>
+                </div>
 
-                    <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
+                <!-- Bloc 2 : Préférences de la bibliothèque -->
+                <div class="box mb-5">
+                    <h3 class="title is-5 mb-4" style="color: #0f172a; font-weight: 700;">
+                        <span class="icon is-small has-text-link mr-2"><i class="fas fa-sliders-h"></i></span>
+                        {{ _("Préférences de la bibliothèque") }}
+                    </h3>
 
-                                        <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Changer de mot de passe") }}</h3>
+                    <div class="field mb-4">
+                        <label class="label is-small has-text-weight-bold" for="default_loan_duration_days">
+                            <span class="icon is-small mr-1"><i class="fas fa-calendar-alt"></i></span>
+                            {{ _("Durée habituelle d'un prêt") }}
+                        </label>
+                        <div class="is-flex is-align-items-center" style="gap: 0.75rem;">
+                            <div class="control has-icons-left" style="width: 130px;">
+                                <input class="input is-rounded" type="number" id="default_loan_duration_days" name="default_loan_duration_days" min="1" max="180" value="{{ user.default_loan_duration_days or 14 }}">
+                                <span class="icon is-left has-text-grey"><i class="fas fa-clock"></i></span>
+                            </div>
+                            <span class="is-size-6 has-text-weight-semibold">{{ _("jours") }}</span>
+                            <span class="is-size-7 has-text-grey">({{ _("ex. : 14 jours = 2 semaines") }})</span>
+                        </div>
+                        <p class="help has-text-grey mt-1">
+                            {{ _("Cette durée pré-remplira automatiquement la date de retour prévue lors de chaque nouvel emprunt. Les retards seront signalés sur le tableau de bord.") }}
+                        </p>
+                    </div>
+
+                    <div class="field mb-4">
+                        <label class="checkbox has-text-weight-bold" style="cursor: pointer; display: flex; align-items: flex-start; gap: 0.6rem;">
+                            <input type="checkbox" name="show_book_covers" value="1" {% if user.show_book_covers %}checked{% endif %} style="transform: scale(1.15); margin-top: 3px;">
+                            <span>
+                                {{ _("Afficher les images de couverture des livres") }}
+                                <span class="tag is-light is-rounded is-small ml-2">
+                                    {% if user.show_book_covers %}{{ _("Activé") }}{% else %}{{ _("Mode compact") }}{% endif %}
+                                </span>
+                            </span>
+                        </label>
+                        <p class="help has-text-grey ml-4">
+                            {{ _("Affiche l'illustration de la couverture des livres sur la liste de tous vos livres, la gestion des emprunts et les fiches détaillées d'un livre ou d'un élève. Décochez pour conserver l'affichage textuel classique.") }}
+                        </p>
+                    </div>
+
+                    <div class="field">
+                        <label class="checkbox has-text-weight-bold" style="cursor: pointer; display: flex; align-items: flex-start; gap: 0.6rem;">
+                            <input type="checkbox" name="newsletter_subscribed" value="1" {% if user.newsletter_subscribed %}checked{% endif %} style="transform: scale(1.15); margin-top: 3px;">
+                            <span>
+                                {{ _("Recevoir la newsletter et les actualités par e-mail") }}
+                                <span class="tag is-light is-rounded is-small ml-2">
+                                    {% if user.newsletter_subscribed %}{{ _("Abonné") }}{% else %}{{ _("Désabonné") }}{% endif %}
+                                </span>
+                            </span>
+                        </label>
+                        <p class="help has-text-grey ml-4">
+                            {{ _("Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous désabonner à tout moment.") }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bloc 3 : Sécurité & Mot de passe -->
+                <div class="box mb-5">
+                    <h3 class="title is-5 mb-4" style="color: #0f172a; font-weight: 700;">
+                        <span class="icon is-small has-text-link mr-2"><i class="fas fa-lock"></i></span>
+                        {{ _("Changer de mot de passe") }}
+                    </h3>
                     <p class="has-text-grey is-size-7 mb-4">{{ _("Laissez ces deux champs vides si vous ne souhaitez pas modifier votre mot de passe.") }}</p>
 
-                    <div class="field">
-                        <label class="label">{{ _("Mot de passe actuel") }}</label>
-                        <div class="control has-icons-left">
-                            <input class="input" type="password" name="password" placeholder="{{ _('Mot de passe actuel') }}">
-                            <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label class="label">{{ _("Nouveau mot de passe") }}</label>
-                        <div class="control has-icons-left">
-                            <input class="input" type="password" name="new_password" placeholder="{{ _('Nouveau mot de passe') }}">
-                            <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
-                        </div>
-                    </div>
-
-                    <!-- Exigences de sécurité -->
-                    <div style="background: hsl(210, 60%, 97%); border: 1px solid hsl(210, 50%, 88%); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; margin-bottom: 1.5rem;">
-                        <p class="has-text-weight-semibold is-size-7 mb-1" style="color: hsl(210, 40%, 30%);">
-                            <i class="fas fa-shield-alt mr-1"></i> {{ _("Conseils pour un mot de passe sécurisé :") }}
-                        </p>
-                        <ul class="is-size-7 has-text-grey" style="list-style: disc; margin-left: 1.25rem; line-height: 1.8;">
-                            <li>{{ _("Au moins 8 caractères") }}</li>
-                            <li>{{ _("Mélange de majuscules et minuscules (ex. : A, a)") }}</li>
-                            <li>{{ _("Au moins un chiffre (ex. : 1, 9) et un caractère spécial (ex. : @, #, $, %%)")|replace("%%", "%") }}</li>
-                        </ul>
-                    </div>
-
-                    <hr style="background-color: hsl(0, 0%, 94%); margin: 1.75rem 0;">
-
-                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Affichage & Préférences") }}</h3>
-                    <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
-                        <div class="field">
-                            <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-                                <label class="checkbox has-text-weight-bold" style="cursor: pointer; display: flex; align-items: center; gap: 0.6rem; color: hsl(210, 40%, 20%);">
-                                    <input type="checkbox" name="show_book_covers" value="1" {% if user.show_book_covers %}checked{% endif %} style="transform: scale(1.2); cursor: pointer;">
-                                    <span>{{ _("Afficher les images de couverture des livres") }}</span>
-                                </label>
-                                {% if user.show_book_covers %}
-                                    <span class="tag is-success is-light is-rounded">{{ _("Activé") }}</span>
-                                {% else %}
-                                    <span class="tag is-grey is-light is-rounded">{{ _("Mode compact") }}</span>
-                                {% endif %}
-                            </div>
-                            <p class="has-text-grey is-size-7 ml-5" style="line-height: 1.5;">
-                                {{ _("Affiche l'illustration de la couverture des livres sur la liste de tous vos livres, la gestion des emprunts et les fiches détaillées d'un livre ou d'un élève. Décochez pour conserver l'affichage textuel classique.") }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Gestion des Prêts & Retards") }}</h3>
-                    <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
-                        <div class="field">
-                            <label class="label has-text-weight-bold" for="default_loan_duration_days" style="color: hsl(210, 40%, 20%);">
-                                <span class="icon is-small mr-1"><i class="fas fa-calendar-alt"></i></span>
-                                {{ _("Durée habituelle d'un prêt") }}
-                            </label>
-                            <div class="columns is-vcentered is-mobile mt-1 mb-1">
-                                <div class="column is-narrow">
-                                    <div class="control has-icons-left">
-                                        <input class="input is-rounded" type="number" id="default_loan_duration_days" name="default_loan_duration_days" min="1" max="180" value="{{ user.default_loan_duration_days or 14 }}" style="width: 110px;">
-                                        <span class="icon is-left has-text-grey"><i class="fas fa-clock"></i></span>
-                                    </div>
-                                </div>
-                                <div class="column">
-                                    <span class="is-size-6 has-text-weight-semibold">{{ _("jours") }}</span>
-                                    <span class="is-size-7 has-text-grey ml-2">({{ _("ex. : 7 jours = 1 semaine, 14 jours = 2 semaines") }})</span>
+                    <div class="columns is-variable is-3">
+                        <div class="column is-6">
+                            <div class="field">
+                                <label class="label is-small">{{ _("Mot de passe actuel") }}</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" name="password" placeholder="{{ _('Mot de passe actuel') }}">
+                                    <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
                                 </div>
                             </div>
-                            <p class="has-text-grey is-size-7 mt-1" style="line-height: 1.5;">
-                                {{ _("Cette durée pré-remplira automatiquement la date de retour prévue lors de chaque nouvel emprunt. Les retards seront signalés sur le tableau de bord.") }}
-                            </p>
                         </div>
-                    </div>
-
-                    <h3 class="title is-5 mb-3" style="color: hsl(0, 0%, 25%);">{{ _("Communications & Newsletter") }}</h3>
-                    <div style="background: hsl(0, 0%, 98%); border: 1px solid hsl(0, 0%, 90%); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
-                        <div class="field">
-                            <div class="is-flex is-align-items-center is-justify-content-space-between mb-2">
-                                <label class="checkbox has-text-weight-bold" style="cursor: pointer; display: flex; align-items: center; gap: 0.6rem; color: hsl(210, 40%, 20%);">
-                                    <input type="checkbox" name="newsletter_subscribed" value="1" {% if user.newsletter_subscribed %}checked{% endif %} style="transform: scale(1.2); cursor: pointer;">
-                                    <span>{{ _("Recevoir la newsletter et les actualités par e-mail") }}</span>
-                                </label>
-                                {% if user.newsletter_subscribed %}
-                                    <span class="tag is-success is-light is-rounded">{{ _("Abonné") }}</span>
-                                {% else %}
-                                    <span class="tag is-grey is-light is-rounded">{{ _("Désabonné") }}</span>
-                                {% endif %}
+                        <div class="column is-6">
+                            <div class="field">
+                                <label class="label is-small">{{ _("Nouveau mot de passe") }}</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" name="new_password" placeholder="{{ _('Nouveau mot de passe') }}">
+                                    <span class="icon is-small is-left"><i class="fas fa-key"></i></span>
+                                </div>
                             </div>
-                            <p class="has-text-grey is-size-7 ml-5" style="line-height: 1.5;">
-                                {{ _("Recevez par e-mail les annonces de nouvelles fonctionnalités, conseils pour gérer votre bibliothèque de classe et actualités. Vous pouvez vous désabonner à tout moment.") }}
-                            </p>
                         </div>
                     </div>
+                    <p class="help has-text-grey">
+                        <span class="icon is-small mr-1"><i class="fas fa-shield-alt"></i></span>
+                        {{ _("Pour un mot de passe sécurisé : au moins 8 caractères avec majuscules, minuscules, chiffres et caractères spéciaux.") }}
+                    </p>
+                </div>
 
-                    <div class="field mt-5">
-                        <div class="control">
-                            <button class="button is-link is-rounded">
-                                <span class="icon"><i class="fas fa-check"></i></span>
-                                <span>{{ _("Enregistrer les modifications") }}</span>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                <!-- Bouton d'action principal bien en vue -->
+                <div class="field mb-5">
+                    <button type="submit" class="button is-link is-rounded has-text-weight-bold">
+                        <span class="icon"><i class="fas fa-check"></i></span>
+                        <span>{{ _("Enregistrer les modifications") }}</span>
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- TAB 1.5 : Année scolaire & Archives -->
