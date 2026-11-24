@@ -219,7 +219,7 @@ def test_pwa_htmx_boost_and_progress_bar(client):
     assert '<body hx-boost="true">' in html
     assert 'class="htmx-progress-bar"' in html
     assert 'id="wrapper"' in html
-    assert "htmx:afterOnLoad" in html
+    assert "htmx:pushedIntoHistory" in html
     assert "stopScanner" in html
 
 

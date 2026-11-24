@@ -313,12 +313,12 @@
                             {{ _("Gérer mon abonnement") }}
                         </a>
                         {% else %}
-                        <a href="{{ url_for('subscription.paiement', plan_type='monthly') }}" class="button is-link is-outlined is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto;">
+                        <a href="{{ url_for('subscription.paiement', plan_type='monthly') }}" rel="nofollow" class="button is-link is-outlined is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto;">
                             <span>{{ _("Choisir la formule mensuelle") }}</span>
                         </a>
                         {% endif %}
                     {% else %}
-                    <a href="{{ url_for('subscription.paiement', plan_type='monthly') }}" class="button is-link is-outlined is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto;">
+                    <a href="{{ url_for('subscription.paiement', plan_type='monthly') }}" rel="nofollow" class="button is-link is-outlined is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto;">
                         <span>{{ _("Choisir la formule mensuelle") }}</span>
                     </a>
                     {% endif %}
@@ -389,18 +389,18 @@
                             {{ _("Gérer mon abonnement") }}
                         </a>
                         {% else %}
-                        <a href="{{ url_for('subscription.paiement', plan_type='yearly') }}" class="button is-link is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.35);">
+                        <a href="{{ url_for('subscription.paiement', plan_type='yearly') }}" rel="nofollow" class="button is-link is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.35);">
                             <span>{{ _("Souscrire pour 30.- CHF / an") }}</span>
                         </a>
                         {% endif %}
                     {% else %}
-                    <a href="{{ url_for('subscription.paiement', plan_type='yearly') }}" class="button is-link is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.35);">
+                    <a href="{{ url_for('subscription.paiement', plan_type='yearly') }}" rel="nofollow" class="button is-link is-fullwidth is-rounded has-text-weight-bold" style="padding: 0.75rem 1rem; height: auto; box-shadow: 0 4px 12px rgba(66, 133, 244, 0.35);">
                         <span>{{ _("Souscrire pour 30.- CHF / an") }}</span>
                     </a>
                     {% endif %}
 
                     <div class="has-text-centered mt-3">
-                        <a href="{{ url_for('subscription.facture_ecole') }}" class="is-size-7 has-text-link has-text-weight-semibold">
+                        <a href="{{ url_for('subscription.facture_ecole') }}" rel="nofollow" class="is-size-7 has-text-link has-text-weight-semibold">
                             <i class="fas fa-file-invoice mr-1"></i>{{ _("Votre école règle directement ? Facture sous 30j") }} &rarr;
                         </a>
                     </div>

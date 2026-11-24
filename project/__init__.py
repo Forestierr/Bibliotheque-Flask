@@ -70,8 +70,7 @@ LOG_DIR = "logs"
 LOG_FILE = os.path.join(LOG_DIR, "app.log")
 
 # Vérifier et créer le répertoire si nécessaire
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
+os.makedirs(LOG_DIR, exist_ok=True)
 
 LOG_FILE = "logs/app.log"
 handler = RotatingFileHandler(LOG_FILE, maxBytes=1 * 1024 * 1024, backupCount=10)

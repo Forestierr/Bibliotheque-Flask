@@ -124,26 +124,30 @@
         flex: 1;
       }
     </style>
+
+    <!-- Matomo (production uniquement, initialisé une seule fois dans <head>) -->
+    <script>
+      if (window.location.hostname === 'livresenclasse.com' && !window.__matomoInitialized) {
+        window.__matomoInitialized = true;
+        window.__matomoLastUrl = window.location.href;
+        var _paq = window._paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+          var u="https://stats.rob1forest.com/";
+          _paq.push(['setTrackerUrl', u+'matomo.php']);
+          _paq.push(['setSiteId', '1']);
+          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+          g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        })();
+      }
+    </script>
+    <!-- End Matomo Code -->
 </head>
 
 <body {% block body_attrs %}hx-boost="true"{% endblock %}>
 <div class="htmx-progress-bar" aria-hidden="true"></div>
-
-<!-- Matomo -->
-<script>
-  var _paq = window._paq = window._paq || [];
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="https://stats.rob1forest.com/";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '1']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Matomo Code -->
 
 <script>
     function initNavbarBurger() {
@@ -222,15 +226,18 @@
     // Réappliquer après une mise à jour HTMX
     document.body.addEventListener('htmx:afterSwap', attachDeleteHandlers);
 
-    // Configurer HTMX pour inclure le token CSRF dans toutes les requêtes
-    // Synchroniser Matomo Analytics sur les navigations boostées par HTMX
-    document.body.addEventListener('htmx:afterOnLoad', (evt) => {
-        if (window._paq && evt.detail && evt.detail.successful) {
-            window._paq.push(['setCustomUrl', window.location.href]);
-            window._paq.push(['setDocumentTitle', document.title]);
-            window._paq.push(['trackPageView']);
-        }
-    });
+    // Synchroniser Matomo Analytics uniquement lors d'un vrai changement d'URL HTMX (hx-boost)
+    if (!window.__matomoHtmxBound) {
+        window.__matomoHtmxBound = true;
+        window.addEventListener('htmx:pushedIntoHistory', () => {
+            if (window.location.hostname === 'livresenclasse.com' && window._paq && window.__matomoLastUrl !== window.location.href) {
+                window.__matomoLastUrl = window.location.href;
+                window._paq.push(['setCustomUrl', window.location.href]);
+                window._paq.push(['setDocumentTitle', document.title]);
+                window._paq.push(['trackPageView']);
+            }
+        });
+    }
 
     // Libérer la caméra si on quitte la page de scan via HTMX
     document.body.addEventListener('htmx:beforeSwap', () => {

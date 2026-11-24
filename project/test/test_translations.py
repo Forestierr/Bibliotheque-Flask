@@ -735,3 +735,56 @@ def test_mentions_legales_translations():
     )
     assert "1. ALLGEMEINE NUTZUNGSBEDINGUNGEN (AGB)" in html_de
     assert "Herausgeber des Dienstes:" in html_de
+
+
+def test_all_translations_complete_and_no_fuzzy():
+    """Verify 0 empty, 0 fuzzy, valid placeholders, and .mo/.po/source sync."""
+    import importlib.util
+
+    script_path = (
+        Path(__file__).resolve().parent.parent.parent
+        / "scripts"
+        / "check_translations.py"
+    )
+    spec = importlib.util.spec_from_file_location("check_translations", script_path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(mod)
+
+    errors = mod.check_translations(skip_extract=False)
+    assert errors == [], "Problèmes i18n détectés:\n" + "\n".join(errors[:20])
+
+
+def test_seo_sitemap_and_matomo_htmx_guards():
+    """Verify sitemap excludes noindex routes and Matomo is isolated from HTMX search loops."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-seo",
+        }
+    )
+    client = app.test_client()
+
+    # 1. Sitemap must not list noindex auth routes
+    res_sm = client.get("/sitemap.xml")
+    assert res_sm.status_code == 200
+    sm = res_sm.get_data(as_text=True)
+    assert "/fr/login" not in sm
+    assert "/fr/signup" not in sm
+    assert "/fr/tarifs" in sm
+
+    # 2. Matomo in <head>, production hostname guarded, and uses htmx:pushedIntoHistory
+    res_home = client.get("/fr/")
+    assert res_home.status_code == 200
+    html = res_home.get_data(as_text=True)
+    assert "window.location.hostname === 'livresenclasse.com'" in html
+    assert "window.__matomoInitialized" in html
+    assert "htmx:pushedIntoHistory" in html
+    assert "htmx:afterOnLoad" not in html
+
+    # 3. Tarifs uses rel="nofollow" on checkout / invoice routes
+    res_tarifs = client.get("/fr/tarifs")
+    assert res_tarifs.status_code == 200
+    html_tarifs = res_tarifs.get_data(as_text=True)
+    assert 'rel="nofollow"' in html_tarifs
