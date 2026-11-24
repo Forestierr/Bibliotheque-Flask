@@ -7,24 +7,19 @@
 {% block og_image %}https://livresenclasse.com/static/image/pinterest/charte-coin-lecture-a-imprimer.png{% endblock %}
 {% block ressource_id %}charte-coin-lecture-a-imprimer{% endblock %}
 
-{% block hreflang %}
-<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/charte-coin-lecture-a-imprimer" />
-<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/charte-coin-lecture-a-imprimer" />
-{% endblock %}
-
 {% block head_extra %}
 {{ super() }}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LearningResource",
-  "name": "Charte du coin lecture à imprimer avec contrat de signatures",
-  "description": "Affiche des 5 règles de vie du coin bibliothèque de classe avec contrat d'engagement des élèves.",
+  "name": {{ _("Charte du coin lecture à imprimer avec contrat de signatures")|tojson }},
+  "description": {{ _("Affiche des 5 règles de vie du coin bibliothèque de classe avec contrat d'engagement des élèves.")|tojson }},
   "learningResourceType": "Printable Resource",
-  "educationalLevel": "Cycles 1, 2 et 3 (Maternelle, CP, CE1, CE2, CM1, CM2)",
-  "inLanguage": "fr",
+  "educationalLevel": {{ _("Cycles 1, 2 et 3 (Maternelle, CP, CE1, CE2, CM1, CM2)")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
   "isAccessibleForFree": true,
-  "url": "https://livresenclasse.com/fr/ressources/charte-coin-lecture-a-imprimer",
+  "url": "{{ lang_url(get_locale(), external=True) }}",
   "publisher": {
     "@type": "Organization",
     "name": "Livres en Classe",
@@ -237,7 +232,7 @@
                 </div>
                 <div class="column is-9">
                     <span class="tag is-danger is-light has-text-weight-bold mb-2">
-                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                        <i class="fab fa-pinterest mr-1"></i> {{ _("Pinterest & Idées Enseignants") }}
                     </span>
                     <h3 class="title is-4 mb-2" style="color: #14532d;">
                         {{ _("Sauvegardez cette charte pour votre classe") }}
@@ -246,7 +241,7 @@
                         {{ _("Épinglez cette affiche sur votre tableau Pinterest pour préparer la rentrée ou poser les règles d'or du coin lecture avec vos élèves.") }}
                     </p>
                     <div class="buttons">
-                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/charte-coin-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=charte_lecture&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=charte_lecture')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/charte-coin-lecture-a-imprimer.png'|urlencode }}&description={{ 'La Charte du Coin Lecture : affiche avec contrat de signatures des élèves à imprimer gratuitement pour l école. #TeamPE #GestionDeClasse #CoinLecture #Cycle2 #Cycle3'|urlencode }}" 
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/charte-coin-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=charte_lecture&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=charte_lecture')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/charte-coin-lecture-a-imprimer.png'|urlencode }}&description={{ _("La Charte du Coin Lecture : affiche avec contrat de signatures des élèves à imprimer gratuitement pour l'école. #TeamPE #GestionDeClasse #CoinLecture #Cycle2 #Cycle3")|urlencode }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            id="pin-button-charte"

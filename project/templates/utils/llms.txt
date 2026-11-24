@@ -1,68 +1,79 @@
-# Livres en classe
- 
-> Livres en classe (aussi appelé My Bibliothèque) est une application web freemium destinée aux enseignants, permettant de gérer facilement la bibliothèque de classe et de suivre les emprunts de livres par les élèves, afin d'encourager la lecture.
- 
-Livres en classe s'adresse aux enseignants (maternelle, élémentaire, primaire, collège) qui souhaitent organiser et faire vivre une bibliothèque de classe avec un matériel minimal (un smartphone, une tablette ou un ordinateur). L'application se veut simple d'utilisation, accessible depuis n'importe quel navigateur, et pensée pour un usage quotidien en classe.
+# Livres en Classe (FR / EN / DE)
 
-## Langues disponibles / Multilingual Support / Mehrsprachigkeit
-L'application et l'ensemble de ses pages publiques et outils sont disponibles en 3 langues avec des URLs dédiées :
-- **Français (fr)** [Langue par défaut] : https://livresenclasse.com/fr/
-- **English (en)** : https://livresenclasse.com/en/
-- **Deutsch (de)** : https://livresenclasse.com/de/
+> Livres en classe (also known as My Bibliothèque) is a free, multilingual (French, English, German) classroom library management & student lending web application for elementary and primary school teachers, hosted in Switzerland (GDPR / DSGVO / Swiss nLPD compliant).
 
-Le sélecteur de langue est accessible dans la barre de navigation (🇫🇷 Français, 🇬🇧 English, 🇩🇪 Deutsch). Des URLs dédiées avec préfixe (/fr/, /en/, /de/) et balises hreflang sont implémentées pour chaque page publique.
- 
-## Fonctionnalités principales
-- Gestion des élèves de la classe (création, listes, classes multiples)
-- Inventaire des livres de la bibliothèque, avec scan de codes-barres ISBN pour un ajout instantané
-- Suivi des emprunts et retours de livres par élève d'un simple clic
-- Tableau de bord et statistiques interactives de lecture (livres les plus lus, élèves les plus assidus)
-- Modèle freemium avec formule gratuite, essai sans carte bancaire et abonnement Premium sans engagement
-- Code source disponible publiquement sous licence PolyForm Noncommercial 1.0.0
-- Support multilingue complet (Français, Anglais, Allemand)
-- PWA installable sur Android, iOS, Windows et macOS
+Livres en classe helps primary, elementary, and kindergarten teachers (Maternelle, Grundschule, Primary School) catalog books via instant ISBN barcode scanning (smartphone camera or USB scanner), track student book loans in one click, motivate young readers with interactive stats, and access 7 free printable PDF classroom tools without requiring an account.
 
-## Modèle Freemium & Abonnements
+## Multilingual Entry Points & Localized Routes
+Public pages, editorial guides, and all 7 printable PDF generators are available in 3 languages with dedicated prefixes and `hreflang` tags:
+- **Français (fr)** [Default]: https://livresenclasse.com/fr/
+- **English (en)**: https://livresenclasse.com/en/
+- **Deutsch (de)**: https://livresenclasse.com/de/
 
-Livres en Classe propose une formule gratuite adaptée aux petits besoins et un abonnement Premium sans limite :
+Localized route aliases are supported alongside unified URLs (e.g. `/en/pricing`, `/de/preise`, `/en/resources`, `/de/ressourcen`, `/en/help`, `/de/hilfe`, `/en/teachers`, `/de/lehrkraefte`).
 
-### Formule Gratuite (Free)
-- **100% gratuite à vie**, sans carte bancaire requise.
-- **Quotas inclus** : jusqu'à 30 élèves, 100 livres au catalogue, 30 scans de codes-barres par semaine (réinitialisés chaque dimanche à minuit UTC).
-- **Historique des prêts** : consultation et suivi sur les 10 derniers mois.
-- **Politique de non-destruction des données** : aucune donnée n'est supprimée ni bloquée en cas de dépassement de quota ou d'arrêt d'abonnement ; la consultation et les retours d'emprunts restent toujours accessibles.
+---
 
-### Abonnement Premium & Financement École / Mairie
-- **Accès illimité** : élèves illimités, livres illimités, scans de codes-barres illimités.
-- **Historique complet** : archives des prêts sur plusieurs années et bilan annuel imprimable de fin d'année scolaire.
-- **Outils exclusifs** : exports complets Excel pour les bilans scolaires, planches de codes-barres vectoriels et étiquettes pour les bacs de lecture.
-- **Tarifs simples et transparents** :
-  - **Mensuel** : 3.00 CHF / mois (renouvelable chaque mois, résiliable à tout moment).
-  - **Annuel** : 30.00 CHF / an ou 30.00 EUR / an (engagement d'un an).
-- **Financement 100% par l'école, la coopérative scolaire (OCCE, Sou des écoles) ou la mairie** :
-  - **Flux A (Remboursement enseignant)** : paiement par carte avec facture acquittée officielle libellée au nom de l'école/coopérative et SIRET/IDE.
-  - **Flux B (Facturation directe école à 30 jours)** : émission automatisée d'une facture Stripe Invoicing (30 CHF ou 30 EUR HT) envoyée au secrétariat avec accès Premium immédiat de 30 jours sans avance de frais pour l'enseignant.
-- **Confidentialité & Résidence des données (RGPD / nLPD)** : données hébergées en Suisse avec sauvegarde haute disponibilité chiffrée, aucune revente de données d'élèves.
-- **Sécurité bancaire** : paiements opérés de manière chiffrée par Stripe (certifié PCI-DSS niveau 1).
-- **Gestion autonome** : résiliation en un clic depuis les réglages du compte via le portail Stripe, effective à la fin de la période en cours.
+## English Summary — Free Classroom Library Software for Teachers
+- **Who it is for**: Elementary & primary school teachers (Grades K–6), homeroom teachers, ESL/bilingual schools, homeschoolers looking for a fast, ad-free Booksource Classroom / Libib alternative.
+- **Privacy & Hosting**: 100% hosted in Switzerland, fully GDPR & Swiss nLPD compliant, encrypted backups, zero student data resale, no ads.
+- **Core Features**: Instant ISBN barcode scanner, book & student roster management, 1-click check-out / check-in, overdue loan alerts, end-of-year cohort archiving, and PWA offline-ready install (Android, iOS, Windows, macOS).
+- **Free Forever Tier**: Up to **30 students**, **100 books**, **30 ISBN barcode scans per week**, and 10 months of loan history — no credit card required. Full 30-day Premium trial upon signup. Non-destructive policy: data is never deleted if limits are reached.
+- **Premium & School / PTA / District Billing**: Unlimited students, books, scans, full archive, Excel export, vector barcode & bin label sheets for **3.00 CHF/month** or **30.00 CHF / 30.00 EUR per year**. Schools, PTAs, and districts can pay directly via 30-day Stripe invoice or card with official receipt.
+- **Key English Links**:
+  - [Home (EN)](https://livresenclasse.com/en/)
+  - [Pricing & School Invoicing (EN)](https://livresenclasse.com/en/pricing)
+  - [Free Printable Classroom Tools (EN)](https://livresenclasse.com/en/resources)
+  - [Printable Reading Bookmarks (EN)](https://livresenclasse.com/en/resources/printable-reading-bookmarks)
+  - [Printable Reading Certificate (EN)](https://livresenclasse.com/en/resources/printable-reading-certificate)
+  - [Printable Book Review Cards (EN)](https://livresenclasse.com/en/resources/printable-book-review-cards)
+  - [Printable Reading Corner Rules Poster (EN)](https://livresenclasse.com/en/resources/printable-reading-corner-poster)
+  - [Printable Reading Bingo Challenge (EN)](https://livresenclasse.com/en/resources/printable-reading-bingo)
+  - [Printable A5 Reading Passport (EN)](https://livresenclasse.com/en/resources/printable-reading-passport)
+  - [Free PDF-to-A5 Booklet Converter (EN)](https://livresenclasse.com/en/resources/pdf-to-booklet-converter)
+  - [Teacher Guides (EN)](https://livresenclasse.com/en/teachers)
+  - [Blog (EN)](https://livresenclasse.com/en/blog)
+  - [Help Center (EN)](https://livresenclasse.com/en/help)
 
-### Membres Fondateurs (Founder)
-- Statut permanent accordé à vie aux utilisateurs historiques inscrits avant le déploiement du modèle payant, garantissant un accès illimité et gratuit.
+---
 
-## Docs & Liens utiles
-- [Accueil](https://livresenclasse.com/): présentation de l'application, fonctionnalités et inscription (FR / EN / DE)
-- [Tarifs & Abonnements](https://livresenclasse.com/tarifs): comparatif détaillé Gratuit vs Premium et souscription (FR / EN / DE)
-- [Centre d'aide](https://livresenclasse.com/aide): guides pas-à-pas, tutoriels et foire aux questions (FR / EN / DE)
-- [Blog](https://livresenclasse.com/blog): articles sur la lecture à l'école, conseils pédagogiques et gestion de classe (FR / EN / DE)
-- [Ressources](https://livresenclasse.com/ressources): fiches pratiques et outils téléchargeables pour les enseignants
-- [Espace Enseignants](https://livresenclasse.com/enseignants): guides d'organisation de bibliothèque scolaire
-- [Mentions Légales & Confidentialité](https://livresenclasse.com/mentions-legales): conditions d'utilisation, politique de confidentialité LPD/RGPD et CGV
- 
-## Public cible
-- Professeurs des écoles et instituteurs (maternelle, primaire, élémentaire, collège)
-- Enseignants internationaux cherchant une solution freemium et multilingue de gestion de bibliothèque
-- Écoles primaires, BCD et bibliothèques scolaires
- 
+## Deutsche Übersicht — Kostenlose Klassenbücherei-Software für Grundschulen
+- **Zielgruppe**: Lehrkräfte in Grundschule (1.–4. Klasse), Primarschule (Schweiz/Österreich), Kindergarten und Förderschulen, die ihre Klassenbibliothek ohne Papierlisten einfach digital verwalten möchten.
+- **Datenschutz (DSGVO / nDSG)**: Serverstandort Schweiz, DSGVO- und nDSG-konform, verschlüsselte Multi-Site-Backups, werbefrei und ohne Datenweitergabe.
+- **Kernfunktionen**: Schneller ISBN-Barcodescanner (Handy-Kamera oder USB-Scanner), Klassenliste & Ausleihe mit einem Klick, Übersicht überfälliger Bücher, Schuljahresarchivierung, interaktive Lesestatistiken und installierbare Web-App (PWA).
+- **Kostenlose Basisversion**: Dauerhaft kostenlos für bis zu **30 Schüler**, **100 Bücher**, **30 ISBN-Scans pro Woche** sowie 10 Monate Ausleihhistorie (keine Kreditkarte nötig). Bei Erreichen der Limits gehen keine Daten verloren.
+- **Premium & Schulfinanzierung**: Unbegrenzte Schüler, Bücher & Scans, Excel-Export, Etiketten- & Barcode-Bögen für **3.00 CHF / Monat** oder **30.00 CHF / 30.00 EUR pro Jahr**. Offizielle Schulrechnung (30 Tage Zahlungsziel, MwSt.-Befreiung/Hinweis) für Schulgemeinden, Schulträger oder Fördervereine verfügbar.
+- **Wichtige deutsche Links**:
+  - [Startseite (DE)](https://livresenclasse.com/de/)
+  - [Preise & Schulrechnung (DE)](https://livresenclasse.com/de/preise)
+  - [Kostenlose Unterrichtsmaterialien als PDF (DE)](https://livresenclasse.com/de/ressourcen)
+  - [Lesezeichen zum Ausdrucken (DE)](https://livresenclasse.com/de/ressourcen/lesezeichen-zum-ausdrucken)
+  - [Leseurkunde zum Ausdrucken (DE)](https://livresenclasse.com/de/ressourcen/leseurkunde-zum-ausdrucken)
+  - [Buchtipp-Karten zum Ausdrucken (DE)](https://livresenclasse.com/de/ressourcen/buchtipp-karten-zum-ausdrucken)
+  - [Leseecke-Regeln Plakat (DE)](https://livresenclasse.com/de/ressourcen/leseecke-regeln-plakat)
+  - [Lesebingo zum Ausdrucken (DE)](https://livresenclasse.com/de/ressourcen/lesebingo-zum-ausdrucken)
+  - [Faltbarer Lesepass A5 (DE)](https://livresenclasse.com/de/ressourcen/lesepass-zum-ausdrucken)
+  - [Kostenloser PDF-zu-A5-Broschüre-Konverter (DE)](https://livresenclasse.com/de/ressourcen/pdf-broschuere-konverter)
+  - [Leitfäden für Lehrkräfte (DE)](https://livresenclasse.com/de/lehrkraefte)
+  - [Blog (DE)](https://livresenclasse.com/de/blog)
+  - [Hilfe & FAQ (DE)](https://livresenclasse.com/de/hilfe)
+
+---
+
+## Résumé Français — Modèle Freemium & Abonnements & Bibliothèque de Classe
+- **Public cible** : Professeurs des écoles, instituteurs (maternelle, primaire, élémentaire, collège) et responsables de BCD en France, Suisse romande, Belgique et Canada.
+- **Fonctionnalités** : Scan ISBN instantané, suivi des emprunts et retours en 1 clic, alertes de retards, archivage annuel de classe, 7 générateurs PDF pédagogiques gratuits (marque-pages, diplôme, fiches coup de cœur, charte du coin lecture, bingo lecture, passeport A5, convertisseur PDF en livret A5).
+- **Modèle Freemium & Financement École / OCCE / Mairie** : Gratuit à vie (30 élèves, 100 livres, 30 scans/semaine, 10 mois d'historique), essai complet 30 jours sans carte bancaire, Premium illimité (3.00 CHF/mois ou 30.00 CHF / 30.00 EUR/an) avec facturation école à 30 jours ou remboursement enseignant.
+- **Liens Français** :
+  - [Accueil (FR)](https://livresenclasse.com/fr/)
+  - [Tarifs & Abonnements](https://livresenclasse.com/tarifs) ([FR](https://livresenclasse.com/fr/tarifs))
+  - [Ressources pédagogiques imprimables (FR)](https://livresenclasse.com/fr/ressources)
+  - [Espace Enseignants (FR)](https://livresenclasse.com/fr/enseignants)
+  - [Blog (FR)](https://livresenclasse.com/fr/blog)
+  - [Centre d'aide (FR)](https://livresenclasse.com/fr/aide)
+  - [Mentions Légales & Confidentialité (LPD/RGPD)](https://livresenclasse.com/fr/mentions-legales)
+
 ## Optional
-- Espace enseignant (/eleve, /livre, /emprunt, /dashboard, /reglage): accès privé, authentification requise, réservé aux comptes enseignants inscrits
-- Le respect des règles définies dans /robots.txt s'applique à l'ensemble du site
+- Teacher workspace (`/eleve`, `/livre`, `/emprunt`, `/dashboard`, `/reglage`): private authenticated area reserved for registered teacher accounts.
+- Technical crawling rules in `/robots.txt` apply across the entire site.
+- Machine-readable sitemap: https://livresenclasse.com/sitemap.xml

@@ -7,24 +7,19 @@
 {% block og_image %}https://livresenclasse.com/static/image/pinterest/marque-pages-a-imprimer.png{% endblock %}
 {% block ressource_id %}marque-pages-a-imprimer{% endblock %}
 
-{% block hreflang %}
-<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/marque-pages-a-imprimer" />
-<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/marque-pages-a-imprimer" />
-{% endblock %}
-
 {% block head_extra %}
 {{ super() }}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LearningResource",
-  "name": "Marque-pages de lecture à imprimer pour l'école primaire",
-  "description": "Fiche de suivi d'emprunt et fiche d'avis critique de lecture pour la bibliothèque de classe et rallye lecture.",
+  "name": {{ _("Marque-pages de lecture à imprimer pour l'école primaire")|tojson }},
+  "description": {{ _("Fiche de suivi d'emprunt et fiche d'avis critique de lecture pour la bibliothèque de classe et rallye lecture.")|tojson }},
   "learningResourceType": "Printable Resource",
-  "educationalLevel": "Cycles 2 et 3 (CP, CE1, CE2, CM1, CM2)",
-  "inLanguage": "fr",
+  "educationalLevel": {{ _("Cycles 2 et 3 (CP, CE1, CE2, CM1, CM2)")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
   "isAccessibleForFree": true,
-  "url": "https://livresenclasse.com/fr/ressources/marque-pages-a-imprimer",
+  "url": "{{ lang_url(get_locale(), external=True) }}",
   "publisher": {
     "@type": "Organization",
     "name": "Livres en Classe",
@@ -225,7 +220,7 @@
                 </div>
                 <div class="column is-9">
                     <span class="tag is-danger is-light has-text-weight-bold mb-2">
-                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                        <i class="fab fa-pinterest mr-1"></i> {{ _("Pinterest & Idées Enseignants") }}
                     </span>
                     <h3 class="title is-4 mb-2" style="color: #9a3412;">
                         {{ _("Sauvegardez ces marque-pages pour votre classe") }}
@@ -234,7 +229,7 @@
                         {{ _("Épinglez ces marque-pages sur votre tableau Pinterest dédié à la lecture pour les retrouver facilement à chaque rentrée ou nouveau projet de prêt.") }}
                     </p>
                     <div class="buttons">
-                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/marque-pages-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=marque_pages&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=marque_pages')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/marque-pages-a-imprimer.png'|urlencode }}&description={{ 'Marque-pages de lecture à imprimer gratuits pour l école primaire (4 par page A4). Fiche d emprunt recto et avis critique verso. #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/marque-pages-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=marque_pages&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=marque_pages')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/marque-pages-a-imprimer.png'|urlencode }}&description={{ _("Marque-pages de lecture à imprimer gratuits pour l'école primaire (4 par page A4). Fiche d'emprunt recto et avis critique verso. #TeamPE #Cycle2 #Cycle3 #RallyeLecture")|urlencode }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            id="pin-button-mp"

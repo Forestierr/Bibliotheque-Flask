@@ -7,24 +7,19 @@
 {% block og_image %}https://livresenclasse.com/static/image/pinterest/passeport-de-lecture-a-imprimer.png{% endblock %}
 {% block ressource_id %}passeport-de-lecture-a-imprimer{% endblock %}
 
-{% block hreflang %}
-<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/passeport-de-lecture-a-imprimer" />
-<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/passeport-de-lecture-a-imprimer" />
-{% endblock %}
-
 {% block head_extra %}
 {{ super() }}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LearningResource",
-  "name": "Passeport de lecture pliable en livret A5 pour l'école primaire",
-  "description": "Livret individuel de lecteur avec page de profil, suivi des genres littéraires et carnet d'avis.",
+  "name": {{ _("Passeport de lecture pliable en livret A5 pour l'école primaire")|tojson }},
+  "description": {{ _("Livret individuel de lecteur avec page de profil, suivi des genres littéraires et carnet d'avis.")|tojson }},
   "learningResourceType": "Printable Resource",
-  "educationalLevel": "Cycles 2 et 3 (CP, CE1, CE2, CM1, CM2)",
-  "inLanguage": "fr",
+  "educationalLevel": {{ _("Cycles 2 et 3 (CP, CE1, CE2, CM1, CM2)")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
   "isAccessibleForFree": true,
-  "url": "https://livresenclasse.com/fr/ressources/passeport-de-lecture-a-imprimer",
+  "url": "{{ lang_url(get_locale(), external=True) }}",
   "publisher": {
     "@type": "Organization",
     "name": "Livres en Classe",
@@ -244,7 +239,7 @@
                 </div>
                 <div class="column is-9">
                     <span class="tag is-danger is-light has-text-weight-bold mb-2">
-                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                        <i class="fab fa-pinterest mr-1"></i> {{ _("Pinterest & Idées Enseignants") }}
                     </span>
                     <h3 class="title is-4 mb-2" style="color: #1e3a8a;">
                         {{ _("Sauvegardez ce passeport de lecture pour votre classe") }}
@@ -253,7 +248,7 @@
                         {{ _("Épinglez ce modèle sur votre tableau Pinterest pour stimuler le goût de lire et proposer un carnet de lecture mignon et gratifiant à vos élèves.") }}
                     </p>
                     <div class="buttons">
-                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/passeport-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=passeport_lecture&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=passeport_lecture')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/passeport-de-lecture-a-imprimer.png'|urlencode }}&description={{ 'Le passeport de lecture pliable A5 pour vos élèves : à télécharger et imprimer gratuitement ! Idéal CP, CE1, CE2, CM1, CM2. #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/passeport-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=passeport_lecture&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=passeport_lecture')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/passeport-de-lecture-a-imprimer.png'|urlencode }}&description={{ _("Le passeport de lecture pliable A5 pour vos élèves : à télécharger et imprimer gratuitement ! Idéal CP, CE1, CE2, CM1, CM2. #TeamPE #Cycle2 #Cycle3 #RallyeLecture")|urlencode }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            id="pin-button-pass"

@@ -2,6 +2,32 @@
 
 {% extends "ressources/base_editor.html" %}
 
+{% block title %}{{ _("Défi & Bingo lecture à imprimer gratuit | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Créez et imprimez gratuitement votre grille de Bingo lecture personnalisée (16 défis A4) pour motiver vos élèves en classe et pendant les vacances.") }}{% endblock %}
+{% block ressource_id %}defi-lecture-bingo-a-imprimer{% endblock %}
+
+{% block head_extra %}
+{{ super() }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": {{ _("Défi / Bingo lecture à imprimer pour la classe")|tojson }},
+  "description": {{ _("Grille de 16 défis de lecture personnalisable et imprimable gratuitement en A4 pour stimuler le plaisir de lire à l'école primaire.")|tojson }},
+  "learningResourceType": "Printable Resource",
+  "educationalLevel": {{ _("Cycles 2 et 3 (CP, CE1, CE2, CM1, CM2)")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
+  "isAccessibleForFree": true,
+  "url": "{{ lang_url(get_locale(), external=True) }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Livres en Classe",
+    "url": "https://livresenclasse.com"
+  }
+}
+</script>
+{% endblock %}
+
 {% block studio_title %}{{ _("Défi / Bingo Lecture") }}{% endblock %}
 {% block sheet_orientation %}portrait{% endblock %}
 

@@ -9,11 +9,6 @@
 {% block title %}{{ _("Convertisseur PDF en Livret A5 imprimable gratuit | Livres en Classe") }}{% endblock %}
 {% block meta_description %}{{ _("Transformez n'importe quel document PDF en livret A5 prêt à imprimer. Imposition automatique pour piqûre à cheval, cahiers cousus ou spirale. Entièrement gratuit.") }}{% endblock %}
 
-{% block hreflang %}
-<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer" />
-<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer" />
-{% endblock %}
-
 {% block head_extra %}
 <script type="application/ld+json">
 {
@@ -23,7 +18,8 @@
   "description": {{ _("Outil gratuit d'imposition PDF pour créer des livrets A5 pliables et agrafés sur feuilles A4.")|tojson }},
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "All",
-  "url": "https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer",
+  "url": "{{ lang_url(get_locale(), external=True) }}",
+  "inLanguage": "{{ get_locale() }}",
   "isAccessibleForFree": true,
   "publisher": {
     "@type": "Organization",
@@ -484,7 +480,7 @@ label.ck {
 
             <div class="booklet-order-bar" id="orderBar">
                 <span id="order"></span>
-                <span class="tag is-info is-light" id="orderBadge">Aperçu direct</span>
+                <span class="tag is-info is-light" id="orderBadge">{{ _("Aperçu direct") }}</span>
             </div>
         </main>
     </div>
@@ -615,87 +611,87 @@ label.ck {
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const MM = 72 / 25.4, $ = s => document.querySelector(s);
 const FM = { A4: [210, 297], A3: [297, 420], A5: [148, 210], Letter: [215.9, 279.4], Tabloid: [279.4, 431.8] };
-const SG = [[0, 'Tout en un'], [4, '4 (1 feuille)'], [8, '8 (2 feuilles)'], [12, '12'], [16, '16'], [20, '20'], [24, '24'], [32, '32']];
+const SG = [[0, {{ _("Tout en un")|tojson }}], [4, {{ _("4 (1 feuille)")|tojson }}], [8, {{ _("8 (2 feuilles)")|tojson }}], [12, '12'], [16, '16'], [20, '20'], [24, '24'], [32, '32']];
 
 // Modèle de configuration
 const G = [
-    ['Feuille', [
-        ['fmt', 'sel', 'Format', ['A4', 'A3', 'A5', 'Letter', 'Tabloid', 'Perso']],
-        ['ori', 'sel', 'Orientation', ['Paysage', 'Portrait']],
-        ['cw', 'num', 'Perso : largeur (mm)', 210],
-        ['ch', 'num', 'Perso : hauteur (mm)', 297]
+    [{{ _("Feuille")|tojson }}, [
+        ['fmt', 'sel', {{ _("Format")|tojson }}, ['A4', 'A3', 'A5', 'Letter', 'Tabloid', ['Perso', {{ _("Personnalisé")|tojson }}]]],
+        ['ori', 'sel', {{ _("Orientation")|tojson }}, [['Paysage', {{ _("Paysage")|tojson }}], ['Portrait', {{ _("Portrait")|tojson }}]]],
+        ['cw', 'num', {{ _("Perso : largeur (mm)")|tojson }}, 210],
+        ['ch', 'num', {{ _("Perso : hauteur (mm)")|tojson }}, 297]
     ]],
-    ['Reliure', [
-        ['pre', 'sel', 'Modèle de reliure', [
-            ['custom', 'Personnalisé'],
-            ['staple', 'Agrafé (piqûre à cheval)'],
-            ['staple3', 'Agrafé, 3 agrafes'],
-            ['kettle', 'Cahiers cousus (chaînette)'],
-            ['cords', 'Cahiers cousus sur ficelles'],
-            ['coptic', 'Reliure copte'],
-            ['perfect', 'Dos carré collé (feuillets pliés)'],
-            ['japan', 'Reliure japonaise'],
-            ['wire', 'Spirale / wire-o'],
-            ['ring', 'Classeur 2 trous']
+    [{{ _("Reliure")|tojson }}, [
+        ['pre', 'sel', {{ _("Modèle de reliure")|tojson }}, [
+            ['custom', {{ _("Personnalisé")|tojson }}],
+            ['staple', {{ _("Agrafé (piqûre à cheval)")|tojson }}],
+            ['staple3', {{ _("Agrafé, 3 agrafes")|tojson }}],
+            ['kettle', {{ _("Cahiers cousus (chaînette)")|tojson }}],
+            ['cords', {{ _("Cahiers cousus sur ficelles")|tojson }}],
+            ['coptic', {{ _("Reliure copte")|tojson }}],
+            ['perfect', {{ _("Dos carré collé (feuillets pliés)")|tojson }}],
+            ['japan', {{ _("Reliure japonaise")|tojson }}],
+            ['wire', {{ _("Spirale / wire-o")|tojson }}],
+            ['ring', {{ _("Classeur 2 trous")|tojson }}]
         ]]
     ]],
-    ['Disposition', [
-        ['mode', 'sel', 'Mode', [['book', 'Livret (cahiers pliés)'], ['stack', 'Pile à couper'], ['nup', 'Pages à la suite']]],
-        ['sig', 'sel', 'Pages par cahier', SG, 'b'],
-        ['rows', 'num', 'Rangées par feuille (livret : cahiers à couper)', 1],
-        ['cols', 'num', 'Colonnes', 2, 'n'],
-        ['dup', 'chk', 'Recto-verso', 1, 'n'],
-        ['flip', 'sel', 'Retournement de la feuille', [['s', 'Bord court (standard livret)'], ['l', 'Bord long']]],
-        ['rtl', 'chk', 'Lecture droite → gauche (Manga/Arabe)', 0],
-        ['from', 'num', 'Première page', 1],
-        ['to', 'num', 'Dernière page (0 = fin)', 0],
-        ['bl', 'num', 'Pages blanches au début', 0],
-        ['bp', 'sel', 'Pages blanches de complément', [['end', 'À la fin'], ['last', 'Avant la 4e de couverture'], ['first', 'Après la première page']], 'b']
+    [{{ _("Disposition")|tojson }}, [
+        ['mode', 'sel', {{ _("Mode")|tojson }}, [['book', {{ _("Livret (cahiers pliés)")|tojson }}], ['stack', {{ _("Pile à couper")|tojson }}], ['nup', {{ _("Pages à la suite")|tojson }}]]],
+        ['sig', 'sel', {{ _("Pages par cahier")|tojson }}, SG, 'b'],
+        ['rows', 'num', {{ _("Rangées par feuille (livret : cahiers à couper)")|tojson }}, 1],
+        ['cols', 'num', {{ _("Colonnes")|tojson }}, 2, 'n'],
+        ['dup', 'chk', {{ _("Recto-verso")|tojson }}, 1, 'n'],
+        ['flip', 'sel', {{ _("Retournement de la feuille")|tojson }}, [['s', {{ _("Bord court (standard livret)")|tojson }}], ['l', {{ _("Bord long")|tojson }}]]],
+        ['rtl', 'chk', {{ _("Lecture droite → gauche (Manga/Arabe)")|tojson }}, 0],
+        ['from', 'num', {{ _("Première page")|tojson }}, 1],
+        ['to', 'num', {{ _("Dernière page (0 = fin)")|tojson }}, 0],
+        ['bl', 'num', {{ _("Pages blanches au début")|tojson }}, 0],
+        ['bp', 'sel', {{ _("Pages blanches de complément")|tojson }}, [['end', {{ _("À la fin")|tojson }}], ['last', {{ _("Avant la 4e de couverture")|tojson }}], ['first', {{ _("Après la première page")|tojson }}]], 'b']
     ]],
-    ['Marges et échelle', [
-        ['m', 'num', 'Marge de feuille (mm)', 5],
-        ['gx', 'num', 'Gouttière horizontale (mm)', 0],
-        ['gy', 'num', 'Gouttière verticale (mm)', 6],
-        ['pad', 'num', 'Marge intérieure de page (mm)', 0],
-        ['bind', 'num', 'Marge de reliure en plus (mm)', 0, 'b'],
-        ['fit', 'sel', 'Mise à l’échelle', [['fit', 'Ajuster à la page'], ['fill', 'Remplir (rogner)'], ['none', 'Taille réelle']]],
-        ['sc', 'num', 'Échelle (%)', 100],
-        ['ox', 'num', 'Décalage horizontal (mm)', 0],
-        ['oy', 'num', 'Décalage vertical (mm)', 0],
-        ['creep', 'num', 'Compensation d’épaisseur (mm par feuille)', 0, 'b'],
-        ['bdx', 'num', 'Correction verso, horizontale (mm)', 0],
-        ['bdy', 'num', 'Correction verso, verticale (mm)', 0]
+    [{{ _("Marges et échelle")|tojson }}, [
+        ['m', 'num', {{ _("Marge de feuille (mm)")|tojson }}, 5],
+        ['gx', 'num', {{ _("Gouttière horizontale (mm)")|tojson }}, 0],
+        ['gy', 'num', {{ _("Gouttière verticale (mm)")|tojson }}, 6],
+        ['pad', 'num', {{ _("Marge intérieure de page (mm)")|tojson }}, 0],
+        ['bind', 'num', {{ _("Marge de reliure en plus (mm)")|tojson }}, 0, 'b'],
+        ['fit', 'sel', {{ _("Mise à l’échelle")|tojson }}, [['fit', {{ _("Ajuster à la page")|tojson }}], ['fill', {{ _("Remplir (rogner)")|tojson }}], ['none', {{ _("Taille réelle")|tojson }}]]],
+        ['sc', 'num', {{ _("Échelle (%%)")|replace("%%", "%")|tojson }}, 100],
+        ['ox', 'num', {{ _("Décalage horizontal (mm)")|tojson }}, 0],
+        ['oy', 'num', {{ _("Décalage vertical (mm)")|tojson }}, 0],
+        ['creep', 'num', {{ _("Compensation d’épaisseur (mm par feuille)")|tojson }}, 0, 'b'],
+        ['bdx', 'num', {{ _("Correction verso, horizontale (mm)")|tojson }}, 0],
+        ['bdy', 'num', {{ _("Correction verso, verticale (mm)")|tojson }}, 0]
     ]],
-    ['Repères', [
-        ['cut', 'chk', 'Lignes de coupe', 1],
-        ['cutl', 'sel', 'Longueur des coupes', [['f', 'Toute la feuille'], ['t', 'Traits courts en bordure']]],
-        ['fold', 'chk', 'Ligne de pli', 1, 'b'],
-        ['mil', 'num', 'Zone de fraisage du dos (mm de chaque côté)', 0, 'b'],
-        ['crop', 'chk', 'Repères de coupe aux coins', 0],
-        ['cropl', 'num', 'Longueur des repères (mm)', 4],
-        ['hole', 'chk', 'Points de reliure (couture, agrafes, trous)', 1],
-        ['hp', 'sel', 'Modèle de points', [
-            ['even', 'Réguliers'],
-            ['staple2', '2 agrafes'],
-            ['staple3', '3 agrafes'],
-            ['kettle', 'Chaînette + stations'],
-            ['cords', 'Ficelles + chaînettes'],
-            ['pitch', 'Spirale / wire-o (pas fixe)'],
-            ['ring2', 'Classeur 2 trous']
+    [{{ _("Repères")|tojson }}, [
+        ['cut', 'chk', {{ _("Lignes de coupe")|tojson }}, 1],
+        ['cutl', 'sel', {{ _("Longueur des coupes")|tojson }}, [['f', {{ _("Toute la feuille")|tojson }}], ['t', {{ _("Traits courts en bordure")|tojson }}]]],
+        ['fold', 'chk', {{ _("Ligne de pli")|tojson }}, 1, 'b'],
+        ['mil', 'num', {{ _("Zone de fraisage du dos (mm de chaque côté)")|tojson }}, 0, 'b'],
+        ['crop', 'chk', {{ _("Repères de coupe aux coins")|tojson }}, 0],
+        ['cropl', 'num', {{ _("Longueur des repères (mm)")|tojson }}, 4],
+        ['hole', 'chk', {{ _("Points de reliure (couture, agrafes, trous)")|tojson }}, 1],
+        ['hp', 'sel', {{ _("Modèle de points")|tojson }}, [
+            ['even', {{ _("Réguliers")|tojson }}],
+            ['staple2', {{ _("2 agrafes")|tojson }}],
+            ['staple3', {{ _("3 agrafes")|tojson }}],
+            ['kettle', {{ _("Chaînette + stations")|tojson }}],
+            ['cords', {{ _("Ficelles + chaînettes")|tojson }}],
+            ['pitch', {{ _("Spirale / wire-o (pas fixe)")|tojson }}],
+            ['ring2', {{ _("Classeur 2 trous")|tojson }}]
         ]],
-        ['hn', 'num', 'Nombre de points ou de ficelles', 4],
-        ['ho', 'num', 'Marge avant le premier point (mm)', 25],
-        ['kt', 'num', 'Distance des chaînettes au bord (mm)', 15],
-        ['pt', 'num', 'Pas de la spirale (mm)', 8.47],
-        ['hx', 'num', 'Distance du trou au bord de reliure (mm)', 10, 'n'],
-        ['hc', 'text', 'Positions perso depuis le haut (mm, virgules)', ''],
-        ['hs', 'sel', 'Symbole', [['d', 'Point'], ['x', 'Croix'], ['t', 'Trait']]],
-        ['hd', 'num', 'Diamètre du point (mm)', 1.5],
-        ['gline', 'chk', 'Ligne au bord de reliure', 0, 'n'],
-        ['frame', 'chk', 'Cadre autour de chaque page', 0],
-        ['lab', 'chk', 'Étiquette de feuille', 1],
-        ['col', 'color', 'Couleur des repères', '#000000'],
-        ['th', 'num', 'Épaisseur des traits (mm)', 0.2]
+        ['hn', 'num', {{ _("Nombre de points ou de ficelles")|tojson }}, 4],
+        ['ho', 'num', {{ _("Marge avant le premier point (mm)")|tojson }}, 25],
+        ['kt', 'num', {{ _("Distance des chaînettes au bord (mm)")|tojson }}, 15],
+        ['pt', 'num', {{ _("Pas de la spirale (mm)")|tojson }}, 8.47],
+        ['hx', 'num', {{ _("Distance du trou au bord de reliure (mm)")|tojson }}, 10, 'n'],
+        ['hc', 'text', {{ _("Positions perso depuis le haut (mm, virgules)")|tojson }}, ''],
+        ['hs', 'sel', {{ _("Symbole")|tojson }}, [['d', {{ _("Point")|tojson }}], ['x', {{ _("Croix")|tojson }}], ['t', {{ _("Trait")|tojson }}]]],
+        ['hd', 'num', {{ _("Diamètre du point (mm)")|tojson }}, 1.5],
+        ['gline', 'chk', {{ _("Ligne au bord de reliure")|tojson }}, 0, 'n'],
+        ['frame', 'chk', {{ _("Cadre autour de chaque page")|tojson }}, 0],
+        ['lab', 'chk', {{ _("Étiquette de feuille")|tojson }}, 1],
+        ['col', 'color', {{ _("Couleur des repères")|tojson }}, '#000000'],
+        ['th', 'num', {{ _("Épaisseur des traits (mm)")|tojson }}, 0.2]
     ]]
 ];
 
@@ -734,39 +730,39 @@ const rd = () => {
 let SRC, DOC, SZ = [], NAME = 'livret', S, R, cur = 1, curB = 0;
 
 const PD = {
-    custom: ['Personnalisé', 'Aucun modèle appliqué : réglez chaque option manuellement.'],
-    staple: ['Agrafé (piqûre à cheval)', 'Un seul cahier : toutes les feuilles sont imbriquées, pliées en deux et agrafées sur le pli central.'],
-    staple3: ['Agrafé, 3 agrafes', 'Comme l’agrafé simple, avec une agrafe centrale en plus pour les grands formats ou livrets épais.'],
-    kettle: ['Cahiers cousus (point de chaînette)', 'Le livre est découpé en cahiers de 16 pages (4 feuilles imbriquées) cousus sur leur pli.'],
-    cords: ['Cahiers cousus sur ficelles', 'La couture passe autour de ficelles ou rubans placés en travers du dos.'],
-    coptic: ['Reliure copte', 'Cahiers cousus entre eux par une couture apparente sur le dos, s’ouvrant parfaitement à plat.'],
-    perfect: ['Dos carré collé', 'Feuillets pliés empilés dans l’ordre, dos fraisé puis collé sous une couverture.'],
-    japan: ['Reliure japonaise', 'Feuilles empilées non pliées, percées de 4 trous le long du bord de reliure et cousues en surjet.'],
-    wire: ['Spirale / wire-o', 'Feuilles empilées avec perforation à pas fixe (wire-o). S’ouvre à 360°.'],
-    ring: ['Classeur 2 trous (ISO 838)', 'Deux trous espacés de 80 mm pour classeur scolaire classique.']
+    custom: [{{ _("Personnalisé")|tojson }}, {{ _("Aucun modèle appliqué : réglez chaque option manuellement.")|tojson }}],
+    staple: [{{ _("Agrafé (piqûre à cheval)")|tojson }}, {{ _("Un seul cahier : toutes les feuilles sont imbriquées, pliées en deux et agrafées sur le pli central.")|tojson }}],
+    staple3: [{{ _("Agrafé, 3 agrafes")|tojson }}, {{ _("Comme l’agrafé simple, avec une agrafe centrale en plus pour les grands formats ou livrets épais.")|tojson }}],
+    kettle: [{{ _("Cahiers cousus (point de chaînette)")|tojson }}, {{ _("Le livre est découpé en cahiers de 16 pages (4 feuilles imbriquées) cousus sur leur pli.")|tojson }}],
+    cords: [{{ _("Cahiers cousus sur ficelles")|tojson }}, {{ _("La couture passe autour de ficelles ou rubans placés en travers du dos.")|tojson }}],
+    coptic: [{{ _("Reliure copte")|tojson }}, {{ _("Cahiers cousus entre eux par une couture apparente sur le dos, s’ouvrant parfaitement à plat.")|tojson }}],
+    perfect: [{{ _("Dos carré collé")|tojson }}, {{ _("Feuillets pliés empilés dans l’ordre, dos fraisé puis collé sous une couverture.")|tojson }}],
+    japan: [{{ _("Reliure japonaise")|tojson }}, {{ _("Feuilles empilées non pliées, percées de 4 trous le long du bord de reliure et cousues en surjet.")|tojson }}],
+    wire: [{{ _("Spirale / wire-o")|tojson }}, {{ _("Feuilles empilées avec perforation à pas fixe (wire-o). S’ouvre à 360°.")|tojson }}],
+    ring: [{{ _("Classeur 2 trous (ISO 838)")|tojson }}, {{ _("Deux trous espacés de 80 mm pour classeur scolaire classique.")|tojson }}]
 };
 
 const GL = [
-    ['Pages blanches de complément', 'Un livret compte toujours un multiple de 4 pages. Les pages manquantes sont ajoutées vides.'],
-    ['Cahier (signature)', 'Groupe de feuilles pliées ensemble formant une section du livre.'],
-    ['Retournement bord court', 'Standard pour un livret paysage imprimé en recto-verso (se tourne comme les pages d’un livre).'],
-    ['Marge de reliure', 'Espace supplémentaire réservé le long du pli pour la couture ou la colle.']
+    [{{ _("Pages blanches de complément")|tojson }}, {{ _("Un livret compte toujours un multiple de 4 pages. Les pages manquantes sont ajoutées vides.")|tojson }}],
+    [{{ _("Cahier (signature)")|tojson }}, {{ _("Groupe de feuilles pliées ensemble formant une section du livre.")|tojson }}],
+    [{{ _("Retournement bord court")|tojson }}, {{ _("Standard pour un livret paysage imprimé en recto-verso (se tourne comme les pages d’un livre).")|tojson }}],
+    [{{ _("Marge de reliure")|tojson }}, {{ _("Espace supplémentaire réservé le long du pli pour la couture ou la colle.")|tojson }}]
 ];
 
 const HK = {
-    mode: S => ({ book: 'Ordre de lecture reconstitué pour pliage en livret.', stack: 'Pile à couper et superposer.', nup: 'Pages à la suite.' }[S.mode]),
-    sig: () => 'Multiple de 4. « Tout en un » pour un seul cahier agrafé.',
-    rows: S => S.mode == 'book' ? 'Plusieurs cahiers l’un sous l’autre sur la feuille.' : 'Nombre de pages en hauteur.',
-    flip: () => 'Bord court recommandé pour livret A5 sur A4.',
-    fit: () => 'Ajuster à la page sans déformation.',
-    gy: () => 'Gouttière entre les rangées.',
-    creep: () => 'Compensation du décalage des pages intérieures.',
-    bind: () => 'Surface en plus près du pli.',
-    hp: S => 'Modèle de répartition des points de perçage ou agrafes.',
-    bp: () => 'Emplacement des pages blanches de complément.',
-    hc: () => 'Positions personnalisées en millimètres.',
-    hx: () => 'Distance du trou au bord.',
-    mil: () => 'Zone de fraisage du dos.'
+    mode: S => ({ book: {{ _("Ordre de lecture reconstitué pour pliage en livret.")|tojson }}, stack: {{ _("Pile à couper et superposer.")|tojson }}, nup: {{ _("Pages à la suite.")|tojson }} }[S.mode]),
+    sig: () => {{ _("Multiple de 4. « Tout en un » pour un seul cahier agrafé.")|tojson }},
+    rows: S => S.mode == 'book' ? {{ _("Plusieurs cahiers l’un sous l’autre sur la feuille.")|tojson }} : {{ _("Nombre de pages en hauteur.")|tojson }},
+    flip: () => {{ _("Bord court recommandé pour livret A5 sur A4.")|tojson }},
+    fit: () => {{ _("Ajuster à la page sans déformation.")|tojson }},
+    gy: () => {{ _("Gouttière entre les rangées.")|tojson }},
+    creep: () => {{ _("Compensation du décalage des pages intérieures.")|tojson }},
+    bind: () => {{ _("Surface en plus près du pli.")|tojson }},
+    hp: S => {{ _("Modèle de répartition des points de perçage ou agrafes.")|tojson }},
+    bp: () => {{ _("Emplacement des pages blanches de complément.")|tojson }},
+    hc: () => {{ _("Positions personnalisées en millimètres.")|tojson }},
+    hx: () => {{ _("Distance du trou au bord.")|tojson }},
+    mil: () => {{ _("Zone de fraisage du dos.")|tojson }}
 };
 
 const SV = (a, b, ca, cb) => `<svg class="il" viewBox="0 0 520 178" role="img" aria-label="${ca} ; ${cb}"><g>${a}</g><g transform="translate(270 0)">${b}</g><text x="125" y="172" text-anchor="middle">${ca}</text><text x="395" y="172" text-anchor="middle">${cb}</text></svg>`;
@@ -799,9 +795,9 @@ const flat = ys => '<rect class="f" x="30" y="10" width="92" height="140"/><rect
 const stp = '<path class="t" stroke-width="3" d="M46 80H100"/>';
 
 const ILL = {
-    staple: SV(flat([.25, .75]), cah(1, 4) + stp, 'Feuille ouverte, 2 agrafes', 'Coupe : feuilles imbriquées'),
-    staple3: SV(flat([.2, .5, .8]), cah(1, 4) + stp, 'Feuille ouverte, 3 agrafes', 'Coupe : feuilles imbriquées'),
-    kettle: SV(spine(4, [.08, .29, .5, .71, .92], 'k'), cah(3, 3), 'Dos : fil et chaînettes', 'Dessus : cahiers reliés')
+    staple: SV(flat([.25, .75]), cah(1, 4) + stp, {{ _("Feuille ouverte, 2 agrafes")|tojson }}, {{ _("Coupe : feuilles imbriquées")|tojson }}),
+    staple3: SV(flat([.2, .5, .8]), cah(1, 4) + stp, {{ _("Feuille ouverte, 3 agrafes")|tojson }}, {{ _("Coupe : feuilles imbriquées")|tojson }}),
+    kettle: SV(spine(4, [.08, .29, .5, .71, .92], 'k'), cah(3, 3), {{ _("Dos : fil et chaînettes")|tojson }}, {{ _("Dessus : cahiers reliés")|tojson }})
 };
 
 for (const k in HK) {
@@ -812,9 +808,9 @@ const preWrap = $('#w_pre');
 if (preWrap) preWrap.insertAdjacentHTML('afterend', '<div id="pdesc"></div>');
 
 // Remplissage du guide
-$('#gc').innerHTML = '<h2>Guide pratique des reliures</h2><p>Le mode simple configure tout automatiquement pour les livrets agrafés. Pour les reliures artisanales cousues ou perforées, explorez les techniques ci-dessous :</p>' +
+$('#gc').innerHTML = '<h2>' + {{ _("Guide pratique des reliures")|tojson }} + '</h2><p>' + {{ _("Le mode simple configure tout automatiquement pour les livrets agrafés. Pour les reliures artisanales cousues ou perforées, explorez les techniques ci-dessous :")|tojson }} + '</p>' +
     Object.entries(PD).filter(([k]) => k != 'custom').map(([k, v]) => `<h3>${v[0]}</h3><p>${v[1]}</p>${ILL[k] || ''}`).join('') +
-    '<h3>Vocabulaire</h3><ul>' + GL.map(g => `<li><strong>${g[0]}</strong> : ${g[1]}</li>`).join('') + '</ul>';
+    '<h3>' + {{ _("Vocabulaire")|tojson }} + '</h3><ul>' + GL.map(g => `<li><strong>${g[0]}</strong> : ${g[1]}</li>`).join('') + '</ul>';
 
 const BK = { mode: 'book', ori: 'Paysage', rows: 1, m: 5, gx: 0, gy: 6, fold: true, mil: 0, bind: 0, flip: 's', hole: true, hd: 1.5, gline: false };
 const SN = { mode: 'nup', ori: 'Portrait', cols: 1, rows: 1, dup: true, m: 4, gx: 0, gy: 0, fold: false, mil: 0, bind: 0, hole: true, gline: false };
@@ -1055,15 +1051,21 @@ function renderSheets() {
         st.append(cv);
         draw(cv, sd);
     }
-    $('#nav').textContent = `Feuille ${cur} / ${R.sheets}`;
+    const T_BLANK = {{ _("vide")|tojson }};
+    const T_SHEET = {{ _("Feuille")|tojson }};
+    const T_BACK = {{ _("Verso")|tojson }};
+    const T_FRONT = {{ _("Recto")|tojson }};
+    const T_SHEETS = {{ _("feuilles")|tojson }};
+    const T_SIDES = {{ _("faces")|tojson }};
+    $('#nav').textContent = `${T_SHEET} ${cur} / ${R.sheets}`;
     $('#order').textContent = all.map(sd => {
         const rs = [];
         for (const e of sd.cells.slice().sort((a, b) => a.r - b.r || a.c - b.c)) {
-            (rs[e.r] = rs[e.r] || []).push(e.p < 0 ? 'vide' : e.p + 1);
+            (rs[e.r] = rs[e.r] || []).push(e.p < 0 ? T_BLANK : e.p + 1);
         }
-        return (sd.face ? 'Verso' : 'Recto') + ' : ' + rs.filter(Boolean).map(r => r.join(' · ')).join(' / ');
+        return (sd.face ? T_BACK : T_FRONT) + ' : ' + rs.filter(Boolean).map(r => r.join(' · ')).join(' / ');
     }).join('   —   ');
-    $('#orderBadge').textContent = `${R.sheets} feuilles (${R.sides.length} faces)`;
+    $('#orderBadge').textContent = `${R.sheets} ${T_SHEETS} (${R.sides.length} ${T_SIDES})`;
 }
 
 function bookSpreads() {
@@ -1116,7 +1118,7 @@ function renderBook() {
         if (e.p === undefined || e.p < 0) {
             c.fillStyle = '#f8fafc'; c.fillRect(x, 0, pw, ph);
             c.fillStyle = '#94a3b8'; c.font = `${pw / 14}px system-ui, sans-serif`; c.textAlign = 'center';
-            c.fillText(e.p < 0 ? 'page vide' : '?', x + pw / 2, ph / 2);
+            c.fillText(e.p < 0 ? {{ _("page vide")|tojson }} : '?', x + pw / 2, ph / 2);
         } else {
             const im = bmp(e.p), [a, b] = SZ[e.p], k = Math.min(pw / a, ph / b), dw = a * k, dh = b * k;
             if (im) c.drawImage(im, x + (pw - dw) / 2, (ph - dh) / 2, dw, dh);
@@ -1141,9 +1143,11 @@ function renderBook() {
     c.fillStyle = g; c.fillRect(pw - pw / 12, 0, pw / 6, ph);
     c.strokeStyle = 'rgba(0,0,0,.2)'; c.lineWidth = 1; c.strokeRect(.5, .5, cv.width - 1, ph - 1);
 
-    $('#nav').textContent = `Double page ${curB + 1} / ${B.sp.length}`;
-    const nm = e => !e ? '—' : e.p < 0 ? 'vide' : e.p === undefined ? '?' : e.p + 1, sp = B.sp[curB];
-    $('#order').textContent = `${nm(sp[0])} | ${nm(sp[1])}  —  ` + (B.bad.size ? `⚠ Ordre incorrect : vérifiez le mode ou le retournement.` : `✓ Ordre de lecture parfait.`);
+    const T_DOUBLE_PAGE = {{ _("Double page")|tojson }};
+    $('#nav').textContent = `${T_DOUBLE_PAGE} ${curB + 1} / ${B.sp.length}`;
+    const T_BLANK_SP = {{ _("vide")|tojson }};
+    const nm = e => !e ? '—' : e.p < 0 ? T_BLANK_SP : e.p === undefined ? '?' : e.p + 1, sp = B.sp[curB];
+    $('#order').textContent = `${nm(sp[0])} | ${nm(sp[1])}  —  ` + (B.bad.size ? {{ _("⚠ Ordre incorrect : vérifiez le mode ou le retournement.")|tojson }} : {{ _("✓ Ordre de lecture parfait.")|tojson }});
     $('#orderBadge').textContent = `Page ${curB * 2 + 1}-${curB * 2 + 2}`;
 }
 
@@ -1173,9 +1177,18 @@ function upd() {
     const kk = (S.fit == 'fit' ? Math.min(cwi / z0[0], chi / z0[1]) : S.fit == 'fill' ? Math.max(cwi / z0[0], chi / z0[1]) : 1) * S.sc / 100;
     const nb = R.padn + R.pad;
 
-    $('#info').innerHTML = `<strong>${R.T0} page(s) source</strong> → <strong>${R.sheets} feuille(s) de papier</strong> (${R.sides.length} faces).<br>` +
-        `Page finie : <strong>${g.cw.toFixed(1)} × ${g.ch.toFixed(1)} mm</strong> (échelle ${Math.round(kk * 100)} %)${nb ? ` · ${nb} page(s) blanche(s) ajoutée(s)` : ''}.<br>` +
-        `<span class="tag is-info is-light mt-1"><i class="fas fa-print mr-1"></i> Impression : 100% taille réelle, Recto-Verso (${S.flip == 'l' ? 'bord long' : 'bord court'})</span>`;
+    const T_SRC_PAGES = {{ _("page(s) source")|tojson }};
+    const T_PAPER_SHEETS = {{ _("feuille(s) de papier")|tojson }};
+    const T_FACES = {{ _("faces")|tojson }};
+    const T_FIN_PAGE = {{ _("Page finie :")|tojson }};
+    const T_SCALE = {{ _("échelle")|tojson }};
+    const T_BLANK_PAGES = {{ _("page(s) blanche(s) ajoutée(s)")|tojson }};
+    const T_PRINT_TIP = {{ _("Impression : 100%% taille réelle, Recto-Verso")|replace("%%", "%")|tojson }};
+    const T_LONG_EDGE = {{ _("bord long")|tojson }};
+    const T_SHORT_EDGE = {{ _("bord court")|tojson }};
+    $('#info').innerHTML = `<strong>${R.T0} ${T_SRC_PAGES}</strong> → <strong>${R.sheets} ${T_PAPER_SHEETS}</strong> (${R.sides.length} ${T_FACES}).<br>` +
+        `${T_FIN_PAGE} <strong>${g.cw.toFixed(1)} × ${g.ch.toFixed(1)} mm</strong> (${T_SCALE} ${Math.round(kk * 100)} %)${nb ? ` · ${nb} ${T_BLANK_PAGES}` : ''}.<br>` +
+        `<span class="tag is-info is-light mt-1"><i class="fas fa-print mr-1"></i> ${T_PRINT_TIP} (${S.flip == 'l' ? T_LONG_EDGE : T_SHORT_EDGE})</span>`;
 
     const versoOpt = $('#view').querySelector('[value=verso]');
     if (versoOpt) versoOpt.disabled = !R.book && !S.dup;
@@ -1186,7 +1199,7 @@ function upd() {
 }
 
 async function load(buf, name) {
-    $('#info').innerHTML = '<span class="icon is-small mr-1"><i class="fas fa-spinner fa-spin"></i></span> Lecture du fichier PDF en cours…';
+    $('#info').innerHTML = '<span class="icon is-small mr-1"><i class="fas fa-spinner fa-spin"></i></span> ' + {{ _("Lecture du fichier PDF en cours…")|tojson }};
     try {
         SRC = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
         DOC = await pdfjsLib.getDocument({ data: new Uint8Array(buf).slice() }).promise;
@@ -1203,7 +1216,8 @@ async function load(buf, name) {
         if (e) e.remove();
         upd();
     } catch (e) {
-        $('#info').innerHTML = `<span class="has-text-danger"><i class="fas fa-exclamation-triangle mr-1"></i> Erreur : impossible de lire ce fichier PDF (${e.message || e})</span>`;
+        const T_PDF_ERR = {{ _("Erreur : impossible de lire ce fichier PDF")|tojson }};
+        $('#info').innerHTML = `<span class="has-text-danger"><i class="fas fa-exclamation-triangle mr-1"></i> ${T_PDF_ERR} (${e.message || e})</span>`;
     }
 }
 
@@ -1216,7 +1230,7 @@ async function demo() {
         const p = d.addPage([595.28, 841.89]);
         p.drawRectangle({ x: 30, y: 30, width: 535, height: 781, borderColor: rgb(.14, .38, .92), borderWidth: 3 });
         p.drawText(`Page ${i}`, { x: 190, y: 440, size: 55, font: f, color: rgb(.06, .09, .16) });
-        p.drawText(`Document d'exemple pour livret A5`, { x: 140, y: 380, size: 20, font: f, color: rgb(.28, .39, .51) });
+        p.drawText({{ _("Document exemple pour livret A5")|tojson }}, { x: 140, y: 380, size: 20, font: f, color: rgb(.28, .39, .51) });
         p.drawText(`Livres en Classe`, { x: 220, y: 80, size: 16, font: f, color: rgb(.14, .38, .92) });
     }
     load(await d.save(), 'exemple-livret');
@@ -1224,13 +1238,13 @@ async function demo() {
 
 async function exp(only) {
     if (!R) {
-        alert("Veuillez d'abord charger un document PDF ou utiliser le PDF d'essai.");
+        alert({{ _("Veuillez d'abord charger un document PDF ou utiliser le PDF d'essai.")|tojson }});
         return;
     }
     const btn = only ? $('#dl1') : $('#dl');
     const btx = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Génération…';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> ' + {{ _("Génération…")|tojson }};
 
     try {
         const { PDFDocument, StandardFonts, rgb, degrees, pushGraphicsState, popGraphicsState, moveTo, lineTo, closePath, clip, endPath } = PDFLib;
@@ -1283,7 +1297,7 @@ async function exp(only) {
         a.download = fn;
         a.click();
     } catch (e) {
-        alert("Échec de l'export : " + (e.message || e));
+        alert({{ _("Échec de l'export :")|tojson }} + ' ' + (e.message || e));
     }
     btn.disabled = false;
     btn.innerHTML = btx;
