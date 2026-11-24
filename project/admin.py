@@ -1295,11 +1295,13 @@ def admin_mark_facture_ecole_paid(invoice_id):
 
     from .subscription import _handle_invoice_paid
 
-    _handle_invoice_paid({
-        "id": school_inv.stripe_invoice_id,
-        "invoice_pdf": school_inv.invoice_pdf_url,
-        "hosted_invoice_url": school_inv.hosted_invoice_url,
-    })
+    _handle_invoice_paid(
+        {
+            "id": school_inv.stripe_invoice_id,
+            "invoice_pdf": school_inv.invoice_pdf_url,
+            "hosted_invoice_url": school_inv.hosted_invoice_url,
+        }
+    )
     flash(
         _("Facture école validée et compte utilisateur prolongé pour 365 jours !"),
         "success",

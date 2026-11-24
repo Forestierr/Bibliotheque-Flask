@@ -131,7 +131,11 @@ def create_checkout_session():
         else (os.getenv("STRIPE_PRICE_ID_MONTHLY") or os.getenv("STRIPE_PRICE_MONTHLY"))
     )
 
-    is_school_reimbursement = request.form.get("is_school_reimbursement") in ("1", "true", "on")
+    is_school_reimbursement = request.form.get("is_school_reimbursement") in (
+        "1",
+        "true",
+        "on",
+    )
     school_name = (request.form.get("school_name") or "").strip()
     school_address = (request.form.get("school_address") or "").strip()
 
@@ -275,12 +279,8 @@ def success():
     if session_id and os.getenv("STRIPE_SECRET_KEY"):
         try:
             stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-            session = stripe.checkout.Session.retrieve(
-                session_id, expand=["invoice"]
-            )
-            session_data = (
-                session.to_dict() if hasattr(session, "to_dict") else session
-            )
+            session = stripe.checkout.Session.retrieve(session_id, expand=["invoice"])
+            session_data = session.to_dict() if hasattr(session, "to_dict") else session
 
             # Vérification d'identité (FND-08) : s'assurer que la session appartient à l'utilisateur connecté
             session_user_id = session_data.get("client_reference_id") or (
@@ -326,9 +326,7 @@ def success():
                                 inv_err,
                             )
                     elif isinstance(inv_obj, dict):
-                        current_user.stripe_latest_invoice_id = str(
-                            inv_obj.get("id")
-                        )
+                        current_user.stripe_latest_invoice_id = str(inv_obj.get("id"))
                         current_user.stripe_latest_invoice_pdf = inv_obj.get(
                             "invoice_pdf"
                         )
@@ -348,8 +346,7 @@ def facture_acquittee():
 
     # Si l'URL n'est pas connue ou pour actualiser depuis Stripe
     if stripe_secret and (
-        current_user.stripe_customer_id
-        or current_user.stripe_latest_invoice_id
+        current_user.stripe_customer_id or current_user.stripe_latest_invoice_id
     ):
         try:
             stripe.api_key = stripe_secret
@@ -384,7 +381,9 @@ def facture_acquittee():
                         latest.get("invoice_pdf") if isinstance(latest, dict) else None
                     )
                     latest_hosted = getattr(latest, "hosted_invoice_url", None) or (
-                        latest.get("hosted_invoice_url") if isinstance(latest, dict) else None
+                        latest.get("hosted_invoice_url")
+                        if isinstance(latest, dict)
+                        else None
                     )
                     if latest_id:
                         current_user.stripe_latest_invoice_id = str(latest_id)
@@ -398,14 +397,11 @@ def facture_acquittee():
         except Exception as e:  # noqa: BLE001  # noqa: BLE001
             logger.warning("Erreur récupération facture acquittée Stripe : %s", e)
 
-
     if pdf_url:
         return redirect(pdf_url, code=302)
 
     flash(
-        _(
-            "Aucune facture acquittée n'est disponible pour votre compte actuellement."
-        ),
+        _("Aucune facture acquittée n'est disponible pour votre compte actuellement."),
         "info",
     )
     return redirect(url_for("auth.reglage"))
@@ -444,12 +440,8 @@ def facture_ecole():
 
         school_name = (request.form.get("school_name") or "").strip()
         school_address = (request.form.get("school_address") or "").strip()
-        school_billing_email = (
-            request.form.get("school_billing_email") or ""
-        ).strip()
-        country_currency = (
-            request.form.get("country_currency") or "EUR"
-        ).upper()
+        school_billing_email = (request.form.get("school_billing_email") or "").strip()
+        country_currency = (request.form.get("country_currency") or "EUR").upper()
         siret_or_tax_id = (request.form.get("siret_or_tax_id") or "").strip()
         order_reference = (request.form.get("order_reference") or "").strip()
 
@@ -468,9 +460,7 @@ def facture_ecole():
 
         stripe_secret = os.getenv("STRIPE_SECRET_KEY")
         if not stripe_secret:
-            logger.warning(
-                "STRIPE_SECRET_KEY non configurée pour facture école."
-            )
+            logger.warning("STRIPE_SECRET_KEY non configurée pour facture école.")
             flash(
                 _(
                     "Le service de facturation Stripe est en cours de configuration. Contactez l'administrateur."
@@ -504,7 +494,9 @@ def facture_ecole():
                 clean_tax = siret_or_tax_id.strip().replace(" ", "").upper()
                 try:
                     stripe.Customer.create_tax_id(customer.id, value=clean_tax)
-                    logger.info("Tax ID Stripe créé pour %s : %s", customer.id, clean_tax)
+                    logger.info(
+                        "Tax ID Stripe créé pour %s : %s", customer.id, clean_tax
+                    )
                 except Exception as tax_err:  # noqa: BLE001
                     logger.info(
                         "Tax ID informel ou SIRET non normalisé Stripe Tax ID : %s",
@@ -541,9 +533,13 @@ def facture_ecole():
                     )
                     else "SIRET / IDE"
                 )
-                custom_fields.append({"name": field_label, "value": siret_or_tax_id[:30]})
+                custom_fields.append(
+                    {"name": field_label, "value": siret_or_tax_id[:30]}
+                )
             if order_reference:
-                custom_fields.append({"name": "Bon de commande", "value": order_reference[:30]})
+                custom_fields.append(
+                    {"name": "Bon de commande", "value": order_reference[:30]}
+                )
             if custom_fields:
                 invoice_params["custom_fields"] = custom_fields
 
@@ -619,7 +615,10 @@ def facture_ecole():
             db_user = db.session.get(User, current_user.id)
             if db_user and db_user.plan != "founder":
                 db_user.trial_ends_at = due_date
-            if hasattr(current_user, "trial_ends_at") and current_user.plan != "founder":
+            if (
+                hasattr(current_user, "trial_ends_at")
+                and current_user.plan != "founder"
+            ):
                 current_user.trial_ends_at = due_date
             db.session.commit()
 
@@ -646,7 +645,9 @@ def facture_ecole():
                     e,
                 )
             else:
-                logger.exception("Erreur lors de la création de la facture école Stripe")
+                logger.exception(
+                    "Erreur lors de la création de la facture école Stripe"
+                )
             db.session.rollback()
             flash(
                 _(
@@ -703,7 +704,6 @@ def cancel():
     return render_template("subscription/cancel.html")
 
 
-
 @webhook_bp.route("/webhook/stripe", methods=["POST"])
 @csrf.exempt
 def stripe_webhook():
@@ -751,7 +751,6 @@ def stripe_webhook():
         _handle_invoice_voided(data_object)
 
     return jsonify({"status": "success"}), 200
-
 
 
 def _handle_checkout_completed(session):
@@ -1021,9 +1020,7 @@ def _handle_invoice_paid(invoice_data):
         return
 
     # 1. Vérifier si c'est une facture école (Flux B)
-    school_inv = SchoolInvoice.query.filter_by(
-        stripe_invoice_id=invoice_id
-    ).first()
+    school_inv = SchoolInvoice.query.filter_by(stripe_invoice_id=invoice_id).first()
     if school_inv:
         if school_inv.status == "paid":
             logger.info(
@@ -1104,20 +1101,14 @@ def _handle_invoice_voided(invoice_data):
     invoice_id = invoice_data.get("id")
     if not invoice_id:
         return
-    school_inv = SchoolInvoice.query.filter_by(
-        stripe_invoice_id=invoice_id
-    ).first()
+    school_inv = SchoolInvoice.query.filter_by(stripe_invoice_id=invoice_id).first()
     if school_inv:
         new_status = (
-            "expired"
-            if invoice_data.get("status") == "uncollectible"
-            else "void"
+            "expired" if invoice_data.get("status") == "uncollectible" else "void"
         )
         school_inv.status = new_status
         db.session.commit()
-        logger.info(
-            "Facture école %s marquée comme %s", invoice_id, new_status
-        )
+        logger.info("Facture école %s marquée comme %s", invoice_id, new_status)
 
 
 def _safe_external_url(endpoint, **values):

@@ -39,8 +39,12 @@ def upgrade():
         sa.Column("siret_or_tax_id", sa.String(length=50), nullable=True),
         sa.Column("order_reference", sa.String(length=100), nullable=True),
         sa.Column("amount", sa.Float(), nullable=False),
-        sa.Column("currency", sa.String(length=10), nullable=False, server_default="eur"),
-        sa.Column("status", sa.String(length=30), nullable=False, server_default="pending"),
+        sa.Column(
+            "currency", sa.String(length=10), nullable=False, server_default="eur"
+        ),
+        sa.Column(
+            "status", sa.String(length=30), nullable=False, server_default="pending"
+        ),
         sa.Column("hosted_invoice_url", sa.String(length=500), nullable=True),
         sa.Column("invoice_pdf_url", sa.String(length=500), nullable=True),
         sa.Column("due_at", sa.DateTime(), nullable=False),

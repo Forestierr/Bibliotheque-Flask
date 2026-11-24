@@ -211,6 +211,3 @@ def send_email_subscription_renewal_reminder(user, days_left=None):
         logger.info(
             f"Email rappel renouvellement (échéance sous {days} jours) envoyé à {user.email}"
         )
-
-
-

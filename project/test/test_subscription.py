@@ -1856,7 +1856,10 @@ def test_flux_a_checkout_session_b2b_metadata(client, app):
             },
         )
         assert resp.status_code == 303
-        assert resp.headers["Location"] == "https://checkout.stripe.com/pay/cs_test_b2b_123"
+        assert (
+            resp.headers["Location"]
+            == "https://checkout.stripe.com/pay/cs_test_b2b_123"
+        )
 
         # Vérifier les paramètres transmis à Stripe
         mock_cust_create.assert_called_once()
@@ -1904,7 +1907,9 @@ def test_facture_acquittee_redirect(client, app):
     ):
         resp = client.get("/subscription/facture-acquittee")
         assert resp.status_code == 302
-        assert resp.headers["Location"] == "https://stripe.com/invoice/inv_paid_cached.pdf"
+        assert (
+            resp.headers["Location"] == "https://stripe.com/invoice/inv_paid_cached.pdf"
+        )
 
 
 def test_facture_acquittee_fetch_from_stripe(client, app):
@@ -2014,7 +2019,9 @@ def test_flux_b_facture_ecole_creation_and_grace_period(client, app):
             },
         )
         assert resp_post.status_code == 302
-        assert "/subscription/facture-ecole/confirmation/" in resp_post.headers["Location"]
+        assert (
+            "/subscription/facture-ecole/confirmation/" in resp_post.headers["Location"]
+        )
 
         # Vérifier les appels Stripe
         mock_invoice_create.assert_called_once()
@@ -2102,7 +2109,10 @@ def test_flux_b_anti_abuse_blocks_duplicate_pending(client, app):
             },
         )
         assert resp.status_code == 302
-        assert f"/subscription/facture-ecole/confirmation/{inv_id}" in resp.headers["Location"]
+        assert (
+            f"/subscription/facture-ecole/confirmation/{inv_id}"
+            in resp.headers["Location"]
+        )
         # Aucune nouvelle facture Stripe n'a été créée
         mock_inv_create.assert_not_called()
 
@@ -2167,7 +2177,10 @@ def test_webhook_invoice_paid_flux_b_extends_365_days(client, app):
             ).first()
             assert si.status == "paid"
             assert si.paid_at is not None
-            assert si.invoice_pdf_url == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+            assert (
+                si.invoice_pdf_url
+                == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+            )
 
             u = db.session.get(User, 206)
             assert u.plan == "premium"
@@ -2177,7 +2190,10 @@ def test_webhook_invoice_paid_flux_b_extends_365_days(client, app):
             delta = u.subscription_end_at.replace(tzinfo=UTC) - datetime.now(UTC)
             assert delta.days in (364, 365, 366)
             assert u.stripe_latest_invoice_id == "in_school_to_pay_206"
-            assert u.stripe_latest_invoice_pdf == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+            assert (
+                u.stripe_latest_invoice_pdf
+                == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+            )
 
 
 def test_webhook_invoice_voided_flux_b(client, app):
@@ -2322,7 +2338,9 @@ def test_scheduler_send_renewal_reminders(app):
         db.session.add_all([u1, u2, u3, u4])
         db.session.commit()
 
-        with patch("project.email.send_email_subscription_renewal_reminder") as mock_send:
+        with patch(
+            "project.email.send_email_subscription_renewal_reminder"
+        ) as mock_send:
             sent_count = send_renewal_reminders(app, window_days=30)
             assert sent_count == 1
             mock_send.assert_called_once()
@@ -2334,7 +2352,9 @@ def test_scheduler_send_renewal_reminders(app):
         assert u2_updated.renewal_reminder_sent is False
 
         # Deuxième exécution : aucun nouvel envoi (idempotent)
-        with patch("project.email.send_email_subscription_renewal_reminder") as mock_send_again:
+        with patch(
+            "project.email.send_email_subscription_renewal_reminder"
+        ) as mock_send_again:
             sent_again = send_renewal_reminders(app, window_days=30)
             assert sent_again == 0
             mock_send_again.assert_not_called()
@@ -2372,11 +2392,13 @@ def test_invoice_paid_resets_renewal_reminder_sent(client, app):
         db.session.commit()
 
         with patch("project.subscription._send_school_invoice_paid_email"):
-            _handle_invoice_paid({
-                "id": "in_renew_321",
-                "customer": "cus_renew_321",
-                "invoice_pdf": "https://stripe.com/renew.pdf",
-            })
+            _handle_invoice_paid(
+                {
+                    "id": "in_renew_321",
+                    "customer": "cus_renew_321",
+                    "invoice_pdf": "https://stripe.com/renew.pdf",
+                }
+            )
 
         u = db.session.get(User, 321)
         assert u.plan == "premium"
@@ -2591,6 +2613,3 @@ def test_reglage_canceling_user_near_expiry(client, app):
     assert "Résiliation programmée : accès Premium maintenu" in html_short
     assert "Abonnement résilié" in html_short
     assert "Votre demande de résiliation a bien été prise en compte" in html_short
-
-
-
