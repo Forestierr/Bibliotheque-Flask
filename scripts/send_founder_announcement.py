@@ -71,7 +71,7 @@ def main():
                     dashboard_url=url_for("main.dashboard", _external=True),
                 )
                 send_html_email(
-                    subject="👑 Vous êtes Membre Fondateur à vie de Livres en Classe !",
+                    subject="Statut Membre Fondateur accordé à vie — Livres en Classe",
                     sender=sender,
                     recipients=[u.email],
                     html_body=html_body,

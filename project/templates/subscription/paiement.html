@@ -19,7 +19,11 @@
         border-radius: 16px;
         border: 1px solid hsl(0, 0%, 88%);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        padding: 2.2rem 2rem;
+        padding: 2rem 1.75rem;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
     }
     .plan-option {
         border: 2px solid hsl(0, 0%, 88%);
@@ -148,45 +152,58 @@
             </p>
         </div>
 
-        {% if current_user.is_authenticated %}
-            {% if current_user.plan == 'founder' %}
-            <div class="notification is-warning is-light mb-5" style="border-radius: 12px; border-left: 5px solid #d69e2e;">
-                <div class="media">
-                    <div class="media-left">
-                        <span class="icon is-large has-text-warning-dark"><i class="fas fa-award fa-2x"></i></span>
-                    </div>
-                    <div class="media-content">
-                        <p class="title is-5 mb-1" style="color: #744210;">{{ _("Vous êtes Membre Fondateur à vie") }}</p>
-                        <p class="is-size-6" style="color: #744210;">
-                            {{ _("Votre compte bénéficie d'un accès illimité et permanent sans aucun frais. Vous n'avez pas besoin de souscrire un abonnement.") }}
-                        </p>
-                        <a href="{{ url_for('main.dashboard') }}" class="button is-warning is-dark is-rounded is-small mt-3">
-                            <span>{{ _("Accéder à mon tableau de bord") }}</span>
-                        </a>
-                    </div>
+        {% if current_user.is_authenticated and (current_user.plan == 'founder' or (current_user.is_premium and current_user.plan == 'premium')) %}
+            <div class="box p-5 mb-5 has-text-centered" style="background-color: #f0fdf4; border: 1.5px solid #86efac; border-radius: 16px; box-shadow: 0 4px 14px rgba(22, 101, 52, 0.06);">
+                <div class="mb-3">
+                    <span class="icon is-large has-text-success">
+                        <i class="fas fa-check-circle fa-3x"></i>
+                    </span>
+                </div>
+                <h2 class="title is-3 mb-2" style="color: #166534; font-weight: 800;">
+                    {% if current_user.plan == 'founder' %}
+                        {{ _("Vous êtes Membre Fondateur à vie") }}
+                    {% else %}
+                        {{ _("Votre abonnement Premium est actif") }}
+                    {% endif %}
+                </h2>
+                <p class="subtitle is-6 mb-4" style="color: #15803d; max-width: 580px; margin: 0 auto; line-height: 1.5;">
+                    {% if current_user.plan == 'founder' %}
+                        {{ _("Votre compte bénéficie d'un accès illimité et permanent sans aucun frais. Toutes les fonctionnalités actuelles et futures sont incluses.") }}
+                    {% elif current_user.subscription_end_at %}
+                        {{ _("Votre formule est active et validée jusqu'au %(date)s. Vous profitez de l'ensemble des fonctionnalités sans aucune limite.", date=current_user.subscription_end_at|format_date) }}
+                    {% else %}
+                        {{ _("Vous disposez déjà de l'accès illimité à toutes les fonctionnalités pour votre classe.") }}
+                    {% endif %}
+                </p>
+
+                <div class="buttons is-centered mt-4" style="gap: 0.75rem;">
+                    {% if current_user.plan != 'founder' and current_user.stripe_customer_id %}
+                    <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="button is-link is-rounded has-text-weight-bold">
+                            <span class="icon"><i class="fas fa-credit-card"></i></span>
+                            <span>{{ _("Gérer mon abonnement & facturation") }}</span>
+                        </button>
+                    </form>
+                    <a href="{{ url_for('subscription.facture_acquittee') }}" target="_blank" class="button is-light is-rounded">
+                        <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                        <span>{{ _("Télécharger ma facture (PDF)") }}</span>
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('main.dashboard') }}" class="button is-light is-rounded">
+                        <span class="icon"><i class="fas fa-th-large"></i></span>
+                        <span>{{ _("Retourner au tableau de bord") }}</span>
+                    </a>
                 </div>
             </div>
-            {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
-            <div class="notification is-success is-light mb-5" style="border-radius: 12px; border-left: 5px solid #48c774;">
-                <div class="level">
-                    <div class="level-left">
-                        <div>
-                            <p class="title is-5 mb-1">{{ _("Votre abonnement Premium est déjà actif") }}</p>
-                            <p class="is-size-6 has-text-grey">{{ _("Vous disposez déjà de l'accès illimité. Vous pouvez gérer vos moyens de paiement ou factures à tout moment.") }}</p>
-                        </div>
-                    </div>
-                    <div class="level-right">
-                        <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="button is-link is-light is-rounded">
-                                <span class="icon"><i class="fas fa-credit-card"></i></span>
-                                <span>{{ _("Gérer mon abonnement") }}</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
+
+            <!-- Option secondaire repliable pour souscrire une licence supplémentaire ou émettre une facture école -->
+            <details class="box mb-5 p-4 has-background-white-ter" style="border: 1px dashed hsl(0, 0%, 82%); border-radius: 14px;">
+                <summary class="is-size-7 has-text-grey has-text-weight-semibold is-clickable">
+                    <span class="icon is-small mr-1"><i class="fas fa-plus-circle"></i></span>
+                    {{ _("Besoin d'émettre une facture école (Chorus Pro / mandat) ou de souscrire une licence supplémentaire ? Cliquez ici") }}
+                </summary>
+                <div class="pt-4 mt-3" style="border-top: 1px solid hsl(0, 0%, 88%);">
         {% endif %}
 
         <div class="checkout-card">
@@ -251,11 +268,11 @@
                     <ul class="feature-check-list">
                         <li>
                             <span class="icon"><i class="fas fa-check-circle"></i></span>
-                            <span><strong>{{ _("Nombre d'élèves illimité") }}</strong> {{ _("(fini la limite de 40)") }}</span>
+                            <span><strong>{{ _("Nombre d'élèves illimité") }}</strong> {{ _("(fini la limite de 30)") }}</span>
                         </li>
                         <li>
                             <span class="icon"><i class="fas fa-check-circle"></i></span>
-                            <span><strong>{{ _("Nombre de livres illimité") }}</strong> {{ _("(fini le seuil de 500)") }}</span>
+                            <span><strong>{{ _("Nombre de livres illimité") }}</strong> {{ _("(fini le seuil de 100)") }}</span>
                         </li>
                         <li>
                             <span class="icon"><i class="fas fa-check-circle"></i></span>
@@ -295,11 +312,57 @@
                     </div>
                 </div>
 
-                <div class="notification is-light mb-5" style="border-radius: 10px; font-size: 0.9rem;">
+                <div class="notification is-light mb-4" style="border-radius: 10px; font-size: 0.9rem;">
                     <span class="icon has-text-info mr-1"><i class="fas fa-tag"></i></span>
                     <strong>{{ _("Code de réduction ou bon d'école ?") }}</strong>
                     {{ _("Vous pourrez saisir votre code promo directement sur l'écran sécurisé de paiement Stripe.") }}
                 </div>
+
+                <!-- Options de facturation école / coopérative (Flux A) -->
+                <div class="box has-background-white-ter mb-4" style="border-radius: 12px; border: 1px solid hsl(0, 0%, 88%);">
+                    <div class="field">
+                        <label class="checkbox has-text-weight-bold" style="color: #1e3a8a; cursor: pointer; display: flex; align-items: flex-start; gap: 0.5rem;">
+                            <input type="checkbox" name="is_school_reimbursement" id="schoolReimbursementCheck" value="1" onchange="toggleSchoolFields()" style="margin-top: 3px; transform: scale(1.15);">
+                            <span>{{ _("Établir la facture au nom de ma coopérative scolaire / école (pour remboursement)") }}</span>
+                        </label>
+                        <p class="help has-text-grey" style="margin-top: 4px; margin-left: 1.6rem;">
+                            {{ _("Cochez cette case si vous avancez la somme et vous faites rembourser par votre coopérative (OCCE, Sou des écoles) ou mairie.") }}
+                        </p>
+                    </div>
+
+                    <div id="schoolFieldsContainer" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed hsl(0, 0%, 85%);">
+                        <div class="field mb-3">
+                            <label class="label is-small" for="school_name">{{ _("Nom exact de l'organisme payeur") }} <span class="has-text-danger">*</span></label>
+                            <div class="control has-icons-left">
+                                <input class="input is-small" type="text" id="school_name" name="school_name" placeholder="{{ _('Ex : Coopérative scolaire OCCE École Victor Hugo') }}">
+                                <span class="icon is-small is-left"><i class="fas fa-university"></i></span>
+                            </div>
+                        </div>
+                        <div class="field mb-3">
+                            <label class="label is-small" for="school_address">{{ _("Adresse postale de l'établissement") }} <span class="has-text-danger">*</span></label>
+                            <div class="control has-icons-left">
+                                <input class="input is-small" type="text" id="school_address" name="school_address" placeholder="{{ _('Numéro, rue, code postal et ville') }}">
+                                <span class="icon is-small is-left"><i class="fas fa-map-marker-alt"></i></span>
+                            </div>
+                        </div>
+                        <p class="is-size-7 has-text-info">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            {{ _("Le reçu officiel sera libellé au nom de votre école avec votre identifiant fiscal (SIRET/IDE) pour un remboursement comptable sans blocage.") }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Alternative Flux B (École règle directement) -->
+                <div class="notification is-light mb-5" style="border-radius: 10px; font-size: 0.88rem; background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <i class="fas fa-file-invoice text-link mr-1"></i>
+                    <strong>{{ _("Votre école exige de régler directement (Mairie, Secrétariat) ?") }}</strong>
+                    <br>
+                    {{ _("Vous ne souhaitez pas avancer les frais ?") }}
+                    <a href="{{ url_for('subscription.facture_ecole') }}" class="has-text-link has-text-weight-bold" style="text-decoration: underline;">
+                        {{ _("Générer une facture école à 30 jours (virement SEPA ou carte) avec accès Premium immédiat →") }}
+                    </a>
+                </div>
+
 
                 <!-- Bouton d'action principal -->
                 {% if current_user.is_authenticated %}
@@ -373,6 +436,10 @@
                 </a>
             </div>
         </div>
+        {% if current_user.is_authenticated and (current_user.plan == 'founder' or (current_user.is_premium and current_user.plan == 'premium')) %}
+                </div>
+            </details>
+        {% endif %}
 
         <!-- FAQ & Garanties de sérénité et résiliation -->
         <div class="columns is-multiline mt-5">
@@ -454,6 +521,24 @@ function selectPlan(plan) {
         billingFrequencyText.textContent = "{{ _('Abonnement mensuel renouvelé à 3.- CHF TTC / mois') }}";
         if (btnSubmitText) {
             btnSubmitText.textContent = "{{ _('Procéder au paiement sécurisé (3.- CHF TTC / mois)') }}";
+        }
+    }
+}
+
+function toggleSchoolFields() {
+    var check = document.getElementById('schoolReimbursementCheck');
+    var container = document.getElementById('schoolFieldsContainer');
+    var nameInput = document.getElementById('school_name');
+    var addrInput = document.getElementById('school_address');
+    if (check && container) {
+        if (check.checked) {
+            container.style.display = 'block';
+            if (nameInput) nameInput.required = true;
+            if (addrInput) addrInput.required = true;
+        } else {
+            container.style.display = 'none';
+            if (nameInput) nameInput.required = false;
+            if (addrInput) addrInput.required = false;
         }
     }
 }

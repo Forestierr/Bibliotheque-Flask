@@ -80,15 +80,17 @@ Une tarification juste et transparente pensée pour les budgets de classe des en
 | Caractéristique | Formule Gratuite | Formule Premium |
 | :--- | :---: | :---: |
 | **Tarif** | **0.- CHF** / à vie | **3.- CHF / mois** ou **30.- CHF / an** |
-| **Élèves maximum** | Jusqu'à 40 élèves | **Illimité** |
-| **Livres au catalogue** | Jusqu'à 500 livres | **Illimité** |
+| **Élèves maximum** | Jusqu'à 30 élèves | **Illimité** |
+| **Livres au catalogue** | Jusqu'à 100 livres | **Illimité** |
 | **Scans code-barres** | 30 scans par semaine | **Illimité** |
 | **Historique des prêts** | 10 mois d'historique | **Illimité** |
 | **Exports de données** | Consultation en ligne | **Exports Excel complets** (livres, élèves, prêts) |
 | **Outils de classe & impressions** | — | **Planches de codes-barres vectoriels & étiquettes de bacs** |
 | **Clôture de classe annuelle** | Bilan en ligne | **Bilan officiel imprimable** (top livres & lecteurs) |
+| **Financement par l'école** | — | **Éligible coopérative (OCCE), mairie, mandat Chorus Pro** |
 
-**Essai gratuit de 30 jours** accordé automatiquement à chaque nouvel inscrit, sans carte bancaire requise.
+**Essai gratuit de 30 jours** accordé automatiquement à chaque nouvel inscrit, sans carte bancaire requise.  
+**Financement établissement** : possibilité de faire régler l'abonnement par votre école, mairie ou coopérative (facture officielle Stripe à 30 jours avec accès Premium immédiat).
 
 **[Créer un compte enseignant gratuitement sur LivresEnClasse.com →](https://livresenclasse.com)**
 

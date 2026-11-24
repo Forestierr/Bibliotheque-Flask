@@ -428,6 +428,31 @@ def reglage():
         except Exception as e:  # noqa: BLE001
             current_app.logger.debug("Sync Stripe reglage : %s", e)
 
+    # Synchronisation immédiate de la facture école si une facture est en attente
+    if (
+        user
+        and user.active_pending_school_invoice
+        and stripe_key
+        and not current_app.config.get("TESTING")
+    ):
+        pending_school_inv = user.active_pending_school_invoice
+        if pending_school_inv.stripe_invoice_id:
+            try:
+                from .subscription import (
+                    _handle_invoice_paid,
+                    _handle_invoice_voided,
+                )
+
+                stripe.api_key = stripe_key
+                st_inv = stripe.Invoice.retrieve(pending_school_inv.stripe_invoice_id)
+                inv_status = getattr(st_inv, "status", None)
+                if inv_status == "paid":
+                    _handle_invoice_paid(st_inv)
+                elif inv_status in ("void", "uncollectible"):
+                    _handle_invoice_voided(st_inv)
+            except Exception as e:  # noqa: BLE001
+                current_app.logger.debug("Sync Stripe school invoice reglage : %s", e)
+
     archives = (
         AcademicYearArchive.query.filter_by(user_id=current_user.id)
         .order_by(AcademicYearArchive.end_date.desc(), AcademicYearArchive.id.desc())

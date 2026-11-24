@@ -1,7 +1,9 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 from project import create_app, db
-from project.models import Book, Feedback, Student, User
+from project.models import Book, Feedback, SchoolInvoice, Student, User
 
 
 @pytest.fixture()
@@ -476,3 +478,67 @@ def test_admin_toggle_user_test_and_exclude_filter(client, app):
     res_users = client.get("/admin/utilisateurs?status=test")
     assert res_users.status_code == 200
     assert "prof1@test.com" in res_users.get_data(as_text=True)
+
+
+def test_admin_factures_ecole_view_and_actions(client, app):
+    """Vérifie la vue des factures école et les actions d'administration (sync et validation manuelle)."""
+    from datetime import UTC, datetime, timedelta
+
+    with app.app_context():
+        u = User(
+            id=300,
+            email="admin_school_teacher@test.com",
+            name="Marie Curie",
+            plan="free",
+        )
+        db.session.add(u)
+        inv = SchoolInvoice(
+            id=300,
+            user_id=300,
+            stripe_invoice_id="in_school_admin_test_300",
+            stripe_customer_id="cus_school_admin_300",
+            school_name="École Élémentaire Curie",
+            school_address="Rue Pierre et Marie Curie",
+            school_billing_email="mairie@curie.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=datetime.now(UTC) + timedelta(days=30),
+        )
+        db.session.add(inv)
+        db.session.commit()
+
+    # 1. Vérifier la page d'administration /admin/factures-ecole
+    resp = client.get("/admin/factures-ecole")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+    assert "Factures École" in html
+    assert "École Élémentaire Curie" in html
+    assert "Marie Curie" in html
+
+    # 2. Action synchronisation avec Stripe (facture en attente)
+    mock_stripe_inv = MagicMock(status="open")
+    with (
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_admin"}),
+        patch("stripe.Invoice.retrieve", return_value=mock_stripe_inv),
+    ):
+        resp_sync = client.post("/admin/factures-ecole/300/sync")
+        assert resp_sync.status_code == 302
+
+    # 3. Action validation manuelle (marquer comme payée)
+    with (
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_admin"}),
+        patch("stripe.Invoice.pay"),
+        patch("project.subscription._send_school_invoice_paid_email"),
+    ):
+        resp_mark = client.post("/admin/factures-ecole/300/mark-paid")
+        assert resp_mark.status_code == 302
+        assert "/admin/factures-ecole" in resp_mark.headers["Location"]
+
+    with app.app_context():
+        si = db.session.get(SchoolInvoice, 300)
+        assert si.status == "paid"
+        u = db.session.get(User, 300)
+        assert u.plan == "premium"
+        assert u.subscription_end_at is not None
+        assert u.trial_ends_at is None

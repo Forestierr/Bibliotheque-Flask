@@ -1,6 +1,7 @@
 # models.py
 # look at the file docs/model.png
 
+import logging
 import os
 from datetime import UTC, datetime, timedelta
 
@@ -10,6 +11,8 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 from . import db
+
+logger = logging.getLogger(__name__)
 
 # Table d'association pour la relation Many-to-Many entre Book et Tags
 
@@ -56,6 +59,15 @@ class User(UserMixin, db.Model):
     trial_reminder_sent = db.Column(
         db.Boolean, default=False, server_default="0", nullable=False
     )
+    scan_limit_email_sent = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False
+    )
+    book_limit_email_sent = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False
+    )
+    renewal_reminder_sent = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False
+    )
     free_scans_used = db.Column(
         db.Integer, default=0, server_default="0", nullable=False
     )
@@ -63,6 +75,8 @@ class User(UserMixin, db.Model):
     stripe_subscription_id = db.Column(db.String(120), nullable=True, index=True)
     stripe_subscription_status = db.Column(db.String(30), nullable=True)
     stripe_price_id = db.Column(db.String(120), nullable=True)
+    stripe_latest_invoice_id = db.Column(db.String(120), nullable=True)
+    stripe_latest_invoice_pdf = db.Column(db.String(500), nullable=True)
     subscription_end_at = db.Column(db.DateTime, nullable=True)
     last_scan_reset_at = db.Column(db.DateTime, nullable=True)
     show_book_covers = db.Column(
@@ -115,6 +129,87 @@ class User(UserMixin, db.Model):
             except Exception:  # noqa: BLE001
                 db.session.rollback()
             return True
+        return False
+
+    def check_and_trigger_scan_limit_email(self) -> bool:
+        """
+        Vérifie si l'utilisateur gratuit a atteint le quota hebdomadaire de scans
+        et n'a jamais reçu l'e-mail d'offre promotionnelle (-30%).
+        Si oui, envoie l'e-mail une seule fois et bascule scan_limit_email_sent à True.
+        """
+        from .config_plans import MAX_FREE_SCANS
+
+        if self.is_premium or self.scan_limit_email_sent:
+            return False
+        if (self.free_scans_used or 0) >= MAX_FREE_SCANS:
+            self.scan_limit_email_sent = True
+            try:
+                db.session.commit()
+                from .email import send_email_scan_limit_reached
+
+                send_email_scan_limit_reached(self)
+                return True
+            except Exception:
+                logger.exception(
+                    "Erreur lors de l'envoi de l'email de premier palier de scans"
+                )
+        return False
+
+    def check_and_trigger_book_limit_email(self) -> bool:
+        """
+        Vérifie si l'utilisateur gratuit a atteint 80 livres (80% du quota)
+        et n'a jamais reçu l'e-mail d'encouragement et offre promo.
+        Si oui, envoie l'e-mail une seule fois et bascule book_limit_email_sent à True.
+        """
+        from sqlalchemy import func
+
+        from .config_plans import GAUGE_WARNING_PERCENT, MAX_FREE_BOOKS
+
+        if self.is_premium or self.book_limit_email_sent:
+            return False
+
+        threshold = int(MAX_FREE_BOOKS * (GAUGE_WARNING_PERCENT / 100.0))
+        books_count = (
+            db.session.query(func.count(Book.id))
+            .filter(Book.user_id == self.id)
+            .scalar()
+            or 0
+        )
+
+        if books_count >= threshold:
+            self.book_limit_email_sent = True
+            try:
+                db.session.commit()
+                from .email import send_email_book_milestone
+
+                send_email_book_milestone(self, books_count)
+                return True
+            except Exception:
+                logger.exception(
+                    "Erreur lors de l'envoi de l'email de palier de livres (80 livres)"
+                )
+        return False
+
+    def check_and_trigger_renewal_reminder(self) -> bool:
+        """
+        Vérifie si l'abonnement annuel arrive à échéance dans 30 jours ou moins
+        et n'a pas encore reçu l'e-mail de rappel de renouvellement.
+        Si oui, envoie l'e-mail une seule fois et bascule renewal_reminder_sent à True.
+        """
+        if self.plan == "founder" or self.renewal_reminder_sent:
+            return False
+        if self.is_subscription_expiring_soon:
+            self.renewal_reminder_sent = True
+            try:
+                db.session.commit()
+                from .email import send_email_subscription_renewal_reminder
+
+                send_email_subscription_renewal_reminder(self)
+                return True
+            except Exception:
+                logger.exception(
+                    "Erreur lors de l'envoi de l'email de rappel de renouvellement"
+                )
         return False
 
     @property
@@ -170,6 +265,11 @@ class User(UserMixin, db.Model):
         """Indique si l'abonnement a été résilié mais bénéficie encore de ses accès jusqu'à échéance."""
         if self.plan == "founder":
             return False
+        if self.plan == "free" and not self.is_in_trial:
+            return False
+        # Un abonnement école payé n'est pas une résiliation
+        if self.has_paid_school_invoice:
+            return False
         # Cas 1 : abonnement premium avec date de fin programmée dans le futur
         if self.plan == "premium" and self.subscription_end_at:
             end_dt = (
@@ -215,6 +315,28 @@ class User(UserMixin, db.Model):
         )
         delta = end_dt - datetime.now(UTC)
         return max(0, delta.days + (1 if delta.seconds > 0 else 0))
+
+    @property
+    def subscription_days_left(self) -> int:
+        """Nombre de jours restants avant l'échéance de l'abonnement annuel."""
+        if self.plan == "founder":
+            return 9999
+        if self.subscription_end_at:
+            end_dt = (
+                self.subscription_end_at.replace(tzinfo=UTC)
+                if self.subscription_end_at.tzinfo is None
+                else self.subscription_end_at
+            )
+            delta = end_dt - datetime.now(UTC)
+            return max(0, delta.days + (1 if delta.seconds > 0 else 0))
+        return 0
+
+    @property
+    def is_subscription_expiring_soon(self) -> bool:
+        """Indique si l'abonnement payé arrive à échéance sous 30 jours."""
+        if self.plan == "founder":
+            return False
+        return bool(self.subscription_end_at and 0 < self.subscription_days_left <= 30)
 
     @property
     def effective_plan(self) -> str:
@@ -282,6 +404,58 @@ class User(UserMixin, db.Model):
         cascade="all, delete-orphan",
         order_by="desc(AcademicYearArchive.end_date)",
     )
+    # One-to-Many relationship with school invoices (Flux B)
+    school_invoices = relationship(
+        "SchoolInvoice",
+        backref="user",
+        lazy=True,
+        cascade="all, delete-orphan",
+        order_by="desc(SchoolInvoice.created_at)",
+    )
+
+    @property
+    def active_pending_school_invoice(self):
+        """Retourne la facture école en attente de paiement (statut pending) si elle existe."""
+        try:
+            invoices = self.school_invoices
+        except Exception:  # noqa: BLE001
+            return None
+        for inv in invoices:
+            if getattr(inv, "status", None) == "pending":
+                return inv
+        return None
+
+    @property
+    def has_pending_school_invoice(self) -> bool:
+        """Indique si l'utilisateur dispose d'une facture école en cours de traitement."""
+        return self.active_pending_school_invoice is not None
+
+    @property
+    def latest_school_invoice(self):
+        """Dernière facture école émise pour l'utilisateur."""
+        try:
+            return self.school_invoices[0] if self.school_invoices else None
+        except Exception:  # noqa: BLE001
+            return None
+
+    @property
+    def latest_paid_school_invoice(self):
+        """Dernière facture école réglée pour l'utilisateur."""
+        try:
+            invoices = self.school_invoices
+        except Exception:  # noqa: BLE001
+            return None
+        for inv in sorted(
+            invoices, key=lambda x: getattr(x, "id", 0) or 0, reverse=True
+        ):
+            if getattr(inv, "status", None) == "paid":
+                return inv
+        return None
+
+    @property
+    def has_paid_school_invoice(self) -> bool:
+        """Indique si l'utilisateur bénéficie d'une facture école validée."""
+        return self.latest_paid_school_invoice is not None
 
     def get_verification_token(self):
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))
@@ -590,3 +764,54 @@ class NewsletterDelivery(db.Model):
     open_count = db.Column(db.Integer, default=0, nullable=False)
 
     user = relationship("User", backref="newsletter_deliveries", lazy=True)
+
+
+class SchoolInvoice(db.Model):
+    __tablename__ = "school_invoice"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer,
+        ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    stripe_invoice_id = db.Column(
+        db.String(120), unique=True, nullable=False, index=True
+    )
+    stripe_customer_id = db.Column(db.String(120), nullable=False)
+    school_name = db.Column(db.String(255), nullable=False)
+    school_address = db.Column(db.Text, nullable=False)
+    school_billing_email = db.Column(db.String(120), nullable=False)
+    siret_or_tax_id = db.Column(db.String(50), nullable=True)
+    order_reference = db.Column(db.String(100), nullable=True)
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(10), nullable=False, default="eur")
+    status = db.Column(
+        db.String(30), default="pending", nullable=False
+    )  # "pending", "paid", "void", "expired"
+    hosted_invoice_url = db.Column(db.String(500), nullable=True)
+    invoice_pdf_url = db.Column(db.String(500), nullable=True)
+    due_at = db.Column(db.DateTime, nullable=False)
+    paid_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(
+        db.DateTime, default=lambda: datetime.now(UTC), nullable=False
+    )
+
+    @property
+    def is_paid(self) -> bool:
+        return self.status == "paid"
+
+    @property
+    def is_pending(self) -> bool:
+        return self.status == "pending"
+
+    @property
+    def is_overdue(self) -> bool:
+        if self.status != "pending" or not self.due_at:
+            return False
+        due = (
+            self.due_at.replace(tzinfo=UTC)
+            if self.due_at.tzinfo is None
+            else self.due_at
+        )
+        return datetime.now(UTC) > due

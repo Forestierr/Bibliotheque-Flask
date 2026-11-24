@@ -69,7 +69,7 @@
           "name": {{ _("Est-ce un logiciel gratuit ?")|tojson }},
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": {{ _("Oui, Livres en Classe propose une formule gratuite accessible à tous les enseignants pour équiper leur classe. Cette formule est toutefois limitée en volume (jusqu'à 40 élèves, 500 livres, 30 scans par semaine et 10 mois d'historique). Pour lever ces quotas et bénéficier d'un usage illimité (scans illimités, exports Excel), un abonnement Premium sans engagement est proposé.")|tojson }}
+            "text": {{ _("Oui, Livres en Classe propose une formule gratuite accessible à tous les enseignants pour équiper leur classe. Cette formule est toutefois limitée en volume (jusqu'à 30 élèves, 100 livres, 30 scans par semaine et 10 mois d'historique). Pour lever ces quotas et bénéficier d'un usage illimité (scans illimités, exports Excel), un abonnement Premium sans engagement est proposé.")|tojson }}
           }
         },
         {
@@ -318,11 +318,11 @@
                             <ul class="mb-6" style="list-style: none; margin: 0; padding: 0;">
                                 <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
                                     <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
-                                    <span><strong>{{ max_students|default(40) }}</strong> {{ _("élèves max") }}</span>
+                                    <span><strong>{{ max_students|default(30) }}</strong> {{ _("élèves max") }}</span>
                                 </li>
                                 <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
                                     <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
-                                    <span><strong>{{ max_books|default(500) }}</strong> {{ _("livres au catalogue") }}</span>
+                                    <span><strong>{{ max_books|default(100) }}</strong> {{ _("livres au catalogue") }}</span>
                                 </li>
                                 <li class="is-flex is-align-items-center mb-4" style="font-size: 0.95rem; line-height: 1.5;">
                                     <span class="icon has-text-success mr-3"><i class="fas fa-check"></i></span>
@@ -638,7 +638,7 @@
                 <p>{{ _("Livres en Classe vous permet de scanner le code-barres de vos livres, d'inscrire vos élèves et de suivre les emprunts en un clic depuis votre tableau de bord. C'est la méthode la plus rapide et la plus efficace pour les enseignants.") }}</p>
                 <hr>
                 <h3 class="title is-4 mt-5">{{ _("Est-ce un logiciel gratuit ?") }}</h3>
-                <p>{{ _("Oui, Livres en Classe propose une formule gratuite accessible à tous les enseignants pour équiper leur classe. Cette formule est toutefois limitée en volume (jusqu'à 40 élèves, 500 livres, 30 scans par semaine et 10 mois d'historique). Pour lever ces quotas et bénéficier d'un usage illimité (scans illimités, exports Excel), un abonnement Premium sans engagement est proposé.") }}</p>
+                <p>{{ _("Oui, Livres en Classe propose une formule gratuite accessible à tous les enseignants pour équiper leur classe. Cette formule est toutefois limitée en volume (jusqu'à 30 élèves, 100 livres, 30 scans par semaine et 10 mois d'historique). Pour lever ces quotas et bénéficier d'un usage illimité (scans illimités, exports Excel), un abonnement Premium sans engagement est proposé.") }}</p>
                 <hr>
                 <h3 class="title is-4 mt-5">{{ _("Pourquoi existe-t-il une formule payante ?") }}</h3>
                 <p>{{ _("L'abonnement permet simplement de couvrir les frais d'hébergement des serveurs et d'améliorer l'application au quotidien, notamment pour financer les services de reconnaissance automatique des livres lors du scan.") }}</p>

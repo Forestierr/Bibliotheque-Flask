@@ -37,6 +37,7 @@ def export_books():
                 "Auteur": book.author,
                 "Éditeur": book.editor,
                 "ISBN": book.isbn,
+                "Code-barres / Réf": book.barcode or "",
                 "Année": book.year,
                 "Type": book.type,
             }

@@ -248,7 +248,7 @@ def test_wizard_commit_full_flow_and_statistics(app, client, test_user):
 
 def test_freemium_quota_reset_allows_adding_students(app, client, test_user):
     with app.app_context():
-        # Création de 40 élèves (quota gratuit max atteint)
+        # Création de 30 élèves (quota gratuit max atteint)
         students = [
             Student(name=f"Nom{i}", firstname=f"Prenom{i}", user_id=test_user.id)
             for i in range(MAX_FREE_STUDENTS)
@@ -268,8 +268,8 @@ def test_freemium_quota_reset_allows_adding_students(app, client, test_user):
     with app.app_context():
         all_ids = [s.id for s in Student.query.filter_by(user_id=test_user.id).all()]
 
-    # Clôture d'année : on archive 35 élèves, 5 restent
-    to_archive = [str(sid) for sid in all_ids[:35]]
+    # Clôture d'année : on archive 25 élèves, 5 restent
+    to_archive = [str(sid) for sid in all_ids[:25]]
     client.post(
         "/archive/wizard/commit",
         data={

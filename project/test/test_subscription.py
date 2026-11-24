@@ -12,7 +12,13 @@ from project.config_plans import (
     MAX_FREE_SCANS,
     MAX_FREE_STUDENTS,
 )
-from project.models import Book, Student, User, get_current_scan_period_start
+from project.models import (
+    Book,
+    SchoolInvoice,
+    Student,
+    User,
+    get_current_scan_period_start,
+)
 
 
 @pytest.fixture
@@ -1654,3 +1660,956 @@ def test_subscription_success_page_session_sync(client, app):
             assert u.stripe_customer_id == "cus_synced_124"
             assert u.stripe_subscription_id == "sub_synced_124"
             assert u.stripe_price_id == "yearly"
+
+
+def test_scan_limit_email_triggered_once_at_30_scans(app):
+    """Vérifie que l'email d'offre promo est déclenché une seule et unique fois à 30 scans."""
+    from project.config_plans import MAX_FREE_SCANS
+
+    with app.app_context():
+        user = User(
+            id=125,
+            email="scan_limit_promo@test.com",
+            name="Camille Dupont",
+            plan="free",
+            free_scans_used=29,
+            scan_limit_email_sent=False,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # À 29 scans : pas d'envoi
+        assert user.check_and_trigger_scan_limit_email() is False
+        assert user.scan_limit_email_sent is False
+
+        # À 30 scans (MAX_FREE_SCANS) : envoi de l'email
+        user.free_scans_used = MAX_FREE_SCANS
+        with patch("project.email.send_email_scan_limit_reached") as mock_send:
+            assert user.check_and_trigger_scan_limit_email() is True
+            assert user.scan_limit_email_sent is True
+            mock_send.assert_called_once_with(user)
+
+        # Deuxième vérification (scan suivant) : ne doit PAS renvoyer d'email
+        with patch("project.email.send_email_scan_limit_reached") as mock_send_again:
+            assert user.check_and_trigger_scan_limit_email() is False
+            mock_send_again.assert_not_called()
+
+
+def test_scan_limit_email_template_rendering(app):
+    """Vérifie le rendu complet du template email de conversion aux 30 scans."""
+    from flask import render_template
+
+    with app.app_context():
+        user = User(
+            id=126,
+            email="template_test@test.com",
+            name="Julien Martin",
+            plan="free",
+        )
+        html = render_template(
+            "email/email_scan_limit_reached.html",
+            user=user,
+            firstname="Julien",
+            tarifs_url="https://livresenclasse.com/tarifs",
+        )
+        assert "Bonjour Julien," in html
+        assert "30 scans gratuits" in html
+        assert "PROMO30" in html
+        assert "30 % de réduction" in html
+        assert "https://livresenclasse.com/tarifs" in html
+        assert "Robin - Créateur de Livres en Classe" in html
+
+
+def test_livre_exist_triggers_scan_limit_email_via_endpoint(client, app):
+    """Vérifie que la route /livre/<isbn>/exist déclenche l'email de limite de scan pour un compte gratuit."""
+    now = datetime.now(UTC)
+    with app.app_context():
+        user = User(
+            id=127,
+            email="api_scan_limit@test.com",
+            name="Sophie",
+            plan="free",
+            free_scans_used=30,
+            last_scan_reset_at=now,
+            scan_limit_email_sent=False,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "127"
+
+    with patch("project.email.send_email_scan_limit_reached") as mock_send:
+        resp = client.get("/livre/9782070612758/exist")
+        assert resp.status_code == 403
+        data = resp.get_json()
+        assert data["error"] == "scan_limit_reached"
+        mock_send.assert_called_once()
+
+    with app.app_context():
+        u = db.session.get(User, 127)
+        assert u.scan_limit_email_sent is True
+
+
+def test_book_limit_email_triggered_at_80_books(app):
+    """Vérifie que l'email de félicitations et offre promo est déclenché une seule fois à 80 livres."""
+    with app.app_context():
+        user = User(
+            id=128,
+            email="book_milestone@test.com",
+            name="Alexandre Dumas",
+            plan="free",
+            book_limit_email_sent=False,
+        )
+        db.session.add(user)
+        db.session.commit()
+        # 79 livres : pas d'envoi
+        books = [Book(id=2000 + i, title=f"Livre {i}", user_id=128) for i in range(79)]
+        db.session.bulk_save_objects(books)
+        db.session.commit()
+
+        assert user.check_and_trigger_book_limit_email() is False
+        assert user.book_limit_email_sent is False
+
+        # Ajout du 80ème livre : envoi de l'e-mail
+        book_80 = Book(id=2080, title="Livre 80", user_id=128)
+        db.session.add(book_80)
+        db.session.commit()
+
+        with patch("project.email.send_email_book_milestone") as mock_send:
+            assert user.check_and_trigger_book_limit_email() is True
+            assert user.book_limit_email_sent is True
+            mock_send.assert_called_once_with(user, 80)
+
+        # Ajout d'un 81ème livre : ne doit pas renvoyer
+        with patch("project.email.send_email_book_milestone") as mock_send_again:
+            assert user.check_and_trigger_book_limit_email() is False
+            mock_send_again.assert_not_called()
+
+
+def test_book_milestone_email_template_rendering(app):
+    """Vérifie le rendu du template d'email de félicitations pour 80 livres."""
+    from flask import render_template
+
+    with app.app_context():
+        user = User(
+            id=129,
+            email="book_template@test.com",
+            name="Marie Curie",
+            plan="free",
+        )
+        html = render_template(
+            "email/email_book_milestone.html",
+            user=user,
+            firstname="Marie",
+            book_count=80,
+            tarifs_url="https://livresenclasse.com/tarifs",
+        )
+        assert "Bonjour Marie," in html
+        assert "80 livres enregistrés" in html
+        assert "PROMO30" in html
+        assert "30 % de réduction" in html
+        assert "coopérative scolaire" in html
+        assert "Robin - Créateur de Livres en Classe" in html
+
+
+def test_flux_a_checkout_session_b2b_metadata(client, app):
+    """Vérifie que la session Stripe Checkout transmet les données B2B pour le remboursement école (Flux A)."""
+    with app.app_context():
+        user = User(
+            id=201,
+            email="teacher_a@test.com",
+            name="Mme Martin",
+            plan="free",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=201,
+        email="teacher_a@test.com",
+        name="Mme Martin",
+        stripe_customer_id=None,
+        is_authenticated=True,
+    )
+    mock_session = MagicMock(url="https://checkout.stripe.com/pay/cs_test_b2b_123")
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_123"}),
+        patch(
+            "stripe.Customer.create",
+            return_value=MagicMock(id="cus_auto_created_201"),
+        ) as mock_cust_create,
+        patch(
+            "stripe.checkout.Session.create", return_value=mock_session
+        ) as mock_sess_create,
+    ):
+        resp = client.post(
+            "/subscription/create-checkout-session",
+            data={
+                "plan_type": "yearly",
+                "is_school_reimbursement": "1",
+                "school_name": "Coopérative OCCE École Victor Hugo",
+                "school_address": "12 rue des Écoles, 75000 Paris",
+            },
+        )
+        assert resp.status_code == 303
+        assert (
+            resp.headers["Location"]
+            == "https://checkout.stripe.com/pay/cs_test_b2b_123"
+        )
+
+        # Vérifier les paramètres transmis à Stripe
+        mock_cust_create.assert_called_once()
+        mock_sess_create.assert_called_once()
+        call_kwargs = mock_sess_create.call_args[1]
+        assert call_kwargs["tax_id_collection"] == {"enabled": True}
+        assert call_kwargs["customer"] == "cus_auto_created_201"
+        assert call_kwargs["customer_update"] == {"name": "auto", "address": "auto"}
+        assert (
+            call_kwargs["metadata"]["school_name"]
+            == "Coopérative OCCE École Victor Hugo"
+        )
+        assert (
+            call_kwargs["metadata"]["school_address"]
+            == "12 rue des Écoles, 75000 Paris"
+        )
+        assert call_kwargs["metadata"]["is_school_reimbursement"] == "true"
+
+
+def test_facture_acquittee_redirect(client, app):
+    """Vérifie la redirection vers le PDF officiel Stripe de facture acquittée."""
+    with app.app_context():
+        user = User(
+            id=202,
+            email="teacher_facture@test.com",
+            plan="premium",
+            stripe_customer_id="cus_facture_202",
+            stripe_latest_invoice_pdf="https://stripe.com/invoice/inv_paid_cached.pdf",
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=202,
+        email="teacher_facture@test.com",
+        stripe_customer_id="cus_facture_202",
+        stripe_latest_invoice_id=None,
+        stripe_latest_invoice_pdf="https://stripe.com/invoice/inv_paid_cached.pdf",
+        is_authenticated=True,
+    )
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+    ):
+        resp = client.get("/subscription/facture-acquittee")
+        assert resp.status_code == 302
+        assert (
+            resp.headers["Location"] == "https://stripe.com/invoice/inv_paid_cached.pdf"
+        )
+
+
+def test_facture_acquittee_fetch_from_stripe(client, app):
+    """Vérifie la récupération dynamique de la facture acquittée via l'API Stripe si non cachée."""
+    with app.app_context():
+        user = User(
+            id=203,
+            email="teacher_api_inv@test.com",
+            plan="premium",
+            stripe_customer_id="cus_api_203",
+            stripe_latest_invoice_pdf=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=203,
+        email="teacher_api_inv@test.com",
+        stripe_customer_id="cus_api_203",
+        stripe_latest_invoice_id=None,
+        stripe_latest_invoice_pdf=None,
+        is_authenticated=True,
+    )
+
+    mock_invoice = MagicMock(
+        id="in_dynamic_999",
+        invoice_pdf="https://pay.stripe.com/invoice/in_dynamic_999/pdf",
+        hosted_invoice_url="https://invoice.stripe.com/i/in_dynamic_999",
+    )
+    mock_invoices_list = MagicMock(data=[mock_invoice])
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_secret"}),
+        patch("stripe.Invoice.list", return_value=mock_invoices_list),
+    ):
+        resp = client.get("/subscription/facture-acquittee")
+        assert resp.status_code == 302
+        assert (
+            resp.headers["Location"]
+            == "https://pay.stripe.com/invoice/in_dynamic_999/pdf"
+        )
+
+
+def test_flux_b_facture_ecole_creation_and_grace_period(client, app):
+    """Vérifie la création d'une facture école (Flux B) avec accès Premium immédiat 30 jours."""
+    with app.app_context():
+        user = User(
+            id=204,
+            email="ecole_teacher@test.com",
+            name="Professeur Tournesol",
+            plan="free",
+            trial_ends_at=None,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    mock_user = MagicMock(
+        id=204,
+        email="ecole_teacher@test.com",
+        name="Professeur Tournesol",
+        plan="free",
+        active_pending_school_invoice=None,
+        is_authenticated=True,
+    )
+
+    mock_cust = MagicMock(id="cus_school_204")
+    mock_inv_created = MagicMock(id="in_school_draft_204")
+    mock_inv_finalized = MagicMock(
+        id="in_school_final_204",
+        hosted_invoice_url="https://invoice.stripe.com/i/school_204",
+        invoice_pdf="https://pay.stripe.com/invoice/school_204/pdf",
+    )
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch.dict("os.environ", {"STRIPE_SECRET_KEY": "sk_test_school"}),
+        patch("stripe.Customer.create", return_value=mock_cust),
+        patch("stripe.InvoiceItem.create") as mock_item_create,
+        patch(
+            "stripe.Invoice.create", return_value=mock_inv_created
+        ) as mock_invoice_create,
+        patch(
+            "stripe.Invoice.finalize_invoice",
+            return_value=mock_inv_finalized,
+        ),
+        patch("stripe.Invoice.send_invoice") as mock_send_inv,
+        patch("project.subscription._send_school_invoice_created_email"),
+    ):
+        # 1. GET page du formulaire
+        resp_get = client.get("/subscription/facture-ecole")
+        assert resp_get.status_code == 200
+        assert "Facture officielle pour votre école".encode() in resp_get.data
+
+        # 2. POST soumission du formulaire
+        resp_post = client.post(
+            "/subscription/facture-ecole",
+            data={
+                "school_name": "Coopérative OCCE Moulinsart",
+                "school_address": "Château de Moulinsart, 1000 Bruxelles",
+                "school_billing_email": "compta@moulinsart.be",
+                "country_currency": "EUR",
+                "siret_or_tax_id": "12345678900014",
+                "order_reference": "BC-2026-001",
+            },
+        )
+        assert resp_post.status_code == 302
+        assert (
+            "/subscription/facture-ecole/confirmation/" in resp_post.headers["Location"]
+        )
+
+        # Vérifier les appels Stripe
+        mock_invoice_create.assert_called_once()
+        inv_kwargs = mock_invoice_create.call_args[1]
+        assert inv_kwargs["currency"] == "eur"
+        assert inv_kwargs["collection_method"] == "send_invoice"
+        assert inv_kwargs["days_until_due"] == 30
+        assert "directive 2006/112/CE" in inv_kwargs["footer"]
+        assert "Autoliquidation par le preneur" in inv_kwargs["footer"]
+
+        mock_item_create.assert_called_once()
+        item_kwargs = mock_item_create.call_args[1]
+        assert item_kwargs["amount"] == 3000
+        assert item_kwargs["currency"] == "eur"
+        assert item_kwargs["invoice"] == "in_school_draft_204"
+
+        mock_send_inv.assert_called_once_with("in_school_final_204")
+
+        # Vérifier en base de données
+        with app.app_context():
+            u = db.session.get(User, 204)
+            assert len(u.school_invoices) == 1
+            si = u.school_invoices[0]
+            assert si.school_name == "Coopérative OCCE Moulinsart"
+            assert si.stripe_invoice_id == "in_school_final_204"
+            assert si.amount == 30.0
+            assert si.currency == "EUR"
+            assert si.status == "pending"
+            assert si.hosted_invoice_url == "https://invoice.stripe.com/i/school_204"
+            assert si.invoice_pdf_url == "https://pay.stripe.com/invoice/school_204/pdf"
+
+            # Vérifier l'accès anticipé immédiat de 30 jours (Grace Period)
+            assert u.is_in_trial is True
+            assert u.is_premium is True
+            assert u.trial_days_left in (29, 30)
+            assert u.has_pending_school_invoice is True
+            assert u.active_pending_school_invoice.id == si.id
+
+
+def test_flux_b_anti_abuse_blocks_duplicate_pending(client, app):
+    """Vérifie le blocage d'une deuxième demande si une facture école est déjà en cours."""
+    with app.app_context():
+        user = User(
+            id=205,
+            email="abuse_check@test.com",
+            plan="free",
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=205,
+            stripe_invoice_id="in_existing_pending",
+            stripe_customer_id="cus_existing",
+            school_name="École Test",
+            school_address="Rue Test",
+            school_billing_email="test@ecole.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=datetime.now(UTC) + timedelta(days=20),
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+        inv_id = school_inv.id
+
+    mock_user = MagicMock(
+        id=205,
+        email="abuse_check@test.com",
+        plan="free",
+        active_pending_school_invoice=school_inv,
+        is_authenticated=True,
+    )
+
+    with (
+        patch("flask_login.utils._get_user", return_value=mock_user),
+        patch("project.subscription.current_user", mock_user),
+        patch("stripe.Invoice.create") as mock_inv_create,
+    ):
+        resp = client.post(
+            "/subscription/facture-ecole",
+            data={
+                "school_name": "Tentative 2",
+                "school_address": "Adresse 2",
+                "school_billing_email": "autre@ecole.fr",
+            },
+        )
+        assert resp.status_code == 302
+        assert (
+            f"/subscription/facture-ecole/confirmation/{inv_id}"
+            in resp.headers["Location"]
+        )
+        # Aucune nouvelle facture Stripe n'a été créée
+        mock_inv_create.assert_not_called()
+
+
+def test_webhook_invoice_paid_flux_b_extends_365_days(client, app):
+    """Vérifie que la réception du webhook invoice.paid pour une facture école prolonge pour 365 jours."""
+    with app.app_context():
+        user = User(
+            id=206,
+            email="reconcile_school@test.com",
+            plan="free",
+            trial_ends_at=datetime.now(UTC) + timedelta(days=25),
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=206,
+            stripe_invoice_id="in_school_to_pay_206",
+            stripe_customer_id="cus_school_206",
+            school_name="École La Fontaine",
+            school_address="1 av La Fontaine",
+            school_billing_email="mairie@ville.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=datetime.now(UTC) + timedelta(days=25),
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+    webhook_payload = {
+        "id": "evt_invoice_paid_school",
+        "type": "invoice.paid",
+        "data": {
+            "object": {
+                "id": "in_school_to_pay_206",
+                "customer": "cus_school_206",
+                "status": "paid",
+                "invoice_pdf": "https://pay.stripe.com/invoice/paid_school_206.pdf",
+                "hosted_invoice_url": "https://invoice.stripe.com/i/paid_school_206",
+            }
+        },
+    }
+
+    stripe_event = stripe.Event.construct_from(webhook_payload, key=None)
+    with (
+        patch("stripe.Webhook.construct_event", return_value=stripe_event),
+        patch.dict("os.environ", {"STRIPE_WEBHOOK_SECRET": "whsec_test"}),
+        patch("project.subscription._send_school_invoice_paid_email"),
+    ):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(webhook_payload),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            si = SchoolInvoice.query.filter_by(
+                stripe_invoice_id="in_school_to_pay_206"
+            ).first()
+            assert si.status == "paid"
+            assert si.paid_at is not None
+            assert (
+                si.invoice_pdf_url
+                == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+            )
+
+            u = db.session.get(User, 206)
+            assert u.plan == "premium"
+            assert u.stripe_subscription_status == "active"
+            assert u.subscription_end_at is not None
+            # Doit être prolongé d'au moins 364 jours
+            delta = u.subscription_end_at.replace(tzinfo=UTC) - datetime.now(UTC)
+            assert delta.days in (364, 365, 366)
+            assert u.stripe_latest_invoice_id == "in_school_to_pay_206"
+            assert (
+                u.stripe_latest_invoice_pdf
+                == "https://pay.stripe.com/invoice/paid_school_206.pdf"
+            )
+
+
+def test_webhook_invoice_voided_flux_b(client, app):
+    """Vérifie que la réception du webhook invoice.voided met à jour le statut en void."""
+    with app.app_context():
+        user = User(
+            id=207,
+            email="void_school@test.com",
+            plan="free",
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=207,
+            stripe_invoice_id="in_school_to_void_207",
+            stripe_customer_id="cus_school_207",
+            school_name="École Annulée",
+            school_address="1 av Annulée",
+            school_billing_email="annulee@ville.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=datetime.now(UTC) + timedelta(days=25),
+            created_at=datetime.now(UTC),
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+    webhook_payload = {
+        "id": "evt_invoice_voided_school",
+        "type": "invoice.voided",
+        "data": {
+            "object": {
+                "id": "in_school_to_void_207",
+            }
+        },
+    }
+
+    stripe_event = stripe.Event.construct_from(webhook_payload, key=None)
+    with (
+        patch("stripe.Webhook.construct_event", return_value=stripe_event),
+        patch.dict("os.environ", {"STRIPE_WEBHOOK_SECRET": "whsec_test"}),
+    ):
+        resp = client.post(
+            "/webhook/stripe",
+            data=json.dumps(webhook_payload),
+            headers={"Stripe-Signature": "valid_sig"},
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        with app.app_context():
+            si = SchoolInvoice.query.filter_by(
+                stripe_invoice_id="in_school_to_void_207"
+            ).first()
+            assert si.status == "void"
+
+
+def test_user_subscription_days_left_and_expiring_soon(app):
+    """Vérifie le calcul des jours restants et la détection d'échéance proche (J-30)."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        # Cas 1 : Expire dans 15 jours
+        user_15d = User(
+            id=301,
+            email="exp15@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=15),
+            renewal_reminder_sent=False,
+        )
+        assert user_15d.subscription_days_left in (15, 16)
+        assert user_15d.is_subscription_expiring_soon is True
+
+        # Cas 2 : Expire dans 45 jours (pas encore éligible au rappel J-30)
+        user_45d = User(
+            id=302,
+            email="exp45@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=45),
+            renewal_reminder_sent=False,
+        )
+        assert user_45d.subscription_days_left in (45, 46)
+        assert user_45d.is_subscription_expiring_soon is False
+
+        # Cas 3 : Membre fondateur (n'expire jamais)
+        user_founder = User(
+            id=303,
+            email="founder_exp@test.com",
+            plan="founder",
+            subscription_end_at=now + timedelta(days=10),
+        )
+        assert user_founder.subscription_days_left == 9999
+        assert user_founder.is_subscription_expiring_soon is False
+
+        # Cas 4 : Compte sans date d'échéance
+        user_none = User(id=304, email="none_exp@test.com", plan="free")
+        assert user_none.subscription_days_left == 0
+        assert user_none.is_subscription_expiring_soon is False
+
+
+def test_scheduler_send_renewal_reminders(app):
+    """Vérifie que send_renewal_reminders cible uniquement les comptes premium à J-30 non encore notifiés."""
+    from project.scheduler import send_renewal_reminders
+
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        # Utilisateur 1 : Éligible (J-20, non notifié)
+        u1 = User(
+            id=311,
+            email="eligible@test.com",
+            name="Prof Éligible",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=20),
+            renewal_reminder_sent=False,
+        )
+        # Utilisateur 2 : Trop tôt (J-40, non notifié)
+        u2 = User(
+            id=312,
+            email="too_early@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=40),
+            renewal_reminder_sent=False,
+        )
+        # Utilisateur 3 : Déjà notifié (J-10, renewal_reminder_sent=True)
+        u3 = User(
+            id=313,
+            email="already_notified@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=10),
+            renewal_reminder_sent=True,
+        )
+        # Utilisateur 4 : Membre fondateur (immunisé)
+        u4 = User(
+            id=314,
+            email="founder_test@test.com",
+            plan="founder",
+            subscription_end_at=now + timedelta(days=10),
+            renewal_reminder_sent=False,
+        )
+
+        db.session.add_all([u1, u2, u3, u4])
+        db.session.commit()
+
+        with patch(
+            "project.email.send_email_subscription_renewal_reminder"
+        ) as mock_send:
+            sent_count = send_renewal_reminders(app, window_days=30)
+            assert sent_count == 1
+            mock_send.assert_called_once()
+
+        # Vérifier que le statut en base est passé à True pour u1 (et reste False pour u2)
+        u1_updated = db.session.get(User, 311)
+        assert u1_updated.renewal_reminder_sent is True
+        u2_updated = db.session.get(User, 312)
+        assert u2_updated.renewal_reminder_sent is False
+
+        # Deuxième exécution : aucun nouvel envoi (idempotent)
+        with patch(
+            "project.email.send_email_subscription_renewal_reminder"
+        ) as mock_send_again:
+            sent_again = send_renewal_reminders(app, window_days=30)
+            assert sent_again == 0
+            mock_send_again.assert_not_called()
+
+
+def test_invoice_paid_resets_renewal_reminder_sent(client, app):
+    """Vérifie que le règlement d'une nouvelle facture école réinitialise renewal_reminder_sent à False."""
+    from project.subscription import _handle_invoice_paid
+
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user = User(
+            id=321,
+            email="renew_user@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=5),
+            renewal_reminder_sent=True,
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=321,
+            stripe_invoice_id="in_renew_321",
+            stripe_customer_id="cus_renew_321",
+            school_name="École Renouvelée",
+            school_address="1 rue de l'Avenir",
+            school_billing_email="mairie@avenir.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=now + timedelta(days=30),
+            created_at=now,
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+        with patch("project.subscription._send_school_invoice_paid_email"):
+            _handle_invoice_paid(
+                {
+                    "id": "in_renew_321",
+                    "customer": "cus_renew_321",
+                    "invoice_pdf": "https://stripe.com/renew.pdf",
+                }
+            )
+
+        u = db.session.get(User, 321)
+        assert u.plan == "premium"
+        assert u.renewal_reminder_sent is False
+        # Doit être prolongé de 365 jours
+        assert u.subscription_days_left >= 365
+
+
+def test_email_subscription_renewal_reminder_template_rendering(app):
+    """Vérifie le rendu du template d'email de rappel de renouvellement à J-30."""
+    from flask import render_template
+
+    with app.app_context():
+        user = User(
+            id=331,
+            email="template_renew@test.com",
+            name="Isabelle Blanc",
+            plan="premium",
+            subscription_end_at=datetime(2027, 8, 31, 0, 0, tzinfo=UTC),
+        )
+        html = render_template(
+            "email/email_subscription_renewal_reminder.html",
+            user=user,
+            days_left=28,
+            end_date_str="31/08/2027",
+            tarifs_url="https://livresenclasse.com/tarifs",
+            facture_ecole_url="https://livresenclasse.com/subscription/facture-ecole",
+        )
+        assert "Bonjour Isabelle Blanc," in html
+        assert "28 jours" in html
+        assert "31/08/2027" in html
+        assert "Générer une facture école (30 € / 30 CHF)" in html
+        assert "https://livresenclasse.com/subscription/facture-ecole" in html
+        assert "https://livresenclasse.com/tarifs" in html
+        assert "Robin Forestier" in html
+
+
+def test_script_subscription_renewal_reminders_dry_run(app):
+    """Vérifie l'exécution sans erreur du script CLI de rappel avec le paramètre --dry-run."""
+    import subprocess
+    import sys
+
+    cmd = [
+        sys.executable,
+        "scripts/send_subscription_renewal_reminders.py",
+        "--dry-run",
+        "--days-before",
+        "30",
+    ]
+    res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    assert res.returncode == 0
+    assert "Rappels de renouvellement annuel" in res.stdout
+
+
+def test_dashboard_badge_hidden_when_expiry_greater_than_30_days(client, app):
+    """Vérifie que le tag d'avertissement 'Premium jusqu'au' est masqué sur le dashboard quand il reste plus de 30 jours."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_365d = User(
+            id=451,
+            email="user_365d@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now + timedelta(days=365),
+            is_verified=True,
+        )
+        db.session.add(user_365d)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "451"
+
+    resp = client.get("/fr/dashboard")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+    # Le tag ⚠️ ne doit PAS être présent
+    assert "Premium jusqu'au" not in html
+    assert "Résiliation programmée" not in html
+
+
+def test_dashboard_badge_shown_when_expiry_within_30_days(client, app):
+    """Vérifie que le tag d'avertissement 'Premium jusqu'au' est affiché sur le dashboard quand il reste <= 30 jours."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_15d = User(
+            id=452,
+            email="user_15d@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now + timedelta(days=15),
+            is_verified=True,
+        )
+        db.session.add(user_15d)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "452"
+
+    resp_15 = client.get("/fr/dashboard")
+    assert resp_15.status_code == 200
+    html_15 = resp_15.get_data(as_text=True)
+    # Le tag ⚠️ DOIT être présent car <= 30 jours
+    assert "Premium jusqu'au" in html_15
+
+
+def test_reglage_school_invoice_display_vs_cancellation(client, app):
+    """Vérifie que la page /reglage affiche 'Abonnement École' et non 'Abonnement résilié' pour une facture école payée."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user = User(
+            id=403,
+            email="school_paid_reglage@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now + timedelta(days=365),
+            is_verified=True,
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            id=501,
+            user_id=403,
+            stripe_invoice_id="in_reglage_school",
+            stripe_customer_id="cus_reglage_school",
+            school_name="École Victor Hugo",
+            school_address="1 rue Victor Hugo",
+            school_billing_email="ecole@paris.fr",
+            amount=30.0,
+            currency="EUR",
+            status="paid",
+            invoice_pdf_url="https://stripe.com/vh_paid.pdf",
+            due_at=now + timedelta(days=30),
+            created_at=now,
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "403"
+
+    resp = client.get("/reglage")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 1. Vérifier qu'il n'y a PAS de message alarmant de résiliation
+    assert "Abonnement résilié" not in html
+    assert "Résiliation programmée" not in html
+    assert "Votre demande de résiliation a bien été prise en compte" not in html
+
+    # 2. Vérifier la mention valorisante d'abonnement école
+    assert "Abonnement Annuel École" in html
+    assert "École Victor Hugo" in html
+    assert "Renouveler ma facture école" in html
+    assert "https://stripe.com/vh_paid.pdf" in html
+
+
+def test_reglage_canceling_user_distant_expiry(client, app):
+    """Vérifie que pour un utilisateur résilié avec > 30 jours restants, les alertes de résiliation sont masquées."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_long = User(
+            id=404,
+            email="canceling_long@test.com",
+            plan="premium",
+            stripe_subscription_status="canceled",
+            subscription_end_at=now + timedelta(days=365),
+            is_verified=True,
+        )
+        db.session.add(user_long)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "404"
+
+    resp_long = client.get("/fr/reglage")
+    assert resp_long.status_code == 200
+    html_long = resp_long.get_data(as_text=True)
+    # Bannière masquée car > 30j
+    assert "Résiliation programmée : accès Premium maintenu" not in html_long
+    # Titre rassurant et pas alarmant
+    assert "Abonnement Annuel" in html_long
+    assert "Votre formule est active et garantie" in html_long
+    assert "Votre demande de résiliation a bien été prise en compte" not in html_long
+
+
+def test_reglage_canceling_user_near_expiry(client, app):
+    """Vérifie que pour un utilisateur résilié avec <= 30 jours restants, les alertes de fin d'accès s'affichent."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_short = User(
+            id=405,
+            email="canceling_short@test.com",
+            plan="premium",
+            stripe_subscription_status="canceled",
+            subscription_end_at=now + timedelta(days=15),
+            is_verified=True,
+        )
+        db.session.add(user_short)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "405"
+
+    resp_short = client.get("/fr/reglage")
+    assert resp_short.status_code == 200
+    html_short = resp_short.get_data(as_text=True)
+    # Bannière affichée car <= 30j
+    assert "Résiliation programmée : accès Premium maintenu" in html_short
+    assert "Abonnement résilié" in html_short
+    assert "Votre demande de résiliation a bien été prise en compte" in html_short

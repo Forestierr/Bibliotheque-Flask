@@ -114,6 +114,64 @@ def downgrade_expired_subscriptions(app) -> int:
             db.session.remove()
 
 
+def send_renewal_reminders(app, window_days: int = 30) -> int:
+    """
+    Envoie l'e-mail de rappel de renouvellement aux utilisateurs premium non-fondateurs
+    dont l'abonnement annuel arrive à échéance sous 30 jours (subscription_end_at <= now + 30 days)
+    et n'ayant pas encore reçu le rappel (renewal_reminder_sent is False).
+    Retourne le nombre d'e-mails envoyés.
+    """
+    from datetime import timedelta
+
+    with app.app_context():
+        now = datetime.now(UTC)
+        threshold = now + timedelta(days=window_days)
+
+        candidates = User.query.filter(
+            User.plan == "premium",
+            User.plan != "founder",
+            User.subscription_end_at.isnot(None),
+            User.subscription_end_at > now,
+            User.subscription_end_at <= threshold,
+            User.renewal_reminder_sent.is_(False),
+        ).all()
+
+        if not candidates:
+            return 0
+
+        sent_count = 0
+        from .email import send_email_subscription_renewal_reminder
+
+        for u in candidates:
+            try:
+                send_email_subscription_renewal_reminder(u)
+                u.renewal_reminder_sent = True
+                sent_count += 1
+            except Exception as e:  # noqa: BLE001
+                logger.warning(
+                    "Scheduler: Échec d'envoi du rappel de renouvellement à %s : %s",
+                    u.email,
+                    e,
+                )
+
+        try:
+            db.session.commit()
+            logger.info(
+                "Scheduler: %d rappel(s) de renouvellement envoyé(s).",
+                sent_count,
+            )
+            return sent_count
+        except Exception as e:  # noqa: BLE001
+            db.session.rollback()
+            logger.error(
+                "Scheduler: Erreur commit rappels de renouvellement : %s",
+                e,
+            )
+            return 0
+        finally:
+            db.session.remove()
+
+
 def _should_run_tasks(app, min_interval_seconds: int) -> bool:
     """
     Coordination multi-workers (Gunicorn -w 4) via un fichier horodaté dans instance/.
@@ -153,11 +211,13 @@ def run_maintenance_tasks(app, min_interval_seconds: int = 600) -> dict:
 
     scans_reset = reset_weekly_scans(app)
     downgraded = downgrade_expired_subscriptions(app)
+    renewals_sent = send_renewal_reminders(app)
 
     return {
         "executed": True,
         "scans_reset": scans_reset,
         "downgraded_subscriptions": downgraded,
+        "renewals_sent": renewals_sent,
     }
 
 

@@ -354,11 +354,15 @@
                     <span class="has-text-weight-bold is-size-6">{{ current_user.name }}</span>
                     {% if current_user.plan == 'founder' %}
                         {# Aucun badge #}
-                    {% elif current_user.is_canceling is sameas true %}
+                    {% elif current_user.has_paid_school_invoice %}
+                        <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #48c774;">
+                            {{ _("Abonnement École") }}
+                        </span>
+                    {% elif current_user.is_canceling and (current_user.subscription_days_left <= 30 or (current_user.trial_days_left and current_user.trial_days_left <= 30)) %}
                         <span class="tag is-warning is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #ffdd57;">
                             ⚠️ {{ _("Résiliation en cours") }}
                         </span>
-                    {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+                    {% elif current_user.plan == 'premium' and current_user.is_premium %}
                         <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #48c774;">
                             {{ _("Premium") }}
                         </span>
@@ -438,11 +442,15 @@
                             <div style="margin-top: 4px;">
                                 {% if current_user.plan == 'founder' %}
                                     {# Aucun badge dans le menu déroulant pour les fondateurs #}
-                                {% elif current_user.is_canceling is sameas true %}
+                                {% elif current_user.has_paid_school_invoice %}
+                                    <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #48c774;">
+                                        {{ _("Abonnement École") }}
+                                    </span>
+                                {% elif current_user.is_canceling and (current_user.subscription_days_left <= 30 or (current_user.trial_days_left and current_user.trial_days_left <= 30)) %}
                                     <span class="tag is-warning is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #ffdd57;" title="{{ _('Résiliation programmée') }}">
                                         ⚠️ {{ _("Résiliation programmée") }}
                                     </span>
-                                {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
+                                {% elif current_user.plan == 'premium' and current_user.is_premium %}
                                     <span class="tag is-success is-light is-rounded has-text-weight-bold" style="font-size: 0.72rem; border: 1px solid #48c774;">
                                         {{ _("Premium") }}
                                     </span>

@@ -136,16 +136,18 @@
     <div class="level-right">
       {% if current_user.plan == 'founder' %}
         {# Aucun badge sur le dashboard pour les membres fondateurs (visible uniquement dans réglages) #}
-      {% elif current_user.is_canceling is sameas true %}
-        <a href="{{ url_for('auth.reglage') }}" class="tag is-warning is-light is-rounded has-text-weight-bold" style="border: 1px solid #ffdd57;" title="{{ _('Résiliation programmée') }}">
+      {% elif (current_user.is_canceling or current_user.is_subscription_expiring_soon) and (current_user.subscription_days_left <= 30 or (current_user.trial_days_left and current_user.trial_days_left <= 30)) %}
+        <a href="{{ url_for('auth.reglage') }}" class="tag is-warning is-light is-rounded has-text-weight-bold" style="border: 1px solid #ffdd57;" title="{{ _('Échéance proche') }}">
           {% if current_user.effective_cancellation_date and current_user.effective_cancellation_date.__class__.__name__ != 'MagicMock' %}
             ⚠️ {{ _("Premium jusqu'au %(date)s", date=current_user.effective_cancellation_date|format_date) }}
+          {% elif current_user.subscription_end_at and current_user.subscription_end_at.__class__.__name__ != 'MagicMock' %}
+            ⚠️ {{ _("Premium jusqu'au %(date)s", date=current_user.subscription_end_at|format_date) }}
           {% else %}
-            ⚠️ {{ _("Résiliation programmée") }}
+            ⚠️ {{ _("Premium bientôt échu") }}
           {% endif %}
         </a>
-      {% elif current_user.plan == 'premium' and current_user.stripe_subscription_status == 'active' %}
-        {# Aucun badge sur le dashboard pour les membres premium (pas de quotas) #}
+      {% elif current_user.plan == 'premium' and current_user.is_premium %}
+        {# Membre premium actif : aucun badge d'alerte sur le dashboard quand > 30 jours #}
       {% elif current_user.is_in_trial %}
         <span class="tag is-info is-light is-rounded has-text-weight-bold" style="border: 1px solid #3273dc;">
           {{ _("Essai Premium : encore %(days)s jours", days=current_user.trial_days_left) }}
@@ -175,10 +177,23 @@
         </div>
       </div>
     {% else %}
-      {% set max_books = max_books|default(500) %}
-      {% set max_students = max_students|default(40) %}
+      {% set max_books = max_books|default(100) %}
+      {% set max_students = max_students|default(30) %}
       {% set max_scans = max_scans|default(30) %}
       {% set warning_percent = warning_percent|default(80) %}
+
+      {% if (n_books / max_books) >= (warning_percent / 100) and n_books < max_books %}
+      <div class="notification is-warning is-light py-2 px-3 mb-3" style="border-radius: 8px; font-size: 0.85rem; border: 1px solid #fde68a;">
+        <span class="icon is-small mr-1 has-text-warning-dark"><i class="fas fa-book-reader"></i></span>
+        <span style="color: #92400e;">
+          {{ _("Bravo ! Votre classe compte déjà %(count)s livres. Vous approchez de la limite des %(max)s livres gratuits.", count=n_books, max=max_books) }}
+        </span>
+        <a href="{{ url_for('subscription.tarifs') }}" class="has-text-weight-bold ml-2" style="color: #78350f; text-decoration: underline;">
+          {{ _("Passer en illimité") }} &rarr;
+        </a>
+      </div>
+      {% endif %}
+
       <!-- Jauges discrètes pour la version gratuite -->
       <div class="columns is-multiline">
         <!-- Jauge Livres -->

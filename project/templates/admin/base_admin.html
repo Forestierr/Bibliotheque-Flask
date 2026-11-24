@@ -350,6 +350,16 @@
           </div>
         </a>
 
+        <a href="{{ url_for('admin.factures_ecole') }}" class="admin-nav-item {% if active_page == 'factures_ecole' %}is-active{% endif %}">
+          <div class="nav-left">
+            <span class="icon is-small"><i class="fas fa-file-invoice-dollar"></i></span>
+            <span>Factures École</span>
+          </div>
+          {% if pending_school_invoices_count is defined and pending_school_invoices_count > 0 %}
+            <span class="tag is-warning is-rounded is-small has-text-weight-bold" style="font-size: 0.65rem; padding: 2px 6px;">{{ pending_school_invoices_count }}</span>
+          {% endif %}
+        </a>
+
         <a href="{{ url_for('admin.emails') }}" class="admin-nav-item {% if active_page == 'emails' %}is-active{% endif %}">
           <div class="nav-left">
             <span class="icon is-small"><i class="fas fa-paper-plane"></i></span>

@@ -1,0 +1,99 @@
+<!-- template from : https://github.com/leemunroe/responsive-html-email-template -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Paiement reçu : votre abonnement annuel est confirmé ! | Livres en Classe</title>
+    <style media="all" type="text/css">
+@media all {
+  .btn-primary table td:hover {
+    background-color: #059669 !important;
+  }
+  .btn-primary a:hover {
+    background-color: #059669 !important;
+    border-color: #059669 !important;
+  }
+}
+@media only screen and (max-width: 640px) {
+  .main p, .main td, .main span {
+    font-size: 16px !important;
+  }
+  .wrapper {
+    padding: 12px !important;
+  }
+  .container {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+}
+    </style>
+  </head>
+  <body style="font-family: Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; font-size: 16px; line-height: 1.4; background-color: #f4f5f6; margin: 0; padding: 0;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="background-color: #f4f5f6; width: 100%;">
+      <tr>
+        <td>&nbsp;</td>
+        <td class="container" style="max-width: 600px; padding: 24px 0; margin: 0 auto;">
+          <div class="content" style="max-width: 600px; margin: 0 auto;">
+
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main" style="background: #ffffff; border: 1px solid #eaebed; border-radius: 16px; width: 100%;">
+              <tr>
+                <td class="wrapper" style="padding: 32px 28px;">
+                  <h2 style="color: #065f46; font-size: 22px; font-weight: 700; margin: 0 0 16px 0;">Règlement validé — Abonnement annuel actif</h2>
+                  <p style="margin: 0 0 16px 0; color: #374151;">Bonjour {{ user.name or user.email }},</p>
+                  <p style="margin: 0 0 16px 0; color: #374151;">
+                    Nous avons le plaisir de vous informer que le règlement de la facture de votre établissement <strong>{{ invoice.school_name }}</strong> a bien été reçu et validé.
+                  </p>
+
+                  <div style="background-color: #ecfdf5; border-left: 4px solid #10b981; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                    <p style="margin: 0 0 8px 0; font-weight: bold; color: #065f46;">Abonnement prolongé pour 365 jours</p>
+                    <p style="margin: 0; font-size: 15px; color: #047857;">
+                      Votre compte Livres en Classe est désormais actif en formule Premium pour l'année scolaire entière (jusqu'au <strong>{{ user.subscription_end_at.strftime('%d/%m/%Y') if user.subscription_end_at else 'prochaine année scolaire' }}</strong>).
+                    </p>
+                  </div>
+
+                  <p style="margin: 0 0 16px 0; color: #374151;">
+                    Vous pouvez télécharger la facture acquittée officielle à tout moment depuis votre tableau de bord ou l'espace Réglages pour votre dossier comptable.
+                  </p>
+
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="margin: 24px 0;">
+                    <tbody>
+                      <tr>
+                        <td align="left">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  {% if invoice.invoice_pdf_url %}
+                                  <a href="{{ invoice.invoice_pdf_url }}" target="_blank" style="background-color: #10b981; border: solid 1px #10b981; border-radius: 8px; box-sizing: border-box; color: #ffffff; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 12px 24px; text-decoration: none;">Télécharger la facture acquittée (PDF)</a>
+                                  {% else %}
+                                  <a href="{{ reglage_url }}" target="_blank" style="background-color: #10b981; border: solid 1px #10b981; border-radius: 8px; box-sizing: border-box; color: #ffffff; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 12px 24px; text-decoration: none;">Accéder à mes réglages</a>
+                                  {% endif %}
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p style="margin: 0; color: #374151;">Merci pour votre confiance et très belle année scolaire avec vos élèves,</p>
+                  <p style="margin: 4px 0 0 0; font-weight: bold; color: #065f46;">Robin Forestier &bull; Livres en Classe</p>
+                </td>
+              </tr>
+            </table>
+
+            <div class="footer" style="padding-top: 20px; text-align: center;">
+              <p style="color: #9ca3af; font-size: 13px; margin: 0;">
+                Robin Forestier — Livres en Classe &bull; Exonéré de TVA selon l'art. 10 LTVA (Suisse)
+              </p>
+            </div>
+
+          </div>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </body>
+</html>

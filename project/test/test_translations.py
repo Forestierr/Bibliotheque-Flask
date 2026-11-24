@@ -416,8 +416,8 @@ def test_llms_txt_mentions_languages():
         assert "https://livresenclasse.com/de/" in text
         # Verify subscription and freemium documentation
         assert "Modèle Freemium & Abonnements" in text
-        assert "40 élèves" in text
-        assert "500 livres" in text
+        assert "30 élèves" in text
+        assert "100 livres" in text
         assert "30 scans" in text
         assert "3.00 CHF" in text
         assert "30.00 CHF" in text
