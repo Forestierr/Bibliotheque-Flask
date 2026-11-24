@@ -2234,3 +2234,363 @@ def test_webhook_invoice_voided_flux_b(client, app):
             ).first()
             assert si.status == "void"
 
+
+def test_user_subscription_days_left_and_expiring_soon(app):
+    """Vérifie le calcul des jours restants et la détection d'échéance proche (J-30)."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        # Cas 1 : Expire dans 15 jours
+        user_15d = User(
+            id=301,
+            email="exp15@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=15),
+            renewal_reminder_sent=False,
+        )
+        assert user_15d.subscription_days_left in (15, 16)
+        assert user_15d.is_subscription_expiring_soon is True
+
+        # Cas 2 : Expire dans 45 jours (pas encore éligible au rappel J-30)
+        user_45d = User(
+            id=302,
+            email="exp45@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=45),
+            renewal_reminder_sent=False,
+        )
+        assert user_45d.subscription_days_left in (45, 46)
+        assert user_45d.is_subscription_expiring_soon is False
+
+        # Cas 3 : Membre fondateur (n'expire jamais)
+        user_founder = User(
+            id=303,
+            email="founder_exp@test.com",
+            plan="founder",
+            subscription_end_at=now + timedelta(days=10),
+        )
+        assert user_founder.subscription_days_left == 9999
+        assert user_founder.is_subscription_expiring_soon is False
+
+        # Cas 4 : Compte sans date d'échéance
+        user_none = User(id=304, email="none_exp@test.com", plan="free")
+        assert user_none.subscription_days_left == 0
+        assert user_none.is_subscription_expiring_soon is False
+
+
+def test_scheduler_send_renewal_reminders(app):
+    """Vérifie que send_renewal_reminders cible uniquement les comptes premium à J-30 non encore notifiés."""
+    from project.scheduler import send_renewal_reminders
+
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        # Utilisateur 1 : Éligible (J-20, non notifié)
+        u1 = User(
+            id=311,
+            email="eligible@test.com",
+            name="Prof Éligible",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=20),
+            renewal_reminder_sent=False,
+        )
+        # Utilisateur 2 : Trop tôt (J-40, non notifié)
+        u2 = User(
+            id=312,
+            email="too_early@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=40),
+            renewal_reminder_sent=False,
+        )
+        # Utilisateur 3 : Déjà notifié (J-10, renewal_reminder_sent=True)
+        u3 = User(
+            id=313,
+            email="already_notified@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=10),
+            renewal_reminder_sent=True,
+        )
+        # Utilisateur 4 : Membre fondateur (immunisé)
+        u4 = User(
+            id=314,
+            email="founder_test@test.com",
+            plan="founder",
+            subscription_end_at=now + timedelta(days=10),
+            renewal_reminder_sent=False,
+        )
+
+        db.session.add_all([u1, u2, u3, u4])
+        db.session.commit()
+
+        with patch("project.email.send_email_subscription_renewal_reminder") as mock_send:
+            sent_count = send_renewal_reminders(app, window_days=30)
+            assert sent_count == 1
+            mock_send.assert_called_once()
+
+        # Vérifier que le statut en base est passé à True pour u1 (et reste False pour u2)
+        u1_updated = db.session.get(User, 311)
+        assert u1_updated.renewal_reminder_sent is True
+        u2_updated = db.session.get(User, 312)
+        assert u2_updated.renewal_reminder_sent is False
+
+        # Deuxième exécution : aucun nouvel envoi (idempotent)
+        with patch("project.email.send_email_subscription_renewal_reminder") as mock_send_again:
+            sent_again = send_renewal_reminders(app, window_days=30)
+            assert sent_again == 0
+            mock_send_again.assert_not_called()
+
+
+def test_invoice_paid_resets_renewal_reminder_sent(client, app):
+    """Vérifie que le règlement d'une nouvelle facture école réinitialise renewal_reminder_sent à False."""
+    from project.subscription import _handle_invoice_paid
+
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user = User(
+            id=321,
+            email="renew_user@test.com",
+            plan="premium",
+            subscription_end_at=now + timedelta(days=5),
+            renewal_reminder_sent=True,
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            user_id=321,
+            stripe_invoice_id="in_renew_321",
+            stripe_customer_id="cus_renew_321",
+            school_name="École Renouvelée",
+            school_address="1 rue de l'Avenir",
+            school_billing_email="mairie@avenir.fr",
+            amount=30.0,
+            currency="EUR",
+            status="pending",
+            due_at=now + timedelta(days=30),
+            created_at=now,
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+        with patch("project.subscription._send_school_invoice_paid_email"):
+            _handle_invoice_paid({
+                "id": "in_renew_321",
+                "customer": "cus_renew_321",
+                "invoice_pdf": "https://stripe.com/renew.pdf",
+            })
+
+        u = db.session.get(User, 321)
+        assert u.plan == "premium"
+        assert u.renewal_reminder_sent is False
+        # Doit être prolongé de 365 jours
+        assert u.subscription_days_left >= 365
+
+
+def test_email_subscription_renewal_reminder_template_rendering(app):
+    """Vérifie le rendu du template d'email de rappel de renouvellement à J-30."""
+    from flask import render_template
+
+    with app.app_context():
+        user = User(
+            id=331,
+            email="template_renew@test.com",
+            name="Isabelle Blanc",
+            plan="premium",
+            subscription_end_at=datetime(2027, 8, 31, 0, 0, tzinfo=UTC),
+        )
+        html = render_template(
+            "email/email_subscription_renewal_reminder.html",
+            user=user,
+            days_left=28,
+            end_date_str="31/08/2027",
+            tarifs_url="https://livresenclasse.com/tarifs",
+            facture_ecole_url="https://livresenclasse.com/subscription/facture-ecole",
+        )
+        assert "Bonjour Isabelle Blanc," in html
+        assert "28 jours" in html
+        assert "31/08/2027" in html
+        assert "Générer une facture école (30 € / 30 CHF)" in html
+        assert "https://livresenclasse.com/subscription/facture-ecole" in html
+        assert "https://livresenclasse.com/tarifs" in html
+        assert "Robin Forestier" in html
+
+
+def test_script_subscription_renewal_reminders_dry_run(app):
+    """Vérifie l'exécution sans erreur du script CLI de rappel avec le paramètre --dry-run."""
+    import subprocess
+    import sys
+
+    cmd = [
+        sys.executable,
+        "scripts/send_subscription_renewal_reminders.py",
+        "--dry-run",
+        "--days-before",
+        "30",
+    ]
+    res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    assert res.returncode == 0
+    assert "Rappels de renouvellement annuel" in res.stdout
+
+
+def test_dashboard_badge_hidden_when_expiry_greater_than_30_days(client, app):
+    """Vérifie que le tag d'avertissement 'Premium jusqu'au' est masqué sur le dashboard quand il reste plus de 30 jours."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_365d = User(
+            id=451,
+            email="user_365d@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now + timedelta(days=365),
+            is_verified=True,
+        )
+        db.session.add(user_365d)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "451"
+
+    resp = client.get("/fr/dashboard")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+    # Le tag ⚠️ ne doit PAS être présent
+    assert "Premium jusqu'au" not in html
+    assert "Résiliation programmée" not in html
+
+
+def test_dashboard_badge_shown_when_expiry_within_30_days(client, app):
+    """Vérifie que le tag d'avertissement 'Premium jusqu'au' est affiché sur le dashboard quand il reste <= 30 jours."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_15d = User(
+            id=452,
+            email="user_15d@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now + timedelta(days=15),
+            is_verified=True,
+        )
+        db.session.add(user_15d)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "452"
+
+    resp_15 = client.get("/fr/dashboard")
+    assert resp_15.status_code == 200
+    html_15 = resp_15.get_data(as_text=True)
+    # Le tag ⚠️ DOIT être présent car <= 30 jours
+    assert "Premium jusqu'au" in html_15
+
+
+def test_reglage_school_invoice_display_vs_cancellation(client, app):
+    """Vérifie que la page /reglage affiche 'Abonnement École' et non 'Abonnement résilié' pour une facture école payée."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user = User(
+            id=403,
+            email="school_paid_reglage@test.com",
+            plan="premium",
+            stripe_subscription_status="active",
+            subscription_end_at=now + timedelta(days=365),
+            is_verified=True,
+        )
+        db.session.add(user)
+        school_inv = SchoolInvoice(
+            id=501,
+            user_id=403,
+            stripe_invoice_id="in_reglage_school",
+            stripe_customer_id="cus_reglage_school",
+            school_name="École Victor Hugo",
+            school_address="1 rue Victor Hugo",
+            school_billing_email="ecole@paris.fr",
+            amount=30.0,
+            currency="EUR",
+            status="paid",
+            invoice_pdf_url="https://stripe.com/vh_paid.pdf",
+            due_at=now + timedelta(days=30),
+            created_at=now,
+        )
+        db.session.add(school_inv)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "403"
+
+    resp = client.get("/reglage")
+    assert resp.status_code == 200
+    html = resp.get_data(as_text=True)
+
+    # 1. Vérifier qu'il n'y a PAS de message alarmant de résiliation
+    assert "Abonnement résilié" not in html
+    assert "Résiliation programmée" not in html
+    assert "Votre demande de résiliation a bien été prise en compte" not in html
+
+    # 2. Vérifier la mention valorisante d'abonnement école
+    assert "Abonnement Annuel École" in html
+    assert "École Victor Hugo" in html
+    assert "Renouveler ma facture école" in html
+    assert "https://stripe.com/vh_paid.pdf" in html
+
+
+def test_reglage_canceling_user_distant_expiry(client, app):
+    """Vérifie que pour un utilisateur résilié avec > 30 jours restants, les alertes de résiliation sont masquées."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_long = User(
+            id=404,
+            email="canceling_long@test.com",
+            plan="premium",
+            stripe_subscription_status="canceled",
+            subscription_end_at=now + timedelta(days=365),
+            is_verified=True,
+        )
+        db.session.add(user_long)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "404"
+
+    resp_long = client.get("/fr/reglage")
+    assert resp_long.status_code == 200
+    html_long = resp_long.get_data(as_text=True)
+    # Bannière masquée car > 30j
+    assert "Résiliation programmée : accès Premium maintenu" not in html_long
+    # Titre rassurant et pas alarmant
+    assert "Abonnement Annuel" in html_long
+    assert "Votre formule est active et garantie" in html_long
+    assert "Votre demande de résiliation a bien été prise en compte" not in html_long
+
+
+def test_reglage_canceling_user_near_expiry(client, app):
+    """Vérifie que pour un utilisateur résilié avec <= 30 jours restants, les alertes de fin d'accès s'affichent."""
+    now = datetime.now(UTC)
+
+    with app.app_context():
+        user_short = User(
+            id=405,
+            email="canceling_short@test.com",
+            plan="premium",
+            stripe_subscription_status="canceled",
+            subscription_end_at=now + timedelta(days=15),
+            is_verified=True,
+        )
+        db.session.add(user_short)
+        db.session.commit()
+
+    with client.session_transaction() as sess:
+        sess["_user_id"] = "405"
+
+    resp_short = client.get("/fr/reglage")
+    assert resp_short.status_code == 200
+    html_short = resp_short.get_data(as_text=True)
+    # Bannière affichée car <= 30j
+    assert "Résiliation programmée : accès Premium maintenu" in html_short
+    assert "Abonnement résilié" in html_short
+    assert "Votre demande de résiliation a bien été prise en compte" in html_short
+
+
+

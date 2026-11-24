@@ -1,0 +1,109 @@
+<!-- template from : https://github.com/leemunroe/responsive-html-email-template -->
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Renouvellement de votre abonnement annuel | Livres en Classe</title>
+    <style media="all" type="text/css">
+@media all {
+  .btn-primary table td:hover {
+    background-color: #1d4ed8 !important;
+  }
+  .btn-primary a:hover {
+    background-color: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+  }
+}
+@media only screen and (max-width: 640px) {
+  .main p, .main td, .main span {
+    font-size: 16px !important;
+  }
+  .wrapper {
+    padding: 12px !important;
+  }
+  .container {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+}
+    </style>
+  </head>
+  <body style="font-family: Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; font-size: 16px; line-height: 1.4; background-color: #f4f5f6; margin: 0; padding: 0;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="background-color: #f4f5f6; width: 100%;">
+      <tr>
+        <td>&nbsp;</td>
+        <td class="container" style="max-width: 600px; padding: 24px 0; margin: 0 auto;">
+          <div class="content" style="max-width: 600px; margin: 0 auto;">
+
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main" style="background: #ffffff; border: 1px solid #eaebed; border-radius: 16px; width: 100%;">
+              <tr>
+                <td class="wrapper" style="padding: 32px 28px;">
+                  <h2 style="color: #1e40af; font-size: 22px; font-weight: 700; margin: 0 0 16px 0;">Renouvellement annuel de votre abonnement Livres en Classe</h2>
+                  <p style="margin: 0 0 16px 0; color: #374151;">Bonjour {{ user.name or user.email }},</p>
+                  <p style="margin: 0 0 16px 0; color: #374151;">
+                    Votre abonnement annuel à <strong>Livres en Classe</strong> arrive à échéance dans <strong>{{ days_left }} jours</strong> (le <strong>{{ end_date_str }}</strong>).
+                  </p>
+
+                  <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                    <p style="margin: 0 0 8px 0; font-weight: bold; color: #1e40af;">Vos données restent 100% sécurisées</p>
+                    <p style="margin: 0; font-size: 15px; color: #1e3a8a;">
+                      Rassurez-vous : même en cas de délai de paiement, <strong>aucun livre ni aucun élève ne sera supprimé</strong>. Vous conservez l'accès en consultation et pour enregistrer les retours d'emprunts.
+                    </p>
+                  </div>
+
+                  <p style="margin: 0 0 12px 0; color: #374151; font-weight: bold;">
+                    Comment renouveler pour la prochaine année scolaire ?
+                  </p>
+
+                  <p style="margin: 0 0 16px 0; color: #374151;">
+                    <strong>1. Financement école / mairie (Mandat administratif ou Virement) :</strong><br>
+                    Si votre abonnement est financé par votre établissement, votre coopérative scolaire (OCCE) ou votre commune, générez en 1 clic une nouvelle facture officielle à 30 jours à transmettre à votre secrétariat ou direction :
+                  </p>
+
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="margin: 16px 0 24px 0;">
+                    <tbody>
+                      <tr>
+                        <td align="left">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <a href="{{ facture_ecole_url }}" target="_blank" style="background-color: #2563eb; border: solid 1px #2563eb; border-radius: 8px; box-sizing: border-box; color: #ffffff; cursor: pointer; display: inline-block; font-size: 16px; font-weight: bold; margin: 0; padding: 12px 24px; text-decoration: none;">Générer une facture école (30 € / 30 CHF)</a>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <p style="margin: 0 0 16px 0; color: #374151;">
+                    <strong>2. Paiement par carte bancaire personnelle :</strong><br>
+                    Vous pouvez également renouveler directement par carte en ligne (avec option de facture acquittée pour remboursement immédiat par votre école) :
+                  </p>
+
+                  <p style="margin: 0 0 20px 0;">
+                    <a href="{{ tarifs_url }}" style="color: #2563eb; font-weight: bold; text-decoration: underline;">Renouveler par carte bancaire sur la page des tarifs</a>
+                  </p>
+
+                  <p style="margin: 0; color: #374151;">Merci pour votre confiance et votre engagement pour le goût de la lecture de vos élèves !</p>
+                  <p style="margin: 6px 0 0 0; font-weight: bold; color: #1e40af;">Robin Forestier &bull; Livres en Classe</p>
+                </td>
+              </tr>
+            </table>
+
+            <div class="footer" style="padding-top: 20px; text-align: center;">
+              <p style="color: #9ca3af; font-size: 13px; margin: 0;">
+                Robin Forestier — Livres en Classe &bull; Exonéré de TVA selon l'art. 10 LTVA (Suisse)
+              </p>
+            </div>
+
+          </div>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </body>
+</html>

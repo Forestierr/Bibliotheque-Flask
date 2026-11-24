@@ -65,6 +65,9 @@ class User(UserMixin, db.Model):
     book_limit_email_sent = db.Column(
         db.Boolean, default=False, server_default="0", nullable=False
     )
+    renewal_reminder_sent = db.Column(
+        db.Boolean, default=False, server_default="0", nullable=False
+    )
     free_scans_used = db.Column(
         db.Integer, default=0, server_default="0", nullable=False
     )
@@ -187,6 +190,28 @@ class User(UserMixin, db.Model):
                 )
         return False
 
+    def check_and_trigger_renewal_reminder(self) -> bool:
+        """
+        Vérifie si l'abonnement annuel arrive à échéance dans 30 jours ou moins
+        et n'a pas encore reçu l'e-mail de rappel de renouvellement.
+        Si oui, envoie l'e-mail une seule fois et bascule renewal_reminder_sent à True.
+        """
+        if self.plan == "founder" or self.renewal_reminder_sent:
+            return False
+        if self.is_subscription_expiring_soon:
+            self.renewal_reminder_sent = True
+            try:
+                db.session.commit()
+                from .email import send_email_subscription_renewal_reminder
+
+                send_email_subscription_renewal_reminder(self)
+                return True
+            except Exception:
+                logger.exception(
+                    "Erreur lors de l'envoi de l'email de rappel de renouvellement"
+                )
+        return False
+
     @property
     def weekly_scans_left(self) -> int:
         """Nombre de scans gratuits restants pour la semaine courante."""
@@ -240,6 +265,11 @@ class User(UserMixin, db.Model):
         """Indique si l'abonnement a été résilié mais bénéficie encore de ses accès jusqu'à échéance."""
         if self.plan == "founder":
             return False
+        if self.plan == "free" and not self.is_in_trial:
+            return False
+        # Un abonnement école payé n'est pas une résiliation
+        if self.has_paid_school_invoice:
+            return False
         # Cas 1 : abonnement premium avec date de fin programmée dans le futur
         if self.plan == "premium" and self.subscription_end_at:
             end_dt = (
@@ -285,6 +315,28 @@ class User(UserMixin, db.Model):
         )
         delta = end_dt - datetime.now(UTC)
         return max(0, delta.days + (1 if delta.seconds > 0 else 0))
+
+    @property
+    def subscription_days_left(self) -> int:
+        """Nombre de jours restants avant l'échéance de l'abonnement annuel."""
+        if self.plan == "founder":
+            return 9999
+        if self.subscription_end_at:
+            end_dt = (
+                self.subscription_end_at.replace(tzinfo=UTC)
+                if self.subscription_end_at.tzinfo is None
+                else self.subscription_end_at
+            )
+            delta = end_dt - datetime.now(UTC)
+            return max(0, delta.days + (1 if delta.seconds > 0 else 0))
+        return 0
+
+    @property
+    def is_subscription_expiring_soon(self) -> bool:
+        """Indique si l'abonnement payé arrive à échéance sous 30 jours."""
+        if self.plan == "founder":
+            return False
+        return bool(self.subscription_end_at and 0 < self.subscription_days_left <= 30)
 
     @property
     def effective_plan(self) -> str:
@@ -364,8 +416,12 @@ class User(UserMixin, db.Model):
     @property
     def active_pending_school_invoice(self):
         """Retourne la facture école en attente de paiement (statut pending) si elle existe."""
-        for inv in self.school_invoices:
-            if inv.status == "pending":
+        try:
+            invoices = self.school_invoices
+        except Exception:  # noqa: BLE001
+            return None
+        for inv in invoices:
+            if getattr(inv, "status", None) == "pending":
                 return inv
         return None
 
@@ -377,7 +433,29 @@ class User(UserMixin, db.Model):
     @property
     def latest_school_invoice(self):
         """Dernière facture école émise pour l'utilisateur."""
-        return self.school_invoices[0] if self.school_invoices else None
+        try:
+            return self.school_invoices[0] if self.school_invoices else None
+        except Exception:  # noqa: BLE001
+            return None
+
+    @property
+    def latest_paid_school_invoice(self):
+        """Dernière facture école réglée pour l'utilisateur."""
+        try:
+            invoices = self.school_invoices
+        except Exception:  # noqa: BLE001
+            return None
+        for inv in sorted(
+            invoices, key=lambda x: getattr(x, "id", 0) or 0, reverse=True
+        ):
+            if getattr(inv, "status", None) == "paid":
+                return inv
+        return None
+
+    @property
+    def has_paid_school_invoice(self) -> bool:
+        """Indique si l'utilisateur bénéficie d'une facture école validée."""
+        return self.latest_paid_school_invoice is not None
 
     def get_verification_token(self):
         serializer = URLSafeTimedSerializer(os.getenv("SECRET_KEY"))

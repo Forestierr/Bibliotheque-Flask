@@ -698,6 +698,11 @@
                                 <span class="icon is-small mr-1"><i class="fas fa-award"></i></span>
                                 {{ _("Membre Fondateur") }}
                             </span>
+                        {% elif user.has_paid_school_invoice %}
+                            <span class="tag is-success is-light is-rounded has-text-weight-bold">
+                                <span class="icon is-small mr-1"><i class="fas fa-school"></i></span>
+                                {{ _("Abonnement École (jusqu'au %(date)s)", date=user.subscription_end_at|format_date) if user.subscription_end_at else _("Abonnement École") }}
+                            </span>
                         {% elif user.is_canceling %}
                             <span class="tag is-warning is-light is-rounded has-text-weight-bold">
                                 <span class="icon is-small mr-1"><i class="fas fa-exclamation-triangle"></i></span>
@@ -711,7 +716,11 @@
                         {% elif user.is_premium %}
                             <span class="tag is-success is-light is-rounded has-text-weight-bold">
                                 <span class="icon is-small mr-1"><i class="fas fa-check"></i></span>
-                                {{ _("Abonné Premium") }}
+                                {% if user.subscription_end_at %}
+                                    {{ _("Abonné Premium (jusqu'au %(date)s)", date=user.subscription_end_at|format_date) }}
+                                {% else %}
+                                    {{ _("Abonné Premium") }}
+                                {% endif %}
                             </span>
                         {% else %}
                             <span class="tag is-light is-rounded has-text-weight-semibold">
@@ -723,12 +732,17 @@
                 <div>
                     {% if user.plan == 'founder' %}
                         {# Membre fondateur #}
+                    {% elif user.has_paid_school_invoice %}
+                        <a href="{{ url_for('subscription.facture_ecole') }}" class="button is-info is-outlined is-rounded is-small">
+                            <span class="icon"><i class="fas fa-file-invoice"></i></span>
+                            <span>{{ _("Facture école") }}</span>
+                        </a>
                     {% elif user.has_pending_school_invoice %}
                         <a href="{{ url_for('subscription.facture_ecole_confirmation', invoice_id=user.active_pending_school_invoice.id) }}" class="button is-info is-outlined is-rounded is-small">
                             <span class="icon"><i class="fas fa-file-invoice"></i></span>
                             <span>{{ _("Consulter la facture école") }}</span>
                         </a>
-                    {% elif user.plan == 'premium' and user.stripe_subscription_status == 'active' %}
+                    {% elif user.plan == 'premium' and user.stripe_subscription_status == 'active' and user.stripe_customer_id and not user.has_paid_school_invoice %}
                         <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
                             {% include 'utils/csrf.html' %}
                             <button type="submit" class="button is-link is-outlined is-rounded is-small">
@@ -770,7 +784,21 @@
 
         <!-- TAB 1 : Mon Compte -->
         <div id="tabContentCompte" class="settings-tab-content">
-            {% if user.is_canceling %}
+            {% if user.has_paid_school_invoice and user.subscription_days_left <= 30 %}
+            <div class="notification is-warning is-light mb-5" style="border-radius: 12px; border-left: 5px solid #f59e0b;">
+                <div class="is-flex is-align-items-center" style="gap: 1rem;">
+                    <span class="icon is-large has-text-warning-dark"><i class="fas fa-school fa-2x"></i></span>
+                    <div>
+                        <p class="title is-6 mb-1" style="color: #92400e;">
+                            {{ _("Renouvellement annuel : votre abonnement école arrive à échéance") }}
+                        </p>
+                        <p class="is-size-7" style="color: #78350f;">
+                            {{ _("Votre formule annuelle expire le %(date)s (dans %(days)d jours). Vous pouvez dès à présent générer la facture pour la prochaine année scolaire afin de maintenir vos accès sans interruption.", date=user.subscription_end_at|format_date, days=user.subscription_days_left) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% elif user.is_canceling and (user.subscription_days_left <= 30 or (user.trial_days_left and user.trial_days_left <= 30)) %}
             <div class="notification is-warning is-light mb-5" style="border-radius: 12px; border-left: 5px solid #f59e0b;">
                 <div class="is-flex is-align-items-center" style="gap: 1rem;">
                     <span class="icon is-large has-text-warning-dark"><i class="fas fa-calendar-times fa-2x"></i></span>
@@ -793,14 +821,24 @@
                         <h2 class="title is-5 mb-1" style="color: #0f172a; font-weight: 700;">
                             {% if user.plan == 'founder' %}
                                 {{ _("Formule Fondateur") }}
+                            {% elif user.has_paid_school_invoice %}
+                                <span class="icon has-text-success mr-1"><i class="fas fa-school"></i></span>{{ _("Abonnement Annuel École (actif jusqu'au %(date)s)", date=user.subscription_end_at|format_date) if user.subscription_end_at else _("Abonnement Annuel École") }}
                             {% elif user.is_canceling %}
-                                <span class="icon has-text-warning mr-1"><i class="fas fa-exclamation-triangle"></i></span>{{ _("Abonnement résilié (actif jusqu'au %(date)s)", date=user.effective_cancellation_date|format_date) }}
+                                {% if user.subscription_days_left and user.subscription_days_left > 30 %}
+                                    <span class="icon has-text-info mr-1"><i class="fas fa-calendar-check"></i></span>{{ _("Abonnement Annuel (actif jusqu'au %(date)s)", date=user.effective_cancellation_date|format_date) }}
+                                {% else %}
+                                    <span class="icon has-text-warning mr-1"><i class="fas fa-exclamation-triangle"></i></span>{{ _("Abonnement résilié (actif jusqu'au %(date)s)", date=user.effective_cancellation_date|format_date) }}
+                                {% endif %}
                             {% elif user.has_pending_school_invoice %}
                                 <span class="icon has-text-info mr-1"><i class="fas fa-school"></i></span>{{ _("Facture École en cours (Accès 30j actif)") }}
                             {% elif user.is_in_trial %}
                                 {{ _("Période d'essai Premium") }}
                             {% elif user.is_premium %}
-                                {{ _("Abonnement Premium Actif") }}
+                                {% if user.subscription_end_at %}
+                                    <span class="icon has-text-success mr-1"><i class="fas fa-check"></i></span>{{ _("Abonnement Annuel (actif jusqu'au %(date)s)", date=user.subscription_end_at|format_date) }}
+                                {% else %}
+                                    {{ _("Abonnement Premium Actif") }}
+                                {% endif %}
                             {% else %}
                                 {{ _("Formule Gratuite") }}
                             {% endif %}
@@ -808,14 +846,24 @@
                         <p class="has-text-grey is-size-7" style="line-height: 1.5; max-width: 650px;">
                             {% if user.plan == 'founder' %}
                                 {{ _("Vous bénéficiez d'un accès complet et illimité à vie pour vous remercier de votre soutien initial.") }}
+                            {% elif user.has_paid_school_invoice %}
+                                {{ _("Votre abonnement annuel a été financé par votre établissement (%(school)s). Vous profitez de l'ensemble des fonctionnalités sans aucune limite jusqu'au %(date)s. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.", school=user.latest_paid_school_invoice.school_name, date=user.subscription_end_at|format_date) }}
                             {% elif user.is_canceling %}
-                                {{ _("Votre demande de résiliation a bien été prise en compte. Vous continuez à profiter de l'ensemble des fonctionnalités Premium sans interruption jusqu'au %(date)s. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.", date=user.effective_cancellation_date|format_date) }}
+                                {% if user.subscription_days_left and user.subscription_days_left > 30 %}
+                                    {{ _("Votre formule est active et garantie jusqu'au %(date)s. Vous profitez de l'ensemble des fonctionnalités Premium sans interruption (renouvellement automatique désactivé). Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.", date=user.effective_cancellation_date|format_date) }}
+                                {% else %}
+                                    {{ _("Votre demande de résiliation a bien été prise en compte. Vous continuez à profiter de l'ensemble des fonctionnalités Premium sans interruption jusqu'au %(date)s. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.", date=user.effective_cancellation_date|format_date) }}
+                                {% endif %}
                             {% elif user.has_pending_school_invoice %}
                                 {{ _("Une facture officielle de %(amount).2f %(curr)s a été émise pour %(school)s. Votre classe dispose d'un accès Premium complet immédiat de 30 jours (encore %(days)d jours) le temps que votre secrétariat effectue le règlement.", amount=user.active_pending_school_invoice.amount, curr=user.active_pending_school_invoice.currency, school=user.active_pending_school_invoice.school_name, days=user.trial_days_left) }}
                             {% elif user.is_in_trial %}
                                 {{ _("Vous bénéficiez de l'accès Premium complet pendant 30 jours (encore %(days)d jours).", days=user.trial_days_left) }}
                             {% elif user.is_premium %}
-                                {{ _("Votre abonnement Premium est actif. Vous disposez de toutes les fonctionnalités sans aucune limite.") }}
+                                {% if user.subscription_end_at %}
+                                    {{ _("Votre formule est active et validée jusqu'au %(date)s. Vous profitez de l'ensemble des fonctionnalités sans aucune limite. Après cette date, votre compte passera automatiquement en formule gratuite sans suppression de vos livres, élèves ou prêts.", date=user.subscription_end_at|format_date) }}
+                                {% else %}
+                                    {{ _("Votre abonnement Premium est actif. Vous disposez de toutes les fonctionnalités sans aucune limite.") }}
+                                {% endif %}
                             {% else %}
                                 {{ _("Vous utilisez la version gratuite (jusqu'à %(students)s élèves, %(books)s livres et %(scans)s scans codes-barres par semaine).", students=max_students, books=max_books, scans=max_scans) }}
                             {% endif %}
@@ -824,6 +872,19 @@
                     <div class="settings-plan-actions">
                         {% if user.plan == 'founder' %}
                             {# Membre fondateur : aucun bouton #}
+                        {% elif user.has_paid_school_invoice %}
+                            <div class="buttons">
+                                <a href="{{ url_for('subscription.facture_ecole') }}" class="button is-info is-outlined is-rounded">
+                                    <span class="icon"><i class="fas fa-file-invoice"></i></span>
+                                    <span>{{ _("Renouveler ma facture école") }}</span>
+                                </a>
+                                {% if user.latest_paid_school_invoice and user.latest_paid_school_invoice.invoice_pdf_url %}
+                                <a href="{{ user.latest_paid_school_invoice.invoice_pdf_url }}" target="_blank" class="button is-link is-light is-rounded">
+                                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                                    <span>{{ _("Télécharger ma facture (PDF)") }}</span>
+                                </a>
+                                {% endif %}
+                            </div>
                         {% elif user.has_pending_school_invoice %}
                             <a href="{{ url_for('subscription.facture_ecole_confirmation', invoice_id=user.active_pending_school_invoice.id) }}" class="button is-info is-outlined is-rounded">
                                 <span class="icon"><i class="fas fa-file-invoice"></i></span>
@@ -833,9 +894,9 @@
                             {% if user.stripe_customer_id %}
                             <form method="POST" action="{{ url_for('subscription.portal') }}" style="display:inline;" hx-boost="false">
                                 {% include 'utils/csrf.html' %}
-                                <button type="submit" class="button is-warning is-outlined is-rounded">
-                                    <span class="icon"><i class="fas fa-undo"></i></span>
-                                    <span>{{ _("Réactiver ou modifier mon abonnement") }}</span>
+                                <button type="submit" class="button {% if user.subscription_days_left and user.subscription_days_left <= 30 %}is-warning{% else %}is-link{% endif %} is-outlined is-rounded">
+                                    <span class="icon"><i class="fas {% if user.subscription_days_left and user.subscription_days_left <= 30 %}fa-undo{% else %}fa-credit-card{% endif %}"></i></span>
+                                    <span>{{ _("Réactiver ou modifier mon abonnement") if (user.subscription_days_left and user.subscription_days_left <= 30) else _("Gérer ma facturation") }}</span>
                                 </button>
                             </form>
                             {% else %}

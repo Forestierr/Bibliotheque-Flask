@@ -66,7 +66,7 @@ def main():
                     tarifs_url=url_for("subscription.tarifs", _external=True),
                 )
                 send_html_email(
-                    subject=f"⏳ Il vous reste {u.trial_days_left} jours d'accès complet offert sur Livres en Classe !",
+                    subject=f"Votre période d'essai se termine dans {u.trial_days_left} jours — Livres en Classe",
                     sender=sender,
                     recipients=[u.email],
                     html_body=html_body,

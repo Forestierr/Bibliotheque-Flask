@@ -805,6 +805,7 @@ def _handle_checkout_completed(session):
         user.plan = "premium"
         user.stripe_subscription_status = "active"
         user.subscription_end_at = None
+        user.renewal_reminder_sent = False
         if customer_id:
             user.stripe_customer_id = customer_id
         if subscription_id:
@@ -1059,6 +1060,7 @@ def _handle_invoice_paid(invoice_data):
                     base_date = end_aware
             user.subscription_end_at = base_date + timedelta(days=365)
             user.trial_ends_at = None
+            user.renewal_reminder_sent = False
             db.session.commit()
             logger.info(
                 "Facture école %s payée. Compte de l'utilisateur %s prolongé pour 365 jours jusqu'au %s",
@@ -1159,14 +1161,21 @@ def _send_school_invoice_created_email(user, school_inv):
                     invoice=inv_copy,
                     confirmation_url=confirmation_url,
                 )
+                recipients = [user_email]
+                billing_email = inv_copy.get("school_billing_email")
+                if billing_email and billing_email not in recipients:
+                    recipients.append(billing_email)
+
                 send_html_email(
-                    subject="Facture école générée & Accès Premium 30 jours actif - Livres en Classe",
+                    subject="Facture école — Accès Premium 30 jours actif — Livres en Classe",
                     sender=os.getenv("MAIL_USERNAME"),
-                    recipients=[user_email],
+                    recipients=recipients,
                     html_body=html_body,
                 )
-                logger.info("Email facture école créée envoyé à %s", user_email)
-            except Exception as e:  # noqa: BLE001  # noqa: BLE001
+                logger.info(
+                    "Email facture école créée envoyé à %s", ", ".join(recipients)
+                )
+            except Exception as e:  # noqa: BLE001
                 logger.warning(
                     "Impossible d'envoyer l'email facture école créée : %s", e
                 )
@@ -1185,6 +1194,7 @@ def _send_school_invoice_paid_email(user, school_inv):
     inv_copy = {
         "id": school_inv.id,
         "school_name": school_inv.school_name,
+        "school_billing_email": getattr(school_inv, "school_billing_email", None),
         "amount": school_inv.amount,
         "currency": school_inv.currency,
         "invoice_pdf_url": school_inv.invoice_pdf_url,
@@ -1200,17 +1210,25 @@ def _send_school_invoice_paid_email(user, school_inv):
                     invoice=inv_copy,
                     reglage_url=reglage_url,
                 )
+                recipients = [user_email]
+                billing_email = inv_copy.get("school_billing_email")
+                if billing_email and billing_email not in recipients:
+                    recipients.append(billing_email)
+
                 send_html_email(
-                    subject="Règlement validé : Votre abonnement annuel Livres en Classe est actif !",
+                    subject="Règlement validé — Votre abonnement annuel Livres en Classe est actif",
                     sender=os.getenv("MAIL_USERNAME"),
-                    recipients=[user_email],
+                    recipients=recipients,
                     html_body=html_body,
                 )
                 logger.info(
                     "Email confirmation règlement facture école envoyé à %s",
-                    user_email,
+                    ", ".join(recipients),
                 )
-            except Exception as e:  # noqa: BLE001  # noqa: BLE001
+            except Exception as e:  # noqa: BLE001
+                logger.warning(
+                    "Impossible d'envoyer l'email confirmation règlement : %s", e
+                )
                 logger.warning(
                     "Impossible d'envoyer l'email de confirmation de paiement école : %s",
                     e,
