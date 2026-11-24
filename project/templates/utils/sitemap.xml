@@ -190,46 +190,10 @@
     </url>
     {% endfor %}
 
-    <!-- Authentification -->
-    {% for l in ['fr', 'en', 'de'] %}
-    <url>
-        <loc>https://livresenclasse.com/{{ l }}/login</loc>
-        <xhtml:link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/login"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/login"/>
-        <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/login"/>
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/login"/>
-        <lastmod>2026-09-12</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://livresenclasse.com/{{ l }}/signup</loc>
-        <xhtml:link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/signup"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/signup"/>
-        <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/signup"/>
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/signup"/>
-        <lastmod>2026-09-12</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    {% endfor %}
-
-    <!-- Fichiers techniques racine -->
-    <url>
-        <loc>https://livresenclasse.com/sitemap.xml</loc>
-        <lastmod>2026-09-12</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://livresenclasse.com/robots.txt</loc>
-        <lastmod>2026-09-12</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.3</priority>
-    </url>
+    <!-- Fichier LLM racine -->
     <url>
         <loc>https://livresenclasse.com/llms.txt</loc>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>2026-11-25</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>

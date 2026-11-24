@@ -390,10 +390,10 @@
                         </p>
                     </div>
                     <div class="buttons is-centered">
-                        <a href="{{ url_for('auth.signup', plan_type=plan_type) }}" class="button is-link is-medium is-rounded has-text-weight-bold">
+                        <a href="{{ url_for('auth.signup', plan_type=plan_type) }}" rel="nofollow" class="button is-link is-medium is-rounded has-text-weight-bold">
                             <span>{{ _("Créer un compte enseignant") }}</span>
                         </a>
-                        <a href="{{ url_for('auth.login', next=url_for('subscription.paiement', plan_type=plan_type)) }}" class="button is-light is-medium is-rounded">
+                        <a href="{{ url_for('auth.login', next=url_for('subscription.paiement', plan_type=plan_type)) }}" rel="nofollow" class="button is-light is-medium is-rounded">
                             <span>{{ _("J'ai déjà un compte (Connexion)") }}</span>
                         </a>
                     </div>

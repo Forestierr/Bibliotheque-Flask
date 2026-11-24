@@ -33,6 +33,9 @@ jobs:
       - name: Lint with Ruff
         run: ruff check project/
 
+      - name: Check i18n completeness and sync
+        run: python scripts/check_translations.py
+
       - name: Verify compiled translations (.mo) are up to date
         run: |
           pybabel compile -d project/translations
