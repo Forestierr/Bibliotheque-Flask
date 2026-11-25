@@ -4,6 +4,9 @@
 
 {% extends "base.html" %}
 
+{% block title %}{{ _("Installer l'application Ma Bibliothèque | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Installez l'application gratuite Livres en Classe (PWA) sur ordinateur, tablette ou smartphone pour gérer votre bibliothèque scolaire en un clic.") }}{% endblock %}
+
 {% block navbar %}
     {{ navbar(current_user, "Ma Bibliothèque") }}
 {% endblock %}

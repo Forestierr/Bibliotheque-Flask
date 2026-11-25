@@ -349,8 +349,11 @@ function initResetButtons() {
     const resetBtn = document.getElementById('btnResetStudio');
     if (!resetBtn) return;
 
+    const confirmMsg = resetBtn.getAttribute('data-confirm-reset')
+        || 'Voulez-vous réinitialiser tous les champs avec les valeurs par défaut ?';
+
     resetBtn.addEventListener('click', function () {
-        if (confirm('Voulez-vous réinitialiser tous les champs avec les valeurs par défaut ?')) {
+        if (confirm(confirmMsg)) {
             window.location.reload();
         }
     });

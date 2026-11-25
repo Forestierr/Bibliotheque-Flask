@@ -788,3 +788,60 @@ def test_seo_sitemap_and_matomo_htmx_guards():
     assert res_tarifs.status_code == 200
     html_tarifs = res_tarifs.get_data(as_text=True)
     assert 'rel="nofollow"' in html_tarifs
+
+
+def test_localized_seo_route_aliases_and_llms():
+    """Verify EN/DE route aliases, localized app_install/blog titles, and multilingual llms.txt."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-seo-aliases",
+        }
+    )
+    client = app.test_client()
+
+    aliases = [
+        ("/en/pricing", "/en/tarifs"),
+        ("/de/preise", "/de/tarifs"),
+        ("/en/resources", "/en/ressources"),
+        ("/de/ressourcen", "/de/ressources"),
+        ("/en/teachers", "/en/enseignants"),
+        ("/de/lehrkraefte", "/de/enseignants"),
+        ("/en/help", "/en/aide"),
+        ("/de/hilfe", "/de/aide"),
+        ("/en/about", "/en/apropos"),
+        ("/de/ueber-uns", "/de/apropos"),
+        ("/en/legal", "/en/mentions-legales"),
+        ("/de/impressum", "/de/mentions-legales"),
+    ]
+    for alias_url, expected_canonical in aliases:
+        res = client.get(alias_url)
+        assert res.status_code == 200, f"Expected 200 on {alias_url}"
+        html = res.get_data(as_text=True)
+        assert expected_canonical in html
+
+    # Localized /install pages
+    res_inst_en = client.get("/en/install")
+    assert res_inst_en.status_code == 200
+    assert "Install the App" in res_inst_en.get_data(as_text=True)
+
+    res_inst_de = client.get("/de/install")
+    assert res_inst_de.status_code == 200
+    assert "App installieren" in res_inst_de.get_data(as_text=True)
+
+    # Blog EN free of French (CP) jargon in title/body
+    res_blog_en = client.get("/en/blog/meilleurs-livres-cp")
+    assert res_blog_en.status_code == 200
+    blog_en_html = res_blog_en.get_data(as_text=True)
+    assert "1st Grade (CP)" not in blog_en_html
+    assert "Best Books for 1st Grade Readers" in blog_en_html
+
+    # Multilingual llms.txt
+    res_llms = client.get("/llms.txt")
+    assert res_llms.status_code == 200
+    llms = res_llms.get_data(as_text=True)
+    assert "English Summary" in llms
+    assert "Deutsche Übersicht" in llms
+    assert "/en/pricing" in llms
+    assert "/de/preise" in llms

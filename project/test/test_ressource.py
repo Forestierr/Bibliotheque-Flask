@@ -444,45 +444,55 @@ def test_mobile_responsive_preview_structure(client):
 
 
 def test_lead_magnets_seo_and_matomo_tracking(client):
-    """Vérifie la présence des métadonnées SEO, tags Matomo et boutons Pinterest sur les lead magnets."""
+    """Vérifie la présence des métadonnées SEO multilingues, tags Matomo et boutons Pinterest sur les lead magnets."""
     lead_magnets = [
         (
             "/ressources/marque-pages-a-imprimer",
+            "/en/resources/printable-reading-bookmarks",
+            "/de/ressourcen/lesezeichen-zum-ausdrucken",
             "marque-pages-a-imprimer",
             "marque_pages",
         ),
         (
             "/ressources/diplome-de-lecture-a-imprimer",
+            "/en/resources/printable-reading-certificate",
+            "/de/ressourcen/leseurkunde-zum-ausdrucken",
             "diplome-de-lecture-a-imprimer",
             "diplome_lecture",
         ),
         (
             "/ressources/fiche-de-lecture-a-imprimer",
+            "/en/resources/printable-book-review-cards",
+            "/de/ressourcen/buchtipp-karten-zum-ausdrucken",
             "fiche-de-lecture-a-imprimer",
             "fiche_lecture",
         ),
         (
             "/ressources/passeport-de-lecture-a-imprimer",
+            "/en/resources/printable-reading-passport",
+            "/de/ressourcen/lesepass-zum-ausdrucken",
             "passeport-de-lecture-a-imprimer",
             "passeport_lecture",
         ),
         (
             "/ressources/charte-coin-lecture-a-imprimer",
+            "/en/resources/printable-reading-corner-poster",
+            "/de/ressourcen/leseecke-regeln-plakat",
             "charte-coin-lecture-a-imprimer",
             "charte_lecture",
         ),
     ]
 
-    for url, res_id, mtm_content in lead_magnets:
+    for url, en_alias, de_alias, res_id, mtm_content in lead_magnets:
         resp = client.get(url)
         assert resp.status_code == 200
         html = resp.get_data(as_text=True)
 
-        # 1. Hreflang restreint à fr et x-default (pas d'en/de)
+        # 1. Hreflang multilingue (fr, en, de et x-default)
         assert 'hreflang="fr"' in html
+        assert 'hreflang="en"' in html
+        assert 'hreflang="de"' in html
         assert 'hreflang="x-default"' in html
-        assert 'hreflang="en"' not in html
-        assert 'hreflang="de"' not in html
 
         # 2. Schema.org LearningResource
         assert '"@type": "LearningResource"' in html
@@ -495,6 +505,49 @@ def test_lead_magnets_seo_and_matomo_tracking(client):
         assert "utm_source" in html
         assert mtm_content in html
         assert f'data-ressource-id="{res_id}"' in html
+
+        # 4. Alias localisés EN / DE et JSON-LD inLanguage
+        res_en = client.get(en_alias)
+        assert res_en.status_code == 200
+        assert '"inLanguage": "en"' in res_en.get_data(as_text=True)
+
+        res_de = client.get(de_alias)
+        assert res_de.status_code == 200
+        assert '"inLanguage": "de"' in res_de.get_data(as_text=True)
+
+    # Vérifier qu'aucun studio n'imbrique deux balises <main>
+    for single_main_url in (
+        "/fr/ressources/diplome-de-lecture-a-imprimer",
+        "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer",
+    ):
+        page_html = client.get(single_main_url).get_data(as_text=True)
+        assert page_html.count("<main") == 1, f"Nested <main> on {single_main_url}"
+
+    # Vérifier que diplome.html aligne bien le motif par défaut et utilise des <button> pour les thèmes
+    dip_html = client.get("/fr/ressources/diplome-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert '<button type="button" class="theme-swatch' in dip_html
+    assert (
+        dip_html.count(
+            "pour sa curiosité, son autonomie et son engagement dans ses lectures de classe."
+        )
+        >= 2
+    )
+
+    # Vérifier également Bingo Lecture (SEO complet + alias EN/DE)
+    for bingo_url, expected_lang in [
+        ("/fr/ressources/defi-lecture-bingo-a-imprimer", "fr"),
+        ("/en/resources/printable-reading-bingo", "en"),
+        ("/de/ressourcen/lesebingo-zum-ausdrucken", "de"),
+    ]:
+        res_b = client.get(bingo_url)
+        assert res_b.status_code == 200
+        b_html = res_b.get_data(as_text=True)
+        assert '"@type": "LearningResource"' in b_html
+        assert f'"inLanguage": "{expected_lang}"' in b_html
+        assert 'hreflang="en"' in b_html
+        assert 'hreflang="de"' in b_html
 
 
 def test_post_print_conversion_modal_anonymous(client):
@@ -568,10 +621,14 @@ def test_convertisseur_pdf_livret(client):
     # Vérification que c'est bien gratuit et accessible publiquement
     assert "Outil 100% gratuit" in html or "100%" in html or "Gratuit" in html
 
-    # Vérification présence dans sitemap.xml
+    # Vérification présence multilingue dans sitemap.xml et accès EN/DE
     res_sitemap = client.get("/sitemap.xml")
     assert res_sitemap.status_code == 200
-    assert (
-        "https://livresenclasse.com/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer"
-        in res_sitemap.get_data(as_text=True)
-    )
+    sm_xml = res_sitemap.get_data(as_text=True)
+    for lang in ("fr", "en", "de"):
+        assert (
+            f"https://livresenclasse.com/{lang}/ressources/convertisseur-pdf-livret-a5-a-imprimer"
+            in sm_xml
+        )
+    assert client.get("/en/resources/pdf-to-booklet-converter").status_code == 200
+    assert client.get("/de/ressourcen/pdf-broschuere-konverter").status_code == 200

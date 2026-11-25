@@ -7,24 +7,19 @@
 {% block og_image %}https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png{% endblock %}
 {% block ressource_id %}fiche-de-lecture-a-imprimer{% endblock %}
 
-{% block hreflang %}
-<link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer" />
-<link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer" />
-{% endblock %}
-
 {% block head_extra %}
 {{ super() }}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LearningResource",
-  "name": "Fiches coup de cœur et avis de lecture à imprimer",
-  "description": "Fiches fanions de recommandation littéraire entre élèves pour coin bibliothèque et BCD.",
+  "name": {{ _("Fiches coup de cœur et avis de lecture à imprimer")|tojson }},
+  "description": {{ _("Fiches fanions de recommandation littéraire entre élèves pour coin bibliothèque et BCD.")|tojson }},
   "learningResourceType": "Printable Resource",
-  "educationalLevel": "École primaire (CP, CE1, CE2, CM1, CM2)",
-  "inLanguage": "fr",
+  "educationalLevel": {{ _("École primaire (CP, CE1, CE2, CM1, CM2)")|tojson }},
+  "inLanguage": "{{ get_locale() }}",
   "isAccessibleForFree": true,
-  "url": "https://livresenclasse.com/fr/ressources/fiche-de-lecture-a-imprimer",
+  "url": "{{ lang_url(get_locale(), external=True) }}",
   "publisher": {
     "@type": "Organization",
     "name": "Livres en Classe",
@@ -166,7 +161,7 @@
                 </div>
                 <div class="column is-9">
                     <span class="tag is-danger is-light has-text-weight-bold mb-2">
-                        <i class="fab fa-pinterest mr-1"></i> Pinterest & Idées Enseignants
+                        <i class="fab fa-pinterest mr-1"></i> {{ _("Pinterest & Idées Enseignants") }}
                     </span>
                     <h3 class="title is-4 mb-2" style="color: #9f1239;">
                         {{ _("Sauvegardez ces fiches pour votre classe") }}
@@ -175,7 +170,7 @@
                         {{ _("Épinglez cette idée sur Pinterest pour aménager un coin lecture interactif où les élèves recommandent leurs livres préférés à leurs camarades.") }}
                     </p>
                     <div class="buttons">
-                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/fiche-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=fiche_lecture&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=fiche_lecture')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png'|urlencode }}&description={{ 'Fiches coup de cœur et avis de lecture à imprimer gratuits pour la classe (A4). Fanions de recommandation de livres entre élèves pour le coin bibliothèque et la BCD ! #TeamPE #Cycle2 #Cycle3 #RallyeLecture'|urlencode }}" 
+                        <a href="https://www.pinterest.com/pin/create/button/?url={{ ('https://livresenclasse.com/' ~ (g.lang_code or 'fr') ~ '/ressources/fiche-de-lecture-a-imprimer?mtm_source=pinterest&mtm_medium=social&mtm_campaign=printables&mtm_content=fiche_lecture&utm_source=pinterest&utm_medium=social&utm_campaign=printables&utm_content=fiche_lecture')|urlencode }}&media={{ 'https://livresenclasse.com/static/image/pinterest/fiche-de-lecture-a-imprimer.png'|urlencode }}&description={{ _("Fiches coup de cœur et avis de lecture à imprimer gratuits pour la classe (A4). Fanions de recommandation de livres entre élèves pour le coin bibliothèque et la BCD ! #TeamPE #Cycle2 #Cycle3 #RallyeLecture")|urlencode }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            id="pin-button-fa"
@@ -195,9 +190,9 @@
 
         <!-- Guide Pédagogique -->
         <div class="content mb-6">
-            <h2 class="title is-3" style="color: #1e293b;">
+            <h1 class="title is-3" style="color: #1e293b;">
                 {{ _("Comment animer les recommandations littéraires entre élèves ?") }}
-            </h2>
+            </h1>
             <p>
                 {{ _("La recommandation par les pairs est l'un des moyens les plus efficaces pour déclencher l'envie de lire chez un enfant. Ces fiches « Coup de cœur » se découpent en fanions verticaux que l'élève glisse directement à l'intérieur du livre qu'il a adoré.") }}
             </p>

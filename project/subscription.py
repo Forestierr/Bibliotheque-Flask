@@ -72,6 +72,8 @@ def premium_required(f):
     return decorated_function
 
 
+@subscription.route("/pricing")
+@subscription.route("/preise")
 @subscription.route("/tarifs")
 def tarifs():
     """Page publique présentant les offres, les fonctionnalités et les tarifs."""
@@ -407,6 +409,8 @@ def facture_acquittee():
     return redirect(url_for("auth.reglage"))
 
 
+@subscription.route("/subscription/school-invoice", methods=["GET", "POST"])
+@subscription.route("/subscription/schulrechnung", methods=["GET", "POST"])
 @subscription.route("/subscription/facture-ecole", methods=["GET", "POST"])
 @login_required
 def facture_ecole():

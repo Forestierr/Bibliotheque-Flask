@@ -4,8 +4,8 @@
 
 {% extends "base.html" %}
 
-{% block title %}{{ _("Comment classer les livres de sa bibliothèque de classe ?") }}{% endblock %}
-{% block meta_description %}{{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.") }}{% endblock %}
+{% block title %}Wie ordnet man Bücher in der Klassenbibliothek? | Livres en Classe{% endblock %}
+{% block meta_description %}Wie organisiert man Bücher im Klassenzimmer? Unser umfassender Leitfaden zu Genres, Themenkisten, Lesestufen, Farbaufklebern und digitaler Ausleihverwaltung.{% endblock %}
 
 {% block head_extra %}
 <script type="application/ld+json">
@@ -16,8 +16,8 @@
     "@type": "WebPage",
     "@id": "{{ lang_url('de', external=True) }}"
   },
-  "headline": {{ _("Comment classer les livres de sa bibliothèque de classe ?")|tojson }},
-  "description": {{ _("Comment organiser les livres de sa classe ? Découvrez notre guide de classement de plus de 1300 mots : genres, thèmes, gommettes et gestion de BCD.")|tojson }},
+  "headline": "Wie ordnet man Bücher in der Klassenbibliothek?",
+  "description": "Wie organisiert man Bücher im Klassenzimmer? Unser umfassender Leitfaden zu Genres, Themenkisten, Lesestufen, Farbaufklebern und digitaler Ausleihverwaltung.",
   "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
   "author": {
     "@type": "Organization",
@@ -202,8 +202,8 @@
                 <ol>
                     <li><strong>Aussortieren:</strong> Beschädigte, veraltete oder unpassende Bücher konsequent entfernen.</li>
                     <li><strong>Kisten beschriften:</strong> Nutzen Sie Schrift und Symbolkarten. Nutzen Sie unsere <a href="{{ url_for('ressource.index') }}">kostenlosen druckbaren Vorlagen</a> für Etiketten.</li>
-                    <li><strong>Bücher markieren:</strong> Farbpunkte auf den Rücken kleben oder den Schülern ein praktisches <a href="{{ url_for('ressource.marque_pages') }}">Ausleih-Lesezeichen</a> mitgeben.</li>
-                    <li><strong>Die Klasse einführen:</strong> Widmen Sie den Regeln eine eigene Stunde und hängen Sie unsere <a href="{{ url_for('ressource.charte') }}">Leseecken-Charta</a> gut sichtbar auf.</li>
+                    <li><strong>Bücher markieren:</strong> Farbpunkte auf den Rücken kleben oder den Schülern ein praktisches <a href="{{ url_for('ressource.marque_pages_a_imprimer') }}">Ausleih-Lesezeichen</a> mitgeben.</li>
+                    <li><strong>Die Klasse einführen:</strong> Widmen Sie den Regeln eine eigene Stunde und hängen Sie unsere <a href="{{ url_for('ressource.charte_coin_lecture_a_imprimer') }}">Leseecken-Charta</a> gut sichtbar auf.</li>
                 </ol>
 
                 <hr class="my-6">

@@ -2,6 +2,9 @@
 
 {% extends "ressources/base_editor.html" %}
 
+{% block title %}{{ _("Étiquettes de genres et bacs à livres à imprimer | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Créez et imprimez des étiquettes de bacs et cotes pour votre bibliothèque de classe à partir de vos tags ou de nos modèles personnalisables.") }}{% endblock %}
+
 {% block studio_title %}{{ _("Étiquettes de Genres & Bacs") }}{% endblock %}
 {% block sheet_orientation %}portrait{% endblock %}
 
@@ -68,8 +71,8 @@
     <div class="etiquette-bac">
         <div class="etiquette-bac-icon" style="color: #2563eb; background: #eff6ff;"><i class="fas fa-feather-alt"></i></div>
         <div>
-            <div class="etiquette-bac-title editable">ROMANS</div>
-            <div class="etiquette-bac-desc editable">Récits, aventures, policier, imaginaire</div>
+            <div class="etiquette-bac-title editable">{{ _("ROMANS") }}</div>
+            <div class="etiquette-bac-desc editable">{{ _("Récits, aventures, policier, imaginaire") }}</div>
         </div>
     </div>
 
@@ -77,8 +80,8 @@
     <div class="etiquette-bac">
         <div class="etiquette-bac-icon" style="color: #d97706; background: #fef3c7;"><i class="fas fa-comment-dots"></i></div>
         <div>
-            <div class="etiquette-bac-title editable">BANDES DESSINÉES</div>
-            <div class="etiquette-bac-desc editable">Planches, bulles et aventures illustrées</div>
+            <div class="etiquette-bac-title editable">{{ _("BANDES DESSINÉES") }}</div>
+            <div class="etiquette-bac-desc editable">{{ _("Planches, bulles et aventures illustrées") }}</div>
         </div>
     </div>
 
@@ -86,8 +89,8 @@
     <div class="etiquette-bac">
         <div class="etiquette-bac-icon" style="color: #059669; background: #ecfdf5;"><i class="fas fa-book-open"></i></div>
         <div>
-            <div class="etiquette-bac-title editable">ALBUMS JEUNESSE</div>
-            <div class="etiquette-bac-desc editable">Belles illustrations et histoires à partager</div>
+            <div class="etiquette-bac-title editable">{{ _("ALBUMS JEUNESSE") }}</div>
+            <div class="etiquette-bac-desc editable">{{ _("Belles illustrations et histoires à partager") }}</div>
         </div>
     </div>
 
@@ -95,8 +98,8 @@
     <div class="etiquette-bac">
         <div class="etiquette-bac-icon" style="color: #0891b2; background: #ecfeff;"><i class="fas fa-globe-europe"></i></div>
         <div>
-            <div class="etiquette-bac-title editable">DOCUMENTAIRES</div>
-            <div class="etiquette-bac-desc editable">Sciences, animaux, histoire, nature, espace</div>
+            <div class="etiquette-bac-title editable">{{ _("DOCUMENTAIRES") }}</div>
+            <div class="etiquette-bac-desc editable">{{ _("Sciences, animaux, histoire, nature, espace") }}</div>
         </div>
     </div>
 
@@ -104,8 +107,8 @@
     <div class="etiquette-bac">
         <div class="etiquette-bac-icon" style="color: #e11d48; background: #fff1f2;"><i class="fas fa-fire"></i></div>
         <div>
-            <div class="etiquette-bac-title editable">MANGAS</div>
-            <div class="etiquette-bac-desc editable">Lectures rythmées de droite à gauche</div>
+            <div class="etiquette-bac-title editable">{{ _("MANGAS") }}</div>
+            <div class="etiquette-bac-desc editable">{{ _("Lectures rythmées de droite à gauche") }}</div>
         </div>
     </div>
 
@@ -113,8 +116,8 @@
     <div class="etiquette-bac">
         <div class="etiquette-bac-icon" style="color: #7c3aed; background: #f5f3ff;"><i class="fas fa-hat-wizard"></i></div>
         <div>
-            <div class="etiquette-bac-title editable">CONTES & LÉGENDES</div>
-            <div class="etiquette-bac-desc editable">Magie, mythologie, fées et fables</div>
+            <div class="etiquette-bac-title editable">{{ _("CONTES & LÉGENDES") }}</div>
+            <div class="etiquette-bac-desc editable">{{ _("Magie, mythologie, fées et fables") }}</div>
         </div>
     </div>
 </div>
@@ -122,14 +125,14 @@
 <!-- Mode 2 : Tranches / Cotes (Caché par défaut) -->
 <div class="etiquettes-tranches-grid" id="gridTranches" style="display: none;">
     {% for genre, icon, color in [
-        ('ROMAN', 'fa-feather-alt', '#2563eb'),
-        ('BD', 'fa-comment-dots', '#d97706'),
-        ('ALBUM', 'fa-book-open', '#059669'),
-        ('DOC', 'fa-globe-europe', '#0891b2'),
-        ('MANGA', 'fa-fire', '#e11d48'),
-        ('CONTE', 'fa-hat-wizard', '#7c3aed'),
-        ('POÉSIE', 'fa-theater-masks', '#db2777'),
-        ('PREM. LECT', 'fa-smile', '#16a34a')
+        (_('ROMAN'), 'fa-feather-alt', '#2563eb'),
+        (_('BD'), 'fa-comment-dots', '#d97706'),
+        (_('ALBUM'), 'fa-book-open', '#059669'),
+        (_('DOC'), 'fa-globe-europe', '#0891b2'),
+        (_('MANGA'), 'fa-fire', '#e11d48'),
+        (_('CONTE'), 'fa-hat-wizard', '#7c3aed'),
+        (_('POÉSIE'), 'fa-theater-masks', '#db2777'),
+        (_('PREM. LECT'), 'fa-smile', '#16a34a')
     ] %}
     {% for i in range(3) %}
     <div class="etiquette-tranche" style="border-left: 5px solid {{ color }};">
@@ -157,9 +160,14 @@ function switchFormat(fmt) {
 }
 
 function setFirstEtiquette(tagName) {
-    const firstTitle = document.querySelector('.etiquette-bac-title');
-    if (firstTitle) {
-        firstTitle.textContent = tagName.toUpperCase();
+    const label = tagName.toUpperCase();
+    const isTranches = document.getElementById('gridTranches').style.display !== 'none';
+    if (isTranches) {
+        const firstTranche = document.querySelector('#gridTranches .etiquette-tranche span');
+        if (firstTranche) firstTranche.textContent = label;
+    } else {
+        const firstTitle = document.querySelector('.etiquette-bac-title');
+        if (firstTitle) firstTitle.textContent = label;
     }
 }
 </script>

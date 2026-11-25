@@ -23,12 +23,16 @@ def handle_htmx_boost(response):
     return response
 
 
+@ressource.route("/resources")
+@ressource.route("/ressourcen")
 @ressource.route("/ressources")
 def index():
     """Catalogue principal des ressources pédagogiques et outils imprimables."""
     return render_template("ressources/index.html")
 
 
+@ressource.route("/resources/printable-reading-certificate")
+@ressource.route("/ressourcen/leseurkunde-zum-ausdrucken")
 @ressource.route("/ressources/diplome-de-lecture-a-imprimer")
 def diplome_de_lecture_a_imprimer():
     """Générateur de diplôme de lecture personnalisé."""
@@ -92,6 +96,8 @@ def diplome():
     )
 
 
+@ressource.route("/resources/printable-reading-bookmarks")
+@ressource.route("/ressourcen/lesezeichen-zum-ausdrucken")
 @ressource.route("/ressources/marque-pages-a-imprimer")
 def marque_pages_a_imprimer():
     """Générateur de marque-pages Emprunt & Avis (4 par page A4)."""
@@ -105,6 +111,8 @@ def marque_pages():
     return redirect(url_for("ressource.marque_pages_a_imprimer", **args), code=301)
 
 
+@ressource.route("/resources/printable-reading-corner-poster")
+@ressource.route("/ressourcen/leseecke-regeln-plakat")
 @ressource.route("/ressources/charte-coin-lecture-a-imprimer")
 def charte_coin_lecture_a_imprimer():
     """Générateur de la Charte du Coin Lecture (A4 / A3)."""
@@ -120,6 +128,8 @@ def charte():
     )
 
 
+@ressource.route("/resources/printable-reading-bingo")
+@ressource.route("/ressourcen/lesebingo-zum-ausdrucken")
 @ressource.route("/ressources/defi-lecture-bingo-a-imprimer")
 def defi_lecture_bingo_a_imprimer():
     """Générateur de Bingo / Défi de lecture personnalisé."""
@@ -151,6 +161,8 @@ def etiquettes():
     )
 
 
+@ressource.route("/resources/printable-book-review-cards")
+@ressource.route("/ressourcen/buchtipp-karten-zum-ausdrucken")
 @ressource.route("/ressources/fiche-de-lecture-a-imprimer")
 def fiche_de_lecture_a_imprimer():
     """Générateur de fiches « Coup de cœur » et fanions de recommandation."""
@@ -187,6 +199,8 @@ def codes_barres():
     )
 
 
+@ressource.route("/resources/printable-reading-passport")
+@ressource.route("/ressourcen/lesepass-zum-ausdrucken")
 @ressource.route("/ressources/passeport-de-lecture-a-imprimer")
 def passeport_de_lecture_a_imprimer():
     """Générateur de Passeport de Lecture pliable en livret A5."""
@@ -202,6 +216,8 @@ def passeport():
     )
 
 
+@ressource.route("/resources/pdf-to-booklet-converter")
+@ressource.route("/ressourcen/pdf-broschuere-konverter")
 @ressource.route("/ressources/convertisseur-pdf-livret-a5-a-imprimer")
 def convertisseur_pdf_livret():
     """Outil d'imposition PDF en livret A5 imprimable (gratuit)."""
@@ -217,6 +233,8 @@ def redirect_livret_pdf():
     return redirect(url_for("ressource.convertisseur_pdf_livret", **args), code=301)
 
 
+@ressource.route("/resources/<path:ressource_slug>")
+@ressource.route("/ressourcen/<path:ressource_slug>")
 @ressource.route("/ressources/<path:ressource_slug>")
 def ressource_article(ressource_slug):
     """Fallback pour d'éventuels guides éditoriaux statiques."""

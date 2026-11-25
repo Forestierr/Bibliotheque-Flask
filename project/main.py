@@ -491,6 +491,8 @@ def feedback():
     )
 
 
+@main.route("/legal")
+@main.route("/impressum")
 @main.route("/mentions_legales")
 @main.route("/mentions-legales")
 def mentions_legales():
@@ -498,12 +500,14 @@ def mentions_legales():
 
 
 @main.route("/about")
+@main.route("/ueber-uns")
 @main.route("/apropos")
 def apropos():
     return render_template("apropos.html")
 
 
 @main.route("/help")
+@main.route("/hilfe")
 @main.route("/aide")
 def aide():
     return render_template("aide.html")
@@ -535,11 +539,15 @@ def blog_article(article_slug):
     return render_editorial_template("blog", article_slug, _("Article non trouvé"))
 
 
+@main.route("/teachers")
+@main.route("/lehrkraefte")
 @main.route("/enseignants")
 def enseignants_index():
     return render_template("enseignants/index.html")
 
 
+@main.route("/teachers/<path:guide_slug>")
+@main.route("/lehrkraefte/<path:guide_slug>")
 @main.route("/enseignants/<path:guide_slug>")
 def enseignants_guide(guide_slug):
     return render_editorial_template("enseignants", guide_slug, _("Guide non trouvé"))
