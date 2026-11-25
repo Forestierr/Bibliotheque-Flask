@@ -122,7 +122,7 @@
             {% endblock %}
 
             <div class="mt-4 pt-4" style="border-top: 1px solid var(--res-border);">
-                <button type="button" class="button is-light is-small is-fullwidth" id="btnResetStudio">
+                <button type="button" class="button is-light is-small is-fullwidth" id="btnResetStudio" data-confirm-reset="{{ _('Voulez-vous réinitialiser tous les champs avec les valeurs par défaut ?') }}">
                     <span class="icon is-small"><i class="fas fa-undo"></i></span>
                     <span>{{ _("Réinitialiser les valeurs par défaut") }}</span>
                 </button>
@@ -134,7 +134,7 @@
             </a>
         </aside>
 
-        <main class="studio-canvas-container" id="studioPreviewContainer">
+        <div class="studio-canvas-container" id="studioPreviewContainer" role="region" aria-label="{{ _('Aperçu A4 en direct') }}">
             <div class="studio-mobile-preview-notice studio-mobile-only no-print">
                 <span class="tag is-info is-light has-text-weight-bold">
                     <i class="fas fa-file-alt mr-2"></i>{{ _("Aperçu A4 en direct") }}
@@ -173,7 +173,7 @@
                 <!-- Contenu rendu de la feuille A4 -->
                 {% endblock %}
             </div>
-        </main>
+        </div>
     </div>
 </div>
 

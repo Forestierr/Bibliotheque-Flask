@@ -2,6 +2,9 @@
 
 {% extends "ressources/base_editor.html" %}
 
+{% block title %}{{ _("Générateur de codes-barres livres et élèves à imprimer | Livres en Classe") }}{% endblock %}
+{% block meta_description %}{{ _("Imprimez des planches de codes-barres Code 128 vectoriels pour vos livres sans ISBN et vos cartes d'emprunt élèves.") }}{% endblock %}
+
 {% block studio_title %}{{ _("Générateur de Codes-Barres") }}{% endblock %}
 {% block sheet_orientation %}portrait{% endblock %}
 {% block sheet_extra_class %}multi-page{% endblock %}
@@ -109,13 +112,13 @@ BAC-B-002 | Charlie et la chocolaterie</textarea>
 const isPremiumUser = {{ 'true' if current_user.is_premium else 'false' }};
 const myBooks = [
     {% for b in books_list %}
-    { code: "{{ b.barcode or b.isbn or 'LIV-' ~ b.id }}", title: "{{ b.title|replace('"', '\\"') }}" },
+    { code: {{ (b.barcode or b.isbn or 'LIV-' ~ b.id)|tojson }}, title: {{ (b.title or '')|tojson }} },
     {% endfor %}
 ];
 
 const myStudents = [
     {% for s in students_list %}
-    { code: "ELEVE-{{ s.id }}", title: "{{ s.firstname }} {{ s.name }} ({{ _('Carte de Lecteur') }})" },
+    { code: {{ ('ELEVE-' ~ s.id)|tojson }}, title: {{ (s.firstname ~ ' ' ~ s.name ~ ' (' ~ _('Carte de Lecteur') ~ ')')|tojson }} },
     {% endfor %}
 ];
 

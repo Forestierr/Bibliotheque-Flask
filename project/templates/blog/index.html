@@ -119,19 +119,52 @@
         margin-top: 1rem;
     }
     .blog-read-link:hover { color: hsl(217, 71%, 40%); }
+    .blog-filter-btn {
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.45rem 1.05rem;
+        border: 1px solid hsl(0, 0%, 86%);
+        background: white;
+        color: hsl(0, 0%, 38%);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .blog-filter-btn:hover, .blog-filter-btn.is-active {
+        background: hsl(217, 71%, 53%);
+        color: white;
+        border-color: hsl(217, 71%, 53%);
+    }
+    @media screen and (max-width: 640px) {
+        .blog-hero-card {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1.5rem;
+            gap: 1rem;
+        }
+    }
 </style>
 
 <section class="section">
     <div class="container" style="max-width: 940px; margin: 0 auto;">
 
         <!-- En-tête -->
-        <div class="has-text-centered mb-6">
+        <div class="has-text-centered mb-5">
             <h1 class="title is-2" style="font-weight: 800;">{{ _("Le Blog des Enseignants") }}</h1>
             <p class="subtitle is-5 has-text-grey">{{ _("Conseils, astuces et sélections littéraires pour votre classe") }}</p>
         </div>
 
+        <!-- Filtres par thème -->
+        <div class="is-flex is-justify-content-center mb-5" style="gap: 0.65rem; flex-wrap: wrap;">
+            <button type="button" class="blog-filter-btn is-active" onclick="filterBlog('all', this)">{{ _("Tous les articles") }}</button>
+            <button type="button" class="blog-filter-btn" onclick="filterBlog('gestion', this)">{{ _("Gestion & Outils") }}</button>
+            <button type="button" class="blog-filter-btn" onclick="filterBlog('organisation', this)">{{ _("Organisation") }}</button>
+            <button type="button" class="blog-filter-btn" onclick="filterBlog('pedagogie', this)">{{ _("Lecture & Pédagogie") }}</button>
+            <button type="button" class="blog-filter-btn" onclick="filterBlog('communaute', this)">{{ _("Vie du projet") }}</button>
+        </div>
+
         <!-- Article à la une -->
-        <div class="blog-hero-card">
+        <div class="blog-hero-card" data-blog-cat="gestion">
             <div style="width: 54px; height: 54px; border-radius: 14px; background: hsl(210, 60%, 90%); color: hsl(210, 50%, 45%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="fas fa-book-open fa-lg"></i>
             </div>
@@ -154,7 +187,7 @@
         <!-- Grille articles -->
         <div class="columns is-multiline">
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="organisation">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-organisation">{{ _("Organisation de classe") }}</span>
@@ -169,7 +202,7 @@
                 </div>
             </div>
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="communaute">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-communaute">{{ _("Communauté") }}</span>
@@ -184,14 +217,14 @@
                 </div>
             </div>
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="pedagogie">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-selection">{{ _("Sélection Littéraire") }}</span>
                         <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-title-link">{{ _("Les meilleurs livres pour le CP") }}</a>
                         <p class="blog-excerpt">{{ _("Notre sélection de romans et d'albums parfaitement adaptés pour les lecteurs débutants en cycle 2. Des titres choisis pour leur accessibilité et leur pouvoir d'accroche.") }}</p>
                         <div class="blog-meta">
-                            <span><i class="fas fa-clock"></i> {{ _("4 min") }}</span>
+                            <span><i class="fas fa-clock"></i> {{ _("8 min") }}</span>
                             <span><i class="fas fa-folder"></i> {{ _("Cycle 2") }}</span>
                         </div>
                         <a href="{{ url_for('main.blog_article', article_slug='meilleurs-livres-cp') }}" class="blog-read-link">{{ _("Lire") }} <i class="fas fa-arrow-right"></i></a>
@@ -199,7 +232,7 @@
                 </div>
             </div>
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="organisation">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-organisation">{{ _("Organisation") }}</span>
@@ -214,7 +247,7 @@
                 </div>
             </div>
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="pedagogie">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-pedagogie">{{ _("Pédagogie") }}</span>
@@ -229,7 +262,7 @@
                 </div>
             </div>
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="gestion">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-gestion">{{ _("Logiciel BCD") }}</span>
@@ -244,7 +277,7 @@
                 </div>
             </div>
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="gestion">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-organisation">{{ _("Scan & Inventaire") }}</span>
@@ -259,7 +292,7 @@
                 </div>
             </div>
 
-            <div class="column is-6">
+            <div class="column is-6 blog-item" data-blog-cat="gestion">
                 <div class="blog-card">
                     <div class="blog-card-body">
                         <span class="blog-tag tag-pedagogie">{{ _("Suivi des Prêts") }}</span>
@@ -276,7 +309,40 @@
 
         </div>
 
+        <!-- Passerelle vers les outils PDF imprimables gratuits -->
+        <div class="box mt-6 p-5" style="border-radius: 16px; border: 1px solid hsl(210, 50%, 88%); background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); box-shadow: none;">
+            <div class="columns is-vcentered">
+                <div class="column is-8">
+                    <h2 class="title is-4 mb-2">{{ _("Outils gratuits à imprimer pour votre classe") }}</h2>
+                    <p class="is-size-6 has-text-grey">
+                        {{ _("Passeports de lecture A5, diplômes personnalisés, bingos, charte du coin lecture et convertisseur PDF en livret prêts en 1 minute sans compte requis.") }}
+                    </p>
+                </div>
+                <div class="column is-4 has-text-right">
+                    <a href="{{ url_for('ressource.index') }}" class="button is-link is-rounded has-text-weight-bold">
+                        <span>{{ _("Voir les ressources") }}</span>
+                        <span class="icon is-small"><i class="fas fa-arrow-right"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
+
+<script>
+function filterBlog(category, btn) {
+    document.querySelectorAll('.blog-filter-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+
+    document.querySelectorAll('.blog-hero-card, .blog-item').forEach(item => {
+        if (category === 'all' || item.getAttribute('data-blog-cat') === category) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+</script>
 
 {% endblock %}

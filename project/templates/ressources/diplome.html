@@ -38,12 +38,12 @@
         <span>{{ _("Style & Thème") }}</span>
     </div>
     <div class="theme-swatches">
-        <div class="theme-swatch gold is-active" data-theme="gold" title="{{ _('Or Prestige') }}"></div>
-        <div class="theme-swatch blue" data-theme="blue" title="{{ _('Bleu Écolier') }}"></div>
-        <div class="theme-swatch green" data-theme="green" title="{{ _('Vert Aventure') }}"></div>
-        <div class="theme-swatch purple" data-theme="purple" title="{{ _('Violet Magique') }}"></div>
-        <div class="theme-swatch coral" data-theme="coral" title="{{ _('Corail Vif') }}"></div>
-        <div class="theme-swatch monochrome" data-theme="monochrome" title="{{ _('Noir & Blanc (À colorier)') }}"></div>
+        <button type="button" class="theme-swatch gold is-active" data-theme="gold" title="{{ _('Or Prestige') }}" aria-label="{{ _('Or Prestige') }}"></button>
+        <button type="button" class="theme-swatch blue" data-theme="blue" title="{{ _('Bleu Écolier') }}" aria-label="{{ _('Bleu Écolier') }}"></button>
+        <button type="button" class="theme-swatch green" data-theme="green" title="{{ _('Vert Aventure') }}" aria-label="{{ _('Vert Aventure') }}"></button>
+        <button type="button" class="theme-swatch purple" data-theme="purple" title="{{ _('Violet Magique') }}" aria-label="{{ _('Violet Magique') }}"></button>
+        <button type="button" class="theme-swatch coral" data-theme="coral" title="{{ _('Corail Vif') }}" aria-label="{{ _('Corail Vif') }}"></button>
+        <button type="button" class="theme-swatch monochrome" data-theme="monochrome" title="{{ _('Noir & Blanc (À colorier)') }}" aria-label="{{ _('Noir & Blanc (À colorier)') }}"></button>
     </div>
 </div>
 
@@ -253,7 +253,7 @@
             </svg>
         </div>
 
-        <p class="diplome-reason editable" id="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('Valorisez les progrès et fêtez chaque palier de lecture !') }}{% endif %}</p>
+        <p class="diplome-reason editable" id="diplomeReason">{% if read_count > 0 %}{{ _('pour avoir franchi avec brio le palier de') }} {{ read_count }} {{ _('livres lus dans la bibliothèque de classe !') }}{% else %}{{ _('pour sa curiosité, son autonomie et son engagement dans ses lectures de classe.') }}{% endif %}</p>
 
         <!-- Sceau / Médaille avec rubans -->
         <div class="diplome-rosette">

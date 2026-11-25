@@ -117,6 +117,10 @@
             font-size: 0.75rem;
             margin-right: 12px; /* Plus d'espace entre le chevron et le texte */
         }
+        .enseignants-hero-title {
+            font-size: clamp(1.85rem, 6vw, 3rem) !important;
+            line-height: 1.15 !important;
+        }
     </style>
 
     <section class="section">
@@ -124,7 +128,7 @@
             
             <!-- Hero Section -->
             <div class="has-text-centered mb-6">
-                <h1 class="title is-1">{{ _("Espace Enseignants") }}</h1>
+                <h1 class="title is-1 enseignants-hero-title">{{ _("Espace Enseignants") }}</h1>
                 <h2 class="subtitle is-3 mt-3">{{ _("Ressources, guides pédagogiques et outils de classe") }}</h2>
                 <p class="is-size-5 has-text-grey" style="max-width: 650px; margin: 0 auto; line-height: 1.6;">
                     {{ _("Retrouvez tout ce dont vous avez besoin pour structurer le coin lecture de votre classe, cataloguer vos livres et encourager l'autonomie de vos élèves au quotidien.") }}
@@ -153,8 +157,8 @@
                             <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
                             <ul style="list-style: none; margin-left: 0; padding-left: 0;">
                                 <li class="mb-4">
-                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="guide-link link-method">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Gérer les emprunts") }}
+                                    <a href="{{ url_for('main.blog_article', article_slug='suivi-emprunts-livres-eleves') }}" class="guide-link link-method">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Suivi des emprunts") }}
                                     </a>
                                     <p class="is-size-7 has-text-grey mt-1">{{ _("Mettre en place un système de prêt numérique efficace avec vos élèves.") }}</p>
                                 </li>
@@ -169,6 +173,12 @@
                                         <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Sélectionner ses livres") }}
                                     </a>
                                     <p class="is-size-7 has-text-grey mt-1">{{ _("Notre sélection de livres adaptés au cycle 2 pour enrichir votre bibliothèque.") }}</p>
+                                </li>
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.blog_article', article_slug='archivage-classe-fin-annee') }}" class="guide-link link-method">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Archiver sa classe en fin d'année") }}
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Clôturer sa promotion en gardant les bilans et en libérant le quota gratuit.") }}</p>
                                 </li>
                             </ul>
                         </div>
@@ -206,10 +216,16 @@
                                     <p class="is-size-7 has-text-grey mt-1">{{ _("Comment mettre en place un défi lecture motivant et bienveillant.") }}</p>
                                 </li>
                                 <li class="mb-4">
-                                    <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="guide-link link-pedagogy">
+                                    <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}#section-4" class="guide-link link-pedagogy">
                                         <i class="fas fa-chevron-right chevron-icon"></i>{{ _("La lecture à haute voix") }}
                                     </a>
                                     <p class="is-size-7 has-text-grey mt-1">{{ _("Conseils pour pratiquer la lecture offerte et développer l'imaginaire de vos élèves.") }}</p>
+                                </li>
+                                <li class="mb-4">
+                                    <a href="{{ url_for('ressource.passeport_de_lecture_a_imprimer') }}" class="guide-link link-pedagogy">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Passeport & Diplômes PDF") }}
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Imprimez gratuitement passeports A5, bingos lecture et diplômes personnalisés.") }}</p>
                                 </li>
                             </ul>
                         </div>
@@ -235,7 +251,7 @@
                             <hr class="my-4" style="background-color: hsl(0, 0%, 96%);">
                             <ul style="list-style: none; margin-left: 0; padding-left: 0;">
                                 <li class="mb-4">
-                                    <a href="{{ url_for('main.index') }}" class="guide-link link-tech">
+                                    <a href="{{ url_for('main.index', home=1) }}" class="guide-link link-tech">
                                         <i class="fas fa-chevron-right chevron-icon"></i>Livres en Classe
                                     </a>
                                     <p class="is-size-7 has-text-grey mt-1">{{ _("Notre application gratuite pour scanner vos ISBN et prêter vos livres.") }}</p>
@@ -244,16 +260,22 @@
                                     <a href="{{ url_for('ressource.index') }}" class="guide-link link-tech">
                                         <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Ressources & Outils imprimables") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Diplômes, marque-pages, affiches, étiquettes et liens vérifiés pour enseignants.") }}</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Diplômes, marque-pages, affiches, étiquettes et convertisseur livret A5.") }}</p>
                                 </li>
                                 <li class="mb-4">
-                                    <a href="{{ url_for('main.blog_article', article_slug='gestion-bibliotheque-classe') }}" class="guide-link link-tech">
-                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Guide de l'application") }}
+                                    <a href="{{ url_for('main.blog_article', article_slug='application-scan-code-barre-livre') }}" class="guide-link link-tech">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Scanner sans douchette") }}
                                     </a>
-                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Comment utiliser Livres en Classe pour gérer emprunts et catalogue numérique.") }}</p>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Comment cataloguer vos ouvrages avec l'appareil photo du téléphone.") }}</p>
                                 </li>
                                 <li class="mb-4">
-                                    <a href="{{ url_for('main.index') }}#comparatif" class="guide-link link-tech">
+                                    <a href="{{ url_for('main.blog_article', article_slug='logiciel-bcd-ecole') }}" class="guide-link link-tech">
+                                        <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Choisir un logiciel BCD") }}
+                                    </a>
+                                    <p class="is-size-7 has-text-grey mt-1">{{ _("Critères et comparatif des solutions pour écoles et classes primaires.") }}</p>
+                                </li>
+                                <li class="mb-4">
+                                    <a href="{{ url_for('main.index', home=1) }}#comparatif" class="guide-link link-tech">
                                         <i class="fas fa-chevron-right chevron-icon"></i>{{ _("Comparatif Excel vs Application") }}
                                     </a>
                                     <p class="is-size-7 has-text-grey mt-1">{{ _("Pourquoi abandonner les tableurs pour la gestion de vos livres scolaires.") }}</p>
@@ -268,16 +290,21 @@
             <!-- Bottom CTA Section -->
             <div class="box mt-6 p-6" style="border-radius: 16px; border: 1px solid hsl(0, 0%, 93%); background-color: hsl(0, 0%, 98.5%); box-shadow: none;">
                 <div class="columns is-vcentered">
-                    <div class="column is-8">
+                    <div class="column is-7">
                         <h3 class="title is-3 mb-2" style="font-weight: 700;">{{ _("Besoin d'un outil de suivi pour vos élèves ?") }}</h3>
                         <p class="is-size-5 has-text-grey">
-                            {{ _("Gérez les prêts de livres, inscrivez vos classes et visualisez les statistiques de lecture globale en quelques clics.") }}
+                            {{ _("Gérez les prêts de livres, inscrivez vos classes et profitez du financement école/mairie en 1 clic.") }}
                         </p>
                     </div>
-                    <div class="column is-4 has-text-centered">
-                        <a href="{{ url_for('auth.signup') }}" class="button is-link is-large is-rounded" style="font-weight: 600;">
-                            {{ _("Créer mon espace") }}
-                        </a>
+                    <div class="column is-5 has-text-centered">
+                        <div class="buttons is-centered">
+                            <a href="{{ url_for('auth.signup') }}" class="button is-link is-medium is-rounded" style="font-weight: 600;">
+                                {{ _("Créer mon espace") }}
+                            </a>
+                            <a href="{{ url_for('subscription.tarifs') }}" class="button is-light is-medium is-rounded" style="font-weight: 600;">
+                                {{ _("Financement école") }}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -441,7 +441,7 @@ label.ck {
                         {{ _("Choisissez toujours « Taille réelle (100 %%) », « Recto-Verso » et retournement sur le « Bord court ».")|replace("%%", "%") }}
                     </div>
 
-                    <button type="button" class="button is-ghost is-small p-0 mt-2 has-text-grey" onclick="setAppMode('advanced')">
+                    <button type="button" class="button is-ghost is-small p-0 mt-2 has-text-grey" style="white-space: normal; height: auto; text-align: left; justify-content: flex-start;" onclick="setAppMode('advanced')">
                         <span class="icon is-small"><i class="fas fa-cog"></i></span>
                         <span>{{ _("Besoin de réglages millimétriques ? Passer en mode avancé") }} &rarr;</span>
                     </button>
@@ -459,7 +459,7 @@ label.ck {
         </aside>
 
         <!-- Espace Canvas Prévisualisation -->
-        <main class="booklet-stage-container" id="stageContainer">
+        <div class="booklet-stage-container" id="stageContainer" role="region" aria-label="{{ _('Aperçu direct') }}">
             <div class="booklet-stage-view" id="stage">
                 <div class="booklet-dropzone" id="empty" onclick="$('#file').click()">
                     <div style="font-size: 2.8rem; color: #3b82f6; margin-bottom: 0.5rem;">
@@ -482,7 +482,7 @@ label.ck {
                 <span id="order"></span>
                 <span class="tag is-info is-light" id="orderBadge">{{ _("Aperçu direct") }}</span>
             </div>
-        </main>
+        </div>
     </div>
 </div>
 
@@ -512,9 +512,9 @@ label.ck {
     <div class="container" style="max-width: 960px; margin: 0 auto;">
 
         <div class="content mb-6">
-            <h2 class="title is-3" style="color: #1e293b;">
+            <h1 class="title is-3" style="color: #1e293b;">
                 {{ _("Comment imprimer et fabriquer un livret A5 en classe ?") }}
-            </h2>
+            </h1>
             <p class="is-size-6 has-text-grey">
                 {{ _("L'imposition est l'étape technique qui consiste à réorganiser l'ordre des pages pour que, une fois les feuilles pliées en deux et imbriquées, l'histoire ou le cours se lise dans le bon ordre (de la page 1 à la fin).") }}
             </p>

@@ -227,7 +227,7 @@
             <button class="filter-btn" onclick="filterResources('rituels', this)">{{ _("Rituels & Prêts") }}</button>
         </div>
 
-        <!-- Grille des 8 outils personnalisables -->
+        <!-- Grille des 9 outils personnalisables -->
         <div class="columns is-multiline mb-6" id="resourcesGrid">
 
             <!-- 1. Diplôme de Lecture -->
@@ -537,53 +537,6 @@ function filterResources(category, btn) {
         }
     });
 }
-
-function openModal(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('is-active');
-}
-
-function closeModal(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('is-active');
-}
-
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.modal.is-active').forEach(function (m) {
-            m.classList.remove('is-active');
-        });
-    }
-});
 </script>
-
-<!-- Modale Paywall Ressource Premium -->
-<div id="modalPremiumRessource" class="modal">
-    <div class="modal-background" onclick="closeModal('modalPremiumRessource')"></div>
-    <div class="modal-card" style="border-radius: 14px; overflow: hidden;">
-        <header class="modal-card-head" style="background: #fef3c7;">
-            <p class="modal-card-title has-text-warning-dark">
-                <span class="icon mr-2"><i class="fas fa-lock"></i></span>
-                {{ _("Outil réservé aux membres Premium") }}
-            </p>
-            <button class="delete" aria-label="close" onclick="closeModal('modalPremiumRessource')"></button>
-        </header>
-        <section class="modal-card-body">
-            <p class="mb-3">
-                {{ _("La génération personnalisée d'étiquettes pour bacs et cotes ainsi que les planches de codes-barres vectoriels sont réservées aux abonnés Premium et membres Fondateurs.") }}
-            </p>
-            <p class="has-text-grey is-size-7">
-                {{ _("Étiquetez votre classe et vos livres en quelques clics pour faciliter les prêts et l'autonomie de vos élèves.") }}
-            </p>
-        </section>
-        <footer class="modal-card-foot" style="justify-content: flex-end;">
-            <button class="button is-light" onclick="closeModal('modalPremiumRessource')">{{ _("Fermer") }}</button>
-            <a href="{{ url_for('subscription.tarifs') }}" class="button is-warning is-dark">
-                <span class="icon"><i class="fas fa-bolt"></i></span>
-                <span>{{ _("Découvrir les offres Premium (dès 3.- CHF/mois)") }}</span>
-            </a>
-        </footer>
-    </div>
-</div>
 
 {% endblock %}

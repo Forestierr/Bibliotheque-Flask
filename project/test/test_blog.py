@@ -189,3 +189,29 @@ def test_sitemap_contains_archivage_classe(client):
     assert "https://livresenclasse.com/fr/blog/archivage-classe-fin-annee" in xml
     assert "https://livresenclasse.com/en/blog/archivage-classe-fin-annee" in xml
     assert "https://livresenclasse.com/de/blog/archivage-classe-fin-annee" in xml
+
+
+def test_enseignants_and_blog_links_integrity(client):
+    """Vérifie la cohérence des liens sur /enseignants, les filtres du blog et l'ancre #rallye."""
+    res_ens = client.get("/fr/enseignants")
+    assert res_ens.status_code == 200
+    ens_html = res_ens.get_data(as_text=True)
+    assert "suivi-emprunts-livres-eleves" in ens_html
+    assert "archivage-classe-fin-annee" in ens_html
+    assert "application-scan-code-barre-livre" in ens_html
+    assert "logiciel-bcd-ecole" in ens_html
+    assert "?home=1#comparatif" in ens_html
+    assert "#rallye" in ens_html
+
+    res_blog = client.get("/fr/blog")
+    assert res_blog.status_code == 200
+    blog_html = res_blog.get_data(as_text=True)
+    assert "filterBlog" in blog_html
+    assert "data-blog-cat=" in blog_html
+    assert "/fr/ressources" in blog_html
+    assert "8 min" in blog_html
+
+    for lang in ("fr", "en", "de"):
+        art_html = client.get(f"/{lang}/blog/donner-envie-lire").get_data(as_text=True)
+        assert 'id="rallye"' in art_html
+        assert "/ressources/diplome-de-lecture-a-imprimer" in art_html

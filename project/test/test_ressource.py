@@ -515,6 +515,26 @@ def test_lead_magnets_seo_and_matomo_tracking(client):
         assert res_de.status_code == 200
         assert '"inLanguage": "de"' in res_de.get_data(as_text=True)
 
+    # Vérifier qu'aucun studio n'imbrique deux balises <main>
+    for single_main_url in (
+        "/fr/ressources/diplome-de-lecture-a-imprimer",
+        "/fr/ressources/convertisseur-pdf-livret-a5-a-imprimer",
+    ):
+        page_html = client.get(single_main_url).get_data(as_text=True)
+        assert page_html.count("<main") == 1, f"Nested <main> on {single_main_url}"
+
+    # Vérifier que diplome.html aligne bien le motif par défaut et utilise des <button> pour les thèmes
+    dip_html = client.get("/fr/ressources/diplome-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert '<button type="button" class="theme-swatch' in dip_html
+    assert (
+        dip_html.count(
+            "pour sa curiosité, son autonomie et son engagement dans ses lectures de classe."
+        )
+        >= 2
+    )
+
     # Vérifier également Bingo Lecture (SEO complet + alias EN/DE)
     for bingo_url, expected_lang in [
         ("/fr/ressources/defi-lecture-bingo-a-imprimer", "fr"),
