@@ -203,7 +203,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 _TEMPLATES_ROOT = Path(__file__).resolve().parent / "templates"
 
 _SITEMAP_BASELINE_LASTMOD = {
-    "index.html": "2026-11-23",
+    "index.html": "2026-11-27",
     "subscription/tarifs.html": "2026-11-25",
     "aide.html": "2026-09-13",
     "apropos.html": "2026-10-13",
@@ -212,7 +212,7 @@ _SITEMAP_BASELINE_LASTMOD = {
     "enseignants/index.html": "2026-11-25",
     "ressources/index.html": "2026-11-25",
     "ressources/marque_pages.html": "2026-11-25",
-    "ressources/diplome.html": "2026-11-25",
+    "ressources/diplome.html": "2026-11-27",
     "ressources/fiches_avis.html": "2026-11-25",
     "ressources/charte.html": "2026-11-25",
     "ressources/bingo.html": "2026-11-25",
@@ -231,7 +231,18 @@ _SITEMAP_BASELINE_LASTMOD = {
     "blog/meilleurs-livres-cp.html": "2026-11-25",
     "blog/suivi-emprunts-livres-eleves.html": "2026-11-25",
     "blog/de/application-scan-code-barre-livre.html": "2026-09-13",
+    "blog/de/archivage-classe-fin-annee.html": "2026-11-27",
+    "blog/de/comment-classer-livres.html": "2026-11-27",
+    "blog/de/gestion-bibliotheque-classe.html": "2026-11-27",
+    "blog/de/logiciel-bcd-ecole.html": "2026-11-27",
+    "blog/de/meilleurs-livres-cp.html": "2026-11-27",
+    "blog/de/suivi-emprunts-livres-eleves.html": "2026-11-27",
     "blog/en/application-scan-code-barre-livre.html": "2026-09-13",
+    "blog/en/archivage-classe-fin-annee.html": "2026-11-27",
+    "blog/en/comment-classer-livres.html": "2026-11-27",
+    "blog/en/gestion-bibliotheque-classe.html": "2026-11-27",
+    "blog/en/logiciel-bcd-ecole.html": "2026-11-27",
+    "blog/en/suivi-emprunts-livres-eleves.html": "2026-11-27",
 }
 
 _SITEMAP_PAGE_TEMPLATES = {
@@ -256,10 +267,27 @@ _SITEMAP_PAGE_TEMPLATES = {
 }
 
 
+@lru_cache(maxsize=1)
+def _has_full_git_history() -> bool:
+    """Vérifie que l'historique Git complet est disponible (excluant les clones shallow CI)."""
+    if not (_REPO_ROOT / ".git").exists():
+        return False
+    try:
+        is_shallow = subprocess.check_output(
+            ["git", "rev-parse", "--is-shallow-repository"],
+            cwd=_REPO_ROOT,
+            text=True,
+            timeout=2,
+        ).strip()
+        return is_shallow.lower() == "false"
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
 @lru_cache(maxsize=128)
 def _get_template_lastmod(rel_path: str) -> str:
     """Retourne la date ISO (YYYY-MM-DD) de dernière modification réelle d'un template."""
-    if (_REPO_ROOT / ".git").exists():
+    if _has_full_git_history():
         try:
             out = subprocess.check_output(
                 [
