@@ -1129,25 +1129,25 @@ def delete_unverified_users():
 
     cutoff = datetime.now(UTC) - timedelta(days=7)
 
-    unverified_users = (
-        db.session.query(User)
-        .filter(User.is_verified.is_(False), User.created_at < cutoff)
-        .all()
-    )
-
-    count = len(unverified_users)
-    if count == 0:
-        return 0
-
-    for user in unverified_users:
-        db.session.delete(user)
-
     try:
+        unverified_users = (
+            db.session.query(User)
+            .filter(User.is_verified.is_(False), User.created_at < cutoff)
+            .all()
+        )
+
+        count = len(unverified_users)
+        if count == 0:
+            return 0
+
+        for user in unverified_users:
+            db.session.delete(user)
+
         db.session.commit()
+        return count
     except Exception:
         db.session.rollback()
         raise
-    return count
 
 
 def get_books_read_by_students(current_user_id, date_from, date_to):

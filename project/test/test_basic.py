@@ -295,3 +295,35 @@ def test_healthy_and_healthz_endpoint(client):
         assert data["database"] == "healthy"
         assert "server" in data
         assert "timestamp" in data
+
+
+def test_cleanup_unverified_accounts_skips_healthy_and_isolates_errors():
+    """Vérifie que cleanup_unverified_accounts ignore /healthy|/healthz et ne corrompt pas db.session en cas d'erreur."""
+    app = create_app(
+        {
+            "TESTING": True,
+            "TEST_CLEANUP": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
+        }
+    )
+    client = app.test_client()
+
+    with patch("project.query.delete_unverified_users") as mock_cleanup:
+        for path in ("/healthy", "/healthz", "/fr/healthy", "/fr/healthz"):
+            res = client.get(path)
+            assert res.status_code == 200
+        mock_cleanup.assert_not_called()
+
+    def failing_cleanup():
+        from project import db
+
+        db.session.execute(db.text("SELECT * FROM nonexistent_table_trigger_error"))
+
+    with patch("project.query.delete_unverified_users", side_effect=failing_cleanup):
+        res_page = client.get("/")
+        assert res_page.status_code == 200
+
+        res_health = client.get("/healthy")
+        assert res_health.status_code == 200
+        assert res_health.get_json()["status"] == "ok"
