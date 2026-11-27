@@ -315,7 +315,13 @@ def create_app(test_config=None):
     @app.before_request
     def cleanup_unverified_accounts():
         """Supprime les comptes non vérifiés âgés de plus de 7 jours, une fois par jour."""
-        if app.config.get("TESTING"):
+        if app.config.get("TESTING") and not app.config.get("TEST_CLEANUP"):
+            return
+        if (
+            request.path.startswith("/static")
+            or request.path in ("/healthy", "/healthz")
+            or request.path.endswith(("/healthy", "/healthz"))
+        ):
             return
         now = datetime.now(UTC)
         if _last_cleanup["ts"] is None or now - _last_cleanup["ts"] > timedelta(days=1):
@@ -330,6 +336,8 @@ def create_app(test_config=None):
                         count,
                     )
             except Exception as e:  # noqa: BLE001
+                db.session.rollback()
+                db.session.remove()
                 app.logger.warning(
                     "Nettoyage automatique : reporté suite à une erreur : %s", e
                 )
