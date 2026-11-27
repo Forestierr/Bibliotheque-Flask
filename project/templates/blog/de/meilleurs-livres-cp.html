@@ -4,8 +4,8 @@
 
 {% extends "base.html" %}
 
-{% block title %}Die besten Bücher für die 1. Klasse: Empfehlungen & Tipps | Livres en Classe{% endblock %}
-{% block meta_description %}Welche Bücher eignen sich für Erstklässler? Entdecken Sie unsere kuratierte Auswahl nach Lesestufen und bewährte Erstlesereihen für die Grundschule.{% endblock %}
+{% block title %}Die besten Erstlesebücher für die 1. Klasse (mit ISBN): Empfehlungen für die Klassenbibliothek | Livres en Classe{% endblock %}
+{% block meta_description %}Welche Bücher eignen sich für die 1. Klasse in Primar- und Grundschule? Entdecken Sie 15 bewährte Erstlesebücher mit Autor, Verlag und ISBN nach Lesestufen für Ihre Klassenbibliothek.{% endblock %}
 
 {% block head_extra %}
 <script type="application/ld+json">
@@ -16,8 +16,8 @@
     "@type": "WebPage",
     "@id": "{{ lang_url('de', external=True) }}"
   },
-  "headline": "Die besten Bücher für die 1. Klasse: Buchempfehlungen und Praxistipps",
-  "description": "Welche Bücher eignen sich für Erstklässler? Entdecken Sie unsere kuratierte Auswahl nach Lesestufen und bewährte Erstlesereihen für die Grundschule.",
+  "headline": "Die besten Erstlesebücher für die 1. Klasse: Kuratierte Auswahl mit Autor, Verlag & ISBN",
+  "description": "Welche Bücher eignen sich für die 1. Klasse in Primar- und Grundschule? Entdecken Sie 15 bewährte Erstlesebücher mit Autor, Verlag und ISBN nach Lesestufen für Ihre Klassenbibliothek.",
   "image": "https://livresenclasse.com/static/image/icons/logo-w-512x512.png",
   "author": {
     "@type": "Organization",
@@ -33,8 +33,8 @@
     }
   },
   "inLanguage": "de",
-  "datePublished": "2024-09-15",
-  "dateModified": "2026-09-12"
+  "datePublished": "2024-09-15T00:00:00+02:00",
+  "dateModified": "2026-11-27T00:00:00+01:00"
 }
 </script>
 {% endblock %}
@@ -48,7 +48,7 @@
     <section class="section">
         <div class="container">
             <div class="columns is-centered">
-                
+
                 <!-- Inhaltsverzeichnis (Desktop: Left) -->
                 <div class="column is-3 is-hidden-touch">
                     <div style="position: sticky; top: 100px;">
@@ -56,10 +56,10 @@
                             <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
                             <ul class="menu-list" style="font-size: 0.95rem;">
                                 <li><a href="#section-1" style="color: #4a4a4a;">1. Leseentwicklung in der 1. Klasse</a></li>
-                                <li><a href="#section-2" style="color: #4a4a4a;">2. Erstlesereihen im Überblick</a></li>
-                                <li><a href="#section-3" style="color: #4a4a4a;">3. Buchempfehlungen nach Stufen</a></li>
-                                <li><a href="#section-4" style="color: #4a4a4a;">4. Kindersachbücher und Comics</a></li>
-                                <li><a href="#section-5" style="color: #4a4a4a;">5. Leseförderung im Klassenraum</a></li>
+                                <li><a href="#section-2" style="color: #4a4a4a;">2. Bewährte Erstlesereihen</a></li>
+                                <li><a href="#section-3" style="color: #4a4a4a;">3. Konkrete Buchliste nach Stufen</a></li>
+                                <li><a href="#section-4" style="color: #4a4a4a;">4. Sachbücher &amp; Erstlese-Comics</a></li>
+                                <li><a href="#section-5" style="color: #4a4a4a;">5. Klassenbücherei &amp; Ausleihe</a></li>
                             </ul>
                         </div>
                     </div>
@@ -67,24 +67,24 @@
 
                 <!-- Main Content -->
                 <div class="column is-7">
-                    
+
                     <nav class="breadcrumb" aria-label="breadcrumbs">
                       <ul>
                         <li><a href="{{ url_for('main.index') }}">Startseite</a></li>
                         <li><a href="{{ url_for('main.blog_index') }}">Blog</a></li>
-                        <li class="is-active"><a href="#" aria-current="page">Beste Bücher für die 1. Klasse</a></li>
+                        <li class="is-active"><a href="#" aria-current="page">Erstlesebücher 1. Klasse</a></li>
                       </ul>
                     </nav>
 
-                    <h1 class="title is-1 mb-5">Die besten Bücher für die 1. Klasse: Buchempfehlungen und Praxistipps</h1>
-                    <p class="subtitle is-5 has-text-grey">Lesezeit: 8 Min. | Von der Redaktion von Livres en Classe</p>
+                    <h1 class="title is-1 mb-5">Die besten Erstlesebücher für die 1. Klasse: Konkrete Empfehlungen mit ISBN für die Klassenbibliothek</h1>
+                    <p class="subtitle is-5 has-text-grey">Lesezeit: 8 Min. | Praxis-Auswahl für Primar- und Grundschule (DACH)</p>
 
             <div class="content is-medium mt-6">
                 <p>
-                    Das <strong>erste Schuljahr</strong> ist ein entscheidender Meilenstein im Leben eines Kindes. Hier werden die fundamentalen Grundlagen für das Lesen und Verstehen gelegt. Um Schulanfänger auf diesem spannenden Weg optimal zu begleiten, sind Bücher erforderlich, die exakt zu ihrer aktuellen Lesefähigkeit passen. Ein zu schwieriges Buch entmutigt rasch, während ein zu simples Buch keine motivierende Herausforderung bietet.
+                    Das <strong>erste Schuljahr</strong> (1. Klasse der Primar- oder Grundschule) ist der Moment, in dem aus einzelnen Lauten erste eigene Geschichten werden. Damit Leseanfängerinnen und Leseanfänger Vertrauen gewinnen, braucht Ihre <strong>Klassenbibliothek</strong> (oder <strong>Klassenbücherei</strong>) eine klug abgestufte Mischung: Bücher, die schon nach den ersten gelernten Buchstaben gelingen, und spannende Titel für die zweite Schuljahreshälfte.
                 </p>
                 <p>
-                    Welche Bücher gehören in die Klassenbibliothek der ersten Klasse? Wie können Sie Eltern bei der Buchauswahl beraten? Dieser Leitfaden bietet Ihnen eine sorgfältig zusammengestellte Auswahl bewährter Erstlesereihen und Titel, gegliedert nach dem Lernfortschritt im Schuljahr.
+                    Nachfolgend finden Sie eine praxiserprobte Auswahl konkreter Titel deutschsprachiger Kinderbuchverlage — inklusive <strong>Autor, Verlag und ISBN-13</strong>, damit Sie jeden Titel direkt bestellen oder per Barcode-Scan in Ihren Klassenbestand aufnehmen können.
                 </p>
 
                 <hr class="my-6">
@@ -94,120 +94,154 @@
                     <p class="menu-label" style="font-size: 0.8rem; font-weight: 700; color: #8892b0; letter-spacing: 1px; text-transform: uppercase;">Inhaltsverzeichnis</p>
                     <ul class="menu-list" style="font-size: 0.95rem;">
                         <li><a href="#section-1" style="color: #4a4a4a;">1. Leseentwicklung in der 1. Klasse</a></li>
-                        <li><a href="#section-2" style="color: #4a4a4a;">2. Erstlesereihen im Überblick</a></li>
-                        <li><a href="#section-3" style="color: #4a4a4a;">3. Buchempfehlungen nach Stufen</a></li>
-                        <li><a href="#section-4" style="color: #4a4a4a;">4. Kindersachbücher und Comics</a></li>
-                        <li><a href="#section-5" style="color: #4a4a4a;">5. Leseförderung im Klassenraum</a></li>
+                        <li><a href="#section-2" style="color: #4a4a4a;">2. Bewährte Erstlesereihen</a></li>
+                        <li><a href="#section-3" style="color: #4a4a4a;">3. Konkrete Buchliste nach Stufen</a></li>
+                        <li><a href="#section-4" style="color: #4a4a4a;">4. Sachbücher &amp; Erstlese-Comics</a></li>
+                        <li><a href="#section-5" style="color: #4a4a4a;">5. Klassenbücherei &amp; Ausleihe</a></li>
                     </ul>
                 </div>
 
-                <h2 id="section-1">1. Die Leseentwicklung im ersten Schuljahr verstehen</h2>
+                <h2 id="section-1">1. Die Leseentwicklung in der 1. Klasse verstehen</h2>
                 <p>
-                    Das Lesenlernen verläuft in dynamischen Phasen. Zwischen September und den Sommerferien vollzieht sich eine bemerkenswerte Entwicklung:
+                    Zwischen Schulanfang im Spätsommer und den Sommerferien durchlaufen Erstklässler drei typische Etappen:
                 </p>
                 <ul>
-                    <li><strong>Schuljahresbeginn (Herbst):</strong> Laut-Buchstaben-Zuordnung. Das Lesen ist streng lautierend und silbenbasiert. Sätze müssen sehr kurz und phonetisch klar aufgebaut sein.</li>
-                    <li><strong>Mitte des Schuljahres (Winter/Frühjahr):</strong> Häufige Sichtwörter werden automatisch erkannt, erste Lautverbindungen gemeistert. Das Zusammenschleifen gelingt flüssiger.</li>
-                    <li><strong>Schuljahresende (Frühsommer):</strong> Die meisten Konsonantenhäufungen sind gesichert. Erste kurze Textabschnitte werden mit natürlicher Betonung und gutem Sinnverständnis gelesen.</li>
+                    <li><strong>Schuljahresbeginn (Herbst):</strong> Erste Laut-Buchstaben-Zuordnungen und lautierendes Lesen. Ideal sind kurze Sätze in großer Fibelschrift sowie Bücher, bei denen Bilder schwierige Nomen ersetzen.</li>
+                    <li><strong>Mitte des Schuljahres (Winter):</strong> Häufige Funktionswörter werden zunehmend ganzheitlich erfasst, Silben lassen sich flüssiger zusammenschleifen. Jetzt tragen erste kurze Abschnitte.</li>
+                    <li><strong>Schuljahresende (Frühjahr/Sommer):</strong> Konsonantenhäufungen und Zwielaute sitzen sicherer. Viele Kinder greifen begeistert zu kurzen Kapiteln, Erstlese-Comics oder Sachbüchern.</li>
                 </ul>
 
                 <hr class="my-6">
 
-                <h2 id="section-2">2. Bewährte Erstlesereihen und Methoden</h2>
+                <h2 id="section-2">2. Bewährte Erstlesereihen und Konzepte im Überblick</h2>
                 <p>
-                    Renommierte Kinderbuchverlage bieten speziell abgestufte Lese-Konzepte:
+                    Für den gezielten Aufbau einer Klassenbücherei hat sich im deutschsprachigen Raum eine Kombination verschiedener Verlagsreihen bewährt:
                 </p>
 
-                <h3>Silbenmethode und farbige Silbentrennung</h3>
+                <h3>Tandem- und Bildwort-Konzepte (Loewe Bildermaus, Oetinger Lesestarter, cbj „Erst ich ein Stück, dann du“)</h3>
                 <p>
-                    Durch den zweifarbigen Wechsel der Silben (z. B. blau und rot) erkennen Leseanfänger Wortbausteine wesentlich schneller und überwinden Stockungen mühelos.
+                    Bei <em>Bildermaus</em> oder <em>Lesestarter</em> werden Hauptwörter durch kleine Illustrationen ersetzt — so lesen Kinder schon nach wenigen Wochen flüssige Sätze. Die Reihe <em>Erst ich ein Stück, dann du</em> kombiniert längere Vorleseabschnitte (für Lehrpersonen, Eltern oder Lesepatinnen) mit kurzen Erstleser-Passagen in großer Schrift.
                 </p>
 
-                <h3>Bildermaus / Leserabe mit Bildwörtern</h3>
+                <h3>Stufenmodelle mit Fibelschrift (Ravensburger Leserabe 1. Lesestufe, Loewe Leselöwen 1. Klasse, Oetinger Büchersterne)</h3>
                 <p>
-                    Hauptwörter werden durch kleine Illustrationen ersetzt. So können Schulanfänger mit der Lehrkraft oder den Eltern im Wechsel lesen und erleben sofort vollwertige Geschichten.
+                    Großzügiger Zeilenabstand, klare Druckschrift und kurze Sinnabschnitte entlasten das Auge. Viele Bände enthalten zudem kleine Leserätsel am Kapitelende, um das Textverständnis spielerisch zu sichern.
                 </p>
 
-                <h3>Große Fibelschrift mit viel Weißraum</h3>
+                <h3>Silbenmethode für unsichere Leserinnen und Leser</h3>
                 <p>
-                    Großzügige Zeilenabstände, serifenlose Druckschrift und klare Schriftbilder verhindern das visuelle Ermüden junger Augen.
+                    Ausgaben mit zweifarbiger Silbenmarkierung (oft blau/rot) machen Wortbausteine auf einen Blick sichtbar — besonders hilfreich in der individuellen Leseförderung und für Kinder mit DaZ-Hintergrund.
                 </p>
 
                 <hr class="my-6">
 
-                <h2 id="section-3">3. Buchempfehlungen nach Lesestufen</h2>
+                <h2 id="section-3">3. Konkrete Buchempfehlungen nach Lesestufen (mit ISBN)</h2>
 
                 <div class="box has-background-white-bis p-5">
-                    <h3 class="title is-4">Stufe 1: Die ersten Schritte (Herbst)</h3>
+                    <h3 class="title is-4">Stufe 1: Erste eigene Wörter &amp; gemeinsames Lesen (Herbst)</h3>
                     <p>
-                        Strikte Lauttreue und wiederkehrende Satzmuster für unmittelbare Erfolgserlebnisse.
+                        Sehr kurze Sätze, Bildwörter oder Tandem-Lesen für schnelle Erfolgserlebnisse ab den ersten Schulwochen.
                     </p>
                     <ul>
-                        <li><strong>"Hurra, ich bin ein Schulkind!"</strong>: Vertraute Schulerlebnisse zum Schulanfang.</li>
-                        <li><strong>"Mein kleiner Hund"</strong>: Lustige, kurze Tierabenteuer in Lautschrift.</li>
-                        <li><strong>"Das Baumhaus"</strong>: Ein bis zwei Sätze pro Doppelseite mit bildstarken Illustrationen.</li>
+                        <li>
+                            <strong>Bildermaus – Nur Mut, kleiner Dino!</strong> — Franziska Gehm (Ill. Alexander Bux), <em>Loewe Verlag</em>, ISBN <code>978-3-7855-6511-7</code> : Kurze, liebevoll illustrierte Sätze mit Bildwörtern für die allerersten Leseversuche.
+                        </li>
+                        <li>
+                            <strong>Die Olchis. Allein auf dem Müllberg</strong> (Reihe <em>Lesestarter</em>) — Erhard Dietl, <em>Verlag Friedrich Oetinger</em>, ISBN <code>978-3-7512-0218-3</code> : Humorvoller Einstieg mit Bild-Wort-Ersetzung, der besonders Lesemuffel sofort abholt.
+                        </li>
+                        <li>
+                            <strong>Erst ich ein Stück, dann du – Ein Drachenfreund für Linus</strong> — Patricia Schröder (Ill. Ute Krause), <em>cbj Verlag</em>, ISBN <code>978-3-570-17831-7</code> : Ideal für Lesepartner-Stunden in der Klasse oder gemeinsames Lesen zu Hause.
+                        </li>
+                        <li>
+                            <strong>Leserabe (1. Lesestufe) – Schulgeschichten</strong> — Julia Breitenöder (Ill. Cathy Ionescu), <em>Ravensburger Verlag</em>, ISBN <code>978-3-473-46252-0</code> : Kurze Geschichten aus dem Schulalltag in großer Fibelschrift.
+                        </li>
                     </ul>
                 </div>
 
                 <div class="box has-background-white-bis p-5 mt-4">
-                    <h3 class="title is-4">Stufe 2: Erste Textabschnitte (Winter)</h3>
+                    <h3 class="title is-4">Stufe 2: Erste kleine Textabschnitte (Winter)</h3>
                     <p>
-                        Erste Diphthonge und zusammengesetzte Wörter mit spannenderen Handlungssträngen.
+                        Abgeschlossene Mini-Geschichten, vertraute Klassenthemen und wachsende Wortvielfalt.
                     </p>
                     <ul>
-                        <li><strong>"Der Wackelzahn ist los!"</strong>: Ein Thema, das alle Erstklässler begeistert.</li>
-                        <li><strong>"Expedition ins Dinosauriermuseum"</strong>: Wissen spielerisch in Geschichten eingebettet.</li>
-                        <li><strong>"Ein Schultag voller Überraschungen"</strong>: Lebendiger Wortschatz in gut lesbarer Gliederung.</li>
+                        <li>
+                            <strong>Leserabe (1. Lesestufe) – Lea, die Neue in der Klasse</strong> — Manfred Mai (Ill. Jutta Berend), <em>Ravensburger Verlag</em>, ISBN <code>978-3-473-46443-2</code> : Einfühlsame Alltagsgeschichte über Freundschaft und Ankommen in der Klasse.
+                        </li>
+                        <li>
+                            <strong>Leselöwen 1. Klasse – Das beste erste Schuljahr</strong> — Anni Möwenthal (Ill. Lisa Hänsch), <em>Loewe Verlag</em>, ISBN <code>978-3-7432-0805-6</code> : Lebensnahe Episoden rund um das erste Schuljahr mit klarem Schriftbild.
+                        </li>
+                        <li>
+                            <strong>Büchersterne – Das Tier-ABC</strong> — Paul Maar (Text) &amp; Tina Schulte (Ill.), <em>Oetinger Verlag</em>, ISBN <code>978-3-7891-2355-9</code> : Sprachspielerische Verse und kurze Tiertexte für neugierige Erstleser.
+                        </li>
+                        <li>
+                            <strong>Erst ich ein Stück, dann du – Der kleine Drache Kokosnuss kommt in die Schule</strong> — Ingo Siegner, <em>cbj Verlag</em>, ISBN <code>978-3-570-15420-5</code> : Verbindet eine beliebte Serienfigur mit gut schaffbaren Erstlese-Passagen.
+                        </li>
                     </ul>
                 </div>
 
                 <div class="box has-background-white-bis p-5 mt-4">
-                    <h3 class="title is-4">Stufe 3: Auf dem Weg zur Selbstständigkeit (Frühjahr/Sommer)</h3>
+                    <h3 class="title is-4">Stufe 3: Kurze Kapitel &amp; Serienstart (Frühjahr/Sommer)</h3>
                     <p>
-                        Für geübte Schulanfänger, die ihre ersten richtigen kleinen Kinderkrimis und Abenteuer verschlingen.
+                        Für fortgeschrittene Erstklässlerinnen und Erstklässler, die bereits längere Handlungsbögen verfolgen.
                     </p>
                     <ul>
-                        <li><strong>"Das Geheimnis der alten Burg"</strong>: Spannende Detektivgeschichten mit kurzen Kapiteln.</li>
-                        <li><strong>"Abenteuer im magischen Baumhaus" (Erstleseausgabe)</strong>: Perfekt für den Einstieg in Buchserien.</li>
-                        <li><strong>"Die Klassenreise ans Meer"</strong>: Vorfreude auf gemeinsame Ferienerlebnisse.</li>
+                        <li>
+                            <strong>Leserabe (1. Lesestufe) – Fiete und die Piraten</strong> — Daniel Sohr, <em>Ravensburger Verlag</em>, ISBN <code>978-3-473-36132-8</code> : Spannendes Abenteuer mit klaren Kapiteln und Witz.
+                        </li>
+                        <li>
+                            <strong>Leselöwen 1. Klasse – Lesenacht im Klassenzimmer</strong> — Anna Taube (Ill. Elli Bruder), <em>Loewe Verlag</em>, ISBN <code>978-3-7432-0137-8</code> : Perfekt zur Vorbereitung auf eine Lesenacht oder als sommerliche Klassenlektüre.
+                        </li>
+                        <li>
+                            <strong>Büchersterne – Die Olchis auf dem Schulfest</strong> — Erhard Dietl, <em>Oetinger Verlag</em>, ISBN <code>978-3-7891-2389-4</code> : Etwas umfangreichere Erstlese-Geschichte mit gewohntem Olchi-Humor.
+                        </li>
+                        <li>
+                            <strong>Das magische Baumhaus junior (Band 1) – Abenteuer bei den Dinosauriern</strong> — Mary Pope Osborne (Übers. Sabine Rahn, Ill. Jutta Knipping), <em>Loewe Verlag</em>, ISBN <code>978-3-7855-8196-4</code> : Der Einstieg in die beliebte Buchreihe, speziell auf die 1. Klasse gekürzt und gesetzt.
+                        </li>
                     </ul>
                 </div>
 
                 <hr class="my-6">
 
-                <h2 id="section-4">4. Bildsachbücher und Erstlese-Comics</h2>
+                <h2 id="section-4">4. Kindersachbücher und Erstlese-Comics für die Klassenbibliothek</h2>
                 <p>
-                    Nicht jedes Kind begeistert sich sofort für fiktionale Erzählungen. Viele Schulanfänger finden ihren Leseantrieb über Fakten und Bilder.
+                    Nicht jedes Kind greift zuerst zu Erzählungen. Viele Kinder entdecken die Lesefreude über Sachfragen, Tierfakten oder Comics mit kurzen Sprechblasen.
                 </p>
 
-                <h3>Anschauliche Kindersachbücher</h3>
-                <p>
-                    Wissensreihen über Lieblingsthemen wie Ritter, Fahrzeuge, Tiere und Sterne bieten kurze Textblöcke und detailreiche Entdeckerbilder.
-                </p>
+                <h3>Sachbücher speziell für Leseanfänger</h3>
+                <ul>
+                    <li>
+                        <strong>Wieso? Weshalb? Warum? Erstleser – Dinosaurier</strong> — Carola von Kessel, <em>Ravensburger Verlag</em>, ISBN <code>978-3-473-60000-7</code> : Sachwissen in großer Erstleseschrift mit Klappen und klaren Infokästen.
+                    </li>
+                    <li>
+                        <strong>WAS IST WAS Erstes Lesen – Dinosaurier</strong> — Karin Bischoff, <em>Tessloff Verlag</em>, ISBN <code>978-3-7886-7744-2</code> : Kurze, verständliche Sachtexte, die das Sinnentnehmen früh trainieren.
+                    </li>
+                </ul>
 
-                <h3>Textarme Comics für Einsteiger</h3>
-                <p>
-                    Comics fördern das Verständnis für zeitliche Abfolgen. Sprechblasen halten die Textportionen kompakt und motivieren auch zögerliche Leser.
-                </p>
+                <h3>Preisgekrönte Erstlese-Comics</h3>
+                <ul>
+                    <li>
+                        <strong>Kiste (Band 1)</strong> — Patrick Wirbeleit (Ill. Uwe Heidschötter), <em>Kibitz Verlag</em> (ISBN <code>978-3-948690-23-6</code>) / Taschenbuch bei <em>Beltz &amp; Gelberg</em> (ISBN <code>978-3-407-81422-7</code>) : Kurze Sprechblasen, starke Bildfolgen und hoher Lesesog auch für zögerliche Leser.
+                    </li>
+                </ul>
 
                 <hr class="my-6">
 
-                <h2 id="section-5">5. So bringen Sie diese Bücher in der Klasse zur Geltung</h2>
+                <h2 id="section-5">5. Klassenbücherei organisieren, Ausleihliste führen &amp; Leselust belohnen</h2>
                 <p>
-                    Eine ansprechende Präsentation weckt die Leselust von ganz allein:
+                    Gute Bücher entfalten ihre Wirkung erst, wenn Kinder sie leicht finden und stolz ausleihen können:
                 </p>
                 <ul>
-                    <li><strong>Cover nach vorne zeigen:</strong> Präsentieren Sie die Bücher frontal in Buchkisten. Orientieren Sie sich an unserem Ratgeber <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}">Bücher in der Klassenbibliothek ordnen</a>.</li>
-                    <li><strong>Täglicher Vorlese-Teaser:</strong> Lesen Sie morgens 5 Minuten aus einem Buch vor und stoppen Sie an der spannendsten Stelle.</li>
-                    <li><strong>Lesepässe und Buchkarten:</strong> Lassen Sie Kinder gelesene Bücher mit unseren <a href="{{ url_for('ressource.fiche_de_lecture_a_imprimer') }}">Buchbewertungs-Karten</a> festhalten oder überreichen Sie eine <a href="{{ url_for('ressource.diplome_de_lecture_a_imprimer') }}">persönliche Leseurkunde</a>.</li>
-                    <li><strong>Beliebte Titel erfassen:</strong> Mit <a href="{{ url_for('main.index') }}">Livres en Classe</a> sehen Sie sofort, welche Bücher am häufigsten entliehen werden.</li>
+                    <li><strong>Nach Lesestufen und Themen ordnen:</strong> Kennzeichnen Sie die Rücken Ihrer Stufen 1–3 mit einfachen Farbpunkten. Tipps dazu finden Sie im Leitfaden <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}">Klassenbibliothek ordnen &amp; strukturieren</a>.</li>
+                    <li><strong>Lesepass &amp; Leselogbuch einsetzen:</strong> Geben Sie Ihren Kindern einen faltbaren <a href="{{ url_for('ressource.passeport_de_lecture_a_imprimer') }}">Lesepass zum Ausdrucken</a> mit und lassen Sie gelesene Lieblingsbücher auf <a href="{{ url_for('ressource.fiche_de_lecture_a_imprimer') }}">Buchbewertungs-Karten</a> festhalten.</li>
+                    <li><strong>Leseerfolge mit einer Leseurkunde würdigen:</strong> Belohnen Sie erreichte Meilensteine (z. B. 5 oder 10 gelesene Bücher) mit einer kostenlosen <a href="{{ url_for('ressource.diplome_de_lecture_a_imprimer') }}">Leseurkunde zum Ausdrucken</a>.</li>
+                    <li><strong>Ausleihliste ohne Zettelchaos:</strong> Statt handschriftlicher Listen scannen Sie die ISBNs dieser Erstlesebücher in <a href="{{ url_for('main.index') }}">Livres en Classe</a> direkt per Smartphone-Kamera und verfolgen die Buchausleihe in Sekunden.</li>
                 </ul>
 
                 <article class="message is-link mt-5">
                     <div class="message-body">
-                        <strong>Wussten Sie schon?</strong> Mit der <strong>Livres en Classe</strong> Web-App scannen Sie den ISBN-Barcode dieser Erstlesebücher in Sekunden und erfassen Ausleihen ohne lästigen Papierkram.
+                        <strong>Praxistipp für die 1. Klasse:</strong> Erfassen Sie die ISBNs Ihrer neuen Erstlesebücher direkt per Kamera-Scan in <strong>Livres en Classe</strong> (für bis zu 30 Schülerinnen und Schüler und 100 Bücher dauerhaft kostenlos, ohne Kreditkarte).
                         <br><br>
-                        <a href="{{ url_for('auth.signup') }}" class="button is-link">Klassenbestand jetzt anlegen</a>
+                        <a href="{{ url_for('auth.signup') }}" class="button is-link">Klassenbibliothek kostenlos anlegen</a>
                     </div>
                 </article>
 
@@ -215,7 +249,7 @@
 
                 <h2>Fazit</h2>
                 <p>
-                    Die passenden Bücher für Schulanfänger zu wählen, erfordert feines Gespür für den individuellen Lernstand. Mit einer bunten Mischung aus abgestuften Erstlesebüchern, motivierenden Sachbüchern und gemeinsamen Vorlesemomenten schenken Sie jedem Kind das ideale Rüstzeug, um stolz und voller Freude lesen zu lernen.
+                    Mit einer bewussten Mischung aus Bildwort-Büchern, abgestuften Erstlesereihen wie <em>Leserabe</em>, <em>Leselöwen</em> oder <em>Büchersterne</em> sowie Sachbüchern und Comics findet jedes Kind in der 1. Klasse ein passendes Buch. Verknüpfen Sie den Buchbestand mit einer klaren Ausleihroutine, einem motivierenden Lesepass und regelmäßiger Wertschätzung — so wächst aus den ersten erlesenen Wörtern echte Lesebegeisterung.
                 </p>
 
                 <!-- Lesetipps -->
@@ -225,15 +259,15 @@
                     <div class="columns">
                         <div class="column">
                             <a href="{{ url_for('main.blog_article', article_slug='donner-envie-lire') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
-                                <p class="is-size-7 has-text-grey mb-2">PÄDAGOGIK</p>
-                                <p class="has-text-weight-bold has-text-dark">Wie man Schülern Freude am Lesen vermittelt: Praxistipps und Rituale</p>
+                                <p class="is-size-7 has-text-grey mb-2">LESEFÖRDERUNG</p>
+                                <p class="has-text-weight-bold has-text-dark">Leselust bei Schülern wecken: Rituale, Lesepass &amp; Lesezeit</p>
                                 <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
                             </a>
                         </div>
                         <div class="column">
-                            <a href="{{ url_for('main.blog_article', article_slug='comment-classer-livres') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
-                                <p class="is-size-7 has-text-grey mb-2">ORGANISATION</p>
-                                <p class="has-text-weight-bold has-text-dark">Wie man Bücher in der Klassenbibliothek ordnet</p>
+                            <a href="{{ url_for('main.blog_article', article_slug='suivi-emprunts-livres-eleves') }}" class="box is-shadowless is-clickable has-background-white" style="border: 1px solid #eef0f5; height: 100%; transition: all 0.3s ease;">
+                                <p class="is-size-7 has-text-grey mb-2">AUSLEIHLISTE</p>
+                                <p class="has-text-weight-bold has-text-dark">Ausleihliste &amp; Buchausleihe in der Klassenbibliothek verwalten</p>
                                 <span class="icon has-text-link mt-2"><i class="fas fa-arrow-right"></i></span>
                             </a>
                         </div>

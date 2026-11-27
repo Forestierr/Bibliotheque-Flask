@@ -190,7 +190,7 @@ def test_query_param_language_selection():
         assert res.status_code == 200
         html = res.data.decode("utf-8")
         assert 'lang="en"' in html
-        assert "School Library Management Software" in html
+        assert "Free Classroom Library Management Software" in html
         with client.session_transaction() as sess:
             assert sess.get("lang") == "en"
 
@@ -199,7 +199,7 @@ def test_query_param_language_selection():
         assert res.status_code == 200
         html = res.data.decode("utf-8")
         assert 'lang="de"' in html
-        assert "Schulbibliothek-Verwaltungssoftware" in html
+        assert "Kostenlose Software zur Verwaltung von Klassenbibliotheken" in html
         with client.session_transaction() as sess:
             assert sess.get("lang") == "de"
 
@@ -845,3 +845,212 @@ def test_localized_seo_route_aliases_and_llms():
     assert "Deutsche Übersicht" in llms
     assert "/en/pricing" in llms
     assert "/de/preise" in llms
+
+
+def test_seo_tickets_t4_to_t8():
+    """Verify SEO fixes T-4 (OG/Twitter parity), T-5 (HTTPS og:url + og:locale:alternate),
+    T-6 (direct canonical resource links), T-7 (sitemap canonicals & real lastmod), and T-8 (EN/DE diploma dates).
+    """
+    import re
+    import xml.etree.ElementTree as ET
+
+    app = create_app(
+        {
+            "TESTING": True,
+            "TEST_REDIRECTS": True,
+            "SERVER_NAME": "livresenclasse.com",
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-seo-tickets",
+        }
+    )
+    client = app.test_client()
+
+    # T-4 & T-5: OG/Twitter meta parity, HTTPS og:url == canonical, 2 og:locale:alternate
+    sample_paths = [
+        "/fr/",
+        "/en/",
+        "/de/",
+        "/fr/blog/meilleurs-livres-cp",
+        "/en/blog/meilleurs-livres-cp",
+        "/de/blog/meilleurs-livres-cp",
+        "/fr/ressources/diplome-de-lecture-a-imprimer",
+        "/en/ressources/diplome-de-lecture-a-imprimer",
+        "/de/ressources/diplome-de-lecture-a-imprimer",
+        "/fr/tarifs",
+        "/en/aide",
+    ]
+    for path in sample_paths:
+        res = client.get(path)
+        assert res.status_code == 200, path
+        html = res.get_data(as_text=True)
+
+        title = re.search(r"<title>(.*?)</title>", html, re.DOTALL).group(1)
+        og_title = re.search(
+            r'<meta property="og:title" content="(.*?)"', html, re.DOTALL
+        ).group(1)
+        tw_title = re.search(
+            r'<meta name="twitter:title" content="(.*?)"', html, re.DOTALL
+        ).group(1)
+        assert title == og_title == tw_title, f"Title mismatch on {path}"
+
+        desc = re.search(
+            r'<meta name="description" content="(.*?)"', html, re.DOTALL
+        ).group(1)
+        og_desc = re.search(
+            r'<meta property="og:description" content="(.*?)"', html, re.DOTALL
+        ).group(1)
+        tw_desc = re.search(
+            r'<meta name="twitter:description" content="(.*?)"', html, re.DOTALL
+        ).group(1)
+        assert desc == og_desc == tw_desc, f"Description mismatch on {path}"
+
+        canonical = re.search(r'<link rel="canonical" href="(.*?)"', html).group(1)
+        og_url = re.search(r'<meta property="og:url" content="(.*?)"', html).group(1)
+        assert canonical == og_url and og_url.startswith("https://"), (
+            path,
+            canonical,
+            og_url,
+        )
+
+        alt_locales = re.findall(
+            r'<meta property="og:locale:alternate" content="(.*?)"', html
+        )
+        assert len(alt_locales) == 2, (path, alt_locales)
+
+    fr_blog = client.get("/fr/blog/meilleurs-livres-cp").get_data(as_text=True)
+    assert "Les Meilleurs Livres pour le CP" in re.search(
+        r'<meta property="og:title" content="(.*?)"', fr_blog, re.DOTALL
+    ).group(1)
+
+    # T-6: Homepage resource links point directly to final canonical URLs
+    for lang in ("fr", "en", "de"):
+        home_html = client.get(f"/{lang}/").get_data(as_text=True)
+        assert f"/{lang}/ressources/diplome-de-lecture-a-imprimer" in home_html
+        assert f"/{lang}/ressources/marque-pages-a-imprimer" in home_html
+        assert f"/{lang}/ressources/charte-coin-lecture-a-imprimer" in home_html
+        assert f'href="/{lang}/ressources/diplome"' not in home_html
+        assert f'href="/{lang}/ressources/marque-pages"' not in home_html
+        assert f'href="/{lang}/ressources/charte"' not in home_html
+        assert 'href="/sitemap.xml"' in home_html
+
+    # T-7: Sitemap lists canonicals (mentions-legales, not mentions_legales) & varied lastmod
+    sm_res = client.get("/sitemap.xml")
+    assert sm_res.status_code == 200
+    sm_xml = sm_res.get_data(as_text=True)
+    assert "mentions_legales" not in sm_xml
+    assert "/fr/mentions-legales" in sm_xml
+    root = ET.fromstring(sm_xml)
+    ns = {"ns": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+    lastmods = {el.text for el in root.findall(".//ns:lastmod", ns)}
+    assert len(lastmods) > 2, f"Expected non-uniform lastmod dates, got {lastmods}"
+
+    for lang in ("fr", "en", "de"):
+        r_sm = client.get(f"/{lang}/sitemap")
+        assert r_sm.status_code == 301
+        assert r_sm.headers["Location"].endswith("/sitemap.xml")
+
+    # T-8: Diploma preview & JS date format localized for EN and DE
+    diplome_en = client.get("/en/ressources/diplome-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert "Le 06/09/2026" not in diplome_en
+    assert "09/06/2026" in diplome_en
+    assert "toLocaleDateString('en-US'" in diplome_en
+
+    diplome_de = client.get("/de/ressources/diplome-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert "Le 06/09/2026" not in diplome_de
+    assert "06.09.2026" in diplome_de
+    assert "toLocaleDateString('de-DE'" in diplome_de
+
+
+def test_seo_t10_t11_keywords():
+    """Verify T-10 (real German 1st-grade books with authors, publishers & ISBNs)
+    and T-11 native page-1 SEO keywords / calque & quota cleanup across DE and EN.
+    """
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SECRET_KEY": "test-key-for-t10-t11",
+        }
+    )
+    client = app.test_client()
+
+    # T-10: DE 1st grade article has real verified books, authors, publishers, ISBNs
+    de_books = client.get("/de/blog/meilleurs-livres-cp").get_data(as_text=True)
+    for placeholder in ("Hurra, ich bin ein Schulkind!", "Der Wackelzahn ist los!"):
+        assert placeholder not in de_books
+    for expected in (
+        "978-3-7855-6511-7",
+        "978-3-473-46443-2",
+        "978-3-570-15420-5",
+        "978-3-948690-23-6",
+        "Franziska Gehm",
+        "Manfred Mai",
+        "Ingo Siegner",
+        "Erhard Dietl",
+        "Patrick Wirbeleit",
+        "Leseurkunde",
+        "Lesepass",
+        "Ausleihliste",
+    ):
+        assert expected in de_books
+
+    # T-11 DE native page-1 keywords
+    de_dip = client.get("/de/ressources/diplome-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert "Leseurkunde zum Ausdrucken" in de_dip
+    assert "LESEURKUNDE" in de_dip
+
+    de_pass = client.get("/de/ressources/passeport-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert "Lesepass zum Ausdrucken" in de_pass
+    assert "Leselogbuch" in de_pass
+
+    de_checkout = client.get("/de/blog/suivi-emprunts-livres-eleves").get_data(
+        as_text=True
+    )
+    assert "Ausleihliste Klassenbibliothek" in de_checkout
+    assert "Klassenbücherei" in de_checkout
+
+    de_org = client.get("/de/blog/comment-classer-livres").get_data(as_text=True)
+    assert "Klassenbibliothek &amp; Klassenbücherei ordnen" in de_org
+
+    de_bcd = client.get("/de/blog/logiciel-bcd-ecole").get_data(as_text=True)
+    assert "500 Bücher und 40 Schüler" not in de_bcd
+    assert "100 Bücher und 30 Schüler" in de_bcd
+
+    # T-11 EN native page-1 keywords & cleanup of French acronyms/calques
+    en_dip = client.get("/en/ressources/diplome-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert "Printable Reading Certificate" in en_dip
+    assert "READING CERTIFICATE" in en_dip
+
+    en_pass = client.get("/en/ressources/passeport-de-lecture-a-imprimer").get_data(
+        as_text=True
+    )
+    assert "Printable Reading Log" in en_pass
+
+    en_checkout = client.get("/en/blog/suivi-emprunts-livres-eleves").get_data(
+        as_text=True
+    )
+    assert "Classroom Library Checkout System" in en_checkout
+
+    en_org = client.get("/en/blog/comment-classer-livres").get_data(as_text=True)
+    assert "Classroom Library Organization" in en_org
+    assert "Book Bin Labels" in en_org
+
+    en_bcd = client.get("/en/blog/logiciel-bcd-ecole").get_data(as_text=True)
+    assert "BCDI" not in en_bcd
+    assert "SIGB" not in en_bcd
+    assert "500 books and 40 students" not in en_bcd
+    assert "100 books and 30 students" in en_bcd
+
+    en_mot = client.get("/en/blog/donner-envie-lire").get_data(as_text=True)
+    assert "reading rally" not in en_mot
+    assert "reading quarter hour" not in en_mot

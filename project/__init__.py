@@ -28,6 +28,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .email_error import MailCriticalHandler
 
@@ -82,8 +83,11 @@ logging.getLogger().addHandler(handler)
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
     is_prod = os.getenv("FLASK_ENV") == "production"
+    if is_prod:
+        app.config["PREFERRED_URL_SCHEME"] = "https"
 
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
@@ -201,7 +205,7 @@ def create_app(test_config=None):
         args.update(view_args)
         args["_external"] = external
         try:
-            return url_for(endpoint, **args)
+            url = url_for(endpoint, **args)
         except Exception:  # noqa: BLE001
             parts = request.path.strip("/").split("/")
             if parts and parts[0] in LANGUAGES:
@@ -211,8 +215,21 @@ def create_app(test_config=None):
                 new_path = f"/{target_lang}{request.path}"
             if external:
                 base = request.host_url.rstrip("/")
-                return f"{base}{new_path}"
-            return new_path
+                url = f"{base}{new_path}"
+            else:
+                url = new_path
+
+        if (
+            external
+            and url.startswith("http://")
+            and (
+                is_prod
+                or request.headers.get("X-Forwarded-Proto", "").lower() == "https"
+                or request.host.split(":")[0] == "livresenclasse.com"
+            )
+        ):
+            url = "https://" + url[len("http://") :]
+        return url
 
     # Rend get_locale, languages, lang_url, og:locale, format_date et format_datetime disponibles dans tous les templates Jinja2
     app.jinja_env.globals["get_locale"] = lambda: str(babel_get_locale() or "fr")

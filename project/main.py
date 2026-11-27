@@ -1,5 +1,8 @@
 import os
+import subprocess
 from datetime import UTC, datetime
+from functools import lru_cache
+from pathlib import Path
 from threading import Thread
 
 import jinja2
@@ -196,16 +199,126 @@ def dashboard():
     )
 
 
-@core.route("/sitemap.xml")
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_TEMPLATES_ROOT = Path(__file__).resolve().parent / "templates"
+
+_SITEMAP_BASELINE_LASTMOD = {
+    "index.html": "2026-11-23",
+    "subscription/tarifs.html": "2026-11-25",
+    "aide.html": "2026-09-13",
+    "apropos.html": "2026-10-13",
+    "mentions-legales.html": "2026-10-16",
+    "contact.html": "2026-10-13",
+    "enseignants/index.html": "2026-11-25",
+    "ressources/index.html": "2026-11-25",
+    "ressources/marque_pages.html": "2026-11-25",
+    "ressources/diplome.html": "2026-11-25",
+    "ressources/fiches_avis.html": "2026-11-25",
+    "ressources/charte.html": "2026-11-25",
+    "ressources/bingo.html": "2026-11-25",
+    "ressources/passeport.html": "2026-11-25",
+    "ressources/livret_pdf.html": "2026-11-25",
+    "blog/index.html": "2026-11-25",
+    "utils/app_install.html": "2026-11-25",
+    "utils/llms.txt": "2026-11-25",
+    "blog/application-scan-code-barre-livre.html": "2026-11-24",
+    "blog/archivage-classe-fin-annee.html": "2026-11-24",
+    "blog/cap-100-classes.html": "2026-10-20",
+    "blog/comment-classer-livres.html": "2026-11-25",
+    "blog/donner-envie-lire.html": "2026-11-25",
+    "blog/gestion-bibliotheque-classe.html": "2026-11-25",
+    "blog/logiciel-bcd-ecole.html": "2026-11-25",
+    "blog/meilleurs-livres-cp.html": "2026-11-25",
+    "blog/suivi-emprunts-livres-eleves.html": "2026-11-25",
+    "blog/de/application-scan-code-barre-livre.html": "2026-09-13",
+    "blog/en/application-scan-code-barre-livre.html": "2026-09-13",
+}
+
+_SITEMAP_PAGE_TEMPLATES = {
+    "index": "index.html",
+    "tarifs": "subscription/tarifs.html",
+    "aide": "aide.html",
+    "apropos": "apropos.html",
+    "mentions-legales": "mentions-legales.html",
+    "contact": "contact.html",
+    "enseignants": "enseignants/index.html",
+    "ressources": "ressources/index.html",
+    "ressources/marque-pages-a-imprimer": "ressources/marque_pages.html",
+    "ressources/diplome-de-lecture-a-imprimer": "ressources/diplome.html",
+    "ressources/fiche-de-lecture-a-imprimer": "ressources/fiches_avis.html",
+    "ressources/charte-coin-lecture-a-imprimer": "ressources/charte.html",
+    "ressources/defi-lecture-bingo-a-imprimer": "ressources/bingo.html",
+    "ressources/passeport-de-lecture-a-imprimer": "ressources/passeport.html",
+    "ressources/convertisseur-pdf-livret-a5-a-imprimer": "ressources/livret_pdf.html",
+    "blog": "blog/index.html",
+    "install": "utils/app_install.html",
+    "llms.txt": "utils/llms.txt",
+}
+
+
+@lru_cache(maxsize=128)
+def _get_template_lastmod(rel_path: str) -> str:
+    """Retourne la date ISO (YYYY-MM-DD) de dernière modification réelle d'un template."""
+    if (_REPO_ROOT / ".git").exists():
+        try:
+            out = subprocess.check_output(
+                [
+                    "git",
+                    "log",
+                    "-n",
+                    "1",
+                    "--format=%cs",
+                    "--",
+                    f"project/templates/{rel_path}",
+                ],
+                cwd=_REPO_ROOT,
+                text=True,
+                timeout=2,
+            ).strip()
+            if out:
+                return out
+        except (OSError, subprocess.SubprocessError):
+            pass
+
+    if rel_path in _SITEMAP_BASELINE_LASTMOD:
+        return _SITEMAP_BASELINE_LASTMOD[rel_path]
+
+    target = _TEMPLATES_ROOT / rel_path
+    if target.exists():
+        return datetime.fromtimestamp(target.stat().st_mtime, UTC).strftime("%Y-%m-%d")
+    return "2026-11-25"
+
+
+@core.app_template_global("sitemap_lastmod")
+def sitemap_lastmod(page_key: str, lang: str = "fr") -> str:
+    """Résout le template associé à une entrée de sitemap et retourne sa date de modification."""
+    if page_key.startswith("blog/"):
+        slug = page_key[len("blog/") :]
+        if lang in ("en", "de"):
+            localized = f"blog/{lang}/{slug}.html"
+            if (_TEMPLATES_ROOT / localized).exists():
+                return _get_template_lastmod(localized)
+        return _get_template_lastmod(f"blog/{slug}.html")
+
+    rel_path = _SITEMAP_PAGE_TEMPLATES.get(page_key, "index.html")
+    return _get_template_lastmod(rel_path)
+
+
 @core.route("/sitemap")
-@main.route("/sitemap.xml")
-@main.route("/sitemap")
+@core.route("/sitemap.xml")
 def sitemap():
     return (
         render_template("utils/sitemap.xml"),
         200,
         {"Content-Type": "application/xml; charset=utf-8"},
     )
+
+
+@main.route("/sitemap")
+@main.route("/sitemap.xml")
+def sitemap_redirect():
+    """Redirige les anciennes URLs localisées de sitemap vers l'unique /sitemap.xml."""
+    return redirect(url_for("core.sitemap"), code=301)
 
 
 @core.route("/robots.txt")

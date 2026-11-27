@@ -10,7 +10,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('index', l) }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
@@ -24,7 +24,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/tarifs"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/tarifs"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/tarifs"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('tarifs', l) }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -38,7 +38,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/aide"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/aide"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/aide"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('aide', l) }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -52,7 +52,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/apropos"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/apropos"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/apropos"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('apropos', l) }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -61,12 +61,12 @@
     <!-- Mentions légales -->
     {% for l in ['fr', 'en', 'de'] %}
     <url>
-        <loc>https://livresenclasse.com/{{ l }}/mentions_legales</loc>
-        <xhtml:link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/mentions_legales"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/mentions_legales"/>
-        <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/mentions_legales"/>
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/mentions_legales"/>
-        <lastmod>2026-09-12</lastmod>
+        <loc>https://livresenclasse.com/{{ l }}/mentions-legales</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://livresenclasse.com/fr/mentions-legales"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/mentions-legales"/>
+        <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/mentions-legales"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/mentions-legales"/>
+        <lastmod>{{ sitemap_lastmod('mentions-legales', l) }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
@@ -80,7 +80,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/contact"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/contact"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/contact"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('contact', l) }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -94,7 +94,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/enseignants"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/enseignants"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/enseignants"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('enseignants', l) }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -108,7 +108,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/ressources"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/ressources"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/ressources"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('ressources', l) }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -132,7 +132,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/{{ outil }}"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/{{ outil }}"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/{{ outil }}"/>
-        <lastmod>2026-11-25</lastmod>
+        <lastmod>{{ sitemap_lastmod(outil, l) }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -147,7 +147,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/blog"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/blog"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/blog"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('blog', l) }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
@@ -173,7 +173,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/{{ art }}"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/{{ art }}"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/{{ art }}"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod(art, l) }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
@@ -188,7 +188,7 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://livresenclasse.com/en/install"/>
         <xhtml:link rel="alternate" hreflang="de" href="https://livresenclasse.com/de/install"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://livresenclasse.com/fr/install"/>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>{{ sitemap_lastmod('install', l) }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
@@ -197,7 +197,7 @@
     <!-- Fichier LLM racine -->
     <url>
         <loc>https://livresenclasse.com/llms.txt</loc>
-        <lastmod>2026-11-25</lastmod>
+        <lastmod>{{ sitemap_lastmod('llms.txt') }}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
