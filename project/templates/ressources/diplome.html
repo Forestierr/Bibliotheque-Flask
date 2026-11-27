@@ -182,7 +182,7 @@
             <div class="field">
                 <label class="label is-small">{{ _("Date") }}</label>
                 <div class="control">
-                    <input class="input is-small" type="text" data-bind="diplomeDate" value="Le 06/09/2026">
+                    <input class="input is-small" type="text" data-bind="diplomeDate" value="{{ _('Le 06/09/2026') }}">
                 </div>
             </div>
         </div>
@@ -271,7 +271,7 @@
     <div class="diplome-footer">
         <div class="diplome-sign-box">
             <p class="editable" id="diplomeSchool" style="font-weight: 700; color: #1e293b;">{{ _("Classe de CM1-B") }}</p>
-            <p class="editable" id="diplomeDate" style="font-size: 0.85rem; color: #64748b;">Le 06/09/2026</p>
+            <p class="editable" id="diplomeDate" style="font-size: 0.85rem; color: #64748b;">{{ _("Le 06/09/2026") }}</p>
         </div>
 
         <div class="diplome-sign-box">
@@ -354,7 +354,7 @@
             <div class="diplome-footer">
                 <div class="diplome-sign-box">
                     <p class="class-diplome-school" style="font-weight: 700; color: #1e293b;">{{ _("Classe de CM1-B") }}</p>
-                    <p class="class-diplome-date" style="font-size: 0.85rem; color: #64748b;">Le 06/09/2026</p>
+                    <p class="class-diplome-date" style="font-size: 0.85rem; color: #64748b;">{{ _("Le 06/09/2026") }}</p>
                 </div>
                 <div class="diplome-sign-box">
                     <div class="diplome-sign-line">
@@ -636,9 +636,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateEl = document.getElementById('diplomeDate');
     if (dateInput && dateEl) {
         const today = new Date();
-        const formatted = today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        dateInput.value = `Le ${formatted}`;
-        dateEl.textContent = `Le ${formatted}`;
+        const pageLang = "{{ get_locale() }}";
+        let formattedDate;
+        if (pageLang === 'de') {
+            formattedDate = today.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        } else if (pageLang === 'en') {
+            formattedDate = today.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        } else {
+            formattedDate = 'Le ' + today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        dateInput.value = formattedDate;
+        dateEl.textContent = formattedDate;
+        document.querySelectorAll('.class-diplome-date').forEach(el => {
+            el.textContent = formattedDate;
+        });
     }
 
     ['diplomeTitle', 'diplomeSubtitle', 'diplomeSchool', 'diplomeDate', 'diplomeTeacher'].forEach(id => {

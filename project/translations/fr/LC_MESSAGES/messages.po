@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-25 01:09+0100\n"
+"POT-Creation-Date: 2026-11-27 22:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,12 +120,12 @@ msgid ""
 "été réactivés dans votre classe."
 msgstr "L'archive de l'année scolaire %(year)s a été supprimée et les élèves ont été réactivés dans votre classe."
 
-#: project/auth.py:78 project/auth.py:149 project/main.py:339
+#: project/auth.py:78 project/auth.py:149 project/main.py:452
 #: project/templates/auth/login.html:161 project/templates/auth/signup.html:272
 msgid "Veuillez compléter le CAPTCHA."
 msgstr "Veuillez compléter le CAPTCHA."
 
-#: project/auth.py:87 project/auth.py:159 project/main.py:348
+#: project/auth.py:87 project/auth.py:159 project/main.py:461
 msgid "CAPTCHA invalide. Veuillez réessayer."
 msgstr "CAPTCHA invalide. Veuillez réessayer."
 
@@ -227,7 +227,7 @@ msgid ""
 "ou supprimez un élève existant."
 msgstr "Vous avez atteint la limite de %(max)s élèves du plan gratuit. Vos élèves existants restent utilisables. Pour en ajouter d'autres, passez Premium ou supprimez un élève existant."
 
-#: project/eleve.py:62 project/main.py:354
+#: project/eleve.py:62 project/main.py:467
 msgid "Veuillez remplir tous les champs."
 msgstr "Veuillez remplir tous les champs."
 
@@ -359,25 +359,25 @@ msgstr "Vous avez atteint votre quota de %(max)s scans gratuits pour cette semai
 msgid "Tous les livres ont été supprimés."
 msgstr "Tous les livres ont été supprimés."
 
-#: project/main.py:376
+#: project/main.py:489
 msgid ""
 "Votre message a été envoyé avec succès. Vous avez reçu un email de "
 "confirmation."
 msgstr "Votre message a été envoyé avec succès. Vous avez reçu un email de confirmation."
 
-#: project/main.py:442
+#: project/main.py:555
 msgid "Veuillez renseigner l'objet et la description de votre retour."
 msgstr "Veuillez renseigner l'objet et la description de votre retour."
 
-#: project/main.py:479
+#: project/main.py:592
 msgid "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 msgstr "Votre retour a été transmis avec succès. Merci pour votre aide précieuse !"
 
-#: project/main.py:539
+#: project/main.py:652
 msgid "Article non trouvé"
 msgstr "Article non trouvé"
 
-#: project/main.py:553
+#: project/main.py:666
 msgid "Guide non trouvé"
 msgstr "Guide non trouvé"
 
@@ -993,22 +993,16 @@ msgstr "Découvrir l'application"
 msgid "Nous contacter"
 msgstr "Nous contacter"
 
-#: project/templates/base.html:11 project/templates/base.html:13
-#: project/templates/base.html:49
+#: project/templates/base.html:11
 msgid ""
 "Livres en Classe aide les enseignants à gérer facilement les livres de "
 "leur classe : catalogage, prêts, suivi des élèves et statistiques en "
 "quelques clics."
 msgstr "Livres en Classe aide les enseignants à gérer facilement les livres de leur classe : catalogage, prêts, suivi des élèves et statistiques en quelques clics."
 
-#: project/templates/base.html:12 project/templates/base.html:14
-#: project/templates/index.html:9
+#: project/templates/base.html:14 project/templates/index.html:9
 msgid "Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe"
 msgstr "Logiciel de gestion de bibliothèque de classe gratuit | Livres en Classe"
-
-#: project/templates/base.html:48
-msgid "Logiciel de gestion de bibliothèque scolaire | Livres en Classe"
-msgstr "Logiciel de gestion de bibliothèque scolaire | Livres en Classe"
 
 #: project/templates/contact.html:7 project/templates/contact.html:19
 msgid "Contact | Livres en Classe"
@@ -5662,6 +5656,12 @@ msgstr "Classe de CM1-B"
 #: project/templates/ressources/diplome.html:183
 msgid "Date"
 msgstr "Date"
+
+#: project/templates/ressources/diplome.html:185
+#: project/templates/ressources/diplome.html:274
+#: project/templates/ressources/diplome.html:357
+msgid "Le 06/09/2026"
+msgstr "Le 06/09/2026"
 
 #: project/templates/ressources/diplome.html:191
 msgid "Enseignant(e)"
